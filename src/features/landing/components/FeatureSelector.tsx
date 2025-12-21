@@ -1,5 +1,12 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Briefcase, FileText, FileCheck, FolderOpen, Check, ArrowRight } from "lucide-react";
+import {
+  Briefcase,
+  FileText,
+  FileCheck,
+  FolderOpen,
+  Check,
+  ArrowRight,
+} from "lucide-react";
 
 const features = [
   {
@@ -31,53 +38,61 @@ const features = [
 const featureDetails = {
   tracker: {
     title: "Lacak Semua Lamaran Kerja Tanpa Bingung",
-    description: "Simpan semua lamaran Anda dalam satu tampilan. Lihat status setiap lamaran, mulai dari dikirim, diproses, interview, hingga offer.",
+    description:
+      "Simpan semua lamaran Anda dalam satu tampilan. Lihat status setiap lamaran, mulai dari dikirim, diproses, interview, hingga offer.",
     bullets: [
       "Timeline status lamaran yang jelas",
       "Catatan interview dan feedback",
       "Pengingat tindak lanjut agar tidak terlewat",
     ],
     cta: "Pelajari cara kerja Application Tracker",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
     imageAlt: "Application Tracker Dashboard",
     bgColor: "bg-secondary",
   },
   surat: {
     title: "Buat Surat Lamaran yang Meyakinkan",
-    description: "Gunakan template surat lamaran dengan bahasa profesional. Sesuaikan untuk setiap posisi hanya dalam beberapa klik.",
+    description:
+      "Gunakan template surat lamaran dengan bahasa profesional. Sesuaikan untuk setiap posisi hanya dalam beberapa klik.",
     bullets: [
       "Template siap pakai untuk berbagai jenis pekerjaan",
       "Data otomatis terisi dari profil dan CV",
       "Ekspor ke Word (.docx) — ekspor PDF segera hadir",
     ],
     cta: "Pelajari cara membuat Surat Lamaran",
-    image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=500&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=500&fit=crop",
     imageAlt: "Editor Surat Lamaran",
     bgColor: "bg-primary/5",
   },
   cv: {
     title: "CV Modern yang Menonjol di Mata Rekruter",
-    description: "Bangun CV rapi dan terstruktur tanpa perlu desain rumit. Cocok untuk fresh graduate maupun profesional berpengalaman.",
+    description:
+      "Bangun CV rapi dan terstruktur tanpa perlu desain rumit. Cocok untuk fresh graduate maupun profesional berpengalaman.",
     bullets: [
       "Template CV modern dan mudah dibaca",
       "Bagian-bagian yang sudah terstruktur (pengalaman, pendidikan, skill)",
       "Ekspor ke Word (.docx) — ekspor PDF segera hadir",
     ],
     cta: "Pelajari cara membuat CV",
-    image: "https://images.unsplash.com/photos/1517048676732-d65bc937f952?w=800&h=500&fit=crop",
+    image:
+      "https://images.unsplash.com/photos/1517048676732-d65bc937f952?w=800&h=500&fit=crop",
     imageAlt: "CV Builder Interface",
     bgColor: "bg-accent",
   },
   portofolio: {
     title: "Tunjukkan Keahlian Anda dengan Portofolio Digital",
-    description: "Kumpulkan hasil karya terbaik Anda—gambar, video, link, dan studi kasus—dalam satu halaman portofolio yang mudah dibagikan.",
+    description:
+      "Kumpulkan hasil karya terbaik Anda—gambar, video, link, dan studi kasus—dalam satu halaman portofolio yang mudah dibagikan.",
     bullets: [
       "Galeri visual yang menarik",
       "Tautan publik yang bisa dikirim ke recruiter",
       "Cocok untuk desainer, developer, kreator konten, dan lainnya",
     ],
     cta: "Pelajari cara membuat Portofolio",
-    image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=500&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=500&fit=crop",
     imageAlt: "Portfolio Gallery",
     bgColor: "bg-muted",
   },
@@ -100,8 +115,12 @@ export function FeatureSelector() {
                   <feature.icon className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
                 </div>
                 <div className="w-full overflow-hidden">
-                  <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{feature.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1 hidden sm:block line-clamp-2">{feature.subtitle}</p>
+                  <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">
+                    {feature.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1 hidden sm:block line-clamp-2">
+                    {feature.subtitle}
+                  </p>
                 </div>
               </TabsTrigger>
             ))}
@@ -109,7 +128,12 @@ export function FeatureSelector() {
 
           {/* Tab Contents */}
           {Object.entries(featureDetails).map(([key, detail]) => (
-            <TabsContent key={key} value={key} className="mt-0" id={key === "tracker" ? undefined : key}>
+            <TabsContent
+              key={key}
+              value={key}
+              className="mt-0"
+              id={key === "tracker" ? undefined : key}
+            >
               <FeatureDetail
                 title={detail.title}
                 description={detail.description}
@@ -137,11 +161,23 @@ interface FeatureDetailProps {
   bgColor: string;
 }
 
-function FeatureDetail({ title, description, bullets, cta, image, imageAlt, bgColor }: FeatureDetailProps) {
+function FeatureDetail({
+  title,
+  description,
+  bullets,
+  cta,
+  image,
+  imageAlt,
+  bgColor,
+}: FeatureDetailProps) {
   return (
-    <div className={`grid lg:grid-cols-2 gap-8 lg:gap-16 items-center rounded-3xl p-8 lg:p-12 ${bgColor}`}>
+    <div
+      className={`grid lg:grid-cols-2 gap-8 lg:gap-16 items-center rounded-3xl p-8 lg:p-12 ${bgColor}`}
+    >
       <div className="space-y-6">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">{title}</h2>
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
+          {title}
+        </h2>
         <p className="text-muted-foreground text-lg">{description}</p>
         <ul className="space-y-3">
           {bullets.map((bullet, index) => (

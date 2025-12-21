@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-query";
 
 export const getUser = (): Promise<User> => {
-  return api.get("/auth/me");
+  return api.get("/account/me");
 };
 
 export const userQueryKey = ["user"];
@@ -20,7 +20,14 @@ export const userQueryKeyOptions = () =>
     queryFn: getUser,
   });
 
-export const useUser = () => useQuery({ queryKey: ["user"], queryFn: getUser });
+export const useUser = () =>
+  useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
 
 export const registerInputSchema = z
   .object({
@@ -51,8 +58,16 @@ export const registerInputSchema = z
 
     phone: z
       .string()
-      .regex(/^(\+62|62|0)8[1-9][0-9]{6,9}$/, "Nomor HP tidak valid")
-      .optional(),
+      .optional()
+      .refine(
+        (value) => {
+          if (!value || value.trim() === "") return true; // Allow empty values
+          return /^(\+62|62|0)8[1-9][0-9]{6,9}$/.test(value);
+        },
+        {
+          message: "Nomor HP tidak valid",
+        }
+      ),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Konfirmasi password tidak cocok",
@@ -66,12 +81,11 @@ export const register = (data: RegisterInput): Promise<User> => {
 };
 
 export const useRegister = ({ onSuccess }: { onSuccess?: () => void }) => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: register,
-    onSuccess: (user) => {
-      queryClient.setQueryData(userQueryKey, user);
+    onSuccess: () => {
+      // Don't set user data in cache after registration
+      // User should log in explicitly after registration
       onSuccess?.();
     },
   });
@@ -97,19 +111,134 @@ export const loginInputSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
 
-export const login = (data: LoginInput): Promise<User> => {
+export type LoginResponse =
+  | User
+  | {
+      message: string;
+      requires_otp: boolean;
+      expiresAt: number;
+      expiresIn: number;
+      resendAvailableAt: number;
+    };
+
+export const login = (data: LoginInput): Promise<LoginResponse> => {
   return api.post("/auth/login", data);
 };
 
-export const useLogin = ({ onSuccess }: { onSuccess?: () => void }) => {
+export const useLogin = ({
+  onSuccess,
+  onOtpRequired,
+}: {
+  onSuccess?: () => void;
+  onOtpRequired?: (data: {
+    message: string;
+    requires_otp: boolean;
+    expiresAt: number;
+    expiresIn: number;
+    resendAvailableAt: number;
+  }) => void;
+}) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: login,
+    onSuccess: (response) => {
+      if ("requires_otp" in response && response.requires_otp) {
+        onOtpRequired?.(
+          response as {
+            message: string;
+            requires_otp: boolean;
+            expiresAt: number;
+            expiresIn: number;
+            resendAvailableAt: number;
+          }
+        );
+      } else {
+        queryClient.setQueryData(userQueryKey, response as User);
+        onSuccess?.();
+      }
+    },
+  });
+};
+
+// OTP Verification APIs
+export const verifyOtpInputSchema = z.object({
+  identifier: z.string().min(1, "Identifier wajib diisi"),
+  otp_code: z
+    .string()
+    .min(6, "Kode OTP minimal 6 digit")
+    .max(6, "Kode OTP maksimal 6 digit"),
+  password: z.string().min(1, "Password wajib diisi"),
+});
+
+export type VerifyOtpInput = z.infer<typeof verifyOtpInputSchema>;
+
+export const verifyOtp = (data: VerifyOtpInput): Promise<User> => {
+  return api.post("/auth/verify-otp", data);
+};
+
+export const useVerifyOtp = ({ onSuccess }: { onSuccess?: () => void }) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: verifyOtp,
     onSuccess: (user) => {
       queryClient.setQueryData(userQueryKey, user);
       onSuccess?.();
     },
+  });
+};
+
+export const resendOtpInputSchema = z.object({
+  identifier: z.string().min(1, "Identifier wajib diisi"),
+});
+
+export type ResendOtpInput = z.infer<typeof resendOtpInputSchema>;
+
+export type ResendOtpResponse = {
+  message: string;
+  expiresAt: number;
+  expiresIn: number;
+  resendAvailableAt: number;
+};
+
+export const resendOtp = (data: ResendOtpInput): Promise<ResendOtpResponse> => {
+  return api.post("/auth/resend-otp", data);
+};
+
+export const useResendOtp = ({
+  onSuccess,
+}: {
+  onSuccess?: (data: ResendOtpResponse) => void;
+}) => {
+  return useMutation({
+    mutationFn: resendOtp,
+    onSuccess,
+  });
+};
+
+export const checkOtpStatusInputSchema = z.object({
+  identifier: z.string().min(1, "Identifier wajib diisi"),
+});
+
+export type CheckOtpStatusInput = z.infer<typeof checkOtpStatusInputSchema>;
+
+export type CheckOtpStatusResponse = {
+  hasActiveOtp: boolean;
+  expiresAt?: number;
+  expiresIn?: number;
+  resendAvailableAt?: number;
+};
+
+export const checkOtpStatus = (
+  data: CheckOtpStatusInput
+): Promise<CheckOtpStatusResponse> => {
+  return api.post("/auth/check-otp-status", data);
+};
+
+export const useCheckOtpStatus = () => {
+  return useMutation({
+    mutationFn: checkOtpStatus,
   });
 };
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { format } from "date-fns";
@@ -19,7 +18,7 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
-
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,21 +58,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   ApplicationFilterModal,
-  type FilterValues,
+  FilterValues,
 } from "@/components/applications/ApplicationFilterModal";
 import {
   ColumnToggle,
-  type ColumnVisibility,
+  ColumnVisibility,
   defaultColumnVisibility,
 } from "@/components/applications/ColumnToggle";
 import { ApplicationStats } from "@/components/applications/ApplicationStats";
 import { mockApplications } from "@/data/mockApplications";
 import {
-  type Application,
-  type ApplicationStatus,
-  type JobType,
-  type WorkSystem,
-  type ResultStatus,
+  Application,
+  ApplicationStatus,
+  JobType,
+  WorkSystem,
+  ResultStatus,
   JOB_TYPE_OPTIONS,
   WORK_SYSTEM_OPTIONS,
   STATUS_OPTIONS,
@@ -155,7 +154,7 @@ type SortField =
   | "follow_up_date";
 type SortOrder = "asc" | "desc";
 
-const Applications = () => {
+export default function Applications() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -282,8 +281,8 @@ const Applications = () => {
     // Sort
     if (sortField) {
       result.sort((a, b) => {
-        const aVal = a[sortField];
-        const bVal = b[sortField];
+        let aVal = a[sortField];
+        let bVal = b[sortField];
 
         if (typeof aVal === "string" && typeof bVal === "string") {
           return sortOrder === "asc"
@@ -494,7 +493,7 @@ const Applications = () => {
   };
 
   return (
-    <>
+    <DashboardLayout>
       <PageHeader
         title="Lamaran Kerja"
         subtitle="Kelola dan pantau semua lamaran kerja Anda."
@@ -987,8 +986,6 @@ const Applications = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </DashboardLayout>
   );
-};
-
-export default Applications;
+}

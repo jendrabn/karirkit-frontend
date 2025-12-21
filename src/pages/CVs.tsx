@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/static-components */
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { format } from "date-fns";
@@ -20,7 +19,7 @@ import {
   User,
   MoreVertical,
 } from "lucide-react";
-
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +47,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
@@ -65,24 +67,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  CVFilterModal,
-  type FilterValues,
-} from "@/components/cv/CVFilterModal";
+import { CVFilterModal, FilterValues } from "@/components/cv/CVFilterModal";
 import {
   CVColumnToggle,
-  type ColumnVisibility,
+  ColumnVisibility,
   defaultColumnVisibility,
 } from "@/components/cv/CVColumnToggle";
 import { mockCVs } from "@/data/mockCVs";
-import { type CV, DEGREE_OPTIONS } from "@/types/cv";
+import { CV, DEGREE_OPTIONS } from "@/types/cv";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 type SortField = "updated_at" | "name";
 type SortOrder = "asc" | "desc";
 
-const CVs = () => {
+export default function CVs() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -145,8 +144,8 @@ const CVs = () => {
     // Sort
     if (sortField) {
       result.sort((a, b) => {
-        const aVal = a[sortField];
-        const bVal = b[sortField];
+        let aVal = a[sortField];
+        let bVal = b[sortField];
 
         if (typeof aVal === "string" && typeof bVal === "string") {
           return sortOrder === "asc"
@@ -251,7 +250,7 @@ const CVs = () => {
   );
 
   return (
-    <>
+    <DashboardLayout>
       <PageHeader
         title="CV"
         subtitle="Kelola daftar riwayat hidup (CV) Anda."
@@ -749,8 +748,6 @@ const CVs = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </DashboardLayout>
   );
-};
-
-export default CVs;
+}

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/static-components */
 import { useNavigate, useParams } from "react-router";
 import { format } from "date-fns";
 import { ArrowLeft, Pencil, ExternalLink } from "lucide-react";
@@ -15,7 +14,7 @@ import {
   RESULT_STATUS_OPTIONS,
 } from "@/types/application";
 
-const ApplicationsDetail = () => {
+export default function ApplicationShow() {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -113,7 +112,7 @@ const ApplicationsDetail = () => {
               ? "default"
               : application.result_status === "failed"
               ? "destructive"
-              : "pending"
+              : "outline-solid"
           }
         >
           {getLabel(application.result_status, RESULT_STATUS_OPTIONS)}
@@ -232,6 +231,4 @@ const ApplicationsDetail = () => {
       </div>
     </DashboardLayout>
   );
-};
-
-export default ApplicationsDetail;
+}

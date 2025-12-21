@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -6,7 +5,7 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { PortfolioForm } from "@/components/portfolios/PortfolioForm";
 import { mockPortfolios } from "@/data/mockPortfolios";
 
-const PortfoliosEdit = () => {
+const PortfolioEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -19,7 +18,6 @@ const PortfoliosEdit = () => {
 
       toast.success("Portfolio berhasil diperbarui");
       navigate("/portfolios");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Gagal memperbarui portfolio");
     }
@@ -48,4 +46,4 @@ const PortfoliosEdit = () => {
   );
 };
 
-export default PortfoliosEdit;
+export default PortfolioEdit;

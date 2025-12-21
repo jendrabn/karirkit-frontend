@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Link } from "react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -177,7 +176,9 @@ const Blog = () => {
               {categories.map((category) => (
                 <Button
                   key={category.slug}
-                  variant={category.slug === "all" ? "default" : "outline"}
+                  variant={
+                    category.slug === "all" ? "default" : "outline-solid"
+                  }
                   size="sm"
                   className="whitespace-nowrap"
                 >

@@ -5,11 +5,11 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
   ApplicationLetterForm,
-  type ApplicationLetterFormData,
+  ApplicationLetterFormData,
 } from "@/components/application-letters/ApplicationLetterForm";
 import { toast } from "sonner";
 
-const ApplicationLettersCreate = () => {
+export default function ApplicationLetterCreate() {
   const navigate = useNavigate();
 
   const handleSubmit = (data: ApplicationLetterFormData) => {
@@ -43,6 +43,4 @@ const ApplicationLettersCreate = () => {
       />
     </DashboardLayout>
   );
-};
-
-export default ApplicationLettersCreate;
+}

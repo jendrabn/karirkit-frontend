@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { CVForm, type CVFormData } from "@/components/cv/CVForm";
+import { CVForm, CVFormData } from "@/components/cv/CVForm";
 import { toast } from "sonner";
 
-const CVsCreate = () => {
+export default function CVCreate() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,6 +37,4 @@ const CVsCreate = () => {
       />
     </DashboardLayout>
   );
-};
-
-export default CVsCreate;
+}

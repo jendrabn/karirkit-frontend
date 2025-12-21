@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus, X, Image } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
+import { buildImageUrl } from "@/lib/utils";
 
 interface Media {
   path: string;
@@ -40,7 +40,7 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
       const mockPath = URL.createObjectURL(file);
       onChange([...value, { path: mockPath, caption: "" }]);
       toast.success("Media berhasil diupload");
-    } catch (error) {
+    } catch {
       toast.error("Gagal mengupload media");
     } finally {
       setIsUploading(false);
@@ -77,7 +77,7 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
           <div key={index} className="space-y-2">
             <div className="relative">
               <img
-                src={media.path}
+                src={buildImageUrl(media.path)}
                 alt={`Media ${index + 1}`}
                 className="w-full h-32 object-cover rounded-lg border border-border"
               />
@@ -111,7 +111,9 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
           ) : (
             <>
               <Plus className="h-6 w-6 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Tambah Media</span>
+              <span className="text-sm text-muted-foreground">
+                Tambah Media
+              </span>
             </>
           )}
         </Button>

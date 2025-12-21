@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { buildImageUrl } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,30 +20,29 @@ import {
   X,
   LogOut,
   User,
-  Home,
   FileText,
   Briefcase,
   FolderOpen,
   Globe,
+  LayoutDashboard,
 } from "lucide-react";
 import { DonationModal } from "./DonationModal";
+import { useAuth } from "@/contexts/AuthContext";
 import logo from "../assets/images/logo.png";
+import { paths } from "@/config/paths";
 
 const navLinks = [
-  { href: "#beranda", label: "Beranda" },
-  { href: "#application-tracker", label: "Application Tracker" },
-  { href: "#surat-lamaran", label: "Surat Lamaran" },
-  { href: "#cv", label: "CV" },
-  { href: "#portofolio", label: "Portofolio" },
-  { href: "/blog", label: "Blog" },
+  { href: paths.home.getHref(), label: "Beranda" },
+  { href: "/#application-tracker", label: "Pelacak Lamaran" },
+  { href: "/#surat-lamaran", label: "Surat Lamaran" },
+  { href: "/#cv", label: "CV" },
+  { href: "/#portofolio", label: "Portofolio" },
+  { href: paths.blog.list.getHref(), label: "Blog" },
 ];
 
-interface NavbarProps {
-  isLoggedIn?: boolean;
-  onLoginToggle?: () => void;
-}
-
-export function Navbar({ isLoggedIn = false, onLoginToggle }: NavbarProps) {
+export function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [donationModalOpen, setDonationModalOpen] = useState(false);
 
@@ -50,20 +51,20 @@ export function Navbar({ isLoggedIn = false, onLoginToggle }: NavbarProps) {
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
           {/* Logo */}
-          <a href="#beranda" className="flex items-center gap-2">
+          <Link to={paths.home.getHref()} className="flex items-center gap-2">
             <img src={logo} alt="KarirKit Logo" className="h-8 w-auto" />
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <NavLink
                 key={link.href}
-                href={link.href}
+                to={link.href}
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
-              </a>
+              </NavLink>
             ))}
             <button
               onClick={() => setDonationModalOpen(true)}
@@ -75,48 +76,67 @@ export function Navbar({ isLoggedIn = false, onLoginToggle }: NavbarProps) {
 
           {/* Desktop Auth Buttons / User Menu */}
           <div className="hidden lg:flex items-center gap-3">
-            {isLoggedIn ? (
+            {isAuthenticated && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <Avatar className="h-9 w-9">
                       <AvatarImage
-                        src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face"
-                        alt="Selena Gomez"
+                        src={buildImageUrl(user.avatar)}
+                        alt={user.name}
                       />
-                      <AvatarFallback>SG</AvatarFallback>
+                      <AvatarFallback>
+                        {user.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2)}
+                      </AvatarFallback>
                     </Avatar>
                     <span className="text-sm font-medium text-foreground">
-                      Selena Gomez
+                      {user.name}
                     </span>
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-popover">
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Home className="mr-2 h-4 w-4" />
-                    Halaman Utama
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link to={paths.dashboard.getHref()}>
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    Application Tracker
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link to={paths.applications.list.getHref()}>
+                      <Briefcase className="mr-2 h-4 w-4" />
+                      Pelacak Lamaran
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <FileText className="mr-2 h-4 w-4" />
-                    Surat Lamaran
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link to={paths.applicationLetters.list.getHref()}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      Surat Lamaran
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <FileText className="mr-2 h-4 w-4" />
-                    CV
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link to={paths.cvs.list.getHref()}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      CV
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <FolderOpen className="mr-2 h-4 w-4" />
-                    Portofolio
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link to={paths.portfolios.list.getHref()}>
+                      <FolderOpen className="mr-2 h-4 w-4" />
+                      Portofolio
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    Akun
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link to={paths.account.profile.getHref()}>
+                      <User className="mr-2 h-4 w-4" />
+                      Akun
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
@@ -137,7 +157,10 @@ export function Navbar({ isLoggedIn = false, onLoginToggle }: NavbarProps) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-destructive"
-                    onClick={onLoginToggle}
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                    }}
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Keluar
@@ -147,10 +170,10 @@ export function Navbar({ isLoggedIn = false, onLoginToggle }: NavbarProps) {
             ) : (
               <>
                 <Button variant="outline" asChild>
-                  <a href="/auth/login">Masuk</a>
+                  <Link to={paths.auth.login.getHref()}>Masuk</Link>
                 </Button>
                 <Button variant="default" asChild>
-                  <a href="/auth/register">Daftar</a>
+                  <Link to={paths.auth.register.getHref()}>Daftar</Link>
                 </Button>
               </>
             )}
@@ -193,21 +216,24 @@ export function Navbar({ isLoggedIn = false, onLoginToggle }: NavbarProps) {
                 Donasi
               </button>
               <div className="flex gap-3 pt-4 border-t border-border">
-                {isLoggedIn ? (
+                {isAuthenticated && user ? (
                   <Button
                     variant="outline"
                     className="flex-1"
-                    onClick={onLoginToggle}
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                    }}
                   >
                     Keluar
                   </Button>
                 ) : (
                   <>
                     <Button variant="outline" className="flex-1" asChild>
-                      <a href="/auth/login">Masuk</a>
+                      <Link to={paths.auth.login.getHref()}>Masuk</Link>
                     </Button>
                     <Button variant="default" className="flex-1" asChild>
-                      <a href="/auth/register">Daftar</a>
+                      <Link to={paths.auth.register.getHref()}>Daftar</Link>
                     </Button>
                   </>
                 )}

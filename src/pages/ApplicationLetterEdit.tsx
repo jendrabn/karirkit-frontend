@@ -5,12 +5,12 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
   ApplicationLetterForm,
-  type ApplicationLetterFormData,
+  ApplicationLetterFormData,
 } from "@/components/application-letters/ApplicationLetterForm";
 import { mockApplicationLetters } from "@/data/mockApplicationLetters";
 import { toast } from "sonner";
 
-const ApplicationLettersEdit = () => {
+export default function ApplicationLetterEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -59,6 +59,4 @@ const ApplicationLettersEdit = () => {
       />
     </DashboardLayout>
   );
-};
-
-export default ApplicationLettersEdit;
+}

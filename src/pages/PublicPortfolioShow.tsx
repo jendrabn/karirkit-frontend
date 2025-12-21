@@ -35,7 +35,7 @@ const monthNames = [
   "Desember",
 ];
 
-const MyDetail = () => {
+export default function PublicPortfolioShow() {
   const { username, id } = useParams<{ username: string; id: string }>();
   const navigate = useNavigate();
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
@@ -357,6 +357,4 @@ const MyDetail = () => {
       <Footer />
     </div>
   );
-};
-
-export default MyDetail;
+}

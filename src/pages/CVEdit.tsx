@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { CVForm, type CVFormData } from "@/components/cv/CVForm";
+import { CVForm, CVFormData } from "@/components/cv/CVForm";
 import { mockCVs } from "@/data/mockCVs";
 import { toast } from "sonner";
 
-const CVsEdit = () => {
+export default function CVEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +53,4 @@ const CVsEdit = () => {
       />
     </DashboardLayout>
   );
-};
-
-export default CVsEdit;
+}

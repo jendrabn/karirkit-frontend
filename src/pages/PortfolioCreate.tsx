@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { PortfolioForm } from "@/components/portfolios/PortfolioForm";
 
-const PortfoliosCreate = () => {
+const PortfolioCreate = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (data: any) => {
@@ -16,7 +15,6 @@ const PortfoliosCreate = () => {
 
       toast.success("Portfolio berhasil dibuat");
       navigate("/portfolios");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Gagal membuat portfolio");
     }
@@ -35,4 +33,4 @@ const PortfoliosCreate = () => {
   );
 };
 
-export default PortfoliosCreate;
+export default PortfolioCreate;

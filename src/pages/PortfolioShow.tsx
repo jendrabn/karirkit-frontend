@@ -30,6 +30,7 @@ import {
 import { mockPortfolios } from "@/data/mockPortfolios";
 import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
+import { buildImageUrl } from "@/lib/utils";
 
 const monthNames = [
   "Januari",
@@ -46,7 +47,7 @@ const monthNames = [
   "Desember",
 ];
 
-const PortfoliosDetail = () => {
+export default function PortfolioShow() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
@@ -121,7 +122,8 @@ const PortfoliosDetail = () => {
             <div className="relative aspect-video">
               <img
                 src={
-                  portfolio.medias[currentMediaIndex]?.path || portfolio.cover
+                  buildImageUrl(portfolio.medias[currentMediaIndex]?.path) ||
+                  buildImageUrl(portfolio.cover)
                 }
                 alt={
                   portfolio.medias[currentMediaIndex]?.caption ||
@@ -190,7 +192,7 @@ const PortfoliosDetail = () => {
                   }`}
                 >
                   <img
-                    src={media.path}
+                    src={buildImageUrl(media.path)}
                     alt={media.caption}
                     className="w-full h-full object-cover"
                   />
@@ -366,6 +368,4 @@ const PortfoliosDetail = () => {
       </AlertDialog>
     </DashboardLayout>
   );
-};
-
-export default PortfoliosDetail;
+}

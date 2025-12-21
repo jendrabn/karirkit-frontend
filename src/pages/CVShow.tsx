@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { mockCVs } from "@/data/mockCVs";
+import { buildImageUrl } from "@/lib/utils";
 import {
   DEGREE_OPTIONS,
   JOB_TYPE_OPTIONS,
@@ -30,7 +31,7 @@ import {
 } from "@/types/cv";
 import { toast } from "sonner";
 
-const CVsDetail = () => {
+export default function CVShow() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -105,7 +106,7 @@ const CVsDetail = () => {
       <Card className="p-6 mb-6">
         <div className="flex flex-col md:flex-row gap-6">
           <Avatar className="h-24 w-24">
-            <AvatarImage src={cv.photo} />
+            <AvatarImage src={buildImageUrl(cv.photo)} />
             <AvatarFallback className="text-2xl bg-primary/10 text-primary">
               {cv.name.charAt(0)}
             </AvatarFallback>
@@ -411,6 +412,4 @@ const CVsDetail = () => {
       </div>
     </DashboardLayout>
   );
-};
-
-export default CVsDetail;
+}

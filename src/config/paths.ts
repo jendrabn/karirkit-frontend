@@ -39,14 +39,14 @@ export const paths = {
   dashboard: {
     getHref: () => "/dashboard",
   },
-
-  profile: {
-    getHref: () => "/profile",
+  account: {
+    profile: {
+      getHref: () => "/profile",
+    },
     changePassword: {
       getHref: () => "/change-password",
     },
   },
-
   applications: {
     list: {
       getHref: () => "/applications",

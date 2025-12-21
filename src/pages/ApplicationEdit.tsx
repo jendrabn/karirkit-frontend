@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -6,7 +5,7 @@ import { ApplicationForm } from "@/components/applications/ApplicationForm";
 import { mockApplications } from "@/data/mockApplications";
 import { toast } from "@/hooks/use-toast";
 
-const ApplicationsEdit = () => {
+export default function ApplicationEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -46,6 +45,4 @@ const ApplicationsEdit = () => {
       />
     </DashboardLayout>
   );
-};
-
-export default ApplicationsEdit;
+}

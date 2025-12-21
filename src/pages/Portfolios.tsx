@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router";
 import {
@@ -25,7 +23,7 @@ import {
   Link2,
   Check,
 } from "lucide-react";
-
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,7 +83,7 @@ const monthNames = [
   "Desember",
 ];
 
-const Portfolios = () => {
+export default function Portfolios() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -225,7 +223,7 @@ const Portfolios = () => {
   };
 
   return (
-    <>
+    <DashboardLayout>
       <PageHeader
         title="Portfolio"
         subtitle="Kelola dan tampilkan proyek-proyek terbaik Anda."
@@ -625,8 +623,6 @@ const Portfolios = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </DashboardLayout>
   );
-};
-
-export default Portfolios;
+}

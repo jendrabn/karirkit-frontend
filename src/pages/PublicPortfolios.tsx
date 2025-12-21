@@ -23,7 +23,7 @@ const monthNames = [
   "Desember",
 ];
 
-const My = () => {
+export default function PublicPortfolios() {
   const { username } = useParams<{ username: string }>();
   const data = getPortfolioListData(username || "");
 
@@ -167,6 +167,4 @@ const My = () => {
       <Footer />
     </div>
   );
-};
-
-export default My;
+}

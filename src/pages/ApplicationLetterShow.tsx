@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/static-components */
 import { useNavigate, useParams } from "react-router";
 import { format } from "date-fns";
 import { ArrowLeft, Pencil, Download, FileText } from "lucide-react";
@@ -21,7 +20,7 @@ import {
 } from "@/types/applicationLetter";
 import { toast } from "sonner";
 
-const ApplicationLettersDetail = () => {
+export default function ApplicationLetterShow() {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -227,6 +226,4 @@ const ApplicationLettersDetail = () => {
       </div>
     </DashboardLayout>
   );
-};
-
-export default ApplicationLettersDetail;
+}

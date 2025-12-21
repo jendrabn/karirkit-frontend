@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Image } from "lucide-react";
+import { X, Image } from "lucide-react";
 import { toast } from "sonner";
+import { buildImageUrl } from "@/lib/utils";
 
 interface CoverUploadProps {
   value?: string;
@@ -10,6 +11,7 @@ interface CoverUploadProps {
 
 export function CoverUpload({ value, onChange }: CoverUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [preview, setPreview] = useState<string>(buildImageUrl(value) || "");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,12 +35,12 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
     try {
       // Simulate upload - replace with actual API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      
+
       // Mock response - in real implementation, this would be the path from API
       const mockPath = URL.createObjectURL(file);
       onChange(mockPath);
       toast.success("Cover berhasil diupload");
-    } catch (error) {
+    } catch {
       toast.error("Gagal mengupload cover");
     } finally {
       setIsUploading(false);
@@ -47,6 +49,7 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
 
   const handleRemove = () => {
     onChange("");
+    setPreview("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -62,10 +65,10 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
         className="hidden"
       />
 
-      {value ? (
+      {preview ? (
         <div className="relative">
           <img
-            src={value}
+            src={preview}
             alt="Cover preview"
             className="w-full h-48 object-cover rounded-lg border border-border"
           />
@@ -92,7 +95,9 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
           ) : (
             <>
               <Image className="h-8 w-8 text-muted-foreground" />
-              <span className="text-muted-foreground">Klik untuk upload cover</span>
+              <span className="text-muted-foreground">
+                Klik untuk upload cover
+              </span>
             </>
           )}
         </Button>

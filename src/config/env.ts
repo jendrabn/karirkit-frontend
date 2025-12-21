@@ -16,6 +16,7 @@ const createEnv = () => {
       .optional()
       .default(false),
     APP_MOCK_API_PORT: z.string().optional().default("8080"),
+    GOOGLE_CLIENT_ID: z.string().optional().default("YOUR_GOOGLE_CLIENT_ID"),
   });
 
   const envVars = Object.entries(import.meta.env).reduce<
@@ -24,6 +25,8 @@ const createEnv = () => {
     const [key, value] = curr;
     if (key.startsWith("VITE_APP_")) {
       acc[key.replace("VITE_APP_", "")] = value;
+    } else if (key.startsWith("VITE_")) {
+      acc[key.replace("VITE_", "")] = value;
     }
     return acc;
   }, {});

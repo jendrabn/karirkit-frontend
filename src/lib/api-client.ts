@@ -1,7 +1,6 @@
 import Axios, { type InternalAxiosRequestConfig } from "axios";
 
 import { env } from "@/config/env";
-import { paths } from "@/config/paths";
 import { toast } from "sonner";
 import { setFormErrors } from "@/hooks/use-form-errors";
 
@@ -53,12 +52,14 @@ api.interceptors.response.use(
       setFormErrors(formErrors);
     }
 
-    if (error.response?.status === 401) {
-      const searchParams = new URLSearchParams();
-      const redirectTo =
-        searchParams.get("redirectTo") || window.location.pathname;
-      window.location.href = paths.auth.login.getHref(redirectTo);
-    }
+    // if (error.response?.status === 401) {
+    //   if (!window.location.pathname.startsWith("/auth/")) {
+    //     const searchParams = new URLSearchParams();
+    //     const redirectTo =
+    //       searchParams.get("redirectTo") || window.location.pathname;
+    //     window.location.href = paths.auth.login.getHref(redirectTo);
+    //   }
+    // }
 
     return Promise.reject(error);
   }

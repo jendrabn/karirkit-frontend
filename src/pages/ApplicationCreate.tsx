@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { ApplicationForm } from "@/components/applications/ApplicationForm";
 import { toast } from "@/hooks/use-toast";
 
-const ApplicationsCreate = () => {
+export default function ApplicationCreate() {
   const navigate = useNavigate();
 
   const handleSubmit = (data: any) => {
@@ -30,6 +29,4 @@ const ApplicationsCreate = () => {
       />
     </DashboardLayout>
   );
-};
-
-export default ApplicationsCreate;
+}

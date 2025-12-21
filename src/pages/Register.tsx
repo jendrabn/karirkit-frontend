@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import RegisterForm from "@/features/auth/components/register-form";
+import RegisterForm from "@/features/auth/components/RegisterForm";
 
 const Register = () => {
   return (

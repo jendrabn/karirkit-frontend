@@ -2,6 +2,10 @@ import { createBrowserRouter } from "react-router";
 import type { LoaderFunction, ActionFunction } from "react-router";
 import type { QueryClient } from "@tanstack/react-query";
 import type { ComponentType } from "react";
+import {
+  withProtection,
+  withPublicProtection,
+} from "@/components/RouteWrappers";
 
 type RouteModule = {
   default: ComponentType;
@@ -21,8 +25,31 @@ const convert = (queryClient: QueryClient) => (module: RouteModule) => {
   };
 };
 
+const convertWithProtection =
+  (queryClient: QueryClient) => (module: RouteModule) => {
+    const { default: Component, clientLoader, clientAction } = module;
+
+    return {
+      Component: withProtection(Component),
+      loader: clientLoader?.(queryClient),
+      action: clientAction?.(queryClient),
+    };
+  };
+
+const convertWithPublicProtection =
+  (queryClient: QueryClient) => (module: RouteModule) => {
+    const { default: Component, clientLoader, clientAction } = module;
+
+    return {
+      Component: withPublicProtection(Component),
+      loader: clientLoader?.(queryClient),
+      action: clientAction?.(queryClient),
+    };
+  };
+
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
+    // Public routes (no authentication required)
     {
       path: "/",
       lazy: () => import("./pages/Landing").then(convert(queryClient)),
@@ -36,114 +63,165 @@ export const createAppRouter = (queryClient: QueryClient) =>
       lazy: () => import("./pages/BlogDetail").then(convert(queryClient)),
     },
     {
+      path: "/u/:username",
+      lazy: () => import("./pages/PublicPortfolios").then(convert(queryClient)),
+    },
+    {
+      path: "/u/:username/:id",
+      lazy: () =>
+        import("./pages/PublicPortfolioShow").then(convert(queryClient)),
+    },
+    // Auth routes (only for non-authenticated users)
+    {
       path: "/auth/login",
-      lazy: () => import("./pages/Login").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/Login").then(convertWithPublicProtection(queryClient)),
     },
     {
       path: "/auth/register",
-      lazy: () => import("./pages/Register").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/Register").then(
+          convertWithPublicProtection(queryClient)
+        ),
     },
     {
       path: "/auth/forgot-password",
-      lazy: () => import("./pages/ForgotPassword").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/ForgotPassword").then(
+          convertWithPublicProtection(queryClient)
+        ),
     },
     {
       path: "/auth/reset-password",
-      lazy: () => import("./pages/ResetPassword").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/ResetPassword").then(
+          convertWithPublicProtection(queryClient)
+        ),
     },
     {
       path: "/auth/verify-otp",
-      lazy: () => import("./pages/VerifyOTP").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/OTPVerification").then(
+          convertWithPublicProtection(queryClient)
+        ),
     },
+    // Protected routes (authentication required)
     {
       path: "/dashboard",
-      lazy: () => import("./pages/Dashboard").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/Dashboard").then(convertWithProtection(queryClient)),
     },
     {
       path: "/profile",
-      lazy: () => import("./pages/Profile").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/Profile").then(convertWithProtection(queryClient)),
     },
     {
       path: "/change-password",
-      lazy: () => import("./pages/ChangePassword").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/ChangePassword").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/applications",
-      lazy: () => import("./pages/Applications").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/Applications").then(convertWithProtection(queryClient)),
     },
     {
       path: "/applications/create",
       lazy: () =>
-        import("./pages/ApplicationsCreate").then(convert(queryClient)),
+        import("./pages/ApplicationCreate").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/applications/:id",
       lazy: () =>
-        import("./pages/ApplicationsDetail").then(convert(queryClient)),
+        import("./pages/ApplicationLetterShow").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/applications/:id/edit",
-      lazy: () => import("./pages/ApplicationsEdit").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/ApplicationEdit").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/application-letters",
       lazy: () =>
-        import("./pages/ApplicationLetters").then(convert(queryClient)),
+        import("./pages/ApplicationLetters").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/application-letters/create",
       lazy: () =>
-        import("./pages/ApplicationLettersCreate").then(convert(queryClient)),
+        import("./pages/ApplicationLetterCreate").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/application-letters/:id",
       lazy: () =>
-        import("./pages/ApplicationLettersDetail").then(convert(queryClient)),
+        import("./pages/ApplicationLetterShow").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/application-letters/:id/edit",
       lazy: () =>
-        import("./pages/ApplicationLettersEdit").then(convert(queryClient)),
+        import("./pages/ApplicationLetterEdit").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/cvs",
-      lazy: () => import("./pages/CVs").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/CVs").then(convertWithProtection(queryClient)),
     },
     {
       path: "/cvs/create",
-      lazy: () => import("./pages/CVsCreate").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/CVCreate").then(convertWithProtection(queryClient)),
     },
     {
       path: "/cvs/:id",
-      lazy: () => import("./pages/CVsDetail").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/CVShow").then(convertWithProtection(queryClient)),
     },
     {
       path: "/cvs/:id/edit",
-      lazy: () => import("./pages/CVsEdit").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/CVEdit").then(convertWithProtection(queryClient)),
     },
     {
       path: "/portfolios",
-      lazy: () => import("./pages/Portfolios").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/Portfolios").then(convertWithProtection(queryClient)),
     },
     {
       path: "/portfolios/create",
-      lazy: () => import("./pages/PortfoliosCreate").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/PortfolioCreate").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/portfolios/:id",
-      lazy: () => import("./pages/PortfoliosDetail").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/PortfolioShow").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "/portfolios/:id/edit",
-      lazy: () => import("./pages/PortfoliosEdit").then(convert(queryClient)),
-    },
-    {
-      path: "/my/:username",
-      lazy: () => import("./pages/My").then(convert(queryClient)),
-    },
-    {
-      path: "/my/:username/:id",
-      lazy: () => import("./pages/MyDetail").then(convert(queryClient)),
+      lazy: () =>
+        import("./pages/PortfolioEdit").then(
+          convertWithProtection(queryClient)
+        ),
     },
     {
       path: "*",

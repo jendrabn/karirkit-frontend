@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/static-components */
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { format } from "date-fns";
@@ -19,7 +18,7 @@ import {
   FileText,
   MoreVertical,
 } from "lucide-react";
-
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +45,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
@@ -65,17 +67,18 @@ import {
 } from "@/components/ui/tooltip";
 import {
   ApplicationLetterFilterModal,
-  type FilterValues,
+  FilterValues,
 } from "@/components/application-letters/ApplicationLetterFilterModal";
 import {
   ApplicationLetterColumnToggle,
-  type ColumnVisibility,
+  ColumnVisibility,
   defaultColumnVisibility,
 } from "@/components/application-letters/ApplicationLetterColumnToggle";
 import { mockApplicationLetters } from "@/data/mockApplicationLetters";
 import {
-  type ApplicationLetter,
-  type Language,
+  ApplicationLetter,
+  Language,
+  LANGUAGE_OPTIONS,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
 } from "@/types/applicationLetter";
@@ -89,7 +92,7 @@ const getLanguageBadgeVariant = (language: Language) => {
 type SortField = "application_date" | "company_name" | "subject";
 type SortOrder = "asc" | "desc";
 
-const ApplicationLetters = () => {
+export default function ApplicationLetters() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -162,8 +165,8 @@ const ApplicationLetters = () => {
     // Sort
     if (sortField) {
       result.sort((a, b) => {
-        const aVal = a[sortField];
-        const bVal = b[sortField];
+        let aVal = a[sortField];
+        let bVal = b[sortField];
 
         if (typeof aVal === "string" && typeof bVal === "string") {
           return sortOrder === "asc"
@@ -273,7 +276,7 @@ const ApplicationLetters = () => {
   );
 
   return (
-    <>
+    <DashboardLayout>
       <PageHeader
         title="Surat Lamaran"
         subtitle="Kelola surat lamaran kerja Anda."
@@ -705,8 +708,6 @@ const ApplicationLetters = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </DashboardLayout>
   );
-};
-
-export default ApplicationLetters;
+}
