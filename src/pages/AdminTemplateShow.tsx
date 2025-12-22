@@ -20,20 +20,48 @@ import {
   Trash2,
   Download,
   Crown,
-  CheckCircle,
-  XCircle,
   FileText,
+  Loader2,
 } from "lucide-react";
-import { mockTemplates } from "@/data/mockTemplates";
 import { getTemplateTypeLabel } from "@/types/template";
 import { toast } from "sonner";
+import { useTemplate } from "@/features/admin/templates/api/get-template";
+import { useDeleteTemplate } from "@/features/admin/templates/api/delete-template";
+import { dayjs } from "@/lib/date";
 
 const AdminTemplateShow = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const template = mockTemplates.find((t) => t.id === Number(id));
+  const { data: template, isLoading } = useTemplate({
+      id: id as string,
+      queryConfig: {
+          enabled: !!id,
+      },
+  });
+
+  const deleteTemplateMutation = useDeleteTemplate({
+      mutationConfig: {
+          onSuccess: () => {
+              toast.success("Template berhasil dihapus");
+              navigate("/admin/templates");
+          },
+          onError: (error) => {
+              console.error(error);
+          }
+      },
+  });
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (!template) {
     return (
@@ -46,10 +74,9 @@ const AdminTemplateShow = () => {
   }
 
   const handleDelete = () => {
-    // Simulate API call
-    console.log("Deleting template:", template.id);
-    toast.success("Template berhasil dihapus");
-    navigate("/templates");
+      if (template.id) {
+          deleteTemplateMutation.mutate({ id: template.id });
+      }
   };
 
   return (
@@ -66,9 +93,9 @@ const AdminTemplateShow = () => {
             <CardTitle className="text-base">Preview</CardTitle>
           </CardHeader>
           <CardContent>
-            {template.preview_image ? (
+            {template.preview ? (
               <img
-                src={template.preview_image}
+                src={template.preview}
                 alt={template.name}
                 className="w-full aspect-[3/4] object-cover rounded-lg border"
               />
@@ -94,6 +121,12 @@ const AdminTemplateShow = () => {
                 </Badge>
               </div>
               <div>
+                <p className="text-sm text-muted-foreground">Bahasa</p>
+                <Badge variant="outline" className="mt-1 uppercase">
+                  {template.language}
+                </Badge>
+              </div>
+              <div>
                 <p className="text-sm text-muted-foreground">Status Premium</p>
                 {template.is_premium ? (
                   <Badge className="mt-1 bg-amber-100 text-amber-700 hover:bg-amber-100">
@@ -107,33 +140,12 @@ const AdminTemplateShow = () => {
                 )}
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Status Aktif</p>
-                {template.is_active ? (
-                  <Badge className="mt-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Aktif
-                  </Badge>
-                ) : (
-                  <Badge variant="destructive" className="mt-1">
-                    <XCircle className="h-3 w-3 mr-1" />
-                    Nonaktif
-                  </Badge>
-                )}
-              </div>
-              <div>
                 <p className="text-sm text-muted-foreground">Slug</p>
                 <p className="mt-1 font-mono text-sm">{template.slug}</p>
               </div>
             </div>
 
-            {template.description && (
-              <div>
-                <p className="text-sm text-muted-foreground">Deskripsi</p>
-                <p className="mt-1">{template.description}</p>
-              </div>
-            )}
-
-            {template.file && (
+            {template.path && (
               <div>
                 <p className="text-sm text-muted-foreground mb-2">
                   File Template
@@ -141,7 +153,7 @@ const AdminTemplateShow = () => {
                 <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/30 w-fit">
                   <FileText className="h-6 w-6 text-blue-600" />
                   <span className="text-sm">
-                    {template.file.split("/").pop()}
+                    {template.path.split("/").pop()}
                   </span>
                 </div>
               </div>
@@ -151,21 +163,13 @@ const AdminTemplateShow = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Dibuat</p>
                 <p className="mt-1 text-sm">
-                  {new Date(template.created_at).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {dayjs(template.created_at).format("D MMMM YYYY")}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Diperbarui</p>
                 <p className="mt-1 text-sm">
-                  {new Date(template.updated_at).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {dayjs(template.updated_at).format("D MMMM YYYY")}
                 </p>
               </div>
             </div>
@@ -173,15 +177,17 @@ const AdminTemplateShow = () => {
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pt-4 border-t">
               <Button
-                onClick={() => navigate(`/templates/${template.id}/edit`)}
+                onClick={() => navigate(`/admin/templates/${template.id}/edit`)}
               >
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              {template.file && (
-                <Button variant="outline">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download File
+              {template.path && (
+                <Button variant="outline" asChild>
+                    <a href={template.path} target="_blank" rel="noopener noreferrer">
+                        <Download className="h-4 w-4 mr-2" />
+                        Download File
+                    </a>
                 </Button>
               )}
               <Button

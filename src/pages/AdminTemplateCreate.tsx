@@ -1,18 +1,28 @@
 import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { TemplateForm } from "@/components/templates/TemplateForm";
-import type { Template } from "@/types/template";
+import { TemplateForm } from "@/features/admin/templates/components/TemplateForm";
+import { useCreateTemplate, type CreateTemplateInput } from "@/features/admin/templates/api/create-template";
 import { toast } from "sonner";
 
 const AdminTemplateCreate = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = (data: Partial<Template>) => {
-    // Simulate API call
-    console.log("Creating template:", data);
-    toast.success("Template berhasil dibuat");
-    navigate("/templates");
+  const createTemplateMutation = useCreateTemplate({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Template berhasil dibuat");
+        navigate("/admin/templates");
+      },
+      onError: (error) => {
+        // Error handling is done via toast in api-client usually, but we can add more here if needed
+        console.error(error);
+      }
+    },
+  });
+
+  const handleSubmit = (data: CreateTemplateInput) => {
+    createTemplateMutation.mutate({ data });
   };
 
   return (
@@ -21,7 +31,10 @@ const AdminTemplateCreate = () => {
         title="Buat Template"
         subtitle="Buat template CV atau Surat Lamaran baru."
       />
-      <TemplateForm onSubmit={handleSubmit} />
+      <TemplateForm 
+        onSubmit={handleSubmit} 
+        isLoading={createTemplateMutation.isPending}
+      />
     </DashboardLayout>
   );
 };
