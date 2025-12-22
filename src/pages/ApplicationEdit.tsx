@@ -1,48 +1,73 @@
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { ApplicationForm } from "@/components/applications/ApplicationForm";
-import { mockApplications } from "@/data/mockApplications";
-import { toast } from "@/hooks/use-toast";
+import { ApplicationForm } from "@/features/applications/components/ApplicationForm";
+import { useApplication } from "@/features/applications/api/get-application";
+import { useUpdateApplication } from "@/features/applications/api/update-application";
+import { toast } from "sonner";
+import { type UpdateApplicationInput } from "@/features/applications/api/update-application";
+import { Loader2 } from "lucide-react";
 
 export default function ApplicationEdit() {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  const application = mockApplications.find((app) => app.id === id);
+  const { data: application, isLoading: isApplicationLoading } = useApplication({
+    id: id!,
+  });
 
-  if (!application) {
+  const updateApplicationMutation = useUpdateApplication({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Lamaran berhasil diperbarui");
+        navigate("/applications");
+      },
+    },
+  });
+
+  const handleSubmit = (data: UpdateApplicationInput) => {
+    if (id) {
+       updateApplicationMutation.mutate({ id, data });
+    }
+  };
+
+  if (isApplicationLoading) {
     return (
       <DashboardLayout>
-        <PageHeader title="Lamaran Tidak Ditemukan" />
-        <p className="text-muted-foreground">
-          Data lamaran dengan ID tersebut tidak ditemukan.
-        </p>
+        <div className="flex justify-center items-center h-full min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
       </DashboardLayout>
     );
   }
 
-  const handleSubmit = (data: any) => {
-    console.log("Updating application:", data);
-    toast({
-      title: "Berhasil",
-      description: "Lamaran berhasil diperbarui.",
-    });
-    navigate("/applications");
-  };
+  if (!application) {
+     return (
+      <DashboardLayout>
+        <PageHeader
+            title="Edit Lamaran"
+            showBackButton
+            backButtonUrl="/applications"
+        />
+        <div className="text-center py-10">Lamaran tidak ditemukan</div>
+      </DashboardLayout>
+     )
+  }
 
   return (
     <DashboardLayout>
       <PageHeader
         title="Edit Lamaran"
-        subtitle={`Edit lamaran ke ${application.company_name}`}
+        subtitle={`Edit informasi lamaran untuk ${application.company_name} - ${application.position}`}
+        showBackButton
+        backButtonUrl="/applications"
       />
-
       <ApplicationForm
-        initialData={application}
-        onSubmit={handleSubmit}
-        onCancel={() => navigate("/applications")}
-      />
+          initialData={application}
+          onSubmit={handleSubmit}
+          onCancel={() => navigate("/applications")}
+          isLoading={updateApplicationMutation.isPending}
+        />
     </DashboardLayout>
   );
 }

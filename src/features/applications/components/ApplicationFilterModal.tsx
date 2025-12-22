@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { format } from "date-fns";
-import { CalendarIcon, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { dayjs } from "@/lib/date";
+import { CalendarIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -28,26 +28,16 @@ import {
   WORK_SYSTEM_OPTIONS,
   STATUS_OPTIONS,
   RESULT_STATUS_OPTIONS,
-  JobType,
-  WorkSystem,
-  ApplicationStatus,
-  ResultStatus,
 } from "@/types/application";
+import { type GetApplicationsParams } from "../api/get-applications";
 
-export interface FilterValues {
-  dateFrom?: Date;
-  dateTo?: Date;
-  job_type?: JobType;
-  work_system?: WorkSystem;
-  status?: ApplicationStatus;
-  result_status?: ResultStatus;
-}
+type FilterParams = Omit<GetApplicationsParams, "page" | "per_page" | "q" | "sort_by" | "sort_order">;
 
 interface ApplicationFilterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  filters: FilterValues;
-  onApplyFilters: (filters: FilterValues) => void;
+  filters: FilterParams;
+  onApplyFilters: (filters: FilterParams) => void;
 }
 
 export function ApplicationFilterModal({
@@ -56,15 +46,33 @@ export function ApplicationFilterModal({
   filters,
   onApplyFilters,
 }: ApplicationFilterModalProps) {
-  const [localFilters, setLocalFilters] = useState<FilterValues>(filters);
+  const [localFilters, setLocalFilters] = useState<FilterParams>(filters);
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(
+    filters.date_from ? dayjs(filters.date_from).toDate() : undefined
+  );
+  const [dateTo, setDateTo] = useState<Date | undefined>(
+      filters.date_to ? dayjs(filters.date_to).toDate() : undefined
+  );
+
+  useEffect(() => {
+      setLocalFilters(filters);
+      setDateFrom(filters.date_from ? dayjs(filters.date_from).toDate() : undefined);
+      setDateTo(filters.date_to ? dayjs(filters.date_to).toDate() : undefined);
+  }, [filters, open]);
 
   const handleApply = () => {
-    onApplyFilters(localFilters);
+    onApplyFilters({
+        ...localFilters,
+        date_from: dateFrom ? dayjs(dateFrom).format("YYYY-MM-DD") : undefined,
+        date_to: dateTo ? dayjs(dateTo).format("YYYY-MM-DD") : undefined,
+    });
     onOpenChange(false);
   };
 
   const handleReset = () => {
     setLocalFilters({});
+    setDateFrom(undefined);
+    setDateTo(undefined);
   };
 
   return (
@@ -85,18 +93,18 @@ export function ApplicationFilterModal({
                     variant="outline"
                     className={cn(
                       "flex-1 justify-start text-left font-normal",
-                      !localFilters.dateFrom && "text-muted-foreground"
+                      !dateFrom && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateFrom ? format(localFilters.dateFrom, "dd/MM/yyyy") : "Dari"}
+                    {dateFrom ? dayjs(dateFrom).format("DD/MM/YYYY") : "Dari"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">
                   <Calendar
                     mode="single"
-                    selected={localFilters.dateFrom}
-                    onSelect={(date) => setLocalFilters({ ...localFilters, dateFrom: date })}
+                    selected={dateFrom}
+                    onSelect={setDateFrom}
                     className="pointer-events-auto"
                   />
                 </PopoverContent>
@@ -107,18 +115,18 @@ export function ApplicationFilterModal({
                     variant="outline"
                     className={cn(
                       "flex-1 justify-start text-left font-normal",
-                      !localFilters.dateTo && "text-muted-foreground"
+                      !dateTo && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateTo ? format(localFilters.dateTo, "dd/MM/yyyy") : "Sampai"}
+                    {dateTo ? dayjs(dateTo).format("DD/MM/YYYY") : "Sampai"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">
                   <Calendar
                     mode="single"
-                    selected={localFilters.dateTo}
-                    onSelect={(date) => setLocalFilters({ ...localFilters, dateTo: date })}
+                    selected={dateTo}
+                    onSelect={setDateTo}
                     className="pointer-events-auto"
                   />
                 </PopoverContent>
@@ -130,13 +138,14 @@ export function ApplicationFilterModal({
           <div className="space-y-2">
             <Label>Tipe Pekerjaan</Label>
             <Select
-              value={localFilters.job_type || ""}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, job_type: value as JobType })}
+              value={localFilters.job_type || "all"}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, job_type: value === "all" ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih tipe pekerjaan" />
               </SelectTrigger>
               <SelectContent className="z-50">
+                <SelectItem value="all">Semua Tipe</SelectItem>
                 {JOB_TYPE_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -150,13 +159,14 @@ export function ApplicationFilterModal({
           <div className="space-y-2">
             <Label>Sistem Kerja</Label>
             <Select
-              value={localFilters.work_system || ""}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, work_system: value as WorkSystem })}
+              value={localFilters.work_system || "all"}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, work_system: value === "all" ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih sistem kerja" />
               </SelectTrigger>
               <SelectContent className="z-50">
+                <SelectItem value="all">Semua Sistem</SelectItem>
                 {WORK_SYSTEM_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -170,13 +180,14 @@ export function ApplicationFilterModal({
           <div className="space-y-2">
             <Label>Status</Label>
             <Select
-              value={localFilters.status || ""}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, status: value as ApplicationStatus })}
+              value={localFilters.status || "all"}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, status: value === "all" ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih status" />
               </SelectTrigger>
               <SelectContent className="z-50 max-h-60">
+                <SelectItem value="all">Semua Status</SelectItem>
                 {STATUS_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -190,13 +201,14 @@ export function ApplicationFilterModal({
           <div className="space-y-2">
             <Label>Hasil</Label>
             <Select
-              value={localFilters.result_status || ""}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, result_status: value as ResultStatus })}
+              value={localFilters.result_status || "all"}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, result_status: value === "all" ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih hasil" />
               </SelectTrigger>
               <SelectContent className="z-50">
+                <SelectItem value="all">Semua Hasil</SelectItem>
                 {RESULT_STATUS_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}

@@ -1,32 +1,81 @@
 import { useNavigate, useParams } from "react-router";
-import { format } from "date-fns";
-import { ArrowLeft, Pencil, ExternalLink } from "lucide-react";
+import { dayjs } from "@/lib/date";
+import { Pencil, ExternalLink, Trash2, Loader2, Copy } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { mockApplications } from "@/data/mockApplications";
 import {
   JOB_TYPE_OPTIONS,
   WORK_SYSTEM_OPTIONS,
   STATUS_OPTIONS,
   RESULT_STATUS_OPTIONS,
 } from "@/types/application";
+import { useApplication } from "@/features/applications/api/get-application";
+import { useDeleteApplication } from "@/features/applications/api/delete-application";
+import { useDuplicateApplication } from "@/features/applications/api/duplicate-application";
+import { toast } from "sonner";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function ApplicationShow() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const application = mockApplications.find((app) => app.id === id);
+  
+  const { data: application, isLoading, error } = useApplication({
+    id: id!,
+  });
 
-  if (!application) {
+  const deleteApplicationMutation = useDeleteApplication({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Lamaran berhasil dihapus");
+        navigate("/applications");
+      },
+    },
+  });
+
+  const duplicateApplicationMutation = useDuplicateApplication({
+      mutationConfig: {
+          onSuccess: (data) => {
+              toast.success("Lamaran berhasil diduplikasi");
+              navigate(`/applications/${data.id}`);
+          }
+      }
+  })
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex justify-center items-center h-full min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error || !application) {
     return (
       <DashboardLayout>
         <PageHeader title="Lamaran Tidak Ditemukan" />
         <p className="text-muted-foreground">
-          Data lamaran dengan ID tersebut tidak ditemukan.
+          Data lamaran dengan ID tersebut tidak ditemukan atau terjadi kesalahan.
         </p>
+        <Button onClick={() => navigate("/applications")} className="mt-4">
+            Kembali ke Daftar
+        </Button>
       </DashboardLayout>
     );
   }
@@ -62,10 +111,10 @@ export default function ApplicationShow() {
           href={String(value)}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-primary hover:underline flex items-center gap-1"
+          className="text-primary hover:underline flex items-center gap-1 break-all"
         >
-          {String(value).substring(0, 40)}...
-          <ExternalLink className="h-3 w-3" />
+          {String(value)}
+          <ExternalLink className="h-3 w-3 shrink-0" />
         </a>
       ) : (
         <p className="font-medium">{value || "-"}</p>
@@ -75,28 +124,29 @@ export default function ApplicationShow() {
 
   return (
     <DashboardLayout>
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/applications")}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Kembali
-        </Button>
-      </div>
-
       <PageHeader
         title={application.position}
         subtitle={application.company_name}
+        showBackButton
+        backButtonUrl="/applications"
       >
-        <Button onClick={() => navigate(`/applications/${id}/edit`)}>
-          <Pencil className="h-4 w-4 mr-2" />
-          Edit
-        </Button>
+        <div className="flex gap-2">
+           <Button variant="outline" onClick={() => duplicateApplicationMutation.mutate({ id: application.id })} disabled={duplicateApplicationMutation.isPending}>
+            <Copy className="h-4 w-4 mr-2" />
+            Duplikat
+          </Button>
+          <Button variant="outline" onClick={() => navigate(`/applications/${id}/edit`)}>
+            <Pencil className="h-4 w-4 mr-2" />
+            Edit
+          </Button>
+          <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+            <Trash2 className="h-4 w-4 mr-2" />
+            Hapus
+          </Button>
+        </div>
       </PageHeader>
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         <Badge variant="outline">
           {getLabel(application.job_type, JOB_TYPE_OPTIONS)}
         </Badge>
@@ -112,7 +162,7 @@ export default function ApplicationShow() {
               ? "default"
               : application.result_status === "failed"
               ? "destructive"
-              : "outline-solid"
+              : "outline"
           }
         >
           {getLabel(application.result_status, RESULT_STATUS_OPTIONS)}
@@ -160,7 +210,7 @@ export default function ApplicationShow() {
             />
             <InfoItem
               label="Tanggal Lamaran"
-              value={format(new Date(application.date), "dd MMMM yyyy")}
+              value={dayjs(application.date).format("DD MMMM YYYY")}
             />
             <InfoItem
               label="Status"
@@ -192,7 +242,7 @@ export default function ApplicationShow() {
               label="Tanggal Follow Up"
               value={
                 application.follow_up_date
-                  ? format(new Date(application.follow_up_date), "dd MMMM yyyy")
+                  ? dayjs(application.follow_up_date).format("DD MMMM YYYY")
                   : "-"
               }
             />
@@ -205,7 +255,7 @@ export default function ApplicationShow() {
 
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">Catatan</h3>
-          <p className="text-foreground">{application.notes || "-"}</p>
+          <p className="whitespace-pre-wrap">{application.notes || "-"}</p>
         </Card>
 
         <Card className="p-6">
@@ -214,21 +264,37 @@ export default function ApplicationShow() {
             <InfoItem label="ID" value={application.id} />
             <InfoItem
               label="Dibuat"
-              value={format(
-                new Date(application.created_at),
-                "dd MMMM yyyy, HH:mm"
-              )}
+              value={dayjs(application.created_at).format("DD MMMM YYYY, HH:mm")}
             />
             <InfoItem
               label="Diperbarui"
-              value={format(
-                new Date(application.updated_at),
-                "dd MMMM yyyy, HH:mm"
-              )}
+              value={dayjs(application.updated_at).format("DD MMMM YYYY, HH:mm")}
             />
           </div>
         </Card>
       </div>
+
+       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Lamaran?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Lamaran akan dihapus secara
+              permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteApplicationMutation.mutate({ id: application.id })}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteApplicationMutation.isPending}
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

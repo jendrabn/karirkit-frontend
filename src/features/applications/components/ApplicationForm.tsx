@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { format } from "date-fns";
+import { dayjs } from "@/lib/date";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,45 +23,17 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { FormError } from "@/components/ui/form-error";
 import {
-  Application,
   JOB_TYPE_OPTIONS,
   WORK_SYSTEM_OPTIONS,
   STATUS_OPTIONS,
   RESULT_STATUS_OPTIONS,
 } from "@/types/application";
-
-const applicationSchema = z.object({
-  company_name: z.string().min(1, "Nama perusahaan wajib diisi"),
-  company_url: z.string().url("URL tidak valid").or(z.literal("")),
-  position: z.string().min(1, "Posisi wajib diisi"),
-  job_source: z.string().min(1, "Sumber lowongan wajib diisi"),
-  job_type: z.enum(["full_time", "part_time", "contract", "internship", "freelance"]),
-  work_system: z.enum(["onsite", "remote", "hybrid"]),
-  salary_min: z.number().min(0, "Gaji minimal harus 0 atau lebih"),
-  salary_max: z.number().min(0, "Gaji maksimal harus 0 atau lebih"),
-  location: z.string().min(1, "Lokasi wajib diisi"),
-  date: z.string().min(1, "Tanggal wajib diisi"),
-  status: z.enum([
-    "draft", "submitted", "administration_screening", "hr_screening",
-    "online_test", "psychology_test", "technical_test", "hr_test",
-    "user_interview", "final_interview", "offering", "mcu", "onboarding",
-    "rejected", "accepted"
-  ]),
-  result_status: z.enum(["pending", "passed", "failed"]),
-  contact_name: z.string().optional(),
-  contact_email: z.string().email("Email tidak valid").or(z.literal("")).optional(),
-  contact_phone: z.string().optional(),
-  follow_up_date: z.string().optional(),
-  follow_up_note: z.string().optional(),
-  job_url: z.string().url("URL tidak valid").or(z.literal("")).optional(),
-  notes: z.string().optional(),
-});
-
-type ApplicationFormData = z.infer<typeof applicationSchema>;
+import { type CreateApplicationInput, createApplicationInputSchema } from "../api/create-application";
+import type { UpdateApplicationInput } from "../api/update-application";
 
 interface ApplicationFormProps {
-  initialData?: Partial<Application>;
-  onSubmit: (data: ApplicationFormData) => void;
+  initialData?: UpdateApplicationInput;
+  onSubmit: (data: CreateApplicationInput) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
@@ -79,28 +50,42 @@ export function ApplicationForm({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<ApplicationFormData>({
-    resolver: zodResolver(applicationSchema),
-    defaultValues: {
-      company_name: initialData?.company_name || "",
-      company_url: initialData?.company_url || "",
-      position: initialData?.position || "",
-      job_source: initialData?.job_source || "",
-      job_type: initialData?.job_type || "full_time",
-      work_system: initialData?.work_system || "onsite",
-      salary_min: initialData?.salary_min || 0,
-      salary_max: initialData?.salary_max || 0,
-      location: initialData?.location || "",
-      date: initialData?.date || "",
-      status: initialData?.status || "draft",
-      result_status: initialData?.result_status || "pending",
-      contact_name: initialData?.contact_name || "",
-      contact_email: initialData?.contact_email || "",
-      contact_phone: initialData?.contact_phone || "",
-      follow_up_date: initialData?.follow_up_date || "",
-      follow_up_note: initialData?.follow_up_note || "",
-      job_url: initialData?.job_url || "",
-      notes: initialData?.notes || "",
+  } = useForm<CreateApplicationInput>({
+    resolver: zodResolver(createApplicationInputSchema) as any,
+    defaultValues: initialData ? {
+      ...initialData,
+      // Ensure specific optional fields are strings if they are undefined in initialData
+      company_url: initialData.company_url || "",
+      job_source: initialData.job_source || "",
+      salary_min: initialData.salary_min || 0,
+      salary_max: initialData.salary_max || 0,
+      contact_name: initialData.contact_name || "",
+      contact_email: initialData.contact_email || "",
+      contact_phone: initialData.contact_phone || "",
+      follow_up_date: initialData.follow_up_date || null,
+      follow_up_note: initialData.follow_up_note || "",
+      job_url: initialData.job_url || "",
+      notes: initialData.notes || "",
+    } : {
+      company_name: "",
+      company_url: "",
+      position: "",
+      job_source: "",
+      job_type: "full_time",
+      work_system: "onsite",
+      salary_min: 0,
+      salary_max: 0,
+      location: "",
+      date: dayjs().format("YYYY-MM-DD"), // Default to today
+      status: "draft",
+      result_status: "pending",
+      contact_name: "",
+      contact_email: "",
+      contact_phone: "",
+      follow_up_date: null,
+      follow_up_note: "",
+      job_url: "",
+      notes: "",
     },
   });
 
@@ -144,7 +129,7 @@ export function ApplicationForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="job_source">Sumber Lowongan *</Label>
+            <Label htmlFor="job_source">Sumber Lowongan</Label>
             <Input
               id="job_source"
               {...register("job_source")}
@@ -166,7 +151,7 @@ export function ApplicationForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Lokasi *</Label>
+            <Label htmlFor="location">Lokasi</Label>
             <Input
               id="location"
               {...register("location")}
@@ -181,7 +166,7 @@ export function ApplicationForm({
         <h3 className="text-lg font-semibold mb-4">Detail Pekerjaan</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Tipe Pekerjaan *</Label>
+            <Label>Tipe Pekerjaan</Label>
             <Select
               value={watch("job_type")}
               onValueChange={(value) => setValue("job_type", value as any)}
@@ -200,7 +185,7 @@ export function ApplicationForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Sistem Kerja *</Label>
+            <Label>Sistem Kerja</Label>
             <Select
               value={watch("work_system")}
               onValueChange={(value) => setValue("work_system", value as any)}
@@ -253,14 +238,14 @@ export function ApplicationForm({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateValue ? format(new Date(dateValue), "dd/MM/yyyy") : "Pilih tanggal"}
+                  {dateValue ? dayjs(dateValue).format("DD/MM/YYYY") : "Pilih tanggal"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 z-50" align="start">
                 <Calendar
                   mode="single"
-                  selected={dateValue ? new Date(dateValue) : undefined}
-                  onSelect={(date) => setValue("date", date ? format(date, "yyyy-MM-dd") : "")}
+                  selected={dateValue ? dayjs(dateValue).toDate() : undefined}
+                  onSelect={(date) => setValue("date", date ? dayjs(date).format("YYYY-MM-DD") : "")}
                   className="pointer-events-auto"
                 />
               </PopoverContent>
@@ -269,7 +254,7 @@ export function ApplicationForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Status *</Label>
+            <Label>Status</Label>
             <Select
               value={watch("status")}
               onValueChange={(value) => setValue("status", value as any)}
@@ -288,7 +273,7 @@ export function ApplicationForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Hasil *</Label>
+            <Label>Hasil</Label>
             <Select
               value={watch("result_status")}
               onValueChange={(value) => setValue("result_status", value as any)}
@@ -349,14 +334,14 @@ export function ApplicationForm({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {followUpDateValue ? format(new Date(followUpDateValue), "dd/MM/yyyy") : "Pilih tanggal"}
+                  {followUpDateValue ? dayjs(followUpDateValue).format("DD/MM/YYYY") : "Pilih tanggal"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 z-50" align="start">
                 <Calendar
                   mode="single"
-                  selected={followUpDateValue ? new Date(followUpDateValue) : undefined}
-                  onSelect={(date) => setValue("follow_up_date", date ? format(date, "yyyy-MM-dd") : "")}
+                  selected={followUpDateValue ? dayjs(followUpDateValue).toDate() : undefined}
+                  onSelect={(date) => setValue("follow_up_date", date ? dayjs(date).format("YYYY-MM-DD") : null)}
                   className="pointer-events-auto"
                 />
               </PopoverContent>
@@ -379,7 +364,7 @@ export function ApplicationForm({
       </Card>
 
       <div className="flex justify-end gap-3">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
           Batal
         </Button>
         <Button type="submit" disabled={isLoading}>

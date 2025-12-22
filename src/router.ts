@@ -150,7 +150,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
     {
       path: "/applications/:id",
       lazy: () =>
-        import("./pages/ApplicationLetterShow").then(
+        import("./pages/ApplicationShow").then(
           convertWithProtection(queryClient)
         ),
     },
