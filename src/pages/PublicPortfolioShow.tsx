@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,8 +18,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { getPortfolioDetailData } from "@/data/mockPortfolios";
+import { usePublicPortfolio } from "@/features/public/api/get-public-portfolio";
 import { projectTypeLabels } from "@/types/portfolio";
+import { buildImageUrl } from "@/lib/utils";
 
 const monthNames = [
   "Januari",
@@ -40,9 +42,24 @@ export default function PublicPortfolioShow() {
   const navigate = useNavigate();
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
-  const data = getPortfolioDetailData(username || "", id || "");
+  const { data, isLoading, error } = usePublicPortfolio({
+    username: username!,
+    id: id!,
+  });
 
-  if (!data) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !data) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
@@ -110,7 +127,7 @@ export default function PublicPortfolioShow() {
               {/* Cover Image */}
               <div className="aspect-video rounded-xl overflow-hidden bg-muted shadow-lg">
                 <img
-                  src={portfolio.cover}
+                  src={buildImageUrl(portfolio.cover)}
                   alt={portfolio.title}
                   className="w-full h-full object-cover"
                 />
@@ -188,7 +205,7 @@ export default function PublicPortfolioShow() {
                     <div className="relative">
                       <div className="aspect-video rounded-lg overflow-hidden bg-muted">
                         <img
-                          src={portfolio.medias[currentMediaIndex].path}
+                          src={buildImageUrl(portfolio.medias[currentMediaIndex].path)}
                           alt={portfolio.medias[currentMediaIndex].caption}
                           className="w-full h-full object-cover"
                         />
@@ -234,7 +251,7 @@ export default function PublicPortfolioShow() {
                             }`}
                           >
                             <img
-                              src={media.path}
+                              src={buildImageUrl(media.path)}
                               alt={media.caption}
                               className="w-full h-full object-cover"
                             />
@@ -260,7 +277,7 @@ export default function PublicPortfolioShow() {
                     className="flex items-center gap-4 group"
                   >
                     <Avatar className="h-16 w-16 ring-2 ring-primary/20">
-                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarImage src={buildImageUrl(user.avatar)} alt={user.name} />
                       <AvatarFallback className="bg-primary text-primary-foreground text-xl">
                         {user.name.charAt(0)}
                       </AvatarFallback>

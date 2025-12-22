@@ -1,12 +1,13 @@
 import { useParams, Link } from "react-router";
-import { Calendar, Briefcase, MapPin } from "lucide-react";
+import { Calendar, Briefcase, MapPin, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { getPortfolioListData } from "@/data/mockPortfolios";
+import { usePublicPortfolios } from "@/features/public/api/get-public-portfolios";
 import { projectTypeLabels } from "@/types/portfolio";
+import { buildImageUrl } from "@/lib/utils";
 
 const monthNames = [
   "Januari",
@@ -25,9 +26,24 @@ const monthNames = [
 
 export default function PublicPortfolios() {
   const { username } = useParams<{ username: string }>();
-  const data = getPortfolioListData(username || "");
 
-  if (!data) {
+  const { data, isLoading, error } = usePublicPortfolios({
+    username: username!,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !data) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
@@ -57,7 +73,7 @@ export default function PublicPortfolios() {
         <div className="container mx-auto max-w-4xl">
           <div className="text-center animate-fade-in">
             <Avatar className="h-32 w-32 mx-auto mb-6 ring-4 ring-primary/20">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={buildImageUrl(user.avatar)} alt={user.name} />
               <AvatarFallback className="text-4xl bg-primary text-primary-foreground">
                 {user.name.charAt(0)}
               </AvatarFallback>
@@ -86,14 +102,14 @@ export default function PublicPortfolios() {
             {portfolios.map((portfolio) => (
               <Link
                 key={portfolio.id}
-                to={`/me/${username}/${portfolio.id}`}
+                to={`/u/@${username}/${portfolio.id}`}
                 className="group"
               >
                 <Card className="overflow-hidden h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-border/50">
                   {/* Cover Image */}
                   <div className="aspect-video relative overflow-hidden bg-muted">
                     <img
-                      src={portfolio.cover}
+                      src={buildImageUrl(portfolio.cover)}
                       alt={portfolio.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
