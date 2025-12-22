@@ -1,38 +1,72 @@
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { UserForm } from "@/components/users/UserForm";
-import { mockUsers } from "@/data/mockUsers";
+import { UserForm } from "@/features/admin/users/components/UserForm";
+import { useUser } from "@/features/admin/users/api/get-user";
+import { useUpdateUser } from "@/features/admin/users/api/update-user";
 import { toast } from "sonner";
+import type { UpdateUserInput } from "@/features/admin/users/api/update-user";
+import { Spinner } from "@/components/ui/spinner";
 
 const AdminUserEdit = () => {
-  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
-  const user = mockUsers.find((u) => u.id === id);
+  const { data: user, isLoading: isUserLoading } = useUser({
+    id: id!,
+    queryConfig: {
+      enabled: !!id,
+    },
+  });
 
-  if (!user) {
+  const updateUserMutation = useUpdateUser({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("User berhasil diupdate");
+        navigate("/admin/users");
+      },
+    },
+  });
+
+  const handleSubmit = (data: any) => {
+    if (id) {
+       updateUserMutation.mutate({ id, data: data as UpdateUserInput });
+    }
+  };
+
+  if (isUserLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">User tidak ditemukan.</p>
+        <div className="flex h-screen items-center justify-center">
+          <Spinner size="lg" />
         </div>
       </DashboardLayout>
     );
   }
 
-  const handleSubmit = (data: any) => {
-    console.log("Updating user:", data);
-    toast.success("User berhasil diupdate");
-    navigate("/admin/users");
-  };
+  if (!user) {
+    return (
+        <DashboardLayout>
+            <div className="flex h-screen items-center justify-center">
+                User not found
+            </div>
+        </DashboardLayout>
+    )
+  }
 
   return (
     <DashboardLayout>
-      <PageHeader title="Edit User" subtitle={`Edit data untuk ${user.name}`} />
+      <PageHeader
+        title="Edit User"
+        subtitle="Edit data pengguna."
+      />
 
       <div className="bg-card border border-border/60 rounded-xl p-6 shadow-sm">
-        <UserForm user={user} onSubmit={handleSubmit} />
+        <UserForm 
+            initialData={user} 
+            onSubmit={handleSubmit} 
+            isLoading={updateUserMutation.isPending} 
+        />
       </div>
     </DashboardLayout>
   );

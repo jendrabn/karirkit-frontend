@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
+import { dayjs } from "@/lib/date";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -123,7 +122,7 @@ export function UserFilterModal({
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {localFilters.created_from
-                    ? format(localFilters.created_from, "dd MMM yyyy", { locale: id })
+                    ? dayjs(localFilters.created_from).format("DD MMM YYYY")
                     : "Pilih tanggal"}
                 </Button>
               </PopoverTrigger>
@@ -153,7 +152,7 @@ export function UserFilterModal({
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {localFilters.created_to
-                    ? format(localFilters.created_to, "dd MMM yyyy", { locale: id })
+                    ? dayjs(localFilters.created_to).format("DD MMM YYYY")
                     : "Pilih tanggal"}
                 </Button>
               </PopoverTrigger>

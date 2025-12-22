@@ -1,16 +1,25 @@
 import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { UserForm } from "@/components/users/UserForm";
+import { UserForm } from "@/features/admin/users/components/UserForm";
+import { useCreateUser } from "@/features/admin/users/api/create-user";
 import { toast } from "sonner";
+import type { CreateUserInput } from "@/features/admin/users/api/create-user";
 
 const AdminUserCreate = () => {
   const navigate = useNavigate();
+  const createUserMutation = useCreateUser({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("User berhasil ditambahkan");
+        navigate("/admin/users");
+      },
+    },
+  });
 
   const handleSubmit = (data: any) => {
-    console.log("Creating user:", data);
-    toast.success("User berhasil ditambahkan");
-    navigate("/admin/users");
+    // data is CreateUserInput | UpdateUserInput, but here we know it is Create
+    createUserMutation.mutate(data as CreateUserInput);
   };
 
   return (
@@ -21,7 +30,7 @@ const AdminUserCreate = () => {
       />
 
       <div className="bg-card border border-border/60 rounded-xl p-6 shadow-sm">
-        <UserForm onSubmit={handleSubmit} />
+        <UserForm onSubmit={handleSubmit} isLoading={createUserMutation.isPending} />
       </div>
     </DashboardLayout>
   );
