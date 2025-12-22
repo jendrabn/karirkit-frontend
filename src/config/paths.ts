@@ -115,4 +115,59 @@ export const paths = {
       getHref: (username: string, id: string) => `/my/${username}/${id}`,
     },
   },
+
+  // Route Admin
+  admin: {
+    dashboard: {
+      getHref: () => "/admin/dashboard",
+    },
+    users: {
+      list: {
+        getHref: () => "/admin/users",
+      },
+      create: {
+        getHref: () => "/admin/users/create",
+      },
+      edit: {
+        getHref: (id: string) => `/admin/users/${id}/edit`,
+      },
+      detail: {
+        getHref: (id: string) => `/admin/users/${id}`,
+      },
+    },
+    blogs: {
+      list: {
+        getHref: () => "/admin/blog",
+      },
+      create: {
+        getHref: () => "/admin/blog/create",
+      },
+      edit: {
+        getHref: (id: string) => `/admin/blog/${id}/edit`,
+      },
+      detail: {
+        getHref: (id: string) => `/admin/blog/${id}`,
+      },
+      categories: {
+        getHref: () => "/admin/blog/m/categories",
+      },
+      tags: {
+        getHref: () => "/admin/blog/m/tags",
+      },
+    },
+    templates: {
+      list: {
+        getHref: () => "/admin/templates",
+      },
+      create: {
+        getHref: () => "/admin/templates/create",
+      },
+      edit: {
+        getHref: (id: string) => `/admin/templates/${id}/edit`,
+      },
+      detail: {
+        getHref: (id: string) => `/admin/templates/${id}`,
+      },
+    },
+  },
 } as const;

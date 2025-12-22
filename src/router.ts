@@ -5,6 +5,7 @@ import type { ComponentType } from "react";
 import {
   withProtection,
   withPublicProtection,
+  withAdminProtection,
 } from "@/components/RouteWrappers";
 
 type RouteModule = {
@@ -31,6 +32,17 @@ const convertWithProtection =
 
     return {
       Component: withProtection(Component),
+      loader: clientLoader?.(queryClient),
+      action: clientAction?.(queryClient),
+    };
+  };
+
+const convertWithAdminProtection =
+  (queryClient: QueryClient) => (module: RouteModule) => {
+    const { default: Component, clientLoader, clientAction } = module;
+
+    return {
+      Component: withAdminProtection(Component),
       loader: clientLoader?.(queryClient),
       action: clientAction?.(queryClient),
     };
@@ -221,6 +233,112 @@ export const createAppRouter = (queryClient: QueryClient) =>
       lazy: () =>
         import("./pages/PortfolioEdit").then(
           convertWithProtection(queryClient)
+        ),
+    },
+    // Admin routes (authentication and admin role required)
+    {
+      path: "/admin/dashboard",
+      lazy: () =>
+        import("./pages/AdminDashboard").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/users",
+      lazy: () =>
+        import("./pages/AdminUsers").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/users/create",
+      lazy: () =>
+        import("./pages/AdminUserCreate").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/users/:id/edit",
+      lazy: () =>
+        import("./pages/AdminUserEdit").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/users/:id",
+      lazy: () =>
+        import("./pages/AdminUserShow").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/blog",
+      lazy: () =>
+        import("./pages/AdminBlogs").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/blog/create",
+      lazy: () =>
+        import("./pages/AdminBlogCreate").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/blog/:id/edit",
+      lazy: () =>
+        import("./pages/AdminBlogEdit").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/blog/:id",
+      lazy: () =>
+        import("./pages/AdminBlogShow").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/blog/m/categories",
+      lazy: () =>
+        import("./pages/AdminBlogCategories").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/blog/m/tags",
+      lazy: () =>
+        import("./pages/AdminBlogTags").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/templates",
+      lazy: () =>
+        import("./pages/AdminTemplates").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/templates/create",
+      lazy: () =>
+        import("./pages/AdminTemplateCreate").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/templates/:id/edit",
+      lazy: () =>
+        import("./pages/AdminTemplateEdit").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/templates/:id",
+      lazy: () =>
+        import("./pages/AdminTemplateShow").then(
+          convertWithAdminProtection(queryClient)
         ),
     },
     {

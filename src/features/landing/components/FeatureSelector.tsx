@@ -1,35 +1,34 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Briefcase,
-  FileText,
-  FileCheck,
-  FolderOpen,
-  Check,
-  ArrowRight,
-} from "lucide-react";
+import { Check } from "lucide-react";
+
+// Import icon images
+import iconTracker from "@/assets/images/icon-tracker.png";
+import iconSurat from "@/assets/images/icon-surat.png";
+import iconCV from "@/assets/images/icon-cv.png";
+import iconPortfolio from "@/assets/images/icon-portfolio.png";
 
 const features = [
   {
     id: "tracker",
-    icon: Briefcase,
+    image: iconTracker,
     title: "Application Tracker",
     subtitle: "Pantau setiap lamaran kerja dalam satu tempat.",
   },
   {
     id: "surat",
-    icon: FileText,
+    image: iconSurat,
     title: "Surat Lamaran",
     subtitle: "Buat surat lamaran profesional dalam hitungan menit.",
   },
   {
     id: "cv",
-    icon: FileCheck,
+    image: iconCV,
     title: "CV Builder",
     subtitle: "CV rapi dan modern yang disukai perekrut.",
   },
   {
     id: "portofolio",
-    icon: FolderOpen,
+    image: iconPortfolio,
     title: "Portofolio",
     subtitle: "Tampilkan karya terbaik Anda secara digital.",
   },
@@ -49,7 +48,7 @@ const featureDetails = {
     image:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
     imageAlt: "Application Tracker Dashboard",
-    bgColor: "bg-secondary",
+    bgColor: "bg-gradient-to-br from-secondary via-secondary/50 to-background",
   },
   surat: {
     title: "Buat Surat Lamaran yang Meyakinkan",
@@ -64,7 +63,7 @@ const featureDetails = {
     image:
       "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=500&fit=crop",
     imageAlt: "Editor Surat Lamaran",
-    bgColor: "bg-primary/5",
+    bgColor: "bg-gradient-to-br from-primary/10 via-primary/5 to-background",
   },
   cv: {
     title: "CV Modern yang Menonjol di Mata Rekruter",
@@ -79,7 +78,7 @@ const featureDetails = {
     image:
       "https://images.unsplash.com/photos/1517048676732-d65bc937f952?w=800&h=500&fit=crop",
     imageAlt: "CV Builder Interface",
-    bgColor: "bg-accent",
+    bgColor: "bg-gradient-to-br from-accent via-accent/50 to-background",
   },
   portofolio: {
     title: "Tunjukkan Keahlian Anda dengan Portofolio Digital",
@@ -94,7 +93,7 @@ const featureDetails = {
     image:
       "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=500&fit=crop",
     imageAlt: "Portfolio Gallery",
-    bgColor: "bg-muted",
+    bgColor: "bg-gradient-to-br from-muted via-muted/50 to-background",
   },
 };
 
@@ -102,23 +101,46 @@ export function FeatureSelector() {
   return (
     <section id="application-tracker" className="py-16 lg:py-24 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <p className="text-sm text-primary font-medium mb-2 uppercase tracking-wider">
+            Fitur Utama
+          </p>
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
+            Semua yang Anda Butuhkan untuk Karier Impian
+          </h2>
+          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            Kelola lamaran, buat CV profesional, surat lamaran menarik, dan
+            portofolio digital dalam satu platform.
+          </p>
+        </div>
+
         <Tabs defaultValue="tracker" className="w-full">
           {/* Feature Cards as Tab Triggers */}
-          <TabsList className="grid grid-cols-2 lg:grid-cols-4 gap-4 h-auto bg-transparent p-0 mb-12">
+          <TabsList className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 h-auto bg-transparent p-0 mb-12">
             {features.map((feature) => (
               <TabsTrigger
                 key={feature.id}
                 value={feature.id}
-                className="group data-[state=active]:bg-secondary data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent bg-card rounded-2xl p-4 sm:p-6 h-auto flex flex-col items-center text-center gap-2 sm:gap-3 transition-all hover:border-primary/30 hover:shadow-md"
+                className="group relative data-[state=active]:bg-card data-[state=active]:border-primary data-[state=active]:shadow-xl border-2 border-border/50 bg-card/50 rounded-2xl p-5 sm:p-6 h-auto flex flex-col items-center text-center gap-3 sm:gap-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
               >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-secondary group-data-[state=active]:bg-primary/20 flex items-center justify-center transition-colors">
-                  <feature.icon className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
+                {/* Active indicator */}
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-primary opacity-0 group-data-[state=active]:opacity-100 transition-opacity" />
+
+                {/* Icon Image */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden flex items-center justify-center transition-transform group-hover:scale-110 group-data-[state=active]:scale-110">
+                  <img
+                    src={feature.image}
+                    alt={feature.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
+
                 <div className="w-full overflow-hidden">
-                  <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">
+                  <h3 className="font-bold text-foreground text-sm sm:text-base">
                     {feature.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-1 hidden sm:block line-clamp-2">
+                  <p className="text-xs text-muted-foreground mt-1.5 hidden sm:block line-clamp-2">
                     {feature.subtitle}
                   </p>
                 </div>
@@ -131,7 +153,7 @@ export function FeatureSelector() {
             <TabsContent
               key={key}
               value={key}
-              className="mt-0"
+              className="mt-0 animate-in fade-in-50 duration-500"
               id={key === "tracker" ? undefined : key}
             >
               <FeatureDetail
@@ -165,21 +187,22 @@ function FeatureDetail({
   title,
   description,
   bullets,
-  cta,
   image,
   imageAlt,
   bgColor,
 }: FeatureDetailProps) {
   return (
     <div
-      className={`grid lg:grid-cols-2 gap-8 lg:gap-16 items-center rounded-3xl p-8 lg:p-12 ${bgColor}`}
+      className={`grid lg:grid-cols-2 gap-8 lg:gap-16 items-center rounded-3xl p-8 lg:p-12 ${bgColor} border border-border/30`}
     >
       <div className="space-y-6">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
           {title}
         </h2>
-        <p className="text-muted-foreground text-lg">{description}</p>
-        <ul className="space-y-3">
+        <p className="text-muted-foreground text-lg leading-relaxed">
+          {description}
+        </p>
+        <ul className="space-y-4">
           {bullets.map((bullet, index) => (
             <li key={index} className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
@@ -189,16 +212,9 @@ function FeatureDetail({
             </li>
           ))}
         </ul>
-        <a
-          href="#"
-          className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
-        >
-          {cta}
-          <ArrowRight className="w-4 h-4" />
-        </a>
       </div>
       <div className="order-first lg:order-last">
-        <div className="rounded-2xl overflow-hidden shadow-xl">
+        <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-border/20 transform hover:scale-[1.02] transition-transform duration-300">
           <img
             src={image}
             alt={imageAlt}

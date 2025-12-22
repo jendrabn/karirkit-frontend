@@ -1,7 +1,7 @@
-import React from "react";
+import type { ComponentType } from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
-import type { ComponentType } from "react";
+import { AdminRoute } from "./AdminRoute";
 
 export const withProtection = (Component: ComponentType) => {
   return () => (
@@ -16,5 +16,13 @@ export const withPublicProtection = (Component: ComponentType) => {
     <PublicRoute>
       <Component />
     </PublicRoute>
+  );
+};
+
+export const withAdminProtection = (Component: ComponentType) => {
+  return () => (
+    <AdminRoute>
+      <Component />
+    </AdminRoute>
   );
 };

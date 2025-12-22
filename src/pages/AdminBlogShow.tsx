@@ -1,0 +1,254 @@
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { format } from "date-fns";
+import {
+  ArrowLeft,
+  Pencil,
+  Trash2,
+  Calendar,
+  Clock,
+  Eye,
+  User,
+  Tag,
+} from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { mockBlogs } from "@/data/mockBlogs";
+import { BLOG_STATUS_OPTIONS, getStatusBadgeVariant } from "@/types/blog";
+import { toast } from "sonner";
+
+const AdminBlogShow = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const blog = mockBlogs.find((b) => b.id === Number(id));
+
+  if (!blog) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center py-16">
+          <p className="text-lg font-medium">Blog tidak ditemukan</p>
+          <button
+            onClick={() => navigate("/blogs")}
+            className="mt-4 text-primary hover:underline"
+          >
+            Kembali ke daftar blog
+          </button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const handleDelete = () => {
+    // In real implementation, call API to delete
+    toast.success("Blog berhasil dihapus");
+    navigate("/blogs");
+  };
+
+  return (
+    <DashboardLayout>
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/blogs")}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Kembali
+        </Button>
+
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">{blog.title}</h1>
+            <p className="text-muted-foreground mt-1">{blog.teaser}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/blogs/${blog.id}/edit`)}
+            >
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => setDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Hapus
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Cover Image */}
+          {blog.image && (
+            <Card>
+              <CardContent className="p-0">
+                <img
+                  src={blog.image}
+                  alt={blog.image_caption || blog.title}
+                  className="w-full h-64 object-cover rounded-t-lg"
+                />
+                {blog.image_caption && (
+                  <p className="text-sm text-muted-foreground p-4 text-center">
+                    {blog.image_caption}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Content */}
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="text-lg font-semibold mb-4">Konten</h3>
+              <div
+                className="prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: blog.content }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Status & Info */}
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Status</span>
+                <Badge variant={getStatusBadgeVariant(blog.status)}>
+                  {
+                    BLOG_STATUS_OPTIONS.find((s) => s.value === blog.status)
+                      ?.label
+                  }
+                </Badge>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Views:</span>
+                  <span className="font-medium">
+                    {blog.views_count.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Waktu Baca:</span>
+                  <span className="font-medium">{blog.min_read} menit</span>
+                </div>
+
+                {blog.category && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Tag className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Kategori:</span>
+                    <Badge variant="secondary">{blog.category.name}</Badge>
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                {blog.published_at && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Dipublikasi:</span>
+                    <span>
+                      {format(new Date(blog.published_at), "dd MMM yyyy HH:mm")}
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Dibuat:</span>
+                  <span>
+                    {format(new Date(blog.created_at), "dd MMM yyyy HH:mm")}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Diperbarui:</span>
+                  <span>
+                    {format(new Date(blog.updated_at), "dd MMM yyyy HH:mm")}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Author */}
+          {blog.author && (
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Penulis
+                </h3>
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={blog.author.avatar || undefined} />
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      {blog.author.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium">{blog.author.name}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* Delete Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Blog?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Blog "{blog.title}" akan
+              dihapus secara permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </DashboardLayout>
+  );
+};
+
+export default AdminBlogShow;

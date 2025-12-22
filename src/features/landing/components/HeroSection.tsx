@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/images/hero.png";
 
 export function HeroSection() {
   return (
@@ -11,17 +12,23 @@ export function HeroSection() {
               Kelola Semua Lamaran Kerja Anda dengan Lebih Mudah
             </h1>
             <p className="text-lg text-foreground/90">
-              Platform all-in-one untuk melacak lamaran kerja, membuat CV profesional, menyusun surat lamaran, dan membangun portofolio digital.
+              Platform all-in-one untuk melacak lamaran kerja, membuat CV
+              profesional, menyusun surat lamaran, dan membangun portofolio
+              digital.
             </p>
             <p className="text-muted-foreground">
-              Gunakan Application Tracker untuk memonitor progres lamaran, buat CV dan Surat Lamaran yang profesional, serta bangun Portofolio yang memukau. Semua alat yang Anda butuhkan untuk menonjol di dunia kerja dalam satu platform yang intuitif.
+              Gunakan Application Tracker untuk memonitor progres lamaran, buat
+              CV dan Surat Lamaran yang profesional, serta bangun Portofolio
+              yang memukau. Semua alat yang Anda butuhkan untuk menonjol di
+              dunia kerja dalam satu platform yang intuitif.
             </p>
             <div className="pt-4">
               <Button variant="hero" size="lg">
                 Daftar Sekarang
               </Button>
               <p className="text-sm text-muted-foreground mt-4">
-                Application Tracker, CV Builder, Surat Lamaran, dan Portofolio — semuanya gratis dalam satu platform.
+                Application Tracker, CV Builder, Surat Lamaran, dan Portofolio —
+                semuanya gratis dalam satu platform.
               </p>
             </div>
           </div>
@@ -30,7 +37,7 @@ export function HeroSection() {
           <div className="relative">
             <div className="rounded-3xl overflow-hidden shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=600&fit=crop"
+                src={heroImage}
                 alt="Dashboard KarirKit - Platform manajemen lamaran kerja"
                 className="w-full h-auto object-cover"
               />

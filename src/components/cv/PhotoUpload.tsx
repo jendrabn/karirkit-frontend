@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Upload, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { cn, buildImageUrl } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface PhotoUploadProps {
@@ -54,18 +54,18 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
   return (
     <div className="space-y-3">
       <Label>Foto (Opsional)</Label>
-
+      
       <div className="flex items-start gap-4">
-        <div
+        <div 
           className={cn(
             "w-32 h-32 rounded-lg border-2 border-dashed flex items-center justify-center overflow-hidden bg-muted/50",
             !preview && "border-muted-foreground/25"
           )}
         >
           {preview ? (
-            <img
-              src={buildImageUrl(preview)}
-              alt="Preview"
+            <img 
+              src={preview} 
+              alt="Preview" 
               className="w-full h-full object-cover"
             />
           ) : (
@@ -81,7 +81,7 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
             onChange={handleFileChange}
             className="hidden"
           />
-
+          
           <Button
             type="button"
             variant="outline"
