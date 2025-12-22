@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { format } from "date-fns";
 import {
@@ -27,38 +26,62 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { mockBlogs } from "@/data/mockBlogs";
 import { BLOG_STATUS_OPTIONS, getStatusBadgeVariant } from "@/types/blog";
 import { toast } from "sonner";
+import { paths } from "@/config/paths";
+import { useBlog } from "@/features/admin/blogs/api/get-blog";
+import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
+import { buildImageUrl } from "@/lib/utils";
+import { useState } from "react";
 
 const AdminBlogShow = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const blog = mockBlogs.find((b) => b.id === Number(id));
+  const { data: blogData, isLoading, error } = useBlog({ id: id! });
+  const deleteBlogMutation = useDeleteBlog();
 
-  if (!blog) {
+  const handleDelete = async () => {
+    if (!id) return;
+    
+    try {
+      await deleteBlogMutation.mutateAsync(id);
+      toast.success("Blog berhasil dihapus");
+      navigate(paths.admin.blogs.list.getHref());
+    } catch (error) {
+      toast.error("Gagal menghapus blog");
+    }
+  };
+
+  if (error) {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center py-16">
           <p className="text-lg font-medium">Blog tidak ditemukan</p>
-          <button
-            onClick={() => navigate("/blogs")}
-            className="mt-4 text-primary hover:underline"
+          <Button
+            onClick={() => navigate(paths.admin.blogs.list.getHref())}
+            className="mt-4"
+            variant="outline"
           >
             Kembali ke daftar blog
-          </button>
+          </Button>
         </div>
       </DashboardLayout>
     );
   }
 
-  const handleDelete = () => {
-    // In real implementation, call API to delete
-    toast.success("Blog berhasil dihapus");
-    navigate("/blogs");
-  };
+  if (isLoading || !blogData) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-16">
+          <p className="text-muted-foreground">Memuat...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const blog = blogData;
 
   return (
     <DashboardLayout>
@@ -66,7 +89,7 @@ const AdminBlogShow = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate("/blogs")}
+          onClick={() => navigate(paths.admin.blogs.list.getHref())}
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -76,12 +99,12 @@ const AdminBlogShow = () => {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">{blog.title}</h1>
-            <p className="text-muted-foreground mt-1">{blog.teaser}</p>
+            <p className="text-muted-foreground mt-1">{blog.excerpt}</p>
           </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => navigate(`/blogs/${blog.id}/edit`)}
+              onClick={() => navigate(paths.admin.blogs.edit.getHref(blog.id))}
             >
               <Pencil className="h-4 w-4 mr-2" />
               Edit
@@ -101,19 +124,14 @@ const AdminBlogShow = () => {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Cover Image */}
-          {blog.image && (
+          {blog.featured_image && (
             <Card>
               <CardContent className="p-0">
                 <img
-                  src={blog.image}
-                  alt={blog.image_caption || blog.title}
+                  src={buildImageUrl(blog.featured_image)}
+                  alt={blog.title}
                   className="w-full h-64 object-cover rounded-t-lg"
                 />
-                {blog.image_caption && (
-                  <p className="text-sm text-muted-foreground p-4 text-center">
-                    {blog.image_caption}
-                  </p>
-                )}
               </CardContent>
             </Card>
           )}
@@ -152,14 +170,14 @@ const AdminBlogShow = () => {
                   <Eye className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Views:</span>
                   <span className="font-medium">
-                    {blog.views_count.toLocaleString()}
+                    {blog.views.toLocaleString()}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Waktu Baca:</span>
-                  <span className="font-medium">{blog.min_read} menit</span>
+                  <span className="font-medium">{blog.read_time} menit</span>
                 </div>
 
                 {blog.category && (
@@ -204,7 +222,7 @@ const AdminBlogShow = () => {
           </Card>
 
           {/* Author */}
-          {blog.author && (
+          {blog.user && (
             <Card>
               <CardContent className="pt-6">
                 <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
@@ -213,12 +231,31 @@ const AdminBlogShow = () => {
                 </h3>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={blog.author.avatar || undefined} />
+                    <AvatarImage src={blog.user.avatar ? buildImageUrl(blog.user.avatar) : undefined} />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      {blog.author.name.charAt(0)}
+                      {blog.user.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="font-medium">{blog.author.name}</span>
+                  <span className="font-medium">{blog.user.name}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Tags */}
+          {blog.tags && blog.tags.length > 0 && (
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  Tags
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {blog.tags.map((tag) => (
+                    <Badge key={tag.id} variant="outline">
+                      {tag.name}
+                    </Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>

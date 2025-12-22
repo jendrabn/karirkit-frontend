@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { format } from "date-fns";
 import {
@@ -74,18 +74,19 @@ import {
   type ColumnVisibility,
   defaultColumnVisibility,
 } from "@/components/blog/BlogColumnToggle";
-import { mockBlogs, mockCategories } from "@/data/mockBlogs";
 import {
-  type Blog,
   type BlogStatus,
   BLOG_STATUS_OPTIONS,
   getStatusBadgeVariant,
 } from "@/types/blog";
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { paths } from "@/config/paths";
+import { useBlogs, type GetBlogsParams } from "@/features/admin/blogs/api/get-blogs";
+import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
+import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 
-type SortField = "updated_at" | "published_at" | "views_count" | "title";
+type SortField = "updated_at" | "published_at" | "views" | "title";
 type SortOrder = "asc" | "desc";
 
 const AdminBlogs = () => {
@@ -98,15 +99,34 @@ const AdminBlogs = () => {
   );
   const [sortField, setSortField] = useState<SortField | null>("updated_at");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-  const [blogs, setBlogs] = useState<Blog[]>(mockBlogs);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [blogToDelete, setBlogToDelete] = useState<number | null>(null);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  // Build API params
+  const apiParams: GetBlogsParams = {
+    page: currentPage,
+    per_page: perPage,
+    q: searchQuery || undefined,
+    sort_order: sortOrder,
+    sort_by: sortField || undefined,
+    status: filters.status as "draft" | "published" | "archived" | undefined,
+    category_id: filters.category_id?.toString(),
+  };
+
+  // Fetch blogs
+  const { data: blogsData, isLoading } = useBlogs({ params: apiParams });
+  const { data: categoriesData } = useBlogCategories();
+  const deleteBlogMutation = useDeleteBlog();
+
+  const blogs = blogsData?.items || [];
+  const totalPages = blogsData?.pagination.total_pages || 0;
+  const totalItems = blogsData?.pagination.total_items || 0;
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -117,142 +137,54 @@ const AdminBlogs = () => {
     }
   };
 
-  const filteredAndSortedBlogs = useMemo(() => {
-    let result = [...blogs];
-
-    // Search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (blog) =>
-          blog.title.toLowerCase().includes(query) ||
-          blog.teaser?.toLowerCase().includes(query)
-      );
-    }
-
-    // Filters
-    if (filters.title) {
-      result = result.filter((blog) =>
-        blog.title.toLowerCase().includes(filters.title!.toLowerCase())
-      );
-    }
-    if (filters.category_id) {
-      result = result.filter(
-        (blog) => blog.category?.id === filters.category_id
-      );
-    }
-    if (filters.status) {
-      result = result.filter((blog) => blog.status === filters.status);
-    }
-    if (filters.dateFrom) {
-      result = result.filter(
-        (blog) => new Date(blog.created_at) >= filters.dateFrom!
-      );
-    }
-    if (filters.dateTo) {
-      result = result.filter(
-        (blog) => new Date(blog.created_at) <= filters.dateTo!
-      );
-    }
-
-    // Sort
-    if (sortField) {
-      result.sort((a, b) => {
-        const aVal: any = a[sortField];
-        const bVal: any = b[sortField];
-
-        if (sortField === "views_count") {
-          return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
-        }
-
-        if (typeof aVal === "string" && typeof bVal === "string") {
-          return sortOrder === "asc"
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal);
-        }
-        return 0;
-      });
-    }
-
-    return result;
-  }, [blogs, searchQuery, filters, sortField, sortOrder]);
-
-  const totalPages = Math.ceil(filteredAndSortedBlogs.length / perPage);
-  const paginatedBlogs = filteredAndSortedBlogs.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     setBlogToDelete(id);
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (blogToDelete) {
-      setBlogs((prev) => prev.filter((blog) => blog.id !== blogToDelete));
-      setDeleteDialogOpen(false);
-      setBlogToDelete(null);
-      toast.success("Blog berhasil dihapus");
+      try {
+        await deleteBlogMutation.mutateAsync(blogToDelete);
+        setDeleteDialogOpen(false);
+        setBlogToDelete(null);
+        toast.success("Blog berhasil dihapus");
+      } catch (error) {
+        toast.error("Gagal menghapus blog");
+      }
     }
   };
 
   const handleSelectAll = () => {
-    if (selectedIds.length === paginatedBlogs.length) {
+    if (selectedIds.length === blogs.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(paginatedBlogs.map((blog) => blog.id));
+      setSelectedIds(blogs.map((blog) => blog.id));
     }
   };
 
-  const handleSelectOne = (id: number) => {
+  const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
-  const confirmBulkDelete = () => {
-    setBlogs((prev) => prev.filter((blog) => !selectedIds.includes(blog.id)));
-    setSelectedIds([]);
-    setBulkDeleteDialogOpen(false);
-    toast.success(`${selectedIds.length} blog berhasil dihapus`);
+  const confirmBulkDelete = async () => {
+    // TODO: Implement bulk delete API endpoint when available
+    try {
+      await Promise.all(selectedIds.map((id) => deleteBlogMutation.mutateAsync(id)));
+      setSelectedIds([]);
+      setBulkDeleteDialogOpen(false);
+      toast.success(`${selectedIds.length} blog berhasil dihapus`);
+    } catch (error) {
+      toast.error("Gagal menghapus beberapa blog");
+    }
   };
 
-  const handleDuplicate = (blog: Blog) => {
-    const newBlog: Blog = {
-      ...blog,
-      id: Date.now(),
-      title: `${blog.title} (Copy)`,
-      slug: `${blog.slug}-copy`,
-      status: "draft",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setBlogs((prev) => [newBlog, ...prev]);
-    toast.success("Blog berhasil diduplikasi");
-  };
-
-  const handleStatusChange = (id: number, newStatus: BlogStatus) => {
-    setBlogs((prev) =>
-      prev.map((blog) =>
-        blog.id === id
-          ? {
-              ...blog,
-              status: newStatus,
-              published_at:
-                newStatus === "published"
-                  ? new Date().toISOString()
-                  : blog.published_at,
-              updated_at: new Date().toISOString(),
-            }
-          : blog
-      )
-    );
-    toast.success(
-      `Status berhasil diubah menjadi ${
-        BLOG_STATUS_OPTIONS.find((s) => s.value === newStatus)?.label
-      }`
-    );
+  // Note: Status change would require update API - simplified for now
+  const handleStatusChange = async (_id: string, _newStatus: BlogStatus) => {
+    // TODO: Implement status change using updateBlog mutation
+    toast.info("Fitur perubahan status akan segera tersedia");
   };
 
   const SortableHeader = ({
@@ -285,7 +217,7 @@ const AdminBlogs = () => {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari judul, teaser..."
+            placeholder="Cari judul, excerpt..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -315,7 +247,7 @@ const AdminBlogs = () => {
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
           />
-          <Button size="sm" onClick={() => navigate("/blogs/create")}>
+          <Button size="sm" onClick={() => navigate(paths.admin.blogs.create.getHref())}>
             <Plus className="h-4 w-4 mr-2" />
             Buat Blog
           </Button>
@@ -332,8 +264,8 @@ const AdminBlogs = () => {
                   <TableHead className="w-[40px]">
                     <Checkbox
                       checked={
-                        paginatedBlogs.length > 0 &&
-                        selectedIds.length === paginatedBlogs.length
+                        blogs.length > 0 &&
+                        selectedIds.length === blogs.length
                       }
                       onCheckedChange={handleSelectAll}
                     />
@@ -360,7 +292,7 @@ const AdminBlogs = () => {
                   )}
                   {columnVisibility.views_count && (
                     <TableHead>
-                      <SortableHeader field="views_count">Views</SortableHeader>
+                      <SortableHeader field="views">Views</SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.min_read && (
@@ -386,7 +318,16 @@ const AdminBlogs = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedBlogs.length === 0 ? (
+                {isLoading ? (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell
+                      colSpan={11}
+                      className="text-center py-16 text-muted-foreground"
+                    >
+                      Memuat...
+                    </TableCell>
+                  </TableRow>
+                ) : blogs.length === 0 ? (
                   <TableRow className="hover:bg-transparent">
                     <TableCell
                       colSpan={11}
@@ -400,7 +341,7 @@ const AdminBlogs = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedBlogs.map((blog, index) => (
+                  blogs.map((blog, index) => (
                     <TableRow
                       key={blog.id}
                       className={cn(
@@ -441,18 +382,18 @@ const AdminBlogs = () => {
                       )}
                       {columnVisibility.author && (
                         <TableCell className="whitespace-nowrap">
-                          {blog.author ? (
+                          {blog.user ? (
                             <div className="flex items-center gap-2">
                               <Avatar className="h-6 w-6">
                                 <AvatarImage
-                                  src={blog.author.avatar || undefined}
+                                  src={blog.user.avatar ? buildImageUrl(blog.user.avatar) : undefined}
                                 />
                                 <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                                  {blog.author.name.charAt(0)}
+                                  {blog.user.name.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
                               <span className="text-sm">
-                                {blog.author.name}
+                                {blog.user.name}
                               </span>
                             </div>
                           ) : (
@@ -473,12 +414,12 @@ const AdminBlogs = () => {
                       )}
                       {columnVisibility.views_count && (
                         <TableCell className="whitespace-nowrap">
-                          {blog.views_count.toLocaleString()}
+                          {blog.views.toLocaleString()}
                         </TableCell>
                       )}
                       {columnVisibility.min_read && (
                         <TableCell className="whitespace-nowrap">
-                          {blog.min_read} menit
+                          {blog.read_time} menit
                         </TableCell>
                       )}
                       {columnVisibility.published_at && (
@@ -506,19 +447,19 @@ const AdminBlogs = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() => navigate(paths.admin.blogs.detail.getHref(String(blog.id)))}
+                              onClick={() => navigate(paths.admin.blogs.detail.getHref(blog.id))}
                             >
                               <Eye className="h-4 w-4 mr-2" />
                               Lihat
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => navigate(paths.admin.blogs.edit.getHref(String(blog.id)))}
+                              onClick={() => navigate(paths.admin.blogs.edit.getHref(blog.id))}
                             >
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => handleDuplicate(blog)}
+                              onClick={() => toast.info("Fitur duplikat akan segera tersedia")}
                             >
                               <Copy className="h-4 w-4 mr-2" />
                               Duplikat
@@ -529,7 +470,7 @@ const AdminBlogs = () => {
                                 Ubah Status
                               </DropdownMenuSubTrigger>
                               <DropdownMenuSubContent>
-                                {BLOG_STATUS_OPTIONS.map((opt) => (
+                                {BLOG_STATUS_OPTIONS.filter(opt => opt.value !== "scheduled").map((opt) => (
                                   <DropdownMenuItem
                                     key={opt.value}
                                     onClick={() =>
@@ -581,7 +522,7 @@ const AdminBlogs = () => {
                 <SelectItem value="50">50</SelectItem>
               </SelectContent>
             </Select>
-            <span>dari {filteredAndSortedBlogs.length} data</span>
+            <span>dari {totalItems} data</span>
           </div>
 
           <div className="flex items-center gap-1">
@@ -634,7 +575,7 @@ const AdminBlogs = () => {
         onOpenChange={setFilterModalOpen}
         filters={filters}
         onApply={setFilters}
-        categories={mockCategories}
+        categories={categoriesData?.items.map((cat) => ({ id: parseInt(cat.id), name: cat.name, slug: cat.slug })) || []}
       />
 
       {/* Delete Dialog */}

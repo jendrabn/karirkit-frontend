@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
-// import "@/styles/quill.css";
 import { X, Image as ImageIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,31 +43,29 @@ import {
   type Blog,
   type BlogCategory,
   type BlogTag,
-  type BlogAuthor,
   BLOG_STATUS_OPTIONS,
 } from "@/types/blog";
 import { toast } from "sonner";
 import { buildImageUrl, cn } from "@/lib/utils";
-import { uploadFile } from "@/lib/upload";
+import { useUploadFile } from "@/lib/upload";
+import { useUploadBlogFile } from "@/features/admin/blogs/api/upload-blog-file";
 
 const blogSchema = z.object({
   title: z.string().min(1, "Judul wajib diisi"),
   slug: z.string().min(1, "Slug wajib diisi"),
-  image: z.string().nullable().optional(),
+  featured_image: z.string().nullable().optional(),
   image_caption: z.string().nullable().optional(),
   content: z.string().min(1, "Konten wajib diisi"),
-  teaser: z.string().nullable().optional(),
-  min_read: z.number().min(1, "Waktu baca minimal 1 menit"),
-  status: z.enum(["draft", "scheduled", "published", "archived"]),
-  published_at: z.string().nullable().optional(),
-  category_id: z.number().nullable().optional(),
-  tag_ids: z.array(z.number()).optional(),
-  author_id: z.number().nullable().optional(),
+  excerpt: z.string().nullable().optional(),
+  read_time: z.number().min(1, "Waktu baca minimal 1 menit"),
+  status: z.enum(["draft", "published", "archived"]),
+  category_id: z.string().nullable().optional(),
+  tag_ids: z.array(z.string()).optional(),
 });
 
 export type BlogFormData = z.infer<typeof blogSchema>;
 
-// QuillEditor Component
+// QuillEditor Component with upload blog file hook
 interface QuillEditorProps {
   defaultValue?: string;
   onTextChange?: (html: string) => void;
@@ -79,6 +76,7 @@ const QuillEditor = forwardRef<Quill | null, QuillEditorProps>(
   ({ defaultValue, onTextChange, placeholder }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const onTextChangeRef = useRef(onTextChange);
+    const uploadBlogFileMutation = useUploadBlogFile();
 
     useLayoutEffect(() => {
       onTextChangeRef.current = onTextChange;
@@ -119,7 +117,7 @@ const QuillEditor = forwardRef<Quill | null, QuillEditorProps>(
           const loadingToast = toast.loading('Mengupload gambar...');
           
           try {
-            const response = await uploadFile(file);
+            const response = await uploadBlogFileMutation.mutateAsync(file);
             quill.insertEmbed(range.index, 'image', buildImageUrl(response.path));
             quill.setSelection(range.index + 1, 0);
             toast.dismiss(loadingToast);
@@ -183,13 +181,12 @@ QuillEditor.displayName = 'QuillEditor';
 
 // Main BlogForm Component
 interface BlogFormProps {
-  initialData?: Blog;
+  initialData?: Partial<Blog>;
   onSubmit: (data: BlogFormData) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
   categories: BlogCategory[];
   tags: BlogTag[];
-  authors: BlogAuthor[];
 }
 
 export function BlogForm({
@@ -199,29 +196,30 @@ export function BlogForm({
   isLoading,
   categories,
   tags,
-  authors,
 }: BlogFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image || null);
-  const [selectedTags, setSelectedTags] = useState<number[]>(initialData?.tags?.map((t) => t.id) || []);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    initialData?.tags?.map((t) => t.id.toString()) || []
+  );
   const [tagPopoverOpen, setTagPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const quillRef = useRef<Quill | null>(null);
+  const uploadFileMutation = useUploadFile();
 
   const form = useForm<BlogFormData>({
     resolver: zodResolver(blogSchema),
     defaultValues: {
       title: initialData?.title || "",
       slug: initialData?.slug || "",
-      image: initialData?.image || null,
+      featured_image: initialData?.image || null,
       image_caption: initialData?.image_caption || "",
       content: initialData?.content || "",
-      teaser: initialData?.teaser || "",
-      min_read: initialData?.min_read || 5,
-      status: initialData?.status || "draft",
-      published_at: initialData?.published_at || null,
-      category_id: initialData?.category?.id || null,
-      tag_ids: initialData?.tags?.map((t) => t.id) || [],
-      author_id: initialData?.author?.id || null,
+      excerpt: initialData?.teaser || "",
+      read_time: initialData?.min_read || 5,
+      status: (initialData?.status as "draft" | "published" | "archived") || "draft",
+      category_id: initialData?.category?.id?.toString() || null,
+      tag_ids: initialData?.tags?.map((t) => t.id.toString()) || [],
     },
   });
 
@@ -254,19 +252,32 @@ export function BlogForm({
       return;
     }
 
-    const mockUrl = URL.createObjectURL(file);
-    setImagePreview(mockUrl);
-    form.setValue("image", mockUrl);
-    toast.success("Gambar berhasil diunggah");
+    setIsUploadingImage(true);
+    const loadingToast = toast.loading("Mengupload gambar...");
+
+    try {
+      const response = await uploadFileMutation.mutateAsync(file);
+      const imageUrl = buildImageUrl(response.path);
+      setImagePreview(imageUrl);
+      form.setValue("featured_image", response.path);
+      toast.dismiss(loadingToast);
+      toast.success("Gambar berhasil diunggah");
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error("Gagal mengupload gambar");
+      console.error("Upload error:", error);
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const removeImage = () => {
     setImagePreview(null);
-    form.setValue("image", null);
+    form.setValue("featured_image", null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleTagToggle = (tagId: number) => {
+  const handleTagToggle = (tagId: string) => {
     const newTags = selectedTags.includes(tagId)
       ? selectedTags.filter((id) => id !== tagId)
       : [...selectedTags, tagId];
@@ -274,7 +285,7 @@ export function BlogForm({
     form.setValue("tag_ids", newTags);
   };
 
-  const selectedTagObjects = tags.filter((tag) => selectedTags.includes(tag.id));
+  const selectedTagObjects = tags.filter((tag) => selectedTags.includes(tag.id.toString()));
 
   return (
     <Form {...form}>
@@ -312,8 +323,8 @@ export function BlogForm({
               />
             </div>
 
-            {/* Category, Author, Min Read */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Category and Read Time */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="category_id"
@@ -321,8 +332,8 @@ export function BlogForm({
                   <FormItem>
                     <FormLabel>Kategori</FormLabel>
                     <Select
-                      value={field.value?.toString() || "none"}
-                      onValueChange={(v) => field.onChange(v === "none" ? null : parseInt(v))}
+                      value={field.value || "none"}
+                      onValueChange={(v) => field.onChange(v === "none" ? null : v)}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -345,36 +356,7 @@ export function BlogForm({
 
               <FormField
                 control={form.control}
-                name="author_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Penulis</FormLabel>
-                    <Select
-                      value={field.value?.toString() || "none"}
-                      onValueChange={(v) => field.onChange(v === "none" ? null : parseInt(v))}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Pilih penulis" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">Tidak ada</SelectItem>
-                        {authors.map((author) => (
-                          <SelectItem key={author.id} value={author.id.toString()}>
-                            {author.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="min_read"
+                name="read_time"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Waktu Baca (menit) *</FormLabel>
@@ -409,8 +391,17 @@ export function BlogForm({
                       <CommandEmpty>Tidak ada tag ditemukan.</CommandEmpty>
                       <CommandGroup>
                         {tags.map((tag) => (
-                          <CommandItem key={tag.id} value={tag.name} onSelect={() => handleTagToggle(tag.id)}>
-                            <Check className={cn("mr-2 h-4 w-4", selectedTags.includes(tag.id) ? "opacity-100" : "opacity-0")} />
+                          <CommandItem 
+                            key={tag.id} 
+                            value={tag.name} 
+                            onSelect={() => handleTagToggle(tag.id.toString())}
+                          >
+                            <Check 
+                              className={cn(
+                                "mr-2 h-4 w-4", 
+                                selectedTags.includes(tag.id.toString()) ? "opacity-100" : "opacity-0"
+                              )} 
+                            />
                             {tag.name}
                           </CommandItem>
                         ))}
@@ -425,7 +416,11 @@ export function BlogForm({
                   {selectedTagObjects.map((tag) => (
                     <Badge key={tag.id} variant="secondary" className="gap-1">
                       {tag.name}
-                      <button type="button" onClick={() => handleTagToggle(tag.id)} className="ml-1 hover:text-destructive">
+                      <button 
+                        type="button" 
+                        onClick={() => handleTagToggle(tag.id.toString())} 
+                        className="ml-1 hover:text-destructive"
+                      >
                         <X className="h-3 w-3" />
                       </button>
                     </Badge>
@@ -434,53 +429,31 @@ export function BlogForm({
               )}
             </div>
 
-            {/* Status & Published Date */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status *</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {BLOG_STATUS_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {form.watch("status") === "scheduled" && (
-                <FormField
-                  control={form.control}
-                  name="published_at"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tanggal Publish</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="datetime-local"
-                          value={field.value?.slice(0, 16) || ""}
-                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : null)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            {/* Status */}
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status *</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {BLOG_STATUS_OPTIONS.filter(opt => opt.value !== "scheduled").map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
             {/* Image Upload */}
             <div className="space-y-2">
@@ -489,18 +462,37 @@ export function BlogForm({
                 {imagePreview ? (
                   <div className="relative">
                     <img src={imagePreview} alt="Preview" className="w-full max-h-64 object-cover rounded-lg" />
-                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2" onClick={removeImage}>
+                    <Button 
+                      type="button" 
+                      variant="destructive" 
+                      size="icon" 
+                      className="absolute top-2 right-2" 
+                      onClick={removeImage}
+                      disabled={isUploadingImage}
+                    >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center cursor-pointer py-8" onClick={() => fileInputRef.current?.click()}>
+                  <div 
+                    className="flex flex-col items-center justify-center cursor-pointer py-8" 
+                    onClick={() => !isUploadingImage && fileInputRef.current?.click()}
+                  >
                     <ImageIcon className="h-12 w-12 text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">Klik untuk upload gambar cover</p>
+                    <p className="text-sm text-muted-foreground">
+                      {isUploadingImage ? "Mengupload..." : "Klik untuk upload gambar cover"}
+                    </p>
                     <p className="text-xs text-muted-foreground mt-1">PNG, JPG, JPEG (max 5MB)</p>
                   </div>
                 )}
-                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                <input 
+                  ref={fileInputRef} 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleImageUpload}
+                  disabled={isUploadingImage}
+                />
               </div>
             </div>
 
@@ -520,10 +512,10 @@ export function BlogForm({
 
             <FormField
               control={form.control}
-              name="teaser"
+              name="excerpt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Teaser / Ringkasan</FormLabel>
+                  <FormLabel>Excerpt / Ringkasan</FormLabel>
                   <FormControl>
                     <Textarea {...field} value={field.value || ""} placeholder="Ringkasan singkat yang akan ditampilkan di listing" rows={3} />
                   </FormControl>
@@ -554,10 +546,10 @@ export function BlogForm({
         </Card>
 
         <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
             Batal
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading || isUploadingImage}>
             {isLoading ? "Menyimpan..." : initialData ? "Perbarui" : "Simpan"}
           </Button>
         </div>
