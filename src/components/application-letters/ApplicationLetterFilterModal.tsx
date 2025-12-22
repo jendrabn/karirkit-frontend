@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format } from "date-fns";
+import { dayjs } from "@/lib/date";
 import { CalendarIcon } from "lucide-react";
 import {
   Dialog,
@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Language, LANGUAGE_OPTIONS } from "@/types/applicationLetter";
+import { type Language, LANGUAGE_OPTIONS } from "@/types/applicationLetter";
 
 export interface FilterValues {
   dateFrom?: Date;
@@ -79,7 +79,7 @@ export function ApplicationLetterFilterModal({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateFrom ? format(localFilters.dateFrom, "dd/MM/yyyy") : "Dari"}
+                    {localFilters.dateFrom ? dayjs(localFilters.dateFrom).format("DD/MM/YYYY") : "Dari"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">
@@ -101,7 +101,7 @@ export function ApplicationLetterFilterModal({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateTo ? format(localFilters.dateTo, "dd/MM/yyyy") : "Sampai"}
+                    {localFilters.dateTo ? dayjs(localFilters.dateTo).format("DD/MM/YYYY") : "Sampai"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">

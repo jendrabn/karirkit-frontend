@@ -20,8 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  ParagraphType,
-  ParagraphTemplate,
+  type ParagraphType,
+  type ParagraphTemplate,
   paragraphTemplates,
   paragraphTypeLabels,
 } from "@/data/paragraphTemplates";

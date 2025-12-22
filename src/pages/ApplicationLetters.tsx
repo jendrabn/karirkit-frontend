@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { format } from "date-fns";
+import { dayjs } from "@/lib/date";
 import {
   Search,
   Filter,
@@ -17,6 +17,7 @@ import {
   ChevronsRight,
   FileText,
   MoreVertical,
+  Loader2,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -45,9 +46,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
@@ -67,17 +65,19 @@ import {
 } from "@/components/ui/tooltip";
 import {
   ApplicationLetterFilterModal,
-  FilterValues,
 } from "@/components/application-letters/ApplicationLetterFilterModal";
+import type { FilterValues } from "@/components/application-letters/ApplicationLetterFilterModal";
 import {
   ApplicationLetterColumnToggle,
-  ColumnVisibility,
   defaultColumnVisibility,
 } from "@/components/application-letters/ApplicationLetterColumnToggle";
-import { mockApplicationLetters } from "@/data/mockApplicationLetters";
+import type { ColumnVisibility } from "@/components/application-letters/ApplicationLetterColumnToggle";
+import { useApplicationLetters } from "@/features/application-letters/api/get-application-letters";
+import { useDeleteApplicationLetter } from "@/features/application-letters/api/delete-application-letter";
+import { useDuplicateApplicationLetter } from "@/features/application-letters/api/duplicate-application-letter";
+import { useMassDeleteApplicationLetters } from "@/features/application-letters/api/mass-delete-application-letters";
+import type { ApplicationLetter } from "@/features/application-letters/api/get-application-letters";
 import {
-  ApplicationLetter,
-  Language,
   LANGUAGE_OPTIONS,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -85,11 +85,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-const getLanguageBadgeVariant = (language: Language) => {
-  return language === "id" ? "default" : "secondary";
-};
-
-type SortField = "application_date" | "company_name" | "subject";
+type SortField = "application_date" | "company_name" | "subject" | "created_at" | "updated_at";
 type SortOrder = "asc" | "desc";
 
 export default function ApplicationLetters() {
@@ -100,13 +96,8 @@ export default function ApplicationLetters() {
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(
     defaultColumnVisibility
   );
-  const [sortField, setSortField] = useState<SortField | null>(
-    "application_date"
-  );
+  const [sortField, setSortField] = useState<SortField>("application_date");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-  const [letters, setLetters] = useState<ApplicationLetter[]>(
-    mockApplicationLetters
-  );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [letterToDelete, setLetterToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -115,6 +106,52 @@ export default function ApplicationLetters() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  // API calls
+  const { data: lettersResponse, isLoading } = useApplicationLetters({
+    params: {
+      page: currentPage,
+      per_page: perPage,
+      q: searchQuery || undefined,
+      sort_by: sortField,
+      sort_order: sortOrder,
+      company_name: filters.company_name || undefined,
+      application_date: filters.dateFrom ? dayjs(filters.dateFrom).format("YYYY-MM-DD") : undefined,
+    },
+  });
+
+  const deleteMutation = useDeleteApplicationLetter({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Surat lamaran berhasil dihapus");
+        setDeleteDialogOpen(false);
+        setLetterToDelete(null);
+      },
+    },
+  });
+
+  const duplicateMutation = useDuplicateApplicationLetter({
+    mutationConfig: {
+      onSuccess: (data) => {
+        toast.success("Surat lamaran berhasil diduplikasi");
+        navigate(`/application-letters/${data.id}`);
+      },
+    },
+  });
+
+  const massDeleteMutation = useMassDeleteApplicationLetters({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success(`${selectedIds.length} surat lamaran berhasil dihapus`);
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+      },
+    },
+  });
+
+  const letters = lettersResponse?.items || [];
+  const pagination = lettersResponse?.pagination;
+  const totalPages = pagination?.total_pages || 1;
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -125,67 +162,6 @@ export default function ApplicationLetters() {
     }
   };
 
-  const filteredAndSortedLetters = useMemo(() => {
-    let result = [...letters];
-
-    // Search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (letter) =>
-          letter.name.toLowerCase().includes(query) ||
-          letter.company_name.toLowerCase().includes(query) ||
-          letter.subject.toLowerCase().includes(query) ||
-          letter.email.toLowerCase().includes(query)
-      );
-    }
-
-    // Filters
-    if (filters.language) {
-      result = result.filter((letter) => letter.language === filters.language);
-    }
-    if (filters.company_name) {
-      result = result.filter((letter) =>
-        letter.company_name
-          .toLowerCase()
-          .includes(filters.company_name!.toLowerCase())
-      );
-    }
-    if (filters.dateFrom) {
-      result = result.filter(
-        (letter) => new Date(letter.application_date) >= filters.dateFrom!
-      );
-    }
-    if (filters.dateTo) {
-      result = result.filter(
-        (letter) => new Date(letter.application_date) <= filters.dateTo!
-      );
-    }
-
-    // Sort
-    if (sortField) {
-      result.sort((a, b) => {
-        let aVal = a[sortField];
-        let bVal = b[sortField];
-
-        if (typeof aVal === "string" && typeof bVal === "string") {
-          return sortOrder === "asc"
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal);
-        }
-        return 0;
-      });
-    }
-
-    return result;
-  }, [letters, searchQuery, filters, sortField, sortOrder]);
-
-  const totalPages = Math.ceil(filteredAndSortedLetters.length / perPage);
-  const paginatedLetters = filteredAndSortedLetters.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
   const handleDelete = (id: string) => {
     setLetterToDelete(id);
     setDeleteDialogOpen(true);
@@ -193,20 +169,15 @@ export default function ApplicationLetters() {
 
   const confirmDelete = () => {
     if (letterToDelete) {
-      setLetters((prev) =>
-        prev.filter((letter) => letter.id !== letterToDelete)
-      );
-      setDeleteDialogOpen(false);
-      setLetterToDelete(null);
-      toast.success("Surat lamaran berhasil dihapus");
+      deleteMutation.mutate(letterToDelete);
     }
   };
 
   const handleSelectAll = () => {
-    if (selectedIds.length === paginatedLetters.length) {
+    if (selectedIds.length === letters.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(paginatedLetters.map((letter) => letter.id));
+      setSelectedIds(letters.map((letter) => letter.id));
     }
   };
 
@@ -217,23 +188,11 @@ export default function ApplicationLetters() {
   };
 
   const confirmBulkDelete = () => {
-    setLetters((prev) =>
-      prev.filter((letter) => !selectedIds.includes(letter.id))
-    );
-    setSelectedIds([]);
-    setBulkDeleteDialogOpen(false);
-    toast.success(`${selectedIds.length} surat lamaran berhasil dihapus`);
+    massDeleteMutation.mutate(selectedIds);
   };
 
-  const handleDuplicate = (letter: ApplicationLetter) => {
-    const newLetter: ApplicationLetter = {
-      ...letter,
-      id: `${Date.now()}`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setLetters((prev) => [newLetter, ...prev]);
-    toast.success("Surat lamaran berhasil diduplikasi");
+  const handleDuplicate = (id: string) => {
+    duplicateMutation.mutate(id);
   };
 
   const handleDownload = (
@@ -337,8 +296,8 @@ export default function ApplicationLetters() {
                   <TableHead className="w-[40px]">
                     <Checkbox
                       checked={
-                        paginatedLetters.length > 0 &&
-                        selectedIds.length === paginatedLetters.length
+                        letters.length > 0 &&
+                        selectedIds.length === letters.length
                       }
                       onCheckedChange={handleSelectAll}
                     />
@@ -411,7 +370,21 @@ export default function ApplicationLetters() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedLetters.length === 0 ? (
+                {isLoading ? (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell
+                      colSpan={14}
+                      className="text-center py-16 text-muted-foreground"
+                    >
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                        <p className="text-base font-medium">
+                          Memuat data...
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : letters.length === 0 ? (
                   <TableRow className="hover:bg-transparent">
                     <TableCell
                       colSpan={14}
@@ -429,7 +402,7 @@ export default function ApplicationLetters() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedLetters.map((letter, index) => (
+                  letters.map((letter: ApplicationLetter, index: number) => (
                     <TableRow
                       key={letter.id}
                       className={cn(
@@ -462,16 +435,13 @@ export default function ApplicationLetters() {
                       )}
                       {columnVisibility.application_date && (
                         <TableCell className="text-muted-foreground">
-                          {format(
-                            new Date(letter.application_date),
-                            "dd MMM yyyy"
-                          )}
+                          {dayjs(letter.application_date).format("DD MMM YYYY")}
                         </TableCell>
                       )}
                       {columnVisibility.language && (
                         <TableCell>
                           <Badge
-                            variant={getLanguageBadgeVariant(letter.language)}
+                            variant={letter.language === "id" ? "default" : "secondary"}
                           >
                             {letter.language === "id" ? "ID" : "EN"}
                           </Badge>
@@ -542,7 +512,7 @@ export default function ApplicationLetters() {
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => handleDuplicate(letter)}
+                              onClick={() => handleDuplicate(letter.id)}
                             >
                               <Copy className="h-4 w-4 mr-2" />
                               Duplikasi
@@ -581,7 +551,7 @@ export default function ApplicationLetters() {
         </div>
 
         {/* Pagination */}
-        {filteredAndSortedLetters.length > 0 && (
+        {pagination && pagination.total_items > 0 && (
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-border/60">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Tampilkan</span>
@@ -602,7 +572,7 @@ export default function ApplicationLetters() {
                   <SelectItem value="100">100</SelectItem>
                 </SelectContent>
               </Select>
-              <span>dari {filteredAndSortedLetters.length} data</span>
+              <span>dari {pagination.total_items} data</span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -625,7 +595,7 @@ export default function ApplicationLetters() {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="px-3 text-sm">
-                Halaman {currentPage} dari {totalPages || 1}
+                Halaman {currentPage} dari {totalPages}
               </span>
               <Button
                 variant="outline"
@@ -634,7 +604,7 @@ export default function ApplicationLetters() {
                 onClick={() =>
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
-                disabled={currentPage === totalPages || totalPages === 0}
+                disabled={currentPage === totalPages}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -643,7 +613,7 @@ export default function ApplicationLetters() {
                 size="icon"
                 className="h-8 w-8"
                 onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages || totalPages === 0}
+                disabled={currentPage === totalPages}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>

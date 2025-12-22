@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { format } from "date-fns";
-import { ArrowLeft, Pencil, Download, FileText } from "lucide-react";
+import { dayjs } from "@/lib/date";
+import { Pencil, Download, FileText, Loader2, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockApplicationLetters } from "@/data/mockApplicationLetters";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
+import { useDeleteApplicationLetter } from "@/features/application-letters/api/delete-application-letter";
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -23,19 +35,22 @@ import { toast } from "sonner";
 export default function ApplicationLetterShow() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const letter = mockApplicationLetters.find((l) => l.id === id);
+  const { data: letterResponse, isLoading } = useApplicationLetter({
+    id: id!,
+  });
 
-  if (!letter) {
-    return (
-      <DashboardLayout>
-        <PageHeader title="Surat Lamaran Tidak Ditemukan" />
-        <p className="text-muted-foreground">
-          Data surat lamaran dengan ID tersebut tidak ditemukan.
-        </p>
-      </DashboardLayout>
-    );
-  }
+  const deleteMutation = useDeleteApplicationLetter({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Surat lamaran berhasil dihapus");
+        navigate("/application-letters");
+      },
+    },
+  });
+
+  const letter = letterResponse;
 
   const getLabel = (
     value: string,
@@ -54,6 +69,12 @@ export default function ApplicationLetterShow() {
     );
   };
 
+  const handleDelete = () => {
+    if (id) {
+      deleteMutation.mutate(id);
+    }
+  };
+
   const InfoItem = ({
     label,
     value,
@@ -67,20 +88,47 @@ export default function ApplicationLetterShow() {
     </div>
   );
 
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <PageHeader
+          title="Detail Surat Lamaran"
+          showBackButton
+          backButtonUrl="/application-letters"
+        />
+        <div className="flex justify-center items-center h-full min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!letter) {
+    return (
+      <DashboardLayout>
+        <PageHeader 
+          title="Surat Lamaran Tidak Ditemukan"
+          showBackButton
+          backButtonUrl="/application-letters"
+        />
+        <p className="text-muted-foreground">
+          Data surat lamaran dengan ID tersebut tidak ditemukan atau terjadi kesalahan.
+        </p>
+        <Button onClick={() => navigate("/application-letters")} className="mt-4">
+          Kembali ke Daftar
+        </Button>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/application-letters")}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Kembali
-        </Button>
-      </div>
-
-      <PageHeader title={letter.subject} subtitle={letter.company_name}>
+      <PageHeader 
+        title={letter.subject} 
+        subtitle={letter.company_name}
+        showBackButton
+        backButtonUrl="/application-letters"
+      >
         <div className="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -95,7 +143,7 @@ export default function ApplicationLetterShow() {
                 Word (.docx)
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleDownload("pdf")}
+                disabled
                 className="text-muted-foreground"
               >
                 <FileText className="h-4 w-4 mr-2" />
@@ -107,12 +155,19 @@ export default function ApplicationLetterShow() {
             <Pencil className="h-4 w-4 mr-2" />
             Edit
           </Button>
+          <Button 
+            variant="destructive" 
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Hapus
+          </Button>
         </div>
       </PageHeader>
 
       <div className="flex gap-2 mb-6">
         <Badge variant="outline">
-          {getLabel(letter.language, LANGUAGE_OPTIONS)}
+          {getLabel(letter.language || "id", LANGUAGE_OPTIONS)}
         </Badge>
         <Badge variant="secondary">
           {getLabel(letter.gender, GENDER_OPTIONS)}
@@ -157,7 +212,7 @@ export default function ApplicationLetterShow() {
             <InfoItem label="Kota Perusahaan" value={letter.company_city} />
             <InfoItem
               label="Tanggal Lamaran"
-              value={format(new Date(letter.application_date), "dd MMMM yyyy")}
+              value={dayjs(letter.application_date).format("DD MMMM YYYY")}
             />
             <div className="md:col-span-2 lg:col-span-3">
               <InfoItem
@@ -215,15 +270,37 @@ export default function ApplicationLetterShow() {
             <InfoItem label="ID" value={letter.id} />
             <InfoItem
               label="Dibuat"
-              value={format(new Date(letter.created_at), "dd MMMM yyyy, HH:mm")}
+              value={dayjs(letter.created_at).format("DD MMMM YYYY, HH:mm")}
             />
             <InfoItem
               label="Diperbarui"
-              value={format(new Date(letter.updated_at), "dd MMMM yyyy, HH:mm")}
+              value={dayjs(letter.updated_at).format("DD MMMM YYYY, HH:mm")}
             />
           </div>
         </Card>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Surat Lamaran</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus surat lamaran ini? Tindakan ini
+              tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Menghapus..." : "Hapus"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

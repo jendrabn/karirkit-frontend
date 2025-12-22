@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { format } from "date-fns";
+import { dayjs } from "@/lib/date";
 import { CalendarIcon, FileText } from "lucide-react";
 import { ParagraphTemplateModal } from "./ParagraphTemplateModal";
-import { ParagraphType } from "@/data/paragraphTemplates";
+import type { ParagraphType } from "@/data/paragraphTemplates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,23 +28,23 @@ import { cn } from "@/lib/utils";
 import { FormError } from "@/components/ui/form-error";
 import { SignatureUpload } from "./SignatureUpload";
 import { TemplateSelector } from "@/components/ui/template-selector";
-import { applicationLetterTemplates } from "@/data/documentTemplates";
 import {
-  ApplicationLetter,
+  type ApplicationLetter,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
   LANGUAGE_OPTIONS,
 } from "@/types/applicationLetter";
+import { useTemplates } from "@/features/templates/api/get-templates";
 
 const applicationLetterSchema = z.object({
   template_id: z.string().optional(),
-  name: z.string().min(1, "Nama wajib diisi"),
-  birth_place_date: z.string().min(1, "Tempat/tanggal lahir wajib diisi"),
+  name: z.string().min(1, "Nama lengkap wajib diisi"),
+  birth_place_date: z.string().min(1, "Tempat, tanggal lahir wajib diisi"),
   gender: z.enum(["male", "female"]),
   marital_status: z.enum(["single", "married", "divorced", "widowed"]),
   education: z.string().min(1, "Pendidikan wajib diisi"),
   phone: z.string().min(1, "Nomor telepon wajib diisi"),
-  email: z.string().email("Email tidak valid"),
+  email: z.string().email("Email tidak valid").min(1, "Email wajib diisi"),
   address: z.string().min(1, "Alamat wajib diisi"),
   subject: z.string().min(1, "Subjek wajib diisi"),
   applicant_city: z.string().min(1, "Kota pelamar wajib diisi"),
@@ -76,7 +76,20 @@ export function ApplicationLetterForm({
   onCancel,
   isLoading,
 }: ApplicationLetterFormProps) {
-  const [selectedTemplate, setSelectedTemplate] = useState(initialData?.template_id || applicationLetterTemplates[0]?.id || "");
+  const selectedLanguage = initialData?.language || "id";
+  
+  // Fetch templates from API
+  const { data: templatesResponse, isLoading: isTemplatesLoading } = useTemplates({
+    params: {
+      type: "application_letter",
+      language: selectedLanguage,
+    },
+  });
+
+  const templates = templatesResponse?.items || [];
+  const [selectedTemplate, setSelectedTemplate] = useState(
+    initialData?.template_id || templates[0]?.id || ""
+  );
 
   const {
     register,
@@ -87,7 +100,7 @@ export function ApplicationLetterForm({
   } = useForm<ApplicationLetterFormData>({
     resolver: zodResolver(applicationLetterSchema),
     defaultValues: {
-      template_id: initialData?.template_id || applicationLetterTemplates[0]?.id || "",
+      template_id: initialData?.template_id || templates[0]?.id || "",
       name: initialData?.name || "",
       birth_place_date: initialData?.birth_place_date || "",
       gender: initialData?.gender || "male",
@@ -148,15 +161,21 @@ export function ApplicationLetterForm({
       {/* Template Selection */}
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Template Surat</h3>
-        <TemplateSelector
-          label="Pilih Template"
-          templates={applicationLetterTemplates}
-          value={selectedTemplate}
-          onChange={(value) => {
-            setSelectedTemplate(value);
-            setValue("template_id", value);
-          }}
-        />
+        {isTemplatesLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="text-sm text-muted-foreground">Memuat templates...</div>
+          </div>
+        ) : (
+          <TemplateSelector
+            label="Pilih Template"
+            templates={templates}
+            value={selectedTemplate}
+            onChange={(value: string) => {
+              setSelectedTemplate(value);
+              setValue("template_id", value);
+            }}
+          />
+        )}
       </Card>
 
       <Card className="p-6">
@@ -326,14 +345,14 @@ export function ApplicationLetterForm({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {applicationDateValue ? format(new Date(applicationDateValue), "dd/MM/yyyy") : "Pilih tanggal"}
+                  {applicationDateValue ? dayjs(applicationDateValue).format("DD/MM/YYYY") : "Pilih tanggal"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 z-50" align="start">
                 <Calendar
                   mode="single"
                   selected={applicationDateValue ? new Date(applicationDateValue) : undefined}
-                  onSelect={(date) => setValue("application_date", date ? format(date, "yyyy-MM-dd") : "")}
+                  onSelect={(date) => setValue("application_date", date ? dayjs(date).format("YYYY-MM-DD") : "")}
                   className="pointer-events-auto"
                 />
               </PopoverContent>

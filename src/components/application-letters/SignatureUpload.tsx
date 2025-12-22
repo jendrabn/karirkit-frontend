@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { Upload, Pen, X, Trash2 } from "lucide-react";
+import { Upload, Pen, X, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -9,6 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUploadFile } from "@/lib/upload";
+import { toast } from "sonner";
 
 interface SignatureUploadProps {
   value: string;
@@ -20,6 +22,19 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadMutation = useUploadFile({
+    mutationConfig: {
+      onSuccess: (data) => {
+        onChange(data.path);
+        setIsModalOpen(false);
+        toast.success("Tanda tangan berhasil diupload");
+      },
+      onError: () => {
+        toast.error("Gagal mengupload tanda tangan");
+      },
+    },
+  });
 
   const startDrawing = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -75,27 +90,27 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dataUrl = canvas.toDataURL("image/png");
-    // In real implementation, upload to server and get path
-    // For now, we'll use the data URL
-    onChange(dataUrl);
-    setIsModalOpen(false);
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        toast.error("Gagal mengonversi tanda tangan");
+        return;
+      }
+
+      const file = new File([blob], "signature.png", { type: "image/png" });
+      uploadMutation.mutate(file);
+    }, "image/png");
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result;
-      if (typeof result === "string") {
-        // In real implementation, upload to server and get path
-        onChange(result);
-        setIsModalOpen(false);
-      }
-    };
-    reader.readAsDataURL(file);
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Ukuran file maksimal 2MB");
+      return;
+    }
+
+    uploadMutation.mutate(file);
   };
 
   const removeSignature = () => {
@@ -176,8 +191,19 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
                   <Trash2 className="h-4 w-4 mr-2" />
                   Hapus
                 </Button>
-                <Button type="button" onClick={saveSignature}>
-                  Simpan
+                <Button 
+                  type="button" 
+                  onClick={saveSignature}
+                  disabled={uploadMutation.isPending}
+                >
+                  {uploadMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Mengupload...
+                    </>
+                  ) : (
+                    "Simpan"
+                  )}
                 </Button>
               </div>
             </TabsContent>
@@ -195,11 +221,21 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
                 variant="outline"
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full h-32 border-dashed"
+                disabled={uploadMutation.isPending}
               >
                 <div className="flex flex-col items-center gap-2">
-                  <Upload className="h-8 w-8" />
-                  <span>Klik untuk upload gambar tanda tangan</span>
-                  <span className="text-xs text-muted-foreground">PNG, JPG (max 2MB)</span>
+                  {uploadMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                      <span>Mengupload...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-8 w-8" />
+                      <span>Klik untuk upload gambar tanda tangan</span>
+                      <span className="text-xs text-muted-foreground">PNG, JPG (max 2MB)</span>
+                    </>
+                  )}
                 </div>
               </Button>
             </TabsContent>

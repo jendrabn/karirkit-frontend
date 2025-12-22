@@ -1,45 +1,45 @@
 import { useNavigate } from "react-router";
-import { ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { Button } from "@/components/ui/button";
-import {
-  ApplicationLetterForm,
-  ApplicationLetterFormData,
-} from "@/components/application-letters/ApplicationLetterForm";
+import { ApplicationLetterForm } from "@/components/application-letters/ApplicationLetterForm";
+import type { ApplicationLetterFormData } from "@/components/application-letters/ApplicationLetterForm";
+import { useCreateApplicationLetter } from "@/features/application-letters/api/create-application-letter";
 import { toast } from "sonner";
+import { useFormErrors } from "@/hooks/use-form-errors";
+import { useForm } from "react-hook-form";
 
 export default function ApplicationLetterCreate() {
   const navigate = useNavigate();
+  const form = useForm<ApplicationLetterFormData>();
+  
+  useFormErrors(form);
+
+  const createMutation = useCreateApplicationLetter({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Surat lamaran berhasil dibuat");
+        navigate("/application-letters");
+      },
+    },
+  });
 
   const handleSubmit = (data: ApplicationLetterFormData) => {
-    // In real implementation, call API to create
-    console.log("Creating application letter:", data);
-    toast.success("Surat lamaran berhasil dibuat");
-    navigate("/application-letters");
+    createMutation.mutate(data);
   };
 
   return (
     <DashboardLayout>
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/application-letters")}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Kembali
-        </Button>
-      </div>
-
       <PageHeader
         title="Buat Surat Lamaran"
         subtitle="Buat surat lamaran kerja baru."
+        showBackButton
+        backButtonUrl="/application-letters"
       />
 
       <ApplicationLetterForm
         onSubmit={handleSubmit}
         onCancel={() => navigate("/application-letters")}
+        isLoading={createMutation.isPending}
       />
     </DashboardLayout>
   );
