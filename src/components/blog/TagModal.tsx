@@ -18,8 +18,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { BlogTag } from "@/types/blog";
+import type { BlogTag } from "@/features/admin/blogs/api/get-blog-tags";
 import { useEffect } from "react";
+import { useFormErrors } from "@/hooks/use-form-errors";
 
 const tagSchema = z.object({
   name: z.string().min(1, "Nama tag wajib diisi"),
@@ -50,6 +51,8 @@ export function TagModal({
       slug: "",
     },
   });
+
+  useFormErrors(form);
 
   useEffect(() => {
     if (tag) {
