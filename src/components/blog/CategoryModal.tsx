@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -18,12 +19,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { BlogCategory } from "@/types/blog";
+import type { BlogCategory } from "@/features/admin/blogs/api/get-blog-categories";
 import { useEffect } from "react";
+import { useFormErrors } from "@/hooks/use-form-errors";
 
 const categorySchema = z.object({
   name: z.string().min(1, "Nama kategori wajib diisi"),
   slug: z.string().min(1, "Slug wajib diisi"),
+  description: z.string().min(1, "Deskripsi wajib diisi"),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
@@ -48,19 +51,24 @@ export function CategoryModal({
     defaultValues: {
       name: "",
       slug: "",
+      description: "",
     },
   });
+
+  useFormErrors(form);
 
   useEffect(() => {
     if (category) {
       form.reset({
         name: category.name,
         slug: category.slug,
+        description: category.description || "",
       });
     } else {
       form.reset({
         name: "",
         slug: "",
+        description: "",
       });
     }
   }, [category, form, open]);
@@ -123,6 +131,24 @@ export function CategoryModal({
                   <FormLabel>Slug *</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="nama-kategori" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Deskripsi *</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Masukkan deskripsi kategori"
+                      rows={3}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

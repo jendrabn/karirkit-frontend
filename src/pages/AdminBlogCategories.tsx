@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { format } from "date-fns";
+import { useState } from "react";
+import { dayjs } from "@/lib/date";
 import {
   Search,
   Plus,
@@ -8,6 +8,7 @@ import {
   Trash2,
   MoreVertical,
   Tag,
+  Loader2,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -50,33 +51,78 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { CategoryModal } from "@/components/blog/CategoryModal";
-import { mockCategories as initialCategories } from "@/data/mockBlogs";
-import type { BlogCategory } from "@/types/blog";
+import { useBlogCategories } from "@/features/admin/blogs/api/get-blog-categories";
+import { useDeleteBlogCategory } from "@/features/admin/blogs/api/delete-blog-category";
+import { useCreateBlogCategory } from "@/features/admin/blogs/api/create-blog-category";
+import { useUpdateBlogCategory } from "@/features/admin/blogs/api/update-blog-category";
+import type { BlogCategory } from "@/features/admin/blogs/api/get-blog-categories";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-type SortField = "name" | "created_at";
+type SortField = "name" | "created_at" | "updated_at";
 type SortOrder = "asc" | "desc";
 
 const AdminBlogCategories = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortField, setSortField] = useState<SortField | null>("created_at");
+  const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-  const [categories, setCategories] =
-    useState<BlogCategory[]>(initialCategories);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<BlogCategory | null>(
     null
   );
-  const [isLoading, setIsLoading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  // API calls
+  const { data: categoriesResponse, isLoading } = useBlogCategories({
+    params: {
+      page: currentPage,
+      per_page: perPage,
+      q: searchQuery || undefined,
+      sort_by: sortField,
+      sort_order: sortOrder,
+    },
+  });
+
+  const deleteMutation = useDeleteBlogCategory({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Kategori berhasil dihapus");
+        setDeleteDialogOpen(false);
+        setCategoryToDelete(null);
+      },
+    },
+  });
+
+  const createMutation = useCreateBlogCategory({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Kategori berhasil ditambahkan");
+        setModalOpen(false);
+        setEditingCategory(null);
+      },
+    },
+  });
+
+  const updateMutation = useUpdateBlogCategory({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Kategori berhasil diperbarui");
+        setModalOpen(false);
+        setEditingCategory(null);
+      },
+    },
+  });
+
+  const categories = categoriesResponse?.items || [];
+  const pagination = categoriesResponse?.pagination;
+  const totalPages = pagination?.total_pages || 1;
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -87,77 +133,34 @@ const AdminBlogCategories = () => {
     }
   };
 
-  const filteredAndSortedCategories = useMemo(() => {
-    let result = [...categories];
-
-    // Search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (cat) =>
-          cat.name.toLowerCase().includes(query) ||
-          cat.slug.toLowerCase().includes(query)
-      );
-    }
-
-    // Sort
-    if (sortField) {
-      result.sort((a, b) => {
-        const aVal = a[sortField] || "";
-        const bVal = b[sortField] || "";
-
-        if (typeof aVal === "string" && typeof bVal === "string") {
-          return sortOrder === "asc"
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal);
-        }
-        return 0;
-      });
-    }
-
-    return result;
-  }, [categories, searchQuery, sortField, sortOrder]);
-
-  const totalPages = Math.ceil(filteredAndSortedCategories.length / perPage);
-  const paginatedCategories = filteredAndSortedCategories.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     setCategoryToDelete(id);
     setDeleteDialogOpen(true);
   };
 
   const confirmDelete = () => {
     if (categoryToDelete) {
-      setCategories((prev) =>
-        prev.filter((cat) => cat.id !== categoryToDelete)
-      );
-      setDeleteDialogOpen(false);
-      setCategoryToDelete(null);
-      toast.success("Kategori berhasil dihapus");
+      deleteMutation.mutate(categoryToDelete);
     }
   };
 
   const handleSelectAll = () => {
-    if (selectedIds.length === paginatedCategories.length) {
+    if (selectedIds.length === categories.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(paginatedCategories.map((cat) => cat.id));
+      setSelectedIds(categories.map((cat) => cat.id));
     }
   };
 
-  const handleSelectOne = (id: number) => {
+  const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
   const confirmBulkDelete = () => {
-    setCategories((prev) =>
-      prev.filter((cat) => !selectedIds.includes(cat.id))
-    );
+    // Note: Implement mass delete API if available
+    selectedIds.forEach((id) => deleteMutation.mutate(id));
     setSelectedIds([]);
     setBulkDeleteDialogOpen(false);
     toast.success(`${selectedIds.length} kategori berhasil dihapus`);
@@ -168,37 +171,11 @@ const AdminBlogCategories = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = async (data: { name: string; slug: string }) => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      if (editingCategory) {
-        setCategories((prev) =>
-          prev.map((cat) =>
-            cat.id === editingCategory.id
-              ? { ...cat, ...data, updated_at: new Date().toISOString() }
-              : cat
-          )
-        );
-        toast.success("Kategori berhasil diperbarui");
-      } else {
-        const newCategory: BlogCategory = {
-          id: Date.now(),
-          ...data,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        setCategories((prev) => [newCategory, ...prev]);
-        toast.success("Kategori berhasil ditambahkan");
-      }
-
-      setModalOpen(false);
-      setEditingCategory(null);
-    } catch {
-      toast.error("Gagal menyimpan kategori");
-    } finally {
-      setIsLoading(false);
+  const handleSubmit = (data: { name: string; slug: string; description: string }) => {
+    if (editingCategory) {
+      updateMutation.mutate({ id: editingCategory.id, data });
+    } else {
+      createMutation.mutate(data);
     }
   };
 
@@ -266,8 +243,8 @@ const AdminBlogCategories = () => {
                 <TableHead className="w-[40px]">
                   <Checkbox
                     checked={
-                      paginatedCategories.length > 0 &&
-                      selectedIds.length === paginatedCategories.length
+                      categories.length > 0 &&
+                      selectedIds.length === categories.length
                     }
                     onCheckedChange={handleSelectAll}
                   />
@@ -287,7 +264,16 @@ const AdminBlogCategories = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedCategories.length === 0 ? (
+              {isLoading ? (
+                <TableRow className="hover:bg-transparent">
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-16"
+                  >
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                  </TableCell>
+                </TableRow>
+              ) : categories.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
                     colSpan={5}
@@ -305,7 +291,7 @@ const AdminBlogCategories = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedCategories.map((category, index) => (
+                categories.map((category, index) => (
                   <TableRow
                     key={category.id}
                     className={cn(
@@ -327,7 +313,7 @@ const AdminBlogCategories = () => {
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {category.created_at
-                        ? format(new Date(category.created_at), "dd MMM yyyy")
+                        ? dayjs(category.created_at).format("DD MMM YYYY")
                         : "-"}
                     </TableCell>
                     <TableCell>
@@ -385,7 +371,7 @@ const AdminBlogCategories = () => {
                 <SelectItem value="50">50</SelectItem>
               </SelectContent>
             </Select>
-            <span>dari {filteredAndSortedCategories.length} data</span>
+            <span>dari {pagination?.total_items || 0} data</span>
           </div>
 
           <div className="flex items-center gap-1">
@@ -438,7 +424,7 @@ const AdminBlogCategories = () => {
         onOpenChange={setModalOpen}
         category={editingCategory}
         onSubmit={handleSubmit}
-        isLoading={isLoading}
+        isLoading={createMutation.isPending || updateMutation.isPending}
       />
 
       {/* Delete Dialog */}

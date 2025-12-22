@@ -272,42 +272,42 @@ export const createAppRouter = (queryClient: QueryClient) =>
         ),
     },
     {
-      path: "/admin/blog",
+      path: "/admin/blogs",
       lazy: () =>
         import("./pages/AdminBlogs").then(
           convertWithAdminProtection(queryClient)
         ),
     },
     {
-      path: "/admin/blog/create",
+      path: "/admin/blogs/create",
       lazy: () =>
         import("./pages/AdminBlogCreate").then(
           convertWithAdminProtection(queryClient)
         ),
     },
     {
-      path: "/admin/blog/:id/edit",
+      path: "/admin/blogs/:id/edit",
       lazy: () =>
         import("./pages/AdminBlogEdit").then(
           convertWithAdminProtection(queryClient)
         ),
     },
     {
-      path: "/admin/blog/:id",
+      path: "/admin/blogs/:id",
       lazy: () =>
         import("./pages/AdminBlogShow").then(
           convertWithAdminProtection(queryClient)
         ),
     },
     {
-      path: "/admin/blog/m/categories",
+      path: "/admin/blogs/m/categories",
       lazy: () =>
         import("./pages/AdminBlogCategories").then(
           convertWithAdminProtection(queryClient)
         ),
     },
     {
-      path: "/admin/blog/m/tags",
+      path: "/admin/blogs/m/tags",
       lazy: () =>
         import("./pages/AdminBlogTags").then(
           convertWithAdminProtection(queryClient)

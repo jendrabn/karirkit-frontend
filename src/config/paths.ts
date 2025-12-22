@@ -137,22 +137,22 @@ export const paths = {
     },
     blogs: {
       list: {
-        getHref: () => "/admin/blog",
+        getHref: () => "/admin/blogs",
       },
       create: {
-        getHref: () => "/admin/blog/create",
+        getHref: () => "/admin/blogs/create",
       },
       edit: {
-        getHref: (id: string) => `/admin/blog/${id}/edit`,
+        getHref: (id: string) => `/admin/blogs/${id}/edit`,
       },
       detail: {
-        getHref: (id: string) => `/admin/blog/${id}`,
+        getHref: (id: string) => `/admin/blogs/${id}`,
       },
       categories: {
-        getHref: () => "/admin/blog/m/categories",
+        getHref: () => "/admin/blogs/m/categories",
       },
       tags: {
-        getHref: () => "/admin/blog/m/tags",
+        getHref: () => "/admin/blogs/m/tags",
       },
     },
     templates: {
