@@ -64,8 +64,8 @@ const AdminBlogTags = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [tags, setTags] = useState<BlogTag[]>(initialTags);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [tagToDelete, setTagToDelete] = useState<number | null>(null);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [tagToDelete, setTagToDelete] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTag, setEditingTag] = useState<BlogTag | null>(null);
@@ -121,7 +121,7 @@ const AdminBlogTags = () => {
     currentPage * perPage
   );
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     setTagToDelete(id);
     setDeleteDialogOpen(true);
   };
@@ -143,7 +143,7 @@ const AdminBlogTags = () => {
     }
   };
 
-  const handleSelectOne = (id: number) => {
+  const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
@@ -177,7 +177,7 @@ const AdminBlogTags = () => {
         toast.success("Tag berhasil diperbarui");
       } else {
         const newTag: BlogTag = {
-          id: Date.now(),
+          id: Date.now().toString(),
           ...data,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),

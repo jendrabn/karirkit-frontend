@@ -25,11 +25,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { BlogStatus, BLOG_STATUS_OPTIONS, BlogCategory } from "@/types/blog";
+import type { BlogStatus, BlogCategory } from "@/types/blog";
+import { BLOG_STATUS_OPTIONS } from "@/types/blog";
 
 export interface FilterValues {
   title?: string;
-  category_id?: number;
+  category_id?: string;
   status?: BlogStatus;
   dateFrom?: Date;
   dateTo?: Date;
@@ -89,7 +90,7 @@ export function BlogFilterModal({
               onValueChange={(value) =>
                 setLocalFilters({
                   ...localFilters,
-                  category_id: value === "all" ? undefined : parseInt(value),
+                  category_id: value === "all" ? undefined : value,
                 })
               }
             >

@@ -20,7 +20,8 @@ import { cn } from "@/lib/utils";
 import { FormError } from "@/components/ui/form-error";
 import { PhotoUpload } from "./PhotoUpload";
 import { TemplateSelector } from "@/components/ui/template-selector";
-import { cvTemplates } from "@/data/documentTemplates";
+import { useTemplates } from "@/features/landing/api/get-templates";
+import { buildImageUrl } from "@/lib/utils";
 import {
   type CV,
   DEGREE_OPTIONS,
@@ -31,7 +32,13 @@ import {
 } from "@/types/cv";
 
 const educationSchema = z.object({
-  degree: z.string().min(1, "Jenjang wajib dipilih"),
+  degree: z.enum([
+    "highschool",
+    "associate",
+    "bachelor",
+    "master",
+    "doctorate",
+  ]),
   school_name: z.string().min(1, "Nama sekolah/universitas wajib diisi"),
   school_location: z.string().min(1, "Lokasi wajib diisi"),
   major: z.string().optional(),
@@ -61,7 +68,13 @@ const experienceSchema = z.object({
   job_title: z.string().min(1, "Jabatan wajib diisi"),
   company_name: z.string().min(1, "Nama perusahaan wajib diisi"),
   company_location: z.string().min(1, "Lokasi wajib diisi"),
-  job_type: z.string().min(1, "Tipe pekerjaan wajib dipilih"),
+  job_type: z.enum([
+    "full_time",
+    "part_time",
+    "contract",
+    "internship",
+    "freelance",
+  ]),
   start_month: z.number().min(1).max(12),
   start_year: z.number().min(1900).max(2100),
   end_month: z.number().min(0).max(12),
@@ -72,7 +85,7 @@ const experienceSchema = z.object({
 
 const skillSchema = z.object({
   name: z.string().min(1, "Nama keahlian wajib diisi"),
-  level: z.string().min(1, "Level wajib dipilih"),
+  level: z.enum(["beginner", "intermediate", "advanced", "expert"]),
 });
 
 const awardSchema = z.object({
@@ -90,7 +103,12 @@ const socialLinkSchema = z.object({
 const organizationSchema = z.object({
   organization_name: z.string().min(1, "Nama organisasi wajib diisi"),
   role_title: z.string().min(1, "Jabatan wajib diisi"),
-  organization_type: z.string().min(1, "Tipe organisasi wajib dipilih"),
+  organization_type: z.enum([
+    "student",
+    "professional",
+    "volunteer",
+    "community",
+  ]),
   location: z.string().optional(),
   start_month: z.number().min(1).max(12),
   start_year: z.number().min(1900).max(2100),
@@ -136,7 +154,25 @@ export function CVForm({
   onCancel,
   isLoading,
 }: CVFormProps) {
-  const [selectedTemplate, setSelectedTemplate] = useState(initialData?.template_id || cvTemplates[0]?.id || "");
+  const { data: templatesData } = useTemplates({
+    params: { type: "cv" },
+  });
+
+  const apiTemplates =
+    templatesData?.items.map((t) => ({
+      id: t.id,
+      name: t.name,
+      previewImage: buildImageUrl(t.preview),
+    })) || [];
+
+  const [selectedTemplate, setSelectedTemplate] = useState(
+    initialData?.template_id || ""
+  );
+
+  // Set default template when data is loaded
+  if (!selectedTemplate && apiTemplates.length > 0) {
+    setSelectedTemplate(apiTemplates[0].id);
+  }
 
   const {
     register,
@@ -148,7 +184,7 @@ export function CVForm({
   } = useForm<CVFormData>({
     resolver: zodResolver(cvSchema),
     defaultValues: {
-      template_id: initialData?.template_id || cvTemplates[0]?.id || "",
+      template_id: initialData?.template_id || "",
       name: initialData?.name || "",
       headline: initialData?.headline || "",
       email: initialData?.email || "",
@@ -183,7 +219,7 @@ export function CVForm({
         <h3 className="text-lg font-semibold mb-4">Template CV</h3>
         <TemplateSelector
           label="Pilih Template"
-          templates={cvTemplates}
+          templates={apiTemplates}
           value={selectedTemplate}
           onChange={(value) => {
             setSelectedTemplate(value);
@@ -276,33 +312,44 @@ export function CVForm({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => educations.append({
-              degree: "bachelor",
-              school_name: "",
-              school_location: "",
-              major: "",
-              start_month: 1,
-              start_year: currentYear,
-              end_month: 0,
-              end_year: 0,
-              is_current: false,
-              gpa: 0,
-              description: "",
-            })}
+            onClick={() =>
+              educations.append({
+                degree: "bachelor",
+                school_name: "",
+                school_location: "",
+                major: "",
+                start_month: 1,
+                start_year: currentYear,
+                end_month: 0,
+                end_year: 0,
+                is_current: false,
+                gpa: 0,
+                description: "",
+              })
+            }
           >
             <Plus className="h-4 w-4 mr-1" /> Tambah
           </Button>
         </div>
 
         {educations.fields.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Belum ada data pendidikan</p>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Belum ada data pendidikan
+          </p>
         ) : (
           <div className="space-y-4">
             {educations.fields.map((field, index) => (
               <div key={field.id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-sm">Pendidikan #{index + 1}</span>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => educations.remove(index)}>
+                  <span className="font-medium text-sm">
+                    Pendidikan #{index + 1}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => educations.remove(index)}
+                  >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
@@ -311,12 +358,26 @@ export function CVForm({
                     <Label>Jenjang *</Label>
                     <Select
                       value={watch(`educations.${index}.degree`)}
-                      onValueChange={(v) => setValue(`educations.${index}.degree`, v)}
+                      onValueChange={(v) =>
+                        setValue(
+                          `educations.${index}.degree`,
+                          v as
+                            | "highschool"
+                            | "associate"
+                            | "bachelor"
+                            | "master"
+                            | "doctorate"
+                        )
+                      }
                     >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="z-50">
                         {DEGREE_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -327,7 +388,9 @@ export function CVForm({
                   </div>
                   <div className="space-y-2">
                     <Label>Lokasi *</Label>
-                    <Input {...register(`educations.${index}.school_location`)} />
+                    <Input
+                      {...register(`educations.${index}.school_location`)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Jurusan</Label>
@@ -338,12 +401,21 @@ export function CVForm({
                       <Label>Bulan Mulai</Label>
                       <Select
                         value={String(watch(`educations.${index}.start_month`))}
-                        onValueChange={(v) => setValue(`educations.${index}.start_month`, parseInt(v))}
+                        onValueChange={(v) =>
+                          setValue(
+                            `educations.${index}.start_month`,
+                            parseInt(v)
+                          )
+                        }
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50">
                           {MONTH_OPTIONS.map((m) => (
-                            <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {m.label}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -352,12 +424,21 @@ export function CVForm({
                       <Label>Tahun Mulai</Label>
                       <Select
                         value={String(watch(`educations.${index}.start_year`))}
-                        onValueChange={(v) => setValue(`educations.${index}.start_year`, parseInt(v))}
+                        onValueChange={(v) =>
+                          setValue(
+                            `educations.${index}.start_year`,
+                            parseInt(v)
+                          )
+                        }
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50 max-h-48">
                           {yearOptions.map((y) => (
-                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                            <SelectItem key={y} value={String(y)}>
+                              {y}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -368,14 +449,20 @@ export function CVForm({
                       <Label>Bulan Selesai</Label>
                       <Select
                         value={String(watch(`educations.${index}.end_month`))}
-                        onValueChange={(v) => setValue(`educations.${index}.end_month`, parseInt(v))}
+                        onValueChange={(v) =>
+                          setValue(`educations.${index}.end_month`, parseInt(v))
+                        }
                         disabled={watch(`educations.${index}.is_current`)}
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50">
                           <SelectItem value="0">-</SelectItem>
                           {MONTH_OPTIONS.map((m) => (
-                            <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {m.label}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -384,14 +471,20 @@ export function CVForm({
                       <Label>Tahun Selesai</Label>
                       <Select
                         value={String(watch(`educations.${index}.end_year`))}
-                        onValueChange={(v) => setValue(`educations.${index}.end_year`, parseInt(v))}
+                        onValueChange={(v) =>
+                          setValue(`educations.${index}.end_year`, parseInt(v))
+                        }
                         disabled={watch(`educations.${index}.is_current`)}
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50 max-h-48">
                           <SelectItem value="0">-</SelectItem>
                           {yearOptions.map((y) => (
-                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                            <SelectItem key={y} value={String(y)}>
+                              {y}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -401,9 +494,13 @@ export function CVForm({
                     <Checkbox
                       id={`edu-current-${index}`}
                       checked={watch(`educations.${index}.is_current`)}
-                      onCheckedChange={(v) => setValue(`educations.${index}.is_current`, !!v)}
+                      onCheckedChange={(v) =>
+                        setValue(`educations.${index}.is_current`, !!v)
+                      }
                     />
-                    <Label htmlFor={`edu-current-${index}`}>Masih berlangsung</Label>
+                    <Label htmlFor={`edu-current-${index}`}>
+                      Masih berlangsung
+                    </Label>
                   </div>
                   <div className="space-y-2">
                     <Label>IPK</Label>
@@ -412,12 +509,17 @@ export function CVForm({
                       step="0.01"
                       min="0"
                       max="4"
-                      {...register(`educations.${index}.gpa`, { valueAsNumber: true })}
+                      {...register(`educations.${index}.gpa`, {
+                        valueAsNumber: true,
+                      })}
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label>Deskripsi</Label>
-                    <Textarea {...register(`educations.${index}.description`)} rows={2} />
+                    <Textarea
+                      {...register(`educations.${index}.description`)}
+                      rows={2}
+                    />
                   </div>
                 </div>
               </div>
@@ -434,32 +536,43 @@ export function CVForm({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => experiences.append({
-              job_title: "",
-              company_name: "",
-              company_location: "",
-              job_type: "full_time",
-              start_month: 1,
-              start_year: currentYear,
-              end_month: 0,
-              end_year: 0,
-              is_current: false,
-              description: "",
-            })}
+            onClick={() =>
+              experiences.append({
+                job_title: "",
+                company_name: "",
+                company_location: "",
+                job_type: "full_time",
+                start_month: 1,
+                start_year: currentYear,
+                end_month: 0,
+                end_year: 0,
+                is_current: false,
+                description: "",
+              })
+            }
           >
             <Plus className="h-4 w-4 mr-1" /> Tambah
           </Button>
         </div>
 
         {experiences.fields.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Belum ada data pengalaman</p>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Belum ada data pengalaman
+          </p>
         ) : (
           <div className="space-y-4">
             {experiences.fields.map((field, index) => (
               <div key={field.id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-sm">Pengalaman #{index + 1}</span>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => experiences.remove(index)}>
+                  <span className="font-medium text-sm">
+                    Pengalaman #{index + 1}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => experiences.remove(index)}
+                  >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
@@ -474,18 +587,34 @@ export function CVForm({
                   </div>
                   <div className="space-y-2">
                     <Label>Lokasi *</Label>
-                    <Input {...register(`experiences.${index}.company_location`)} />
+                    <Input
+                      {...register(`experiences.${index}.company_location`)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Tipe Pekerjaan *</Label>
                     <Select
                       value={watch(`experiences.${index}.job_type`)}
-                      onValueChange={(v) => setValue(`experiences.${index}.job_type`, v)}
+                      onValueChange={(v) =>
+                        setValue(
+                          `experiences.${index}.job_type`,
+                          v as
+                            | "full_time"
+                            | "part_time"
+                            | "contract"
+                            | "internship"
+                            | "freelance"
+                        )
+                      }
                     >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="z-50">
                         {JOB_TYPE_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -494,13 +623,24 @@ export function CVForm({
                     <div className="space-y-2">
                       <Label>Bulan Mulai</Label>
                       <Select
-                        value={String(watch(`experiences.${index}.start_month`))}
-                        onValueChange={(v) => setValue(`experiences.${index}.start_month`, parseInt(v))}
+                        value={String(
+                          watch(`experiences.${index}.start_month`)
+                        )}
+                        onValueChange={(v) =>
+                          setValue(
+                            `experiences.${index}.start_month`,
+                            parseInt(v)
+                          )
+                        }
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50">
                           {MONTH_OPTIONS.map((m) => (
-                            <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {m.label}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -509,12 +649,21 @@ export function CVForm({
                       <Label>Tahun Mulai</Label>
                       <Select
                         value={String(watch(`experiences.${index}.start_year`))}
-                        onValueChange={(v) => setValue(`experiences.${index}.start_year`, parseInt(v))}
+                        onValueChange={(v) =>
+                          setValue(
+                            `experiences.${index}.start_year`,
+                            parseInt(v)
+                          )
+                        }
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50 max-h-48">
                           {yearOptions.map((y) => (
-                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                            <SelectItem key={y} value={String(y)}>
+                              {y}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -525,14 +674,23 @@ export function CVForm({
                       <Label>Bulan Selesai</Label>
                       <Select
                         value={String(watch(`experiences.${index}.end_month`))}
-                        onValueChange={(v) => setValue(`experiences.${index}.end_month`, parseInt(v))}
+                        onValueChange={(v) =>
+                          setValue(
+                            `experiences.${index}.end_month`,
+                            parseInt(v)
+                          )
+                        }
                         disabled={watch(`experiences.${index}.is_current`)}
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50">
                           <SelectItem value="0">-</SelectItem>
                           {MONTH_OPTIONS.map((m) => (
-                            <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {m.label}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -541,14 +699,20 @@ export function CVForm({
                       <Label>Tahun Selesai</Label>
                       <Select
                         value={String(watch(`experiences.${index}.end_year`))}
-                        onValueChange={(v) => setValue(`experiences.${index}.end_year`, parseInt(v))}
+                        onValueChange={(v) =>
+                          setValue(`experiences.${index}.end_year`, parseInt(v))
+                        }
                         disabled={watch(`experiences.${index}.is_current`)}
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50 max-h-48">
                           <SelectItem value="0">-</SelectItem>
                           {yearOptions.map((y) => (
-                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                            <SelectItem key={y} value={String(y)}>
+                              {y}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -558,13 +722,20 @@ export function CVForm({
                     <Checkbox
                       id={`exp-current-${index}`}
                       checked={watch(`experiences.${index}.is_current`)}
-                      onCheckedChange={(v) => setValue(`experiences.${index}.is_current`, !!v)}
+                      onCheckedChange={(v) =>
+                        setValue(`experiences.${index}.is_current`, !!v)
+                      }
                     />
-                    <Label htmlFor={`exp-current-${index}`}>Masih bekerja</Label>
+                    <Label htmlFor={`exp-current-${index}`}>
+                      Masih bekerja
+                    </Label>
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label>Deskripsi</Label>
-                    <Textarea {...register(`experiences.${index}.description`)} rows={3} />
+                    <Textarea
+                      {...register(`experiences.${index}.description`)}
+                      rows={3}
+                    />
                   </div>
                 </div>
               </div>
@@ -588,28 +759,47 @@ export function CVForm({
         </div>
 
         {skills.fields.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Belum ada data keahlian</p>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Belum ada data keahlian
+          </p>
         ) : (
           <div className="space-y-3">
             {skills.fields.map((field, index) => (
               <div key={field.id} className="flex gap-3 items-start">
                 <div className="flex-1 space-y-2">
-                  <Input placeholder="Nama Keahlian" {...register(`skills.${index}.name`)} />
+                  <Input
+                    placeholder="Nama Keahlian"
+                    {...register(`skills.${index}.name`)}
+                  />
                 </div>
                 <div className="w-40 space-y-2">
                   <Select
                     value={watch(`skills.${index}.level`)}
-                    onValueChange={(v) => setValue(`skills.${index}.level`, v)}
+                    onValueChange={(v) =>
+                      setValue(
+                        `skills.${index}.level`,
+                        v as "beginner" | "intermediate" | "advanced" | "expert"
+                      )
+                    }
                   >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent className="z-50">
                       {SKILL_LEVEL_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => skills.remove(index)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => skills.remove(index)}
+                >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </div>
@@ -626,32 +816,43 @@ export function CVForm({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => certificates.append({
-              title: "",
-              issuer: "",
-              issue_month: 1,
-              issue_year: currentYear,
-              expiry_month: 0,
-              expiry_year: 0,
-              no_expiry: true,
-              credential_id: "",
-              credential_url: "",
-              description: "",
-            })}
+            onClick={() =>
+              certificates.append({
+                title: "",
+                issuer: "",
+                issue_month: 1,
+                issue_year: currentYear,
+                expiry_month: 0,
+                expiry_year: 0,
+                no_expiry: true,
+                credential_id: "",
+                credential_url: "",
+                description: "",
+              })
+            }
           >
             <Plus className="h-4 w-4 mr-1" /> Tambah
           </Button>
         </div>
 
         {certificates.fields.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Belum ada data sertifikasi</p>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Belum ada data sertifikasi
+          </p>
         ) : (
           <div className="space-y-4">
             {certificates.fields.map((field, index) => (
               <div key={field.id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-sm">Sertifikat #{index + 1}</span>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => certificates.remove(index)}>
+                  <span className="font-medium text-sm">
+                    Sertifikat #{index + 1}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => certificates.remove(index)}
+                  >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
@@ -668,13 +869,24 @@ export function CVForm({
                     <div className="space-y-2">
                       <Label>Bulan Terbit</Label>
                       <Select
-                        value={String(watch(`certificates.${index}.issue_month`))}
-                        onValueChange={(v) => setValue(`certificates.${index}.issue_month`, parseInt(v))}
+                        value={String(
+                          watch(`certificates.${index}.issue_month`)
+                        )}
+                        onValueChange={(v) =>
+                          setValue(
+                            `certificates.${index}.issue_month`,
+                            parseInt(v)
+                          )
+                        }
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50">
                           {MONTH_OPTIONS.map((m) => (
-                            <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {m.label}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -682,33 +894,117 @@ export function CVForm({
                     <div className="space-y-2">
                       <Label>Tahun Terbit</Label>
                       <Select
-                        value={String(watch(`certificates.${index}.issue_year`))}
-                        onValueChange={(v) => setValue(`certificates.${index}.issue_year`, parseInt(v))}
+                        value={String(
+                          watch(`certificates.${index}.issue_year`)
+                        )}
+                        onValueChange={(v) =>
+                          setValue(
+                            `certificates.${index}.issue_year`,
+                            parseInt(v)
+                          )
+                        }
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50 max-h-48">
                           {yearOptions.map((y) => (
-                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                            <SelectItem key={y} value={String(y)}>
+                              {y}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 md:col-span-2">
                     <Checkbox
                       id={`cert-no-expiry-${index}`}
                       checked={watch(`certificates.${index}.no_expiry`)}
-                      onCheckedChange={(v) => setValue(`certificates.${index}.no_expiry`, !!v)}
+                      onCheckedChange={(v) =>
+                        setValue(`certificates.${index}.no_expiry`, !!v)
+                      }
                     />
-                    <Label htmlFor={`cert-no-expiry-${index}`}>Tidak ada masa berlaku</Label>
+                    <Label htmlFor={`cert-no-expiry-${index}`}>
+                      Tidak ada masa berlaku
+                    </Label>
                   </div>
+
+                  {!watch(`certificates.${index}.no_expiry`) && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-2">
+                        <Label>Bulan Kedaluwarsa</Label>
+                        <Select
+                          value={String(
+                            watch(`certificates.${index}.expiry_month`)
+                          )}
+                          onValueChange={(v) =>
+                            setValue(
+                              `certificates.${index}.expiry_month`,
+                              parseInt(v)
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-50">
+                            <SelectItem value="0">-</SelectItem>
+                            {MONTH_OPTIONS.map((m) => (
+                              <SelectItem key={m.value} value={String(m.value)}>
+                                {m.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Tahun Kedaluwarsa</Label>
+                        <Select
+                          value={String(
+                            watch(`certificates.${index}.expiry_year`)
+                          )}
+                          onValueChange={(v) =>
+                            setValue(
+                              `certificates.${index}.expiry_year`,
+                              parseInt(v)
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-50 max-h-48">
+                            <SelectItem value="0">-</SelectItem>
+                            {yearOptions.map((y) => (
+                              <SelectItem key={y} value={String(y)}>
+                                {y}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-2">
                     <Label>ID Kredensial</Label>
-                    <Input {...register(`certificates.${index}.credential_id`)} />
+                    <Input
+                      {...register(`certificates.${index}.credential_id`)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>URL Kredensial</Label>
-                    <Input {...register(`certificates.${index}.credential_url`)} />
+                    <Input
+                      {...register(`certificates.${index}.credential_url`)}
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label>Deskripsi</Label>
+                    <Textarea
+                      {...register(`certificates.${index}.description`)}
+                      rows={2}
+                    />
                   </div>
                 </div>
               </div>
@@ -725,21 +1021,37 @@ export function CVForm({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => awards.append({ title: "", issuer: "", description: "", year: currentYear })}
+            onClick={() =>
+              awards.append({
+                title: "",
+                issuer: "",
+                description: "",
+                year: currentYear,
+              })
+            }
           >
             <Plus className="h-4 w-4 mr-1" /> Tambah
           </Button>
         </div>
 
         {awards.fields.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Belum ada data penghargaan</p>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Belum ada data penghargaan
+          </p>
         ) : (
           <div className="space-y-4">
             {awards.fields.map((field, index) => (
               <div key={field.id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-sm">Penghargaan #{index + 1}</span>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => awards.remove(index)}>
+                  <span className="font-medium text-sm">
+                    Penghargaan #{index + 1}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => awards.remove(index)}
+                  >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
@@ -756,12 +1068,18 @@ export function CVForm({
                     <Label>Tahun</Label>
                     <Select
                       value={String(watch(`awards.${index}.year`))}
-                      onValueChange={(v) => setValue(`awards.${index}.year`, parseInt(v))}
+                      onValueChange={(v) =>
+                        setValue(`awards.${index}.year`, parseInt(v))
+                      }
                     >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="z-50 max-h-48">
                         {yearOptions.map((y) => (
-                          <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                          <SelectItem key={y} value={String(y)}>
+                            {y}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -785,39 +1103,52 @@ export function CVForm({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => organizations.append({
-              organization_name: "",
-              role_title: "",
-              organization_type: "community",
-              location: "",
-              start_month: 1,
-              start_year: currentYear,
-              end_month: 0,
-              end_year: 0,
-              is_current: false,
-              description: "",
-            })}
+            onClick={() =>
+              organizations.append({
+                organization_name: "",
+                role_title: "",
+                organization_type: "community",
+                location: "",
+                start_month: 1,
+                start_year: currentYear,
+                end_month: 0,
+                end_year: 0,
+                is_current: false,
+                description: "",
+              })
+            }
           >
             <Plus className="h-4 w-4 mr-1" /> Tambah
           </Button>
         </div>
 
         {organizations.fields.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Belum ada data organisasi</p>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Belum ada data organisasi
+          </p>
         ) : (
           <div className="space-y-4">
             {organizations.fields.map((field, index) => (
               <div key={field.id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-sm">Organisasi #{index + 1}</span>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => organizations.remove(index)}>
+                  <span className="font-medium text-sm">
+                    Organisasi #{index + 1}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => organizations.remove(index)}
+                  >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Nama Organisasi *</Label>
-                    <Input {...register(`organizations.${index}.organization_name`)} />
+                    <Input
+                      {...register(`organizations.${index}.organization_name`)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Jabatan *</Label>
@@ -827,12 +1158,25 @@ export function CVForm({
                     <Label>Tipe Organisasi *</Label>
                     <Select
                       value={watch(`organizations.${index}.organization_type`)}
-                      onValueChange={(v) => setValue(`organizations.${index}.organization_type`, v)}
+                      onValueChange={(v) =>
+                        setValue(
+                          `organizations.${index}.organization_type`,
+                          v as
+                            | "student"
+                            | "professional"
+                            | "volunteer"
+                            | "community"
+                        )
+                      }
                     >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="z-50">
                         {ORGANIZATION_TYPE_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -845,13 +1189,24 @@ export function CVForm({
                     <div className="space-y-2">
                       <Label>Bulan Mulai</Label>
                       <Select
-                        value={String(watch(`organizations.${index}.start_month`))}
-                        onValueChange={(v) => setValue(`organizations.${index}.start_month`, parseInt(v))}
+                        value={String(
+                          watch(`organizations.${index}.start_month`)
+                        )}
+                        onValueChange={(v) =>
+                          setValue(
+                            `organizations.${index}.start_month`,
+                            parseInt(v)
+                          )
+                        }
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50">
                           {MONTH_OPTIONS.map((m) => (
-                            <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {m.label}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -859,13 +1214,24 @@ export function CVForm({
                     <div className="space-y-2">
                       <Label>Tahun Mulai</Label>
                       <Select
-                        value={String(watch(`organizations.${index}.start_year`))}
-                        onValueChange={(v) => setValue(`organizations.${index}.start_year`, parseInt(v))}
+                        value={String(
+                          watch(`organizations.${index}.start_year`)
+                        )}
+                        onValueChange={(v) =>
+                          setValue(
+                            `organizations.${index}.start_year`,
+                            parseInt(v)
+                          )
+                        }
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50 max-h-48">
                           {yearOptions.map((y) => (
-                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                            <SelectItem key={y} value={String(y)}>
+                              {y}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -875,15 +1241,26 @@ export function CVForm({
                     <div className="space-y-2">
                       <Label>Bulan Selesai</Label>
                       <Select
-                        value={String(watch(`organizations.${index}.end_month`))}
-                        onValueChange={(v) => setValue(`organizations.${index}.end_month`, parseInt(v))}
+                        value={String(
+                          watch(`organizations.${index}.end_month`)
+                        )}
+                        onValueChange={(v) =>
+                          setValue(
+                            `organizations.${index}.end_month`,
+                            parseInt(v)
+                          )
+                        }
                         disabled={watch(`organizations.${index}.is_current`)}
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50">
                           <SelectItem value="0">-</SelectItem>
                           {MONTH_OPTIONS.map((m) => (
-                            <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {m.label}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -892,14 +1269,23 @@ export function CVForm({
                       <Label>Tahun Selesai</Label>
                       <Select
                         value={String(watch(`organizations.${index}.end_year`))}
-                        onValueChange={(v) => setValue(`organizations.${index}.end_year`, parseInt(v))}
+                        onValueChange={(v) =>
+                          setValue(
+                            `organizations.${index}.end_year`,
+                            parseInt(v)
+                          )
+                        }
                         disabled={watch(`organizations.${index}.is_current`)}
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent className="z-50 max-h-48">
                           <SelectItem value="0">-</SelectItem>
                           {yearOptions.map((y) => (
-                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                            <SelectItem key={y} value={String(y)}>
+                              {y}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -909,13 +1295,18 @@ export function CVForm({
                     <Checkbox
                       id={`org-current-${index}`}
                       checked={watch(`organizations.${index}.is_current`)}
-                      onCheckedChange={(v) => setValue(`organizations.${index}.is_current`, !!v)}
+                      onCheckedChange={(v) =>
+                        setValue(`organizations.${index}.is_current`, !!v)
+                      }
                     />
                     <Label htmlFor={`org-current-${index}`}>Masih aktif</Label>
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label>Deskripsi</Label>
-                    <Textarea {...register(`organizations.${index}.description`)} rows={2} />
+                    <Textarea
+                      {...register(`organizations.${index}.description`)}
+                      rows={2}
+                    />
                   </div>
                 </div>
               </div>
@@ -939,18 +1330,31 @@ export function CVForm({
         </div>
 
         {socialLinks.fields.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Belum ada data media sosial</p>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Belum ada data media sosial
+          </p>
         ) : (
           <div className="space-y-3">
             {socialLinks.fields.map((field, index) => (
               <div key={field.id} className="flex gap-3 items-start">
                 <div className="w-40 space-y-2">
-                  <Input placeholder="Platform" {...register(`social_links.${index}.platform`)} />
+                  <Input
+                    placeholder="Platform"
+                    {...register(`social_links.${index}.platform`)}
+                  />
                 </div>
                 <div className="flex-1 space-y-2">
-                  <Input placeholder="URL" {...register(`social_links.${index}.url`)} />
+                  <Input
+                    placeholder="URL"
+                    {...register(`social_links.${index}.url`)}
+                  />
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => socialLinks.remove(index)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => socialLinks.remove(index)}
+                >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </div>

@@ -8,7 +8,6 @@ import { ParagraphTemplateModal } from "./ParagraphTemplateModal";
 import type { ParagraphType } from "@/data/paragraphTemplates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -24,8 +23,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { FormError } from "@/components/ui/form-error";
+import { cn, buildImageUrl } from "@/lib/utils";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { SignatureUpload } from "./SignatureUpload";
 import { TemplateSelector } from "@/components/ui/template-selector";
 import {
@@ -34,7 +40,8 @@ import {
   MARITAL_STATUS_OPTIONS,
   LANGUAGE_OPTIONS,
 } from "@/types/applicationLetter";
-import { useTemplates } from "@/features/templates/api/get-templates";
+import { useTemplates } from "@/features/landing/api/get-templates";
+import { useFormErrors } from "@/hooks/use-form-errors";
 
 const applicationLetterSchema = z.object({
   template_id: z.string().optional(),
@@ -77,30 +84,36 @@ export function ApplicationLetterForm({
   isLoading,
 }: ApplicationLetterFormProps) {
   const selectedLanguage = initialData?.language || "id";
-  
-  // Fetch templates from API
-  const { data: templatesResponse, isLoading: isTemplatesLoading } = useTemplates({
-    params: {
-      type: "application_letter",
-      language: selectedLanguage,
-    },
-  });
 
-  const templates = templatesResponse?.items || [];
+  // Fetch templates from API
+  const { data: templatesResponse, isLoading: isTemplatesLoading } =
+    useTemplates({
+      params: {
+        type: "application_letter",
+        language: selectedLanguage,
+      },
+    });
+
+  const templates =
+    templatesResponse?.items.map((t) => ({
+      id: t.id,
+      name: t.name,
+      previewImage: buildImageUrl(t.preview),
+    })) || [];
+
   const [selectedTemplate, setSelectedTemplate] = useState(
-    initialData?.template_id || templates[0]?.id || ""
+    initialData?.template_id || ""
   );
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<ApplicationLetterFormData>({
+  // Set default template when data is loaded
+  if (!selectedTemplate && templates.length > 0) {
+    setSelectedTemplate(templates[0].id);
+  }
+
+  const form = useForm<ApplicationLetterFormData>({
     resolver: zodResolver(applicationLetterSchema),
     defaultValues: {
-      template_id: initialData?.template_id || templates[0]?.id || "",
+      template_id: initialData?.template_id || "",
       name: initialData?.name || "",
       birth_place_date: initialData?.birth_place_date || "",
       gender: initialData?.gender || "male",
@@ -125,14 +138,12 @@ export function ApplicationLetterForm({
     },
   });
 
-  const applicationDateValue = watch("application_date");
-  const signatureValue = watch("signature");
-  const openingParagraphValue = watch("opening_paragraph");
-  const bodyParagraphValue = watch("body_paragraph");
-  const closingParagraphValue = watch("closing_paragraph");
+  // Handle form validation errors from API
+  useFormErrors(form);
 
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
-  const [activeParagraphType, setActiveParagraphType] = useState<ParagraphType | null>(null);
+  const [activeParagraphType, setActiveParagraphType] =
+    useState<ParagraphType | null>(null);
 
   const handleOpenTemplateModal = (type: ParagraphType) => {
     setActiveParagraphType(type);
@@ -141,366 +152,488 @@ export function ApplicationLetterForm({
 
   const handleSelectTemplate = (content: string) => {
     if (activeParagraphType === "opening") {
-      setValue("opening_paragraph", content);
+      form.setValue("opening_paragraph", content);
     } else if (activeParagraphType === "body") {
-      setValue("body_paragraph", content);
+      form.setValue("body_paragraph", content);
     } else if (activeParagraphType === "closing") {
-      setValue("closing_paragraph", content);
+      form.setValue("closing_paragraph", content);
     }
   };
 
   const getCurrentParagraphValue = () => {
-    if (activeParagraphType === "opening") return openingParagraphValue;
-    if (activeParagraphType === "body") return bodyParagraphValue;
-    if (activeParagraphType === "closing") return closingParagraphValue;
+    if (activeParagraphType === "opening")
+      return form.watch("opening_paragraph");
+    if (activeParagraphType === "body") return form.watch("body_paragraph");
+    if (activeParagraphType === "closing")
+      return form.watch("closing_paragraph");
     return "";
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Template Selection */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Template Surat</h3>
-        {isTemplatesLoading ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="text-sm text-muted-foreground">Memuat templates...</div>
-          </div>
-        ) : (
-          <TemplateSelector
-            label="Pilih Template"
-            templates={templates}
-            value={selectedTemplate}
-            onChange={(value: string) => {
-              setSelectedTemplate(value);
-              setValue("template_id", value);
-            }}
-          />
-        )}
-      </Card>
-
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Informasi Pelamar</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nama Lengkap *</Label>
-            <Input
-              id="name"
-              {...register("name")}
-              className={cn(errors.name && "border-destructive")}
-            />
-            <FormError message={errors.name?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="birth_place_date">Tempat, Tanggal Lahir *</Label>
-            <Input
-              id="birth_place_date"
-              {...register("birth_place_date")}
-              placeholder="Jakarta, 15 Mei 1995"
-              className={cn(errors.birth_place_date && "border-destructive")}
-            />
-            <FormError message={errors.birth_place_date?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Jenis Kelamin *</Label>
-            <Select
-              value={watch("gender")}
-              onValueChange={(value) => setValue("gender", value as any)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="z-50">
-                {GENDER_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Status Pernikahan *</Label>
-            <Select
-              value={watch("marital_status")}
-              onValueChange={(value) => setValue("marital_status", value as any)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="z-50">
-                {MARITAL_STATUS_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="education">Pendidikan Terakhir *</Label>
-            <Input
-              id="education"
-              {...register("education")}
-              placeholder="S1 Teknik Informatika"
-              className={cn(errors.education && "border-destructive")}
-            />
-            <FormError message={errors.education?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Nomor Telepon *</Label>
-            <Input
-              id="phone"
-              {...register("phone")}
-              placeholder="081234567890"
-              className={cn(errors.phone && "border-destructive")}
-            />
-            <FormError message={errors.phone?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              {...register("email")}
-              className={cn(errors.email && "border-destructive")}
-            />
-            <FormError message={errors.email?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="applicant_city">Kota Pelamar *</Label>
-            <Input
-              id="applicant_city"
-              {...register("applicant_city")}
-              placeholder="Jakarta"
-              className={cn(errors.applicant_city && "border-destructive")}
-            />
-            <FormError message={errors.applicant_city?.message} />
-          </div>
-
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="address">Alamat Lengkap *</Label>
-            <Textarea
-              id="address"
-              {...register("address")}
-              rows={2}
-              className={cn(errors.address && "border-destructive")}
-            />
-            <FormError message={errors.address?.message} />
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Informasi Perusahaan</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="receiver_title">Jabatan Penerima *</Label>
-            <Input
-              id="receiver_title"
-              {...register("receiver_title")}
-              placeholder="HRD Manager"
-              className={cn(errors.receiver_title && "border-destructive")}
-            />
-            <FormError message={errors.receiver_title?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="company_name">Nama Perusahaan *</Label>
-            <Input
-              id="company_name"
-              {...register("company_name")}
-              className={cn(errors.company_name && "border-destructive")}
-            />
-            <FormError message={errors.company_name?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="company_city">Kota Perusahaan *</Label>
-            <Input
-              id="company_city"
-              {...register("company_city")}
-              placeholder="Jakarta"
-              className={cn(errors.company_city && "border-destructive")}
-            />
-            <FormError message={errors.company_city?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Tanggal Lamaran *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !applicationDateValue && "text-muted-foreground",
-                    errors.application_date && "border-destructive"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {applicationDateValue ? dayjs(applicationDateValue).format("DD/MM/YYYY") : "Pilih tanggal"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-50" align="start">
-                <Calendar
-                  mode="single"
-                  selected={applicationDateValue ? new Date(applicationDateValue) : undefined}
-                  onSelect={(date) => setValue("application_date", date ? dayjs(date).format("YYYY-MM-DD") : "")}
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
-            <FormError message={errors.application_date?.message} />
-          </div>
-
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="company_address">Alamat Perusahaan *</Label>
-            <Textarea
-              id="company_address"
-              {...register("company_address")}
-              rows={2}
-              className={cn(errors.company_address && "border-destructive")}
-            />
-            <FormError message={errors.company_address?.message} />
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Isi Surat</h3>
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="subject">Subjek Surat *</Label>
-              <Input
-                id="subject"
-                {...register("subject")}
-                placeholder="Lamaran Posisi Software Engineer"
-                className={cn(errors.subject && "border-destructive")}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <fieldset disabled={isLoading} className="space-y-6">
+          {/* Template Selection */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Template Surat</h3>
+            {isTemplatesLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="text-sm text-muted-foreground">
+                  Memuat templates...
+                </div>
+              </div>
+            ) : (
+              <TemplateSelector
+                label="Pilih Template"
+                templates={templates}
+                value={selectedTemplate}
+                onChange={(value: string) => {
+                  setSelectedTemplate(value);
+                  form.setValue("template_id", value);
+                }}
               />
-              <FormError message={errors.subject?.message} />
+            )}
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Informasi Pelamar</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nama Lengkap *</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="birth_place_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tempat, Tanggal Lahir *</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Jakarta, 15 Mei 1995" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jenis Kelamin *</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="z-50">
+                        {GENDER_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="marital_status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status Pernikahan *</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="z-50">
+                        {MARITAL_STATUS_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="education"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pendidikan Terakhir *</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="S1 Teknik Informatika" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nomor Telepon *</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="081234567890" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email *</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="email" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="applicant_city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Kota Pelamar *</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Jakarta" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Alamat Lengkap *</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={2} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
+          </Card>
 
-            <div className="space-y-2">
-              <Label>Bahasa *</Label>
-              <Select
-                value={watch("language")}
-                onValueChange={(value) => setValue("language", value as any)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="z-50">
-                  {LANGUAGE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Informasi Perusahaan</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="receiver_title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jabatan Penerima *</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="HRD Manager" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="company_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nama Perusahaan *</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="company_city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Kota Perusahaan *</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Jakarta" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="application_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tanggal Lamaran *</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value
+                              ? dayjs(field.value).format("DD/MM/YYYY")
+                              : "Pilih tanggal"}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 z-50" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onSelect={(date) =>
+                            field.onChange(
+                              date ? dayjs(date).format("YYYY-MM-DD") : ""
+                            )
+                          }
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="company_address"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Alamat Perusahaan *</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={2} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-          </div>
+          </Card>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="opening_paragraph">Paragraf Pembuka *</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleOpenTemplateModal("opening")}
-              >
-                <FileText className="h-4 w-4 mr-1" />
-                Gunakan Template
-              </Button>
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Isi Surat</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subjek Surat *</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Lamaran Posisi Software Engineer"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="language"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bahasa *</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="z-50">
+                          {LANGUAGE_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="opening_paragraph"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Paragraf Pembuka *</FormLabel>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenTemplateModal("opening")}
+                      >
+                        <FileText className="h-4 w-4 mr-1" />
+                        Gunakan Template
+                      </Button>
+                    </div>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        rows={3}
+                        placeholder="Dengan hormat, saya yang bertanda tangan di bawah ini..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="body_paragraph"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Paragraf Isi *</FormLabel>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenTemplateModal("body")}
+                      >
+                        <FileText className="h-4 w-4 mr-1" />
+                        Gunakan Template
+                      </Button>
+                    </div>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        rows={5}
+                        placeholder="Saya memiliki pengalaman dalam bidang..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="attachments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lampiran</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="closing_paragraph"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Paragraf Penutup *</FormLabel>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenTemplateModal("closing")}
+                      >
+                        <FileText className="h-4 w-4 mr-1" />
+                        Gunakan Template
+                      </Button>
+                    </div>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        rows={3}
+                        placeholder="Demikian surat lamaran ini saya buat..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <SignatureUpload
+                value={form.watch("signature") || ""}
+                onChange={(value) => form.setValue("signature", value)}
+              />
             </div>
-            <Textarea
-              id="opening_paragraph"
-              {...register("opening_paragraph")}
-              rows={3}
-              placeholder="Dengan hormat, saya yang bertanda tangan di bawah ini..."
-              className={cn(errors.opening_paragraph && "border-destructive")}
-            />
-            <FormError message={errors.opening_paragraph?.message} />
-          </div>
+          </Card>
+        </fieldset>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="body_paragraph">Paragraf Isi *</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleOpenTemplateModal("body")}
-              >
-                <FileText className="h-4 w-4 mr-1" />
-                Gunakan Template
-              </Button>
-            </div>
-            <Textarea
-              id="body_paragraph"
-              {...register("body_paragraph")}
-              rows={5}
-              placeholder="Saya memiliki pengalaman dalam bidang..."
-              className={cn(errors.body_paragraph && "border-destructive")}
-            />
-            <FormError message={errors.body_paragraph?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="attachments">Lampiran</Label>
-            <Input
-              id="attachments"
-              {...register("attachments")}
-              placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="closing_paragraph">Paragraf Penutup *</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleOpenTemplateModal("closing")}
-              >
-                <FileText className="h-4 w-4 mr-1" />
-                Gunakan Template
-              </Button>
-            </div>
-            <Textarea
-              id="closing_paragraph"
-              {...register("closing_paragraph")}
-              rows={3}
-              placeholder="Demikian surat lamaran ini saya buat..."
-              className={cn(errors.closing_paragraph && "border-destructive")}
-            />
-            <FormError message={errors.closing_paragraph?.message} />
-          </div>
-
-          <SignatureUpload
-            value={signatureValue || ""}
-            onChange={(value) => setValue("signature", value)}
-          />
+        <div className="flex justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Batal
+          </Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Menyimpan..." : "Simpan"}
+          </Button>
         </div>
-      </Card>
-
-      <div className="flex justify-end gap-3">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Batal
-        </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Menyimpan..." : "Simpan"}
-        </Button>
-      </div>
+      </form>
 
       <ParagraphTemplateModal
         open={templateModalOpen}
@@ -509,6 +642,6 @@ export function ApplicationLetterForm({
         currentValue={getCurrentParagraphValue()}
         onSelectTemplate={handleSelectTemplate}
       />
-    </form>
+    </Form>
   );
 }

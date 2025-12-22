@@ -14,11 +14,9 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, X, FileText } from "lucide-react";
-import {
-  Template,
-  TEMPLATE_TYPE_OPTIONS,
-  TemplateType,
-} from "@/types/template";
+import { buildImageUrl } from "@/lib/utils";
+import type { Template, TemplateType } from "@/types/template";
+import { TEMPLATE_TYPE_OPTIONS } from "@/types/template";
 import { toast } from "sonner";
 
 interface TemplateFormProps {
@@ -195,7 +193,7 @@ export function TemplateForm({ initialData, onSubmit }: TemplateFormProps) {
                     src={
                       previewImageFile
                         ? URL.createObjectURL(previewImageFile)
-                        : formData.preview_image
+                        : buildImageUrl(formData.preview_image)
                     }
                     alt="Preview"
                     className="w-32 h-40 object-cover rounded-lg border"
@@ -214,18 +212,20 @@ export function TemplateForm({ initialData, onSubmit }: TemplateFormProps) {
                   </Button>
                 </div>
               )}
-              <label className="flex flex-col items-center justify-center w-32 h-40 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                <Upload className="h-6 w-6 text-muted-foreground mb-2" />
-                <span className="text-xs text-muted-foreground text-center">
-                  Upload Preview
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handlePreviewImageChange}
-                />
-              </label>
+              {!(previewImageFile || formData.preview_image) && (
+                <label className="flex flex-col items-center justify-center w-32 h-40 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                  <Upload className="h-6 w-6 text-muted-foreground mb-2" />
+                  <span className="text-xs text-muted-foreground text-center">
+                    Upload Preview
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePreviewImageChange}
+                  />
+                </label>
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
               Format: JPG, PNG. Maks 5MB

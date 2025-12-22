@@ -285,7 +285,7 @@ export default function CVShow() {
                           {edu.major && `- ${edu.major}`}
                         </p>
                       </div>
-                      {edu.gpa > 0 && (
+                      {edu.gpa && edu.gpa > 0 && (
                         <Badge variant="secondary">IPK: {edu.gpa}</Badge>
                       )}
                     </div>
@@ -397,10 +397,10 @@ export default function CVShow() {
                     <p className="text-xs text-muted-foreground mt-1">
                       {getLabel(cert.issue_month, MONTH_OPTIONS)}{" "}
                       {cert.issue_year}
-                      {!cert.no_expiry && cert.expiry_year > 0 && (
+                      {!cert.no_expiry && cert.expiry_year && cert.expiry_year > 0 && (
                         <>
                           {" "}
-                          - {getLabel(cert.expiry_month, MONTH_OPTIONS)}{" "}
+                          - {getLabel(cert.expiry_month ?? 0, MONTH_OPTIONS)}{" "}
                           {cert.expiry_year}
                         </>
                       )}

@@ -18,7 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import type { BlogTag } from "@/features/admin/blogs/api/get-blog-tags";
+import type { BlogTag } from "@/types/blog";
 import { useEffect } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
 
@@ -93,13 +93,14 @@ export function TagModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
-            {tag ? "Edit Tag" : "Tambah Tag"}
-          </DialogTitle>
+          <DialogTitle>{tag ? "Edit Tag" : "Tambah Tag"}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="name"

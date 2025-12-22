@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ErrorBoundary } from "react-error-boundary";
 import React, { useMemo } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { HelmetProvider } from "react-helmet-async";
 import MainErrorFallback from "@/components/errors/main";
 import { env } from "@/config/env";
 import { LoadingFallback } from "@/components/ui/loading-fallback";
@@ -24,18 +25,20 @@ export const App = () => {
 
   return (
     <ErrorBoundary FallbackComponent={MainErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
-          <AuthProvider>
-            <ReactQueryDevtools initialIsOpen={env.DEBUG} />
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
+            <AuthProvider>
+              <ReactQueryDevtools initialIsOpen={env.DEBUG} />
 
-            <React.Suspense fallback={<LoadingFallback />}>
-              <RouterProvider router={router} />
-              <Toaster position="top-center" />
-            </React.Suspense>
-          </AuthProvider>
-        </GoogleOAuthProvider>
-      </QueryClientProvider>
+              <React.Suspense fallback={<LoadingFallback />}>
+                <RouterProvider router={router} />
+                <Toaster position="top-center" />
+              </React.Suspense>
+            </AuthProvider>
+          </GoogleOAuthProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 };

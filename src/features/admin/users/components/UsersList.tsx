@@ -19,7 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
@@ -63,7 +62,7 @@ import {
   defaultColumnVisibility,
 } from "@/components/users/UserColumnToggle";
 import { USER_ROLE_OPTIONS } from "@/types/user";
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
 import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -265,11 +264,11 @@ export const UsersList = () => {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="h-24 text-center">
-                        Memuat data...
-                    </TableCell>
-                  </TableRow>
+                <TableRow>
+                  <TableCell colSpan={8} className="h-24 text-center">
+                    Memuat data...
+                  </TableCell>
+                </TableRow>
               ) : users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="h-32 text-center">
@@ -289,7 +288,7 @@ export const UsersList = () => {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src={user.avatar} />
+                            <AvatarImage src={buildImageUrl(user.avatar)} />
                             <AvatarFallback className="bg-primary/10 text-primary text-xs">
                               {user.name.charAt(0)}
                             </AvatarFallback>
@@ -313,7 +312,11 @@ export const UsersList = () => {
                     )}
                     {columnVisibility.role && (
                       <TableCell>
-                        <Badge variant={user.role === 'admin' ? "default" : 'secondary'}>
+                        <Badge
+                          variant={
+                            user.role === "admin" ? "default" : "secondary"
+                          }
+                        >
                           {
                             USER_ROLE_OPTIONS.find(
                               (opt) => opt.value === user.role
@@ -324,12 +327,12 @@ export const UsersList = () => {
                     )}
                     {columnVisibility.created_at && (
                       <TableCell className="text-muted-foreground">
-                        {user.created_at ? dayjs(user.created_at).format("DD MMM YYYY") : "-"}
+                        {dayjs(user.created_at).format("DD MMM YYYY")}
                       </TableCell>
                     )}
                     {columnVisibility.updated_at && (
                       <TableCell className="text-muted-foreground">
-                         {user.updated_at ? dayjs(user.updated_at).format("DD MMM YYYY") : "-"}
+                        {dayjs(user.updated_at).format("DD MMM YYYY")}
                       </TableCell>
                     )}
                     <TableCell className="text-right">

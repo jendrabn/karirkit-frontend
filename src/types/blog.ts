@@ -1,7 +1,7 @@
-export type BlogStatus = 'draft' | 'scheduled' | 'published' | 'archived';
+export type BlogStatus = "draft" | "scheduled" | "published" | "archived";
 
 export interface BlogCategory {
-  id: number;
+  id: string;
   name: string;
   slug: string;
   created_at?: string;
@@ -9,7 +9,7 @@ export interface BlogCategory {
 }
 
 export interface BlogTag {
-  id: number;
+  id: string;
   name: string;
   slug: string;
   created_at?: string;
@@ -17,13 +17,13 @@ export interface BlogTag {
 }
 
 export interface BlogAuthor {
-  id: number;
+  id: string;
   name: string;
   avatar?: string | null;
 }
 
 export interface Blog {
-  id: number;
+  id: string;
   title: string;
   slug: string;
   image?: string | null;
@@ -42,23 +42,23 @@ export interface Blog {
 }
 
 export const BLOG_STATUS_OPTIONS: { value: BlogStatus; label: string }[] = [
-  { value: 'draft', label: 'Draft' },
-  { value: 'scheduled', label: 'Dijadwalkan' },
-  { value: 'published', label: 'Dipublikasi' },
-  { value: 'archived', label: 'Diarsipkan' },
+  { value: "draft", label: "Draft" },
+  { value: "scheduled", label: "Dijadwalkan" },
+  { value: "published", label: "Dipublikasi" },
+  { value: "archived", label: "Diarsipkan" },
 ];
 
 export const getStatusBadgeVariant = (status: BlogStatus) => {
   switch (status) {
-    case 'draft':
-      return 'secondary';
-    case 'scheduled':
-      return 'outline';
-    case 'published':
-      return 'default';
-    case 'archived':
-      return 'destructive';
+    case "draft":
+      return "secondary";
+    case "scheduled":
+      return "outline";
+    case "published":
+      return "default";
+    case "archived":
+      return "destructive";
     default:
-      return 'secondary';
+      return "secondary";
   }
 };

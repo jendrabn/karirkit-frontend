@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,14 +43,13 @@ const RegisterForm = () => {
       email: "",
       password: "",
       confirm_password: "",
-      phone: "",
     },
   });
 
   const registerMutation = useRegister({
     onSuccess: () => {
-      toast.success("Registrasi berhasil! Silakan masuk.");
-      navigate("/auth/login");
+      toast.success("Registrasi berhasil! Selamat datang.");
+      navigate("/dashboard");
     },
   });
 
@@ -62,16 +61,6 @@ const RegisterForm = () => {
 
   // Handle form validation errors from API
   useFormErrors(form);
-
-  // Clear confirm password when password changes
-  useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      if (name === "password") {
-        form.setValue("confirm_password", "");
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
 
   return (
     <Card className="w-full max-w-md shadow-xl border-border/50">
@@ -158,24 +147,6 @@ const RegisterForm = () => {
 
               <FormField
                 control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nomor Telepon</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Masukkan nomor telepon"
-                        {...field}
-                        className="h-12"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
@@ -219,7 +190,6 @@ const RegisterForm = () => {
                           placeholder="Masukkan ulang password"
                           {...field}
                           className="h-12 pr-12"
-                          onChange={field.onChange}
                         />
                         <button
                           type="button"
@@ -240,6 +210,24 @@ const RegisterForm = () => {
                   </FormItem>
                 )}
               />
+
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Dengan mendaftar, Anda menyetujui{" "}
+                <Link
+                  to="/syarat-ketentuan"
+                  className="text-primary hover:underline"
+                >
+                  Syarat & Ketentuan
+                </Link>{" "}
+                dan{" "}
+                <Link
+                  to="/kebijakan-privasi"
+                  className="text-primary hover:underline"
+                >
+                  Kebijakan Privasi
+                </Link>{" "}
+                KarirKit
+              </p>
             </fieldset>
 
             <Button

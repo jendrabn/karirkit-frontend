@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DocumentTemplate } from "@/data/documentTemplates";
+import type { DocumentTemplate } from "@/data/documentTemplates";
 
 interface TemplatePreviewModalProps {
   open: boolean;

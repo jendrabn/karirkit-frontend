@@ -171,7 +171,11 @@ const AdminBlogCategories = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = (data: { name: string; slug: string; description: string }) => {
+  const handleSubmit = (data: {
+    name: string;
+    slug: string;
+    description: string;
+  }) => {
     if (editingCategory) {
       updateMutation.mutate({ id: editingCategory.id, data });
     } else {
@@ -266,10 +270,7 @@ const AdminBlogCategories = () => {
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell
-                    colSpan={5}
-                    className="text-center py-16"
-                  >
+                  <TableCell colSpan={5} className="text-center py-16">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                   </TableCell>
                 </TableRow>

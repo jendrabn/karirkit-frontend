@@ -9,11 +9,36 @@ export interface UploadResponse {
   mime_type: string;
 }
 
-export const uploadFile = (file: File): Promise<UploadResponse> => {
+export type UploadInput =
+  | File
+  | { file: File; quality?: number; webp?: boolean; format?: string };
+
+export const uploadFile = (input: UploadInput): Promise<UploadResponse> => {
   const formData = new FormData();
+  let file: File;
+  const params = new URLSearchParams();
+
+  if (input instanceof File) {
+    file = input;
+  } else {
+    file = input.file;
+    if (input.quality !== undefined) {
+      params.append("quality", input.quality.toString());
+    }
+    if (input.webp !== undefined) {
+      params.append("webp", input.webp.toString());
+    }
+    if (input.format !== undefined) {
+      params.append("format", input.format);
+    }
+  }
+
   formData.append("file", file);
 
-  return api.post("/uploads", formData, {
+  const queryString = params.toString();
+  const url = queryString ? `/uploads?${queryString}` : "/uploads";
+
+  return api.post(url, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

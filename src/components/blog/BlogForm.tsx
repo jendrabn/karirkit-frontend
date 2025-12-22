@@ -1,4 +1,10 @@
-import { useState, useRef, useEffect, useLayoutEffect, forwardRef } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  forwardRef,
+} from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -49,6 +55,7 @@ import { toast } from "sonner";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { useUploadFile } from "@/lib/upload";
 import { useUploadBlogFile } from "@/features/admin/blogs/api/upload-blog-file";
+import { useFormErrors } from "@/hooks/use-form-errors";
 
 const blogSchema = z.object({
   title: z.string().min(1, "Judul wajib diisi"),
@@ -87,26 +94,26 @@ const QuillEditor = forwardRef<Quill | null, QuillEditorProps>(
       if (!container) return;
 
       const editorContainer = container.appendChild(
-        container.ownerDocument.createElement('div')
+        container.ownerDocument.createElement("div")
       );
 
-      const imageHandler = async function(this: any) {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', 'image/*');
+      const imageHandler = async function (this: any) {
+        const input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", "image/*");
         input.click();
 
         input.onchange = async () => {
           const file = input.files?.[0];
           if (!file) return;
 
-          if (!file.type.startsWith('image/')) {
-            toast.error('File harus berupa gambar');
+          if (!file.type.startsWith("image/")) {
+            toast.error("File harus berupa gambar");
             return;
           }
 
           if (file.size > 5 * 1024 * 1024) {
-            toast.error('Ukuran file maksimal 5MB');
+            toast.error("Ukuran file maksimal 5MB");
             return;
           }
 
@@ -114,24 +121,28 @@ const QuillEditor = forwardRef<Quill | null, QuillEditorProps>(
           if (!quill) return;
 
           const range = quill.getSelection(true);
-          const loadingToast = toast.loading('Mengupload gambar...');
-          
+          const loadingToast = toast.loading("Mengupload gambar...");
+
           try {
             const response = await uploadBlogFileMutation.mutateAsync(file);
-            quill.insertEmbed(range.index, 'image', buildImageUrl(response.path));
+            quill.insertEmbed(
+              range.index,
+              "image",
+              buildImageUrl(response.path)
+            );
             quill.setSelection(range.index + 1, 0);
             toast.dismiss(loadingToast);
-            toast.success('Gambar berhasil diupload');
+            toast.success("Gambar berhasil diupload");
           } catch (error) {
             toast.dismiss(loadingToast);
-            toast.error('Gagal mengupload gambar');
-            console.error('Upload error:', error);
+            toast.error("Gagal mengupload gambar");
+            console.error("Upload error:", error);
           }
         };
       };
 
       const quill = new Quill(editorContainer, {
-        theme: 'snow',
+        theme: "snow",
         modules: {
           toolbar: {
             container: [
@@ -152,7 +163,7 @@ const QuillEditor = forwardRef<Quill | null, QuillEditorProps>(
       });
 
       if (ref) {
-        typeof ref === 'function' ? ref(quill) : (ref.current = quill);
+        typeof ref === "function" ? ref(quill) : (ref.current = quill);
       }
 
       if (defaultValue) quill.root.innerHTML = defaultValue;
@@ -163,9 +174,9 @@ const QuillEditor = forwardRef<Quill | null, QuillEditorProps>(
 
       return () => {
         if (ref) {
-          typeof ref === 'function' ? ref(null) : (ref.current = null);
+          typeof ref === "function" ? ref(null) : (ref.current = null);
         }
-        container.innerHTML = '';
+        container.innerHTML = "";
       };
     }, [ref, placeholder, defaultValue]);
 
@@ -177,7 +188,7 @@ const QuillEditor = forwardRef<Quill | null, QuillEditorProps>(
   }
 );
 
-QuillEditor.displayName = 'QuillEditor';
+QuillEditor.displayName = "QuillEditor";
 
 // Main BlogForm Component
 interface BlogFormProps {
@@ -197,7 +208,9 @@ export function BlogForm({
   categories,
   tags,
 }: BlogFormProps) {
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image || null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    initialData?.image || null
+  );
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>(
     initialData?.tags?.map((t) => t.id.toString()) || []
@@ -217,11 +230,15 @@ export function BlogForm({
       content: initialData?.content || "",
       excerpt: initialData?.teaser || "",
       read_time: initialData?.min_read || 5,
-      status: (initialData?.status as "draft" | "published" | "archived") || "draft",
+      status:
+        (initialData?.status as "draft" | "published" | "archived") || "draft",
       category_id: initialData?.category?.id?.toString() || null,
       tag_ids: initialData?.tags?.map((t) => t.id.toString()) || [],
     },
   });
+
+  // Handle form validation errors from API
+  useFormErrors(form);
 
   const generateSlug = (title: string) => {
     return title
@@ -285,66 +302,193 @@ export function BlogForm({
     form.setValue("tag_ids", newTags);
   };
 
-  const selectedTagObjects = tags.filter((tag) => selectedTags.includes(tag.id.toString()));
+  const selectedTagObjects = tags.filter((tag) =>
+    selectedTags.includes(tag.id.toString())
+  );
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Card>
           <CardContent className="pt-6 space-y-6">
-            {/* Title & Slug */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Judul *</FormLabel>
-                    <FormControl>
-                      <Input {...field} onChange={handleTitleChange} placeholder="Masukkan judul blog" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <fieldset
+              disabled={isLoading || isUploadingImage}
+              className="space-y-6"
+            >
+              {/* Title & Slug */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Judul *</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          onChange={handleTitleChange}
+                          placeholder="Masukkan judul blog"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Slug *</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="judul-blog-anda" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                <FormField
+                  control={form.control}
+                  name="slug"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Slug *</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="judul-blog-anda" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            {/* Category and Read Time */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="category_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Kategori</FormLabel>
-                    <Select
-                      value={field.value || "none"}
-                      onValueChange={(v) => field.onChange(v === "none" ? null : v)}
+              {/* Category and Read Time */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="category_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kategori</FormLabel>
+                      <Select
+                        value={field.value || "none"}
+                        onValueChange={(v) =>
+                          field.onChange(v === "none" ? null : v)
+                        }
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Pilih kategori" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">Tidak ada</SelectItem>
+                          {categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id.toString()}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="read_time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Waktu Baca (menit) *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                          min={1}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Tags */}
+              <div className="space-y-2">
+                <Label>Tags</Label>
+                <Popover open={tagPopoverOpen} onOpenChange={setTagPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className="w-full justify-between"
                     >
+                      {selectedTags.length > 0
+                        ? `${selectedTags.length} tag dipilih`
+                        : "Pilih tags..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Cari tag..." />
+                      <CommandList>
+                        <CommandEmpty>Tidak ada tag ditemukan.</CommandEmpty>
+                        <CommandGroup>
+                          {tags.map((tag) => (
+                            <CommandItem
+                              key={tag.id}
+                              value={tag.name}
+                              onSelect={() =>
+                                handleTagToggle(tag.id.toString())
+                              }
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedTags.includes(tag.id.toString())
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {tag.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                {selectedTagObjects.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {selectedTagObjects.map((tag) => (
+                      <Badge key={tag.id} variant="secondary" className="gap-1">
+                        {tag.name}
+                        <button
+                          type="button"
+                          onClick={() => handleTagToggle(tag.id.toString())}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Status */}
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status *</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Pilih kategori" />
+                          <SelectValue />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none">Tidak ada</SelectItem>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id.toString()}>
-                            {cat.name}
+                        {BLOG_STATUS_OPTIONS.filter(
+                          (opt) => opt.value !== "scheduled"
+                        ).map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -354,199 +498,123 @@ export function BlogForm({
                 )}
               />
 
+              {/* Image Upload */}
+              <div className="space-y-2">
+                <Label>Gambar Cover</Label>
+                <div className="border-2 border-dashed border-border rounded-lg p-6">
+                  {imagePreview ? (
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full max-h-64 object-cover rounded-lg"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2"
+                        onClick={removeImage}
+                        disabled={isUploadingImage}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div
+                      className="flex flex-col items-center justify-center cursor-pointer py-8"
+                      onClick={() =>
+                        !isUploadingImage && fileInputRef.current?.click()
+                      }
+                    >
+                      <ImageIcon className="h-12 w-12 text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        {isUploadingImage
+                          ? "Mengupload..."
+                          : "Klik untuk upload gambar cover"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        PNG, JPG, JPEG (max 5MB)
+                      </p>
+                    </div>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                    disabled={isUploadingImage}
+                  />
+                </div>
+              </div>
+
               <FormField
                 control={form.control}
-                name="read_time"
+                name="image_caption"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Waktu Baca (menit) *</FormLabel>
+                    <FormLabel>Caption Gambar</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        min={1} 
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        placeholder="Deskripsi gambar"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Tags */}
-            <div className="space-y-2">
-              <Label>Tags</Label>
-              <Popover open={tagPopoverOpen} onOpenChange={setTagPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" role="combobox" className="w-full justify-between">
-                    {selectedTags.length > 0 ? `${selectedTags.length} tag dipilih` : "Pilih tags..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="Cari tag..." />
-                    <CommandList>
-                      <CommandEmpty>Tidak ada tag ditemukan.</CommandEmpty>
-                      <CommandGroup>
-                        {tags.map((tag) => (
-                          <CommandItem 
-                            key={tag.id} 
-                            value={tag.name} 
-                            onSelect={() => handleTagToggle(tag.id.toString())}
-                          >
-                            <Check 
-                              className={cn(
-                                "mr-2 h-4 w-4", 
-                                selectedTags.includes(tag.id.toString()) ? "opacity-100" : "opacity-0"
-                              )} 
-                            />
-                            {tag.name}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-
-              {selectedTagObjects.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedTagObjects.map((tag) => (
-                    <Badge key={tag.id} variant="secondary" className="gap-1">
-                      {tag.name}
-                      <button 
-                        type="button" 
-                        onClick={() => handleTagToggle(tag.id.toString())} 
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Status */}
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status *</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
+              <FormField
+                control={form.control}
+                name="excerpt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Excerpt / Ringkasan</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <Textarea
+                        {...field}
+                        value={field.value || ""}
+                        placeholder="Ringkasan singkat yang akan ditampilkan di listing"
+                        rows={3}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      {BLOG_STATUS_OPTIONS.filter(opt => opt.value !== "scheduled").map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <Label>Gambar Cover</Label>
-              <div className="border-2 border-dashed border-border rounded-lg p-6">
-                {imagePreview ? (
-                  <div className="relative">
-                    <img src={imagePreview} alt="Preview" className="w-full max-h-64 object-cover rounded-lg" />
-                    <Button 
-                      type="button" 
-                      variant="destructive" 
-                      size="icon" 
-                      className="absolute top-2 right-2" 
-                      onClick={removeImage}
-                      disabled={isUploadingImage}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div 
-                    className="flex flex-col items-center justify-center cursor-pointer py-8" 
-                    onClick={() => !isUploadingImage && fileInputRef.current?.click()}
-                  >
-                    <ImageIcon className="h-12 w-12 text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      {isUploadingImage ? "Mengupload..." : "Klik untuk upload gambar cover"}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG, JPEG (max 5MB)</p>
-                  </div>
+                    <FormMessage />
+                  </FormItem>
                 )}
-                <input 
-                  ref={fileInputRef} 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden" 
-                  onChange={handleImageUpload}
-                  disabled={isUploadingImage}
-                />
-              </div>
-            </div>
+              />
 
-            <FormField
-              control={form.control}
-              name="image_caption"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Caption Gambar</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value || ""} placeholder="Deskripsi gambar" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="excerpt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Excerpt / Ringkasan</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} value={field.value || ""} placeholder="Ringkasan singkat yang akan ditampilkan di listing" rows={3} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Konten *</FormLabel>
-                  <FormControl>
-                    <QuillEditor
-                      ref={quillRef}
-                      defaultValue={field.value}
-                      onTextChange={field.onChange}
-                      placeholder="Tulis konten blog Anda di sini..."
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Konten *</FormLabel>
+                    <FormControl>
+                      <QuillEditor
+                        ref={quillRef}
+                        defaultValue={field.value}
+                        onTextChange={field.onChange}
+                        placeholder="Tulis konten blog Anda di sini..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </fieldset>
           </CardContent>
         </Card>
 
         <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
             Batal
           </Button>
           <Button type="submit" disabled={isLoading || isUploadingImage}>

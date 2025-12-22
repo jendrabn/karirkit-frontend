@@ -54,7 +54,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { TemplatesFilterModal } from "./TemplatesFilterModal";
 import { TemplatesColumnToggle } from "./TemplatesColumnToggle";
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
 import { useTemplates } from "../api/get-templates";
 import { useDeleteTemplate } from "../api/delete-template";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -62,106 +62,118 @@ import { toast } from "sonner";
 import { getTemplateTypeLabel } from "@/types/template";
 import type { GetTemplatesParams } from "../api/get-templates";
 
-type SortField = "created_at" | "updated_at" | "name" | "type" | "language" | "is_premium";
+type SortField =
+  | "created_at"
+  | "updated_at"
+  | "name"
+  | "type"
+  | "language"
+  | "is_premium";
 
 export const TemplatesList = () => {
-    const navigate = useNavigate();
-    const [searchQuery, setSearchQuery] = useState("");
-    const debouncedSearch = useDebounce(searchQuery, 500);
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 500);
 
-    const [filterModalOpen, setFilterModalOpen] = useState(false);
-    const [filters, setFilters] = useState<Omit<GetTemplatesParams, "page" | "per_page" | "q" | "sort_by" | "sort_order">>({});
-    const [visibleColumns, setVisibleColumns] = useState({
-        preview: true,
-        type: true,
-        name: true,
-        language: true,
-        is_premium: true,
-        created_at: true,
-    });
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [filters, setFilters] = useState<
+    Omit<
+      GetTemplatesParams,
+      "page" | "per_page" | "q" | "sort_by" | "sort_order"
+    >
+  >({});
+  const [visibleColumns, setVisibleColumns] = useState({
+    preview: true,
+    type: true,
+    name: true,
+    language: true,
+    is_premium: true,
+    created_at: true,
+  });
 
-    const [sortField, setSortField] = useState<SortField>("created_at");
-    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortField, setSortField] = useState<SortField>("created_at");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
-    const { data: templatesData, isLoading } = useTemplates({
-        params: {
-            page: currentPage,
-            per_page: perPage,
-            q: debouncedSearch,
-            sort_by: sortField,
-            sort_order: sortOrder,
-            ...filters,
-        },
-    });
+  const { data: templatesData, isLoading } = useTemplates({
+    params: {
+      page: currentPage,
+      per_page: perPage,
+      q: debouncedSearch,
+      sort_by: sortField,
+      sort_order: sortOrder,
+      ...filters,
+    },
+  });
 
-    const deleteTemplateMutation = useDeleteTemplate({
-        mutationConfig: {
-            onSuccess: () => {
-                toast.success("Template berhasil dihapus");
-                setDeleteDialogOpen(false);
-                setTemplateToDelete(null);
-            },
-        },
-    });
+  const deleteTemplateMutation = useDeleteTemplate({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Template berhasil dihapus");
+        setDeleteDialogOpen(false);
+        setTemplateToDelete(null);
+      },
+    },
+  });
 
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [templateToDelete, setTemplateToDelete] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState<string | null>(null);
 
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-        } else {
-            setSortField(field);
-            setSortOrder("asc");
-        }
-    };
-
-    const handleDelete = (id: string) => {
-        setTemplateToDelete(id);
-        setDeleteDialogOpen(true);
-    };
-
-    const confirmDelete = () => {
-        if (templateToDelete) {
-            deleteTemplateMutation.mutate({ id: templateToDelete });
-        }
-    };
-
-    const SortableHeader = ({
-        field,
-        children,
-    }: {
-        field: SortField;
-        children: React.ReactNode;
-    }) => (
-        <Button
-            variant="ghost"
-            size="sm"
-            className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-            onClick={() => handleSort(field)}
-        >
-            {children}
-            <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-        </Button>
-    );
-
-    const hasActiveFilters = filters.type || filters.language || filters.is_premium !== undefined;
-
-    const templates = templatesData?.items || [];
-    const pagination = templatesData?.pagination || {
-        page: 1,
-        per_page: 10,
-        total_items: 0,
-        total_pages: 0,
-    };
-
-    const handleApplyFilters = (newFilters: any) => {
-         setFilters(newFilters);
-         setCurrentPage(1);
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setTemplateToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (templateToDelete) {
+      deleteTemplateMutation.mutate({ id: templateToDelete });
+    }
+  };
+
+  const SortableHeader = ({
+    field,
+    children,
+  }: {
+    field: SortField;
+    children: React.ReactNode;
+  }) => (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
+      onClick={() => handleSort(field)}
+    >
+      {children}
+      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
+    </Button>
+  );
+
+  const hasActiveFilters =
+    filters.type || filters.language || filters.is_premium !== undefined;
+
+  const templates = templatesData?.items || [];
+  const pagination = templatesData?.pagination || {
+    page: 1,
+    per_page: 10,
+    total_items: 0,
+    total_pages: 0,
+  };
+
+  const handleApplyFilters = (newFilters: any) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
 
   return (
     <>
@@ -195,9 +207,14 @@ export const TemplatesList = () => {
             <Filter className="h-4 w-4 mr-2" />
             Filter
           </Button>
-          <TemplatesColumnToggle 
+          <TemplatesColumnToggle
             visibleColumns={visibleColumns}
-            onToggle={(column) => setVisibleColumns((prev) => ({...prev, [column]: !prev[column]}))}
+            onToggle={(column) =>
+              setVisibleColumns((prev) => ({
+                ...prev,
+                [column]: !prev[column],
+              }))
+            }
           />
           <Button size="sm" onClick={() => navigate("/admin/templates/create")}>
             <Plus className="h-4 w-4 mr-2" />
@@ -226,14 +243,14 @@ export const TemplatesList = () => {
                     <SortableHeader field="type">Tipe</SortableHeader>
                   </TableHead>
                 )}
-                 {visibleColumns.language && (
+                {visibleColumns.language && (
                   <TableHead>
                     <SortableHeader field="language">Bahasa</SortableHeader>
                   </TableHead>
                 )}
                 {visibleColumns.is_premium && (
                   <TableHead className="uppercase text-xs font-medium tracking-wider">
-                     <SortableHeader field="is_premium">Premium</SortableHeader>
+                    <SortableHeader field="is_premium">Premium</SortableHeader>
                   </TableHead>
                 )}
                 {visibleColumns.created_at && (
@@ -246,11 +263,11 @@ export const TemplatesList = () => {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                  <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center">
-                          Memuat data...
-                      </TableCell>
-                  </TableRow>
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    Memuat data...
+                  </TableCell>
+                </TableRow>
               ) : templates.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
@@ -275,7 +292,7 @@ export const TemplatesList = () => {
                       <TableCell>
                         {template.preview ? (
                           <img
-                            src={template.preview}
+                            src={buildImageUrl(template.preview)}
                             alt={template.name}
                             className="w-16 h-20 object-cover rounded border"
                           />
@@ -300,9 +317,7 @@ export const TemplatesList = () => {
                     )}
                     {visibleColumns.language && (
                       <TableCell className="whitespace-nowrap uppercase">
-                         <Badge variant="secondary">
-                            {template.language}
-                        </Badge>
+                        <Badge variant="secondary">{template.language}</Badge>
                       </TableCell>
                     )}
                     {visibleColumns.is_premium && (
@@ -373,71 +388,73 @@ export const TemplatesList = () => {
 
         {/* Pagination */}
         {pagination.total_items > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-border/60">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>Menampilkan</span>
-                    <Select
-                        value={String(perPage)}
-                        onValueChange={(val) => {
-                            setPerPage(Number(val));
-                            setCurrentPage(1);
-                        }}
-                    >
-                        <SelectTrigger className="w-[70px] h-8">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-popover z-50">
-                            {[10, 25, 50].map((n) => (
-                                <SelectItem key={n} value={String(n)}>
-                                    {n}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <span>dari {pagination.total_items} data</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setCurrentPage(1)}
-                        disabled={currentPage === 1}
-                    >
-                        <ChevronsLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                    >
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="px-3 text-sm">
-                        {currentPage} / {pagination.total_pages}
-                    </span>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setCurrentPage((p) => Math.min(pagination.total_pages, p + 1))}
-                        disabled={currentPage === pagination.total_pages}
-                    >
-                        <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setCurrentPage(pagination.total_pages)}
-                        disabled={currentPage === pagination.total_pages}
-                    >
-                        <ChevronsRight className="h-4 w-4" />
-                    </Button>
-                </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-border/60">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Menampilkan</span>
+              <Select
+                value={String(perPage)}
+                onValueChange={(val) => {
+                  setPerPage(Number(val));
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-[70px] h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  {[10, 25, 50].map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span>dari {pagination.total_items} data</span>
             </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="px-3 text-sm">
+                {currentPage} / {pagination.total_pages}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(pagination.total_pages, p + 1))
+                }
+                disabled={currentPage === pagination.total_pages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(pagination.total_pages)}
+                disabled={currentPage === pagination.total_pages}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         )}
       </div>
 

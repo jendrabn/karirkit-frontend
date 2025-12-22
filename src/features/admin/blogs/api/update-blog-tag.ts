@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
-import { setFormErrors } from "@/hooks/use-form-errors";
 import type { MutationConfig } from "@/lib/react-query";
 import type { BlogTag } from "./get-blog-tags";
 
@@ -31,7 +30,7 @@ export const useUpdateBlogTag = ({
 }: UseUpdateBlogTagOptions = {}) => {
   const queryClient = useQueryClient();
 
-  const { onSuccess, onError, ...restConfig } = mutationConfig || {};
+  const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
     mutationFn: updateBlogTag,
@@ -39,12 +38,6 @@ export const useUpdateBlogTag = ({
       queryClient.invalidateQueries({ queryKey: ["blog-tags"] });
       queryClient.invalidateQueries({ queryKey: ["blog-tag", args[1].id] });
       onSuccess?.(...args);
-    },
-    onError: (error, ...args) => {
-      if (error.response?.data?.errors) {
-        setFormErrors(error.response.data.errors);
-      }
-      onError?.(error, ...args);
     },
     ...restConfig,
   });

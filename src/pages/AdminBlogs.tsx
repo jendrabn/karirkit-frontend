@@ -82,7 +82,10 @@ import {
 import { cn, buildImageUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { paths } from "@/config/paths";
-import { useBlogs, type GetBlogsParams } from "@/features/admin/blogs/api/get-blogs";
+import {
+  useBlogs,
+  type GetBlogsParams,
+} from "@/features/admin/blogs/api/get-blogs";
 import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 
@@ -172,7 +175,9 @@ const AdminBlogs = () => {
   const confirmBulkDelete = async () => {
     // TODO: Implement bulk delete API endpoint when available
     try {
-      await Promise.all(selectedIds.map((id) => deleteBlogMutation.mutateAsync(id)));
+      await Promise.all(
+        selectedIds.map((id) => deleteBlogMutation.mutateAsync(id))
+      );
       setSelectedIds([]);
       setBulkDeleteDialogOpen(false);
       toast.success(`${selectedIds.length} blog berhasil dihapus`);
@@ -247,7 +252,10 @@ const AdminBlogs = () => {
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
           />
-          <Button size="sm" onClick={() => navigate(paths.admin.blogs.create.getHref())}>
+          <Button
+            size="sm"
+            onClick={() => navigate(paths.admin.blogs.create.getHref())}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Buat Blog
           </Button>
@@ -264,8 +272,7 @@ const AdminBlogs = () => {
                   <TableHead className="w-[40px]">
                     <Checkbox
                       checked={
-                        blogs.length > 0 &&
-                        selectedIds.length === blogs.length
+                        blogs.length > 0 && selectedIds.length === blogs.length
                       }
                       onCheckedChange={handleSelectAll}
                     />
@@ -386,15 +393,17 @@ const AdminBlogs = () => {
                             <div className="flex items-center gap-2">
                               <Avatar className="h-6 w-6">
                                 <AvatarImage
-                                  src={blog.user.avatar ? buildImageUrl(blog.user.avatar) : undefined}
+                                  src={
+                                    blog.user.avatar
+                                      ? buildImageUrl(blog.user.avatar)
+                                      : undefined
+                                  }
                                 />
                                 <AvatarFallback className="bg-primary/10 text-primary text-xs">
                                   {blog.user.name.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
-                              <span className="text-sm">
-                                {blog.user.name}
-                              </span>
+                              <span className="text-sm">{blog.user.name}</span>
                             </div>
                           ) : (
                             <span className="text-muted-foreground">-</span>
@@ -447,19 +456,31 @@ const AdminBlogs = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() => navigate(paths.admin.blogs.detail.getHref(blog.id))}
+                              onClick={() =>
+                                navigate(
+                                  paths.admin.blogs.detail.getHref(blog.id)
+                                )
+                              }
                             >
                               <Eye className="h-4 w-4 mr-2" />
                               Lihat
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => navigate(paths.admin.blogs.edit.getHref(blog.id))}
+                              onClick={() =>
+                                navigate(
+                                  paths.admin.blogs.edit.getHref(blog.id)
+                                )
+                              }
                             >
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => toast.info("Fitur duplikat akan segera tersedia")}
+                              onClick={() =>
+                                toast.info(
+                                  "Fitur duplikat akan segera tersedia"
+                                )
+                              }
                             >
                               <Copy className="h-4 w-4 mr-2" />
                               Duplikat
@@ -470,7 +491,9 @@ const AdminBlogs = () => {
                                 Ubah Status
                               </DropdownMenuSubTrigger>
                               <DropdownMenuSubContent>
-                                {BLOG_STATUS_OPTIONS.filter(opt => opt.value !== "scheduled").map((opt) => (
+                                {BLOG_STATUS_OPTIONS.filter(
+                                  (opt) => opt.value !== "scheduled"
+                                ).map((opt) => (
                                   <DropdownMenuItem
                                     key={opt.value}
                                     onClick={() =>
@@ -575,7 +598,13 @@ const AdminBlogs = () => {
         onOpenChange={setFilterModalOpen}
         filters={filters}
         onApply={setFilters}
-        categories={categoriesData?.items.map((cat) => ({ id: parseInt(cat.id), name: cat.name, slug: cat.slug })) || []}
+        categories={
+          categoriesData?.items.map((cat) => ({
+            id: cat.id,
+            name: cat.name,
+            slug: cat.slug,
+          })) || []
+        }
       />
 
       {/* Delete Dialog */}

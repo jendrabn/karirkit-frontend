@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { api } from "@/lib/api-client";
-import { MutationConfig } from "@/lib/react-query";
-import { Application } from "@/types/application";
+import type { MutationConfig } from "@/lib/react-query";
+import type { Application } from "@/types/application";
 
 export const createApplicationInputSchema = z.object({
   company_name: z.string().min(1, "Nama perusahaan wajib diisi"),

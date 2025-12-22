@@ -23,7 +23,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS, UserRole, UserStatus } from "@/types/user";
+import type { UserRole, UserStatus } from "@/types/user";
+import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from "@/types/user";
 import { cn } from "@/lib/utils";
 
 export interface FilterValues {

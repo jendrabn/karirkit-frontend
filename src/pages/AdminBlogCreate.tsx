@@ -64,7 +64,7 @@ const AdminBlogCreate = () => {
   // Map API categories/tags to match the type expected by BlogForm
   const categories: BlogCategory[] =
     categoriesData?.items.map((cat) => ({
-      id: parseInt(cat.id),
+      id: cat.id,
       name: cat.name,
       slug: cat.slug,
       created_at: cat.created_at,
@@ -73,7 +73,7 @@ const AdminBlogCreate = () => {
 
   const tags: BlogTag[] =
     tagsData?.items.map((tag) => ({
-      id: parseInt(tag.id),
+      id: tag.id,
       name: tag.name,
       slug: tag.slug,
       created_at: tag.created_at,

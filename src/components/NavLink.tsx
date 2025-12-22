@@ -1,4 +1,5 @@
-import { NavLink as RouterNavLink, NavLinkProps } from "react-router";
+import { NavLink as RouterNavLink } from "react-router";
+import type { NavLinkProps } from "react-router";
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 

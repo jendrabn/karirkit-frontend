@@ -63,9 +63,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  ApplicationLetterFilterModal,
-} from "@/components/application-letters/ApplicationLetterFilterModal";
+import { ApplicationLetterFilterModal } from "@/components/application-letters/ApplicationLetterFilterModal";
 import type { FilterValues } from "@/components/application-letters/ApplicationLetterFilterModal";
 import {
   ApplicationLetterColumnToggle,
@@ -77,15 +75,20 @@ import { useDeleteApplicationLetter } from "@/features/application-letters/api/d
 import { useDuplicateApplicationLetter } from "@/features/application-letters/api/duplicate-application-letter";
 import { useMassDeleteApplicationLetters } from "@/features/application-letters/api/mass-delete-application-letters";
 import type { ApplicationLetter } from "@/features/application-letters/api/get-application-letters";
+import { useDownloadApplicationLetter } from "@/features/application-letters/api/download-application-letter";
 import {
-  LANGUAGE_OPTIONS,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
 } from "@/types/applicationLetter";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-type SortField = "application_date" | "company_name" | "subject" | "created_at" | "updated_at";
+type SortField =
+  | "application_date"
+  | "company_name"
+  | "subject"
+  | "created_at"
+  | "updated_at";
 type SortOrder = "asc" | "desc";
 
 export default function ApplicationLetters() {
@@ -116,7 +119,9 @@ export default function ApplicationLetters() {
       sort_by: sortField,
       sort_order: sortOrder,
       company_name: filters.company_name || undefined,
-      application_date: filters.dateFrom ? dayjs(filters.dateFrom).format("YYYY-MM-DD") : undefined,
+      application_date: filters.dateFrom
+        ? dayjs(filters.dateFrom).format("YYYY-MM-DD")
+        : undefined,
     },
   });
 
@@ -195,18 +200,14 @@ export default function ApplicationLetters() {
     duplicateMutation.mutate(id);
   };
 
+  const downloadMutation = useDownloadApplicationLetter();
+
   const handleDownload = (
     letter: ApplicationLetter,
     format: "docx" | "pdf"
   ) => {
-    if (format === "pdf") {
-      toast.info("Fitur export PDF akan segera hadir");
-      return;
-    }
-    // In real implementation, call API to generate and download file
-    toast.success(
-      `Mengunduh surat lamaran dalam format ${format.toUpperCase()}`
-    );
+    toast.info(`Sedang memproses unduhan ${format.toUpperCase()}...`);
+    downloadMutation.mutate({ id: letter.id, format });
   };
 
   const getLabel = (
@@ -378,9 +379,7 @@ export default function ApplicationLetters() {
                     >
                       <div className="flex flex-col items-center gap-2">
                         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                        <p className="text-base font-medium">
-                          Memuat data...
-                        </p>
+                        <p className="text-base font-medium">Memuat data...</p>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -441,7 +440,9 @@ export default function ApplicationLetters() {
                       {columnVisibility.language && (
                         <TableCell>
                           <Badge
-                            variant={letter.language === "id" ? "default" : "secondary"}
+                            variant={
+                              letter.language === "id" ? "default" : "secondary"
+                            }
                           >
                             {letter.language === "id" ? "ID" : "EN"}
                           </Badge>

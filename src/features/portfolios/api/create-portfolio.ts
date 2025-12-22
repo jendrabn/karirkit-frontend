@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
-import { setFormErrors } from "@/hooks/use-form-errors";
 import type { MutationConfig } from "@/lib/react-query";
 import type { Portfolio } from "./get-portfolios";
 
@@ -42,19 +41,13 @@ export const useCreatePortfolio = ({
 }: UseCreatePortfolioOptions = {}) => {
   const queryClient = useQueryClient();
 
-  const { onSuccess, onError, ...restConfig } = mutationConfig || {};
+  const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
     mutationFn: createPortfolio,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["portfolios"] });
       onSuccess?.(...args);
-    },
-    onError: (error, ...args) => {
-      if (error.response?.data?.errors) {
-        setFormErrors(error.response.data.errors);
-      }
-      onError?.(error, ...args);
     },
     ...restConfig,
   });

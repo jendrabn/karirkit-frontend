@@ -19,7 +19,11 @@ const AdminBlogEdit = () => {
   const updateBlogMutation = useUpdateBlog();
 
   // Fetch blog data
-  const { data: blogData, isLoading: isLoadingBlog, error } = useBlog({ id: id! });
+  const {
+    data: blogData,
+    isLoading: isLoadingBlog,
+    error,
+  } = useBlog({ id: id! });
 
   // Fetch categories and tags
   const { data: categoriesData, isLoading: isLoadingCategories } =
@@ -87,7 +91,7 @@ const AdminBlogEdit = () => {
   // Map API categories/tags to match the type expected by BlogForm
   const categories: BlogCategory[] =
     categoriesData?.items.map((cat) => ({
-      id: parseInt(cat.id),
+      id: cat.id,
       name: cat.name,
       slug: cat.slug,
       created_at: cat.created_at,
@@ -96,7 +100,7 @@ const AdminBlogEdit = () => {
 
   const tags: BlogTag[] =
     tagsData?.items.map((tag) => ({
-      id: parseInt(tag.id),
+      id: tag.id,
       name: tag.name,
       slug: tag.slug,
       created_at: tag.created_at,
@@ -105,7 +109,7 @@ const AdminBlogEdit = () => {
 
   // Map API blog data to component blog type
   const mappedBlogData: Partial<import("@/types/blog").Blog> = {
-    id: parseInt(blogData.id),
+    id: blogData.id,
     title: blogData.title,
     slug: blogData.slug,
     image: blogData.featured_image,
@@ -116,25 +120,29 @@ const AdminBlogEdit = () => {
     views_count: blogData.views,
     status: blogData.status,
     published_at: blogData.published_at,
-    category: blogData.category ? {
-      id: parseInt(blogData.category.id),
-      name: blogData.category.name,
-      slug: blogData.category.slug,
-      created_at: blogData.category.created_at,
-      updated_at: blogData.category.updated_at,
-    } : undefined,
-    tags: blogData.tags?.map(tag => ({
-      id: parseInt(tag.id),
+    category: blogData.category
+      ? {
+          id: blogData.category.id,
+          name: blogData.category.name,
+          slug: blogData.category.slug,
+          created_at: blogData.category.created_at,
+          updated_at: blogData.category.updated_at,
+        }
+      : undefined,
+    tags: blogData.tags?.map((tag) => ({
+      id: tag.id,
       name: tag.name,
       slug: tag.slug,
       created_at: tag.created_at,
       updated_at: tag.updated_at,
     })),
-    author: blogData.user ? {
-      id: parseInt(blogData.user.id),
-      name: blogData.user.name,
-      avatar: blogData.user.avatar,
-    } : undefined,
+    author: blogData.user
+      ? {
+          id: blogData.user.id,
+          name: blogData.user.name,
+          avatar: blogData.user.avatar,
+        }
+      : undefined,
     created_at: blogData.created_at,
     updated_at: blogData.updated_at,
   };

@@ -2,7 +2,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { Application, ApplicationsResponse } from "@/types/application";
+import type { ApplicationsResponse } from "@/types/application";
 
 export type GetApplicationsParams = {
   page?: number;

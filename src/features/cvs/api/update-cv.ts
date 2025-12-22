@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
-import { setFormErrors } from "@/hooks/use-form-errors";
 import type { MutationConfig } from "@/lib/react-query";
 import type { CV, Education, Certificate, Experience, Skill, Award, SocialLink, Organization } from "./get-cvs";
 
@@ -42,7 +41,7 @@ type UseUpdateCVOptions = {
 export const useUpdateCV = ({ mutationConfig }: UseUpdateCVOptions = {}) => {
   const queryClient = useQueryClient();
 
-  const { onSuccess, onError, ...restConfig } = mutationConfig || {};
+  const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
     mutationFn: updateCV,
@@ -50,12 +49,6 @@ export const useUpdateCV = ({ mutationConfig }: UseUpdateCVOptions = {}) => {
       queryClient.invalidateQueries({ queryKey: ["cvs"] });
       queryClient.invalidateQueries({ queryKey: ["cv", args[1].id] });
       onSuccess?.(...args);
-    },
-    onError: (error, ...args) => {
-      if (error.response?.data?.errors) {
-        setFormErrors(error.response.data.errors);
-      }
-      onError?.(error, ...args);
     },
     ...restConfig,
   });

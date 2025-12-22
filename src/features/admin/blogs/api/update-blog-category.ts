@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
-import { setFormErrors } from "@/hooks/use-form-errors";
 import type { MutationConfig } from "@/lib/react-query";
 import type { BlogCategory } from "./get-blog-categories";
 
@@ -32,20 +31,16 @@ export const useUpdateBlogCategory = ({
 }: UseUpdateBlogCategoryOptions = {}) => {
   const queryClient = useQueryClient();
 
-  const { onSuccess, onError, ...restConfig } = mutationConfig || {};
+  const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
     mutationFn: updateBlogCategory,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["blog-categories"] });
-      queryClient.invalidateQueries({ queryKey: ["blog-category", args[1].id] });
+      queryClient.invalidateQueries({
+        queryKey: ["blog-category", args[1].id],
+      });
       onSuccess?.(...args);
-    },
-    onError: (error, ...args) => {
-      if (error.response?.data?.errors) {
-        setFormErrors(error.response.data.errors);
-      }
-      onError?.(error, ...args);
     },
     ...restConfig,
   });

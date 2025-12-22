@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -20,7 +19,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { AvatarUpload } from "./AvatarUpload";
-import { User, USER_ROLE_OPTIONS } from "@/types/user";
+import type { User } from "@/types/user";
+import { USER_ROLE_OPTIONS } from "@/types/user";
 
 const userFormSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi").max(100, "Nama maksimal 100 karakter"),

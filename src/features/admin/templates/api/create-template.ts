@@ -9,10 +9,10 @@ export const createTemplateInputSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
   slug: z.string().min(1, "Slug wajib diisi"),
   type: z.enum(["cv", "application_letter"], {
-    required_error: "Tipe wajib dipilih",
+    message: "Tipe wajib dipilih",
   }),
   language: z.enum(["en", "id"], {
-    required_error: "Bahasa wajib dipilih",
+    message: "Bahasa wajib dipilih",
   }),
   path: z.string().min(1, "Path file wajib diisi"),
   preview: z.string().min(1, "Preview image wajib diisi"),

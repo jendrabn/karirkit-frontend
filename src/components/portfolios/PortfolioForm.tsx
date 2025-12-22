@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -12,13 +11,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FormError } from "@/components/ui/form-error";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { CoverUpload } from "./CoverUpload";
 import { MediaUpload } from "./MediaUpload";
-import { type Portfolio, projectTypeLabels, type ProjectType } from "@/types/portfolio";
+import { type Portfolio, projectTypeLabels } from "@/types/portfolio";
 import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { useFormErrors } from "@/hooks/use-form-errors";
 
 const portfolioSchema = z.object({
   title: z.string().min(1, "Judul wajib diisi"),
@@ -39,7 +46,12 @@ type PortfolioFormData = z.infer<typeof portfolioSchema>;
 
 interface PortfolioFormProps {
   initialData?: Portfolio;
-  onSubmit: (data: PortfolioFormData & { tools: string[]; medias: { path: string; caption: string }[] }) => void;
+  onSubmit: (
+    data: PortfolioFormData & {
+      tools: string[];
+      medias: { path: string; caption: string }[];
+    }
+  ) => void;
   isLoading?: boolean;
 }
 
@@ -61,21 +73,22 @@ const months = [
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 
-export function PortfolioForm({ initialData, onSubmit, isLoading }: PortfolioFormProps) {
-  const [tools, setTools] = useState<string[]>(initialData?.tools?.map(t => t.name) || []);
+export function PortfolioForm({
+  initialData,
+  onSubmit,
+  isLoading,
+}: PortfolioFormProps) {
+  const [tools, setTools] = useState<string[]>(
+    initialData?.tools?.map((t) => t.name) || []
+  );
   const [newTool, setNewTool] = useState("");
   const [medias, setMedias] = useState<{ path: string; caption: string }[]>(
-    initialData?.medias?.map(m => ({ path: m.path, caption: m.caption })) || []
+    initialData?.medias?.map((m) => ({ path: m.path, caption: m.caption })) ||
+      []
   );
   const [cover, setCover] = useState(initialData?.cover || "");
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm<PortfolioFormData>({
+  const form = useForm<PortfolioFormData>({
     resolver: zodResolver(portfolioSchema),
     defaultValues: {
       title: initialData?.title || "",
@@ -92,6 +105,9 @@ export function PortfolioForm({ initialData, onSubmit, isLoading }: PortfolioFor
       cover: initialData?.cover || "",
     },
   });
+
+  // Handle form validation errors from API
+  useFormErrors(form);
 
   const handleAddTool = () => {
     if (newTool.trim() && !tools.includes(newTool.trim())) {
@@ -122,228 +138,314 @@ export function PortfolioForm({ initialData, onSubmit, isLoading }: PortfolioFor
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      {/* Basic Info */}
-      <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-        <h3 className="text-lg font-semibold">Informasi Dasar</h3>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleFormSubmit)}
+        className="space-y-6"
+      >
+        <fieldset disabled={isLoading} className="space-y-6">
+          {/* Basic Info */}
+          <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+            <h3 className="text-lg font-semibold">Informasi Dasar</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Judul Proyek</Label>
-            <Input
-              id="title"
-              {...register("title")}
-              onChange={(e) => {
-                register("title").onChange(e);
-                setValue("slug", generateSlug(e.target.value));
-              }}
-              className={errors.title ? "border-destructive" : ""}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Judul Proyek</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          if (!initialData) {
+                            form.setValue("slug", generateSlug(e.target.value));
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Slug</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="sort_description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Deskripsi Singkat</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <FormError message={errors.title?.message} />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Deskripsi</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} rows={5} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="role_title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role / Posisi</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="project_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipe Proyek</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih tipe proyek" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.entries(projectTypeLabels).map(
+                          ([value, label]) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="industry"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Industri</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="month"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bulan</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={String(field.value)}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih bulan" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {months.map((month) => (
+                          <SelectItem
+                            key={month.value}
+                            value={String(month.value)}
+                          >
+                            {month.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="year"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tahun</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={String(field.value)}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih tahun" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {years.map((year) => (
+                          <SelectItem key={year} value={String(year)}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="slug">Slug</Label>
-            <Input
-              id="slug"
-              {...register("slug")}
-              className={errors.slug ? "border-destructive" : ""}
-            />
-            <FormError message={errors.slug?.message} />
+          {/* Links */}
+          <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+            <h3 className="text-lg font-semibold">Links</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="live_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Live URL (Opsional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="url"
+                        placeholder="https://example.com"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="repo_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Repository URL (Opsional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="url"
+                        placeholder="https://github.com/..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="sort_description">Deskripsi Singkat</Label>
-          <Input
-            id="sort_description"
-            {...register("sort_description")}
-            className={errors.sort_description ? "border-destructive" : ""}
-          />
-          <FormError message={errors.sort_description?.message} />
-        </div>
+          {/* Tools */}
+          <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+            <h3 className="text-lg font-semibold">Tools & Teknologi</h3>
 
-        <div className="space-y-2">
-          <Label htmlFor="description">Deskripsi</Label>
-          <Textarea
-            id="description"
-            {...register("description")}
-            rows={5}
-            className={errors.description ? "border-destructive" : ""}
-          />
-          <FormError message={errors.description?.message} />
-        </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Tambah tool/teknologi..."
+                value={newTool}
+                onChange={(e) => setNewTool(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddTool();
+                  }
+                }}
+              />
+              <Button type="button" onClick={handleAddTool}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="role_title">Role / Posisi</Label>
-            <Input
-              id="role_title"
-              {...register("role_title")}
-              className={errors.role_title ? "border-destructive" : ""}
-            />
-            <FormError message={errors.role_title?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="project_type">Tipe Proyek</Label>
-            <Select
-              defaultValue={watch("project_type")}
-              onValueChange={(value) => setValue("project_type", value as ProjectType)}
-            >
-              <SelectTrigger className={errors.project_type ? "border-destructive" : ""}>
-                <SelectValue placeholder="Pilih tipe proyek" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(projectTypeLabels).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
+            {tools.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {tools.map((tool) => (
+                  <Badge key={tool} variant="secondary" className="gap-1">
+                    {tool}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTool(tool)}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
                 ))}
-              </SelectContent>
-            </Select>
-            <FormError message={errors.project_type?.message} />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="industry">Industri</Label>
-            <Input
-              id="industry"
-              {...register("industry")}
-              className={errors.industry ? "border-destructive" : ""}
-            />
-            <FormError message={errors.industry?.message} />
+              </div>
+            )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="month">Bulan</Label>
-            <Select
-              defaultValue={String(watch("month"))}
-              onValueChange={(value) => setValue("month", parseInt(value))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih bulan" />
-              </SelectTrigger>
-              <SelectContent>
-                {months.map((month) => (
-                  <SelectItem key={month.value} value={String(month.value)}>
-                    {month.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Cover */}
+          <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+            <h3 className="text-lg font-semibold">Cover Image</h3>
+            <CoverUpload value={cover} onChange={setCover} />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="year">Tahun</Label>
-            <Select
-              defaultValue={String(watch("year"))}
-              onValueChange={(value) => setValue("year", parseInt(value))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih tahun" />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((year) => (
-                  <SelectItem key={year} value={String(year)}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Medias */}
+          <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+            <h3 className="text-lg font-semibold">Media Gallery</h3>
+            <MediaUpload value={medias} onChange={setMedias} />
           </div>
-        </div>
-      </div>
+        </fieldset>
 
-      {/* Links */}
-      <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-        <h3 className="text-lg font-semibold">Links</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="live_url">Live URL (Opsional)</Label>
-            <Input
-              id="live_url"
-              type="url"
-              placeholder="https://example.com"
-              {...register("live_url")}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="repo_url">Repository URL (Opsional)</Label>
-            <Input
-              id="repo_url"
-              type="url"
-              placeholder="https://github.com/..."
-              {...register("repo_url")}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Tools */}
-      <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-        <h3 className="text-lg font-semibold">Tools & Teknologi</h3>
-
-        <div className="flex gap-2">
-          <Input
-            placeholder="Tambah tool/teknologi..."
-            value={newTool}
-            onChange={(e) => setNewTool(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleAddTool();
-              }
-            }}
-          />
-          <Button type="button" onClick={handleAddTool}>
-            <Plus className="h-4 w-4" />
+        {/* Actions */}
+        <div className="flex justify-end gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => window.history.back()}
+            disabled={isLoading}
+          >
+            Batal
+          </Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Menyimpan..." : "Simpan"}
           </Button>
         </div>
-
-        {tools.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {tools.map((tool) => (
-              <Badge key={tool} variant="secondary" className="gap-1">
-                {tool}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveTool(tool)}
-                  className="ml-1 hover:text-destructive"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Cover */}
-      <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-        <h3 className="text-lg font-semibold">Cover Image</h3>
-        <CoverUpload value={cover} onChange={setCover} />
-      </div>
-
-      {/* Medias */}
-      <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-        <h3 className="text-lg font-semibold">Media Gallery</h3>
-        <MediaUpload value={medias} onChange={setMedias} />
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={() => window.history.back()}>
-          Batal
-        </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Menyimpan..." : "Simpan"}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 }

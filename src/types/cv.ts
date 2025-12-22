@@ -1,20 +1,34 @@
-export type DegreeType = "highschool" | "diploma" | "bachelor" | "master" | "doctorate";
-export type JobType = "full_time" | "part_time" | "contract" | "internship" | "freelance";
+export type DegreeType =
+  | "highschool"
+  | "associate"
+  | "bachelor"
+  | "master"
+  | "doctorate";
+export type JobType =
+  | "full_time"
+  | "part_time"
+  | "contract"
+  | "internship"
+  | "freelance";
 export type SkillLevel = "beginner" | "intermediate" | "advanced" | "expert";
-export type OrganizationType = "student" | "professional" | "community" | "volunteer";
+export type OrganizationType =
+  | "student"
+  | "professional"
+  | "community"
+  | "volunteer";
 
 export interface Education {
   degree: DegreeType;
   school_name: string;
   school_location: string;
-  major: string;
+  major?: string;
   start_month: number;
   start_year: number;
-  end_month: number;
-  end_year: number;
+  end_month?: number;
+  end_year?: number;
   is_current: boolean;
-  gpa: number;
-  description: string;
+  gpa?: number;
+  description?: string;
 }
 
 export interface Certificate {
@@ -22,12 +36,12 @@ export interface Certificate {
   issuer: string;
   issue_month: number;
   issue_year: number;
-  expiry_month: number;
-  expiry_year: number;
+  expiry_month?: number;
+  expiry_year?: number;
   no_expiry: boolean;
-  credential_id: string;
-  credential_url: string;
-  description: string;
+  credential_id?: string;
+  credential_url?: string;
+  description?: string;
 }
 
 export interface Experience {
@@ -37,10 +51,10 @@ export interface Experience {
   job_type: JobType;
   start_month: number;
   start_year: number;
-  end_month: number;
-  end_year: number;
+  end_month?: number;
+  end_year?: number;
   is_current: boolean;
-  description: string;
+  description?: string;
 }
 
 export interface Skill {
@@ -51,7 +65,7 @@ export interface Skill {
 export interface Award {
   title: string;
   issuer: string;
-  description: string;
+  description?: string;
   year: number;
 }
 
@@ -64,13 +78,13 @@ export interface Organization {
   organization_name: string;
   role_title: string;
   organization_type: OrganizationType;
-  location: string;
+  location?: string;
   start_month: number;
   start_year: number;
-  end_month: number;
-  end_year: number;
+  end_month?: number;
+  end_year?: number;
   is_current: boolean;
-  description: string;
+  description?: string;
 }
 
 export interface CV {
@@ -97,7 +111,7 @@ export interface CV {
 
 export const DEGREE_OPTIONS = [
   { value: "highschool", label: "SMA/SMK" },
-  { value: "diploma", label: "Diploma" },
+  { value: "associate", label: "Diploma" },
   { value: "bachelor", label: "Sarjana (S1)" },
   { value: "master", label: "Magister (S2)" },
   { value: "doctorate", label: "Doktor (S3)" },

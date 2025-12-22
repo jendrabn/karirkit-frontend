@@ -5,47 +5,28 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
-const templates = [
-  {
-    id: 1,
-    title: "Surat Lamaran Kerja - Formal",
-    image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=500&fit=crop",
-    type: "Surat Lamaran",
-  },
-  {
-    id: 2,
-    title: "Surat Lamaran Kerja - Modern",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=500&fit=crop",
-    type: "Surat Lamaran",
-  },
-  {
-    id: 3,
-    title: "CV Profesional",
-    image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=500&fit=crop",
-    type: "CV",
-  },
-  {
-    id: 4,
-    title: "CV Modern",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=500&fit=crop",
-    type: "CV",
-  },
-  {
-    id: 5,
-    title: "CV Kreatif",
-    image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=500&fit=crop",
-    type: "CV",
-  },
-  {
-    id: 6,
-    title: "Surat Lamaran Kerja - Minimalis",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=500&fit=crop",
-    type: "Surat Lamaran",
-  },
-];
+import {
+  useTemplates,
+  type Template,
+} from "@/features/landing/api/get-templates";
+import { buildImageUrl } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function TemplateSliderSection() {
+  const { data, isLoading } = useTemplates();
+  const templates = data?.items || [];
+
+  const getTemplateTypeLabel = (type: Template["type"]) => {
+    switch (type) {
+      case "cv":
+        return "CV";
+      case "application_letter":
+        return "Surat Lamaran";
+      default:
+        return type;
+    }
+  };
+
   return (
     <section className="py-16 lg:py-24 bg-secondary">
       <div className="container mx-auto px-4 lg:px-8">
@@ -55,40 +36,59 @@ export function TemplateSliderSection() {
           </h2>
         </div>
 
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-4">
-            {templates.map((template) => (
-              <CarouselItem key={template.id} className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                <div className="bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="aspect-[3/4] relative">
-                    <img
-                      src={template.image}
-                      alt={template.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <span className="inline-block px-2 py-1 text-xs font-medium bg-primary text-primary-foreground rounded mb-2">
-                        {template.type}
-                      </span>
-                      <p className="text-sm font-medium text-primary-foreground line-clamp-2">
-                        {template.title}
-                      </p>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="aspect-[3/4] w-full rounded-xl"
+              />
+            ))}
+          </div>
+        ) : (
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
+              {templates.map((template) => (
+                <CarouselItem
+                  key={template.id}
+                  className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                >
+                  <div className="bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group cursor-pointer">
+                    <div className="aspect-[3/4] relative">
+                      <img
+                        src={buildImageUrl(template.preview)}
+                        alt={template.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <span className="inline-block px-2 py-1 text-xs font-medium bg-primary text-primary-foreground rounded mb-2 capitalize">
+                          {getTemplateTypeLabel(template.type)}
+                        </span>
+                        <p className="text-sm font-medium text-white line-clamp-2">
+                          {template.name}
+                        </p>
+                      </div>
+                      {template.is_premium && (
+                        <div className="absolute top-2 right-2 px-2 py-1 bg-yellow-500 text-white text-xs font-bold rounded shadow-sm">
+                          PREMIUM
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="hidden md:flex -left-4 bg-card border-border hover:bg-secondary" />
-          <CarouselNext className="hidden md:flex -right-4 bg-card border-border hover:bg-secondary" />
-        </Carousel>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex -left-4 bg-card border-border hover:bg-secondary" />
+            <CarouselNext className="hidden md:flex -right-4 bg-card border-border hover:bg-secondary" />
+          </Carousel>
+        )}
       </div>
     </section>
   );

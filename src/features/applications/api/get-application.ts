@@ -1,8 +1,8 @@
 import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
-import { QueryConfig } from "@/lib/react-query";
-import { Application } from "@/types/application";
+import type { QueryConfig } from "@/lib/react-query";
+import type { Application } from "@/types/application";
 
 export const getApplication = ({
   id,

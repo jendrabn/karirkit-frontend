@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router";
+import { useNavigate } from "react-router";
 import {
   Search,
   Filter,
@@ -61,11 +61,13 @@ import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
 import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
+import { paths } from "@/config/paths";
+import { env } from "@/config/env";
 
 type SortField = "created_at" | "updated_at" | "year" | "month" | "title";
 type SortOrder = "asc" | "desc";
 
-const getProjectTypeBadgeVariant = (type: string) => {
+const getProjectTypeBadgeVariant = (_type: string) => {
   return "secondary"; // Consistent styling for all project types
 };
 
@@ -129,15 +131,6 @@ export default function Portfolios() {
   const pagination = portfoliosResponse?.pagination;
   const totalPages = pagination?.total_pages || 1;
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("desc");
-    }
-  };
-
   const handleDelete = (id: string) => {
     setPortfolioToDelete(id);
     setDeleteDialogOpen(true);
@@ -151,7 +144,8 @@ export default function Portfolios() {
 
   // Mock username - in real app, get from auth context
   const username = "johndoe";
-  const publicPortfolioUrl = `${window.location.origin}/me/${username}`;
+  const publicPortfolioUrl =
+    env.APP_URL + paths.publicPortfolio.list.getHref(username);
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {

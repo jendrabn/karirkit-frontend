@@ -45,7 +45,7 @@ export type Education = {
   degree: "highschool" | "associate" | "bachelor" | "master" | "doctorate";
   school_name: string;
   school_location: string;
-  major: string;
+  major?: string;
   start_month: number;
   start_year: number;
   end_month?: number;
@@ -102,7 +102,7 @@ export type Organization = {
   organization_name: string;
   role_title: string;
   organization_type: "student" | "professional" | "volunteer" | "community";
-  location: string;
+  location?: string;
   start_month: number;
   start_year: number;
   end_month?: number;

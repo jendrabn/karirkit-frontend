@@ -25,12 +25,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
 import { useDeleteApplicationLetter } from "@/features/application-letters/api/delete-application-letter";
+import { downloadApplicationLetter } from "@/features/application-letters/api/download-application-letter";
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
   LANGUAGE_OPTIONS,
 } from "@/types/applicationLetter";
 import { toast } from "sonner";
+import { buildImageUrl } from "@/lib/utils";
 
 export default function ApplicationLetterShow() {
   const navigate = useNavigate();
@@ -59,14 +61,33 @@ export default function ApplicationLetterShow() {
     return options.find((opt) => opt.value === value)?.label || value;
   };
 
-  const handleDownload = (format: "docx" | "pdf") => {
-    if (format === "pdf") {
-      toast.info("Fitur export PDF akan segera hadir");
-      return;
+  const handleDownload = async (format: "docx" | "pdf") => {
+    try {
+      const promise = downloadApplicationLetter(id!, format);
+
+      toast.promise(promise, {
+        loading: `Mengunduh surat lamaran (format ${format.toUpperCase()})...`,
+        success: (response) => {
+          // Create blob link to download
+          const url = window.URL.createObjectURL(
+            new Blob([response as unknown as Blob])
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          const fileName = `${
+            letter?.subject || "application-letter"
+          }.${format}`;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          return `Berhasil mengunduh ${format.toUpperCase()}`;
+        },
+        error: "Gagal mengunduh file",
+      });
+    } catch (error) {
+      console.error("Download error:", error);
     }
-    toast.success(
-      `Mengunduh surat lamaran dalam format ${format.toUpperCase()}`
-    );
   };
 
   const handleDelete = () => {
@@ -106,15 +127,19 @@ export default function ApplicationLetterShow() {
   if (!letter) {
     return (
       <DashboardLayout>
-        <PageHeader 
+        <PageHeader
           title="Surat Lamaran Tidak Ditemukan"
           showBackButton
           backButtonUrl="/application-letters"
         />
         <p className="text-muted-foreground">
-          Data surat lamaran dengan ID tersebut tidak ditemukan atau terjadi kesalahan.
+          Data surat lamaran dengan ID tersebut tidak ditemukan atau terjadi
+          kesalahan.
         </p>
-        <Button onClick={() => navigate("/application-letters")} className="mt-4">
+        <Button
+          onClick={() => navigate("/application-letters")}
+          className="mt-4"
+        >
           Kembali ke Daftar
         </Button>
       </DashboardLayout>
@@ -123,8 +148,8 @@ export default function ApplicationLetterShow() {
 
   return (
     <DashboardLayout>
-      <PageHeader 
-        title={letter.subject} 
+      <PageHeader
+        title={letter.subject}
         subtitle={letter.company_name}
         showBackButton
         backButtonUrl="/application-letters"
@@ -142,12 +167,9 @@ export default function ApplicationLetterShow() {
                 <FileText className="h-4 w-4 mr-2" />
                 Word (.docx)
               </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled
-                className="text-muted-foreground"
-              >
+              <DropdownMenuItem onClick={() => handleDownload("pdf")}>
                 <FileText className="h-4 w-4 mr-2" />
-                PDF (Segera Hadir)
+                PDF (.pdf)
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -155,8 +177,8 @@ export default function ApplicationLetterShow() {
             <Pencil className="h-4 w-4 mr-2" />
             Edit
           </Button>
-          <Button 
-            variant="destructive" 
+          <Button
+            variant="destructive"
             onClick={() => setDeleteDialogOpen(true)}
           >
             <Trash2 className="h-4 w-4 mr-2" />
@@ -255,7 +277,7 @@ export default function ApplicationLetterShow() {
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Tanda Tangan</p>
                 <img
-                  src={letter.signature}
+                  src={buildImageUrl(letter.signature)}
                   alt="Tanda tangan"
                   className="max-h-24 border rounded-md p-2 bg-background"
                 />

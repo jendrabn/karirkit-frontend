@@ -87,8 +87,6 @@ const templateMenuItems = [
   { title: "Buat Template", url: paths.admin.templates.create.getHref() },
 ];
 
-
-
 export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -116,7 +114,9 @@ export function DashboardSidebar() {
     location.pathname.startsWith(paths.admin.blogs.list.getHref()) ||
     location.pathname === paths.admin.blogs.categories.getHref() ||
     location.pathname === paths.admin.blogs.tags.getHref();
-  const isTemplateActive = location.pathname.startsWith(paths.admin.templates.list.getHref());
+  const isTemplateActive = location.pathname.startsWith(
+    paths.admin.templates.list.getHref()
+  );
 
   return (
     <Sidebar collapsible="icon" className="border-r">
@@ -143,9 +143,7 @@ export function DashboardSidebar() {
               {!isCollapsed && (
                 <>
                   <div className="flex-1 text-left min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {user?.name}
-                    </p>
+                    <p className="text-sm font-medium truncate">{user?.name}</p>
                     <p className="text-xs text-muted-foreground truncate">
                       {user?.email}
                     </p>
@@ -163,11 +161,11 @@ export function DashboardSidebar() {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate("/profile")}>
               <User className="h-4 w-4 mr-2" />
-              Profile
+              Profil
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/change-password")}>
               <Lock className="h-4 w-4 mr-2" />
-              Change Password
+              Ubah Password
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -250,7 +248,7 @@ export function DashboardSidebar() {
                       >
                         <LayoutDashboard className="h-5 w-5 shrink-0" />
                         {!isCollapsed && (
-                          <span className="font-medium">Dashboard Admin</span>
+                          <span className="font-medium">Dashboard</span>
                         )}
                       </NavLink>
                     </SidebarMenuButton>

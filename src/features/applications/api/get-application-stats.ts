@@ -1,7 +1,7 @@
 import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
-import { QueryConfig } from "@/lib/react-query";
+import type { QueryConfig } from "@/lib/react-query";
 
 export type ApplicationStats = {
   total_applications: number;

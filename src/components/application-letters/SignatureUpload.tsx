@@ -11,6 +11,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUploadFile } from "@/lib/upload";
 import { toast } from "sonner";
+import { buildImageUrl } from "@/lib/utils";
 
 interface SignatureUploadProps {
   value: string;
@@ -36,41 +37,63 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
     },
   });
 
-  const startDrawing = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const startDrawing = useCallback(
+    (
+      e:
+        | React.MouseEvent<HTMLCanvasElement>
+        | React.TouchEvent<HTMLCanvasElement>
+    ) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    setIsDrawing(true);
-    const rect = canvas.getBoundingClientRect();
-    const x = "touches" in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const y = "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+      setIsDrawing(true);
+      const rect = canvas.getBoundingClientRect();
+      const x =
+        "touches" in e
+          ? e.touches[0].clientX - rect.left
+          : e.clientX - rect.left;
+      const y =
+        "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
 
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  }, []);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    },
+    []
+  );
 
-  const draw = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
-    
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const draw = useCallback(
+    (
+      e:
+        | React.MouseEvent<HTMLCanvasElement>
+        | React.TouchEvent<HTMLCanvasElement>
+    ) => {
+      if (!isDrawing) return;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = "touches" in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const y = "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#000";
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  }, [isDrawing]);
+      const rect = canvas.getBoundingClientRect();
+      const x =
+        "touches" in e
+          ? e.touches[0].clientX - rect.left
+          : e.clientX - rect.left;
+      const y =
+        "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#000";
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    },
+    [isDrawing]
+  );
 
   const stopDrawing = useCallback(() => {
     setIsDrawing(false);
@@ -97,7 +120,12 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
       }
 
       const file = new File([blob], "signature.png", { type: "image/png" });
-      uploadMutation.mutate(file);
+      uploadMutation.mutate({
+        file,
+        quality: 75,
+        webp: false,
+        format: "jpg,png",
+      });
     }, "image/png");
   };
 
@@ -110,7 +138,12 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
       return;
     }
 
-    uploadMutation.mutate(file);
+    uploadMutation.mutate({
+      file,
+      quality: 75,
+      webp: false,
+      format: "jpg,png",
+    });
   };
 
   const removeSignature = () => {
@@ -120,11 +153,11 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
   return (
     <div className="space-y-2">
       <Label>Tanda Tangan (Opsional)</Label>
-      
+
       {value ? (
         <div className="relative inline-block">
           <img
-            src={value}
+            src={buildImageUrl(value)}
             alt="Tanda tangan"
             className="max-h-24 border rounded-md p-2 bg-background"
           />
@@ -191,8 +224,8 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
                   <Trash2 className="h-4 w-4 mr-2" />
                   Hapus
                 </Button>
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   onClick={saveSignature}
                   disabled={uploadMutation.isPending}
                 >
@@ -233,7 +266,9 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
                     <>
                       <Upload className="h-8 w-8" />
                       <span>Klik untuk upload gambar tanda tangan</span>
-                      <span className="text-xs text-muted-foreground">PNG, JPG (max 2MB)</span>
+                      <span className="text-xs text-muted-foreground">
+                        PNG, JPG (max 2MB)
+                      </span>
                     </>
                   )}
                 </div>
