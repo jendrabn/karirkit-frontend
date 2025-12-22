@@ -15,7 +15,7 @@ import {
 import { FormError } from "@/components/ui/form-error";
 import { CoverUpload } from "./CoverUpload";
 import { MediaUpload } from "./MediaUpload";
-import { Portfolio, projectTypeLabels, ProjectType } from "@/types/portfolio";
+import { type Portfolio, projectTypeLabels, type ProjectType } from "@/types/portfolio";
 import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";

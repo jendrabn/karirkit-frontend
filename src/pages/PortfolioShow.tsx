@@ -10,8 +10,7 @@ import {
   ChevronRight,
   Pencil,
   Trash2,
-  Download,
-  FileText,
+  Loader2,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { mockPortfolios } from "@/data/mockPortfolios";
+import { usePortfolio } from "@/features/portfolios/api/get-portfolio";
+import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
 import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
@@ -53,7 +53,40 @@ export default function PortfolioShow() {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const portfolio = mockPortfolios.find((p) => p.id === id);
+  const { data: portfolioResponse, isLoading } = usePortfolio({
+    id: id!,
+  });
+
+  const deleteMutation = useDeletePortfolio({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Portfolio berhasil dihapus");
+        navigate("/portfolios");
+      },
+    },
+  });
+
+  const handleDelete = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (id) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex justify-center items-center h-full min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const portfolio = portfolioResponse;
 
   if (!portfolio) {
     return (
@@ -69,25 +102,6 @@ export default function PortfolioShow() {
       </DashboardLayout>
     );
   }
-
-  const handleDelete = () => {
-    setDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    toast.success("Portfolio berhasil dihapus");
-    navigate("/portfolios");
-  };
-
-  const handleDownload = (format: "docx" | "pdf") => {
-    if (format === "pdf") {
-      toast.info("Fitur download PDF akan segera hadir");
-      return;
-    }
-    toast.success(
-      `Mengunduh portfolio dalam format ${format.toUpperCase()}...`
-    );
-  };
 
   const nextMedia = () => {
     setCurrentMediaIndex((prev) =>
@@ -312,25 +326,6 @@ export default function PortfolioShow() {
               >
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit Portfolio
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleDownload("docx")}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Download DOCX
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start text-muted-foreground"
-                disabled
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download PDF
-                <Badge variant="outline" className="ml-auto text-[10px] px-1">
-                  Soon
-                </Badge>
               </Button>
               <Button
                 variant="outline"

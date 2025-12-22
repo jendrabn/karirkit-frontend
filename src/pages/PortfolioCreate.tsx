@@ -3,21 +3,27 @@ import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { PortfolioForm } from "@/components/portfolios/PortfolioForm";
+import { useCreatePortfolio } from "@/features/portfolios/api/create-portfolio";
+import { useFormErrors } from "@/hooks/use-form-errors";
+import { useForm } from "react-hook-form";
 
 const PortfolioCreate = () => {
   const navigate = useNavigate();
+  const form = useForm();
+  
+  useFormErrors(form);
 
-  const handleSubmit = async (data: any) => {
-    try {
-      // Simulate API call
-      console.log("Creating portfolio:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  const createMutation = useCreatePortfolio({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Portfolio berhasil dibuat");
+        navigate("/portfolios");
+      },
+    },
+  });
 
-      toast.success("Portfolio berhasil dibuat");
-      navigate("/portfolios");
-    } catch (error) {
-      toast.error("Gagal membuat portfolio");
-    }
+  const handleSubmit = (data: any) => {
+    createMutation.mutate(data);
   };
 
   return (
@@ -25,9 +31,14 @@ const PortfolioCreate = () => {
       <PageHeader
         title="Buat Portfolio"
         subtitle="Tambahkan proyek baru ke portfolio Anda"
+        showBackButton
+        backButtonUrl="/portfolios"
       />
       <div className="max-w-4xl">
-        <PortfolioForm onSubmit={handleSubmit} />
+        <PortfolioForm 
+          onSubmit={handleSubmit}
+          isLoading={createMutation.isPending}
+        />
       </div>
     </DashboardLayout>
   );

@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProjectType, projectTypeLabels } from "@/types/portfolio";
+import { type ProjectType, projectTypeLabels } from "@/types/portfolio";
 
 export interface PortfolioFilterValues {
   project_type?: ProjectType;

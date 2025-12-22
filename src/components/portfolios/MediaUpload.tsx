@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus, X, Image } from "lucide-react";
+import { Plus, X, Loader2 } from "lucide-react";
+import { useUploadFile } from "@/lib/upload";
+import { buildImageUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface Media {
@@ -16,8 +17,28 @@ interface MediaUploadProps {
 }
 
 export function MediaUpload({ value, onChange }: MediaUploadProps) {
-  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadMutation = useUploadFile({
+    mutationConfig: {
+      onSuccess: (data) => {
+        // Add new media with path from API response
+        onChange([...value, { path: data.path, caption: "" }]);
+        toast.success("Media berhasil diupload");
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      },
+      onError: () => {
+        toast.error("Gagal mengupload media");
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      },
+    },
+  });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -33,21 +54,8 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
       return;
     }
 
-    setIsUploading(true);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const mockPath = URL.createObjectURL(file);
-      onChange([...value, { path: mockPath, caption: "" }]);
-      toast.success("Media berhasil diupload");
-    } catch (error) {
-      toast.error("Gagal mengupload media");
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
+    // Upload to server
+    uploadMutation.mutate(file);
   };
 
   const handleRemove = (index: number) => {
@@ -70,6 +78,7 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
         onChange={handleFileChange}
         accept="image/*"
         className="hidden"
+        disabled={uploadMutation.isPending}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -77,7 +86,7 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
           <div key={index} className="space-y-2">
             <div className="relative">
               <img
-                src={media.path}
+                src={buildImageUrl(media.path)}
                 alt={`Media ${index + 1}`}
                 className="w-full h-32 object-cover rounded-lg border border-border"
               />
@@ -87,6 +96,7 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
                 size="icon"
                 className="absolute top-1 right-1 h-6 w-6"
                 onClick={() => handleRemove(index)}
+                disabled={uploadMutation.isPending}
               >
                 <X className="h-3 w-3" />
               </Button>
@@ -95,6 +105,7 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
               placeholder="Caption (opsional)"
               value={media.caption}
               onChange={(e) => handleCaptionChange(index, e.target.value)}
+              disabled={uploadMutation.isPending}
             />
           </div>
         ))}
@@ -104,10 +115,13 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
           variant="outline"
           className="h-32 border-dashed flex flex-col gap-2"
           onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
+          disabled={uploadMutation.isPending}
         >
-          {isUploading ? (
-            <span className="text-sm">Mengupload...</span>
+          {uploadMutation.isPending ? (
+            <>
+              <Loader2 className="h-6 w-6 text-muted-foreground animate-spin" />
+              <span className="text-sm text-muted-foreground">Mengupload...</span>
+            </>
           ) : (
             <>
               <Plus className="h-6 w-6 text-muted-foreground" />

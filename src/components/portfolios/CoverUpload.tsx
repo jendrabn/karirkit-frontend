@@ -1,6 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Image } from "lucide-react";
+import { X, Image, Loader2 } from "lucide-react";
+import { useUploadFile } from "@/lib/upload";
+import { buildImageUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface CoverUploadProps {
@@ -9,8 +11,24 @@ interface CoverUploadProps {
 }
 
 export function CoverUpload({ value, onChange }: CoverUploadProps) {
-  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadMutation = useUploadFile({
+    mutationConfig: {
+      onSuccess: (data) => {
+        // Set the path from API response
+        onChange(data.path);
+        toast.success("Cover berhasil diupload");
+      },
+      onError: () => {
+        toast.error("Gagal mengupload cover");
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      },
+    },
+  });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -28,21 +46,8 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
       return;
     }
 
-    setIsUploading(true);
-
-    try {
-      // Simulate upload - replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Mock response - in real implementation, this would be the path from API
-      const mockPath = URL.createObjectURL(file);
-      onChange(mockPath);
-      toast.success("Cover berhasil diupload");
-    } catch (error) {
-      toast.error("Gagal mengupload cover");
-    } finally {
-      setIsUploading(false);
-    }
+    // Upload to server
+    uploadMutation.mutate(file);
   };
 
   const handleRemove = () => {
@@ -60,12 +65,13 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
         onChange={handleFileChange}
         accept="image/*"
         className="hidden"
+        disabled={uploadMutation.isPending}
       />
 
       {value ? (
         <div className="relative">
           <img
-            src={value}
+            src={buildImageUrl(value)}
             alt="Cover preview"
             className="w-full h-48 object-cover rounded-lg border border-border"
           />
@@ -75,6 +81,7 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
             size="icon"
             className="absolute top-2 right-2"
             onClick={handleRemove}
+            disabled={uploadMutation.isPending}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -85,10 +92,13 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
           variant="outline"
           className="w-full h-48 border-dashed flex flex-col gap-2"
           onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
+          disabled={uploadMutation.isPending}
         >
-          {isUploading ? (
-            <span>Mengupload...</span>
+          {uploadMutation.isPending ? (
+            <>
+              <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" />
+              <span className="text-muted-foreground">Mengupload...</span>
+            </>
           ) : (
             <>
               <Image className="h-8 w-8 text-muted-foreground" />

@@ -1,31 +1,67 @@
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { PortfolioForm } from "@/components/portfolios/PortfolioForm";
-import { mockPortfolios } from "@/data/mockPortfolios";
+import { usePortfolio } from "@/features/portfolios/api/get-portfolio";
+import { useUpdatePortfolio } from "@/features/portfolios/api/update-portfolio";
+import { useFormErrors } from "@/hooks/use-form-errors";
+import { useForm } from "react-hook-form";
 
 const PortfolioEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const form = useForm();
+  
+  useFormErrors(form);
 
-  const portfolio = mockPortfolios.find((p) => p.id === id);
+  const { data: portfolioResponse, isLoading } = usePortfolio({
+    id: id!,
+  });
 
-  const handleSubmit = async (data: any) => {
-    try {
-      console.log("Updating portfolio:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  const updateMutation = useUpdatePortfolio({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Portfolio berhasil diperbarui");
+        navigate("/portfolios");
+      },
+    },
+  });
 
-      toast.success("Portfolio berhasil diperbarui");
-      navigate("/portfolios");
-    } catch (error) {
-      toast.error("Gagal memperbarui portfolio");
+  const handleSubmit = (data: any) => {
+    if (id) {
+      updateMutation.mutate({ id, data });
     }
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <PageHeader
+          title="Edit Portfolio"
+          subtitle="Perbarui informasi portfolio Anda"
+          showBackButton
+          backButtonUrl="/portfolios"
+        />
+        <div className="flex justify-center items-center h-full min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const portfolio = portfolioResponse;
 
   if (!portfolio) {
     return (
       <DashboardLayout>
+        <PageHeader
+          title="Edit Portfolio"
+          subtitle="Perbarui informasi portfolio Anda"
+          showBackButton
+          backButtonUrl="/portfolios"
+        />
         <div className="flex items-center justify-center h-64">
           <p className="text-muted-foreground">Portfolio tidak ditemukan</p>
         </div>
@@ -38,9 +74,15 @@ const PortfolioEdit = () => {
       <PageHeader
         title="Edit Portfolio"
         subtitle="Perbarui informasi portfolio Anda"
+        showBackButton
+        backButtonUrl="/portfolios"
       />
       <div className="max-w-4xl">
-        <PortfolioForm initialData={portfolio} onSubmit={handleSubmit} />
+        <PortfolioForm 
+          initialData={portfolio} 
+          onSubmit={handleSubmit}
+          isLoading={updateMutation.isPending}
+        />
       </div>
     </DashboardLayout>
   );

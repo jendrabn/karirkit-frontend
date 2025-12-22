@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import {
   Search,
@@ -16,12 +16,11 @@ import {
   ExternalLink,
   Github,
   MoreVertical,
-  Download,
-  FileText,
   Calendar,
   Briefcase,
   Link2,
   Check,
+  Loader2,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -57,9 +56,11 @@ import {
   PortfolioFilterModal,
   type PortfolioFilterValues,
 } from "@/components/portfolios/PortfolioFilterModal";
-import { mockPortfolios } from "@/data/mockPortfolios";
-import { type Portfolio, projectTypeLabels } from "@/types/portfolio";
+import { usePortfolios } from "@/features/portfolios/api/get-portfolios";
+import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
+import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
+import { buildImageUrl } from "@/lib/utils";
 
 type SortField = "created_at" | "updated_at" | "year" | "month" | "title";
 type SortOrder = "asc" | "desc";
@@ -90,7 +91,6 @@ export default function Portfolios() {
   const [filters, setFilters] = useState<PortfolioFilterValues>({});
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-  const [portfolios, setPortfolios] = useState<Portfolio[]>(mockPortfolios);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState<string | null>(
     null
@@ -99,6 +99,35 @@ export default function Portfolios() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(12);
+
+  // API calls
+  const { data: portfoliosResponse, isLoading } = usePortfolios({
+    params: {
+      page: currentPage,
+      per_page: perPage,
+      q: searchQuery || undefined,
+      sort_by: sortField,
+      sort_order: sortOrder,
+      project_type: filters.project_type || undefined,
+      industry: filters.industry || undefined,
+      year: filters.year || undefined,
+      month: filters.month || undefined,
+    },
+  });
+
+  const deleteMutation = useDeletePortfolio({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Portfolio berhasil dihapus");
+        setDeleteDialogOpen(false);
+        setPortfolioToDelete(null);
+      },
+    },
+  });
+
+  const portfolios = portfoliosResponse?.items || [];
+  const pagination = portfoliosResponse?.pagination;
+  const totalPages = pagination?.total_pages || 1;
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -109,70 +138,6 @@ export default function Portfolios() {
     }
   };
 
-  const filteredAndSortedPortfolios = useMemo(() => {
-    let result = [...portfolios];
-
-    // Search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.title.toLowerCase().includes(query) ||
-          p.sort_description.toLowerCase().includes(query) ||
-          p.role_title.toLowerCase().includes(query) ||
-          p.industry.toLowerCase().includes(query)
-      );
-    }
-
-    // Filters
-    if (filters.project_type) {
-      result = result.filter((p) => p.project_type === filters.project_type);
-    }
-    if (filters.industry) {
-      result = result.filter((p) =>
-        p.industry.toLowerCase().includes(filters.industry!.toLowerCase())
-      );
-    }
-    if (filters.year) {
-      result = result.filter((p) => p.year === filters.year);
-    }
-    if (filters.month) {
-      result = result.filter((p) => p.month === filters.month);
-    }
-
-    // Sort
-    result.sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
-
-      if (sortField === "created_at" || sortField === "updated_at") {
-        aVal = new Date(a[sortField]).getTime();
-        bVal = new Date(b[sortField]).getTime();
-      } else if (sortField === "year" || sortField === "month") {
-        aVal = a[sortField];
-        bVal = b[sortField];
-      } else {
-        aVal = a[sortField];
-        bVal = b[sortField];
-      }
-
-      if (typeof aVal === "string" && typeof bVal === "string") {
-        return sortOrder === "asc"
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal);
-      }
-      return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
-    });
-
-    return result;
-  }, [portfolios, searchQuery, filters, sortField, sortOrder]);
-
-  const totalPages = Math.ceil(filteredAndSortedPortfolios.length / perPage);
-  const paginatedPortfolios = filteredAndSortedPortfolios.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
   const handleDelete = (id: string) => {
     setPortfolioToDelete(id);
     setDeleteDialogOpen(true);
@@ -180,34 +145,8 @@ export default function Portfolios() {
 
   const confirmDelete = () => {
     if (portfolioToDelete) {
-      setPortfolios((prev) => prev.filter((p) => p.id !== portfolioToDelete));
-      setDeleteDialogOpen(false);
-      setPortfolioToDelete(null);
-      toast.success("Portfolio berhasil dihapus");
+      deleteMutation.mutate(portfolioToDelete);
     }
-  };
-
-  const handleDuplicate = (portfolio: Portfolio) => {
-    const newPortfolio: Portfolio = {
-      ...portfolio,
-      id: `portfolio-${Date.now()}`,
-      title: `${portfolio.title} (Copy)`,
-      slug: `${portfolio.slug}-copy-${Date.now()}`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setPortfolios((prev) => [newPortfolio, ...prev]);
-    toast.success("Portfolio berhasil diduplikasi");
-  };
-
-  const handleDownload = (id: string, format: "docx" | "pdf") => {
-    if (format === "pdf") {
-      toast.info("Fitur download PDF akan segera hadir");
-      return;
-    }
-    toast.success(
-      `Mengunduh portfolio dalam format ${format.toUpperCase()}...`
-    );
   };
 
   // Mock username - in real app, get from auth context
@@ -329,7 +268,11 @@ export default function Portfolios() {
       </div>
 
       {/* Portfolio Grid */}
-      {paginatedPortfolios.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : portfolios.length === 0 ? (
         <div className="bg-card border border-border/60 rounded-xl p-16 text-center">
           <div className="flex flex-col items-center gap-2">
             <Briefcase className="h-12 w-12 text-muted-foreground/50" />
@@ -350,7 +293,7 @@ export default function Portfolios() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {paginatedPortfolios.map((portfolio) => (
+          {portfolios.map((portfolio) => (
             <Card
               key={portfolio.id}
               className="group overflow-hidden border border-border/60 hover:shadow-lg transition-all duration-300"
@@ -358,7 +301,7 @@ export default function Portfolios() {
               {/* Cover Image */}
               <div className="relative aspect-video overflow-hidden">
                 <img
-                  src={portfolio.cover}
+                  src={buildImageUrl(portfolio.cover)}
                   alt={portfolio.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -390,33 +333,6 @@ export default function Portfolios() {
                       >
                         <Pencil className="h-4 w-4 mr-2" />
                         Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleDuplicate(portfolio)}
-                      >
-                        <Copy className="h-4 w-4 mr-2" />
-                        Duplikat
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleDownload(portfolio.id, "docx")}
-                      >
-                        <FileText className="h-4 w-4 mr-2" />
-                        Download DOCX
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        disabled
-                        className="text-muted-foreground"
-                        onClick={() => handleDownload(portfolio.id, "pdf")}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download PDF
-                        <Badge
-                          variant="outline"
-                          className="ml-auto text-[10px] px-1"
-                        >
-                          Soon
-                        </Badge>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -524,7 +440,7 @@ export default function Portfolios() {
       )}
 
       {/* Pagination */}
-      {filteredAndSortedPortfolios.length > 0 && (
+      {pagination && pagination.total_items > 0 && (
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Tampilkan</span>
@@ -546,7 +462,7 @@ export default function Portfolios() {
               </SelectContent>
             </Select>
             <span className="text-sm text-muted-foreground">
-              dari {filteredAndSortedPortfolios.length} portfolio
+              dari {pagination?.total_items || 0} portfolio
             </span>
           </div>
 
