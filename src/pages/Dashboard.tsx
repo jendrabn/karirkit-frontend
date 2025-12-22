@@ -5,8 +5,7 @@ import { FileText, Send, Briefcase, FolderOpen, CheckCircle, XCircle, Loader2 } 
 import { useDashboardStats } from "@/features/dashboard/api/get-dashboard-stats";
 
 export default function Dashboard() {
-  const { data: statsResponse, isLoading, error } = useDashboardStats();
-  const stats = statsResponse?.data;
+  const { data: stats, isLoading, error } = useDashboardStats();
 
   const statCards = [
     {

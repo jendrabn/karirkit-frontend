@@ -7,6 +7,4 @@ export type DashboardStats = {
   total_portfolios: number;
 };
 
-export type DashboardStatsResponse = {
-  data: DashboardStats;
-};
+export type DashboardStatsResponse = DashboardStats;

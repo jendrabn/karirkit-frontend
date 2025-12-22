@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { format } from "date-fns";
+import { dayjs } from "@/lib/date";
 import {
   Search,
   Filter,
@@ -18,6 +18,7 @@ import {
   FileText,
   User,
   MoreVertical,
+  Loader2,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -47,9 +48,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
@@ -67,18 +65,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CVFilterModal, FilterValues } from "@/components/cv/CVFilterModal";
+import { CVFilterModal } from "@/components/cv/CVFilterModal";
+import type { FilterValues } from "@/components/cv/CVFilterModal";
 import {
   CVColumnToggle,
-  ColumnVisibility,
   defaultColumnVisibility,
 } from "@/components/cv/CVColumnToggle";
-import { mockCVs } from "@/data/mockCVs";
-import { CV, DEGREE_OPTIONS } from "@/types/cv";
+import type { ColumnVisibility } from "@/components/cv/CVColumnToggle";
+import { useCVs } from "@/features/cvs/api/get-cvs";
+import { useDeleteCV } from "@/features/cvs/api/delete-cv";
+import { useDuplicateCV } from "@/features/cvs/api/duplicate-cv";
+import { useDownloadCV } from "@/features/cvs/api/download-cv";
+import type { CV } from "@/features/cvs/api/get-cvs";
+import { DEGREE_OPTIONS } from "@/types/cv";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-type SortField = "updated_at" | "name";
+type SortField = "updated_at" | "name" | "created_at";
 type SortOrder = "asc" | "desc";
 
 export default function CVs() {
@@ -89,9 +92,8 @@ export default function CVs() {
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(
     defaultColumnVisibility
   );
-  const [sortField, setSortField] = useState<SortField | null>("updated_at");
+  const [sortField, setSortField] = useState<SortField>("updated_at");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-  const [cvs, setCvs] = useState<CV[]>(mockCVs);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [cvToDelete, setCvToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -100,6 +102,43 @@ export default function CVs() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  // API calls
+  const { data: cvsResponse, isLoading } = useCVs({
+    params: {
+      page: currentPage,
+      per_page: perPage,
+      q: searchQuery || undefined,
+      sort_by: sortField,
+      sort_order: sortOrder,
+      name: filters.name || undefined,
+    },
+  });
+
+  const deleteMutation = useDeleteCV({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("CV berhasil dihapus");
+        setDeleteDialogOpen(false);
+        setCvToDelete(null);
+      },
+    },
+  });
+
+  const duplicateMutation = useDuplicateCV({
+    mutationConfig: {
+      onSuccess: (data) => {
+        toast.success("CV berhasil diduplikasi");
+        navigate(`/cvs/${data.id}`);
+      },
+    },
+  });
+
+  const { downloadCV } = useDownloadCV();
+
+  const cvs = cvsResponse?.items || [];
+  const pagination = cvsResponse?.pagination;
+  const totalPages = pagination?.total_pages || 1;
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -110,61 +149,6 @@ export default function CVs() {
     }
   };
 
-  const filteredAndSortedCVs = useMemo(() => {
-    let result = [...cvs];
-
-    // Search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (cv) =>
-          cv.name.toLowerCase().includes(query) ||
-          cv.headline.toLowerCase().includes(query) ||
-          cv.email.toLowerCase().includes(query)
-      );
-    }
-
-    // Filters
-    if (filters.name) {
-      result = result.filter((cv) =>
-        cv.name.toLowerCase().includes(filters.name!.toLowerCase())
-      );
-    }
-    if (filters.dateFrom) {
-      result = result.filter(
-        (cv) => new Date(cv.created_at) >= filters.dateFrom!
-      );
-    }
-    if (filters.dateTo) {
-      result = result.filter(
-        (cv) => new Date(cv.created_at) <= filters.dateTo!
-      );
-    }
-
-    // Sort
-    if (sortField) {
-      result.sort((a, b) => {
-        let aVal = a[sortField];
-        let bVal = b[sortField];
-
-        if (typeof aVal === "string" && typeof bVal === "string") {
-          return sortOrder === "asc"
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal);
-        }
-        return 0;
-      });
-    }
-
-    return result;
-  }, [cvs, searchQuery, filters, sortField, sortOrder]);
-
-  const totalPages = Math.ceil(filteredAndSortedCVs.length / perPage);
-  const paginatedCVs = filteredAndSortedCVs.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
   const handleDelete = (id: string) => {
     setCvToDelete(id);
     setDeleteDialogOpen(true);
@@ -172,18 +156,15 @@ export default function CVs() {
 
   const confirmDelete = () => {
     if (cvToDelete) {
-      setCvs((prev) => prev.filter((cv) => cv.id !== cvToDelete));
-      setDeleteDialogOpen(false);
-      setCvToDelete(null);
-      toast.success("CV berhasil dihapus");
+      deleteMutation.mutate(cvToDelete);
     }
   };
 
   const handleSelectAll = () => {
-    if (selectedIds.length === paginatedCVs.length) {
+    if (selectedIds.length === cvs.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(paginatedCVs.map((cv) => cv.id));
+      setSelectedIds(cvs.map((cv) => cv.id));
     }
   };
 
@@ -194,29 +175,24 @@ export default function CVs() {
   };
 
   const confirmBulkDelete = () => {
-    setCvs((prev) => prev.filter((cv) => !selectedIds.includes(cv.id)));
+    // Note: Implement mass delete API if available
+    selectedIds.forEach((id) => deleteMutation.mutate(id));
     setSelectedIds([]);
     setBulkDeleteDialogOpen(false);
     toast.success(`${selectedIds.length} CV berhasil dihapus`);
   };
 
-  const handleDuplicate = (cv: CV) => {
-    const newCV: CV = {
-      ...cv,
-      id: `${Date.now()}`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setCvs((prev) => [newCV, ...prev]);
-    toast.success("CV berhasil diduplikasi");
+  const handleDuplicate = (id: string) => {
+    duplicateMutation.mutate(id);
   };
 
-  const handleDownload = (cv: CV, format: "docx" | "pdf") => {
-    if (format === "pdf") {
-      toast.info("Fitur export PDF akan segera hadir");
-      return;
+  const handleDownload = async (id: string, format: "docx" | "pdf") => {
+    try {
+      await downloadCV(id, format);
+      toast.success(`CV berhasil diunduh dalam format ${format.toUpperCase()}`);
+    } catch (error) {
+      toast.error("Gagal mengunduh CV");
     }
-    toast.success(`Mengunduh CV dalam format ${format.toUpperCase()}`);
   };
 
   // Helper to get latest experience
@@ -308,8 +284,8 @@ export default function CVs() {
                   <TableHead className="w-[40px]">
                     <Checkbox
                       checked={
-                        paginatedCVs.length > 0 &&
-                        selectedIds.length === paginatedCVs.length
+                        cvs.length > 0 &&
+                        selectedIds.length === cvs.length
                       }
                       onCheckedChange={handleSelectAll}
                     />
@@ -390,7 +366,16 @@ export default function CVs() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedCVs.length === 0 ? (
+                {isLoading ? (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell
+                      colSpan={16}
+                      className="text-center py-16"
+                    >
+                      <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                    </TableCell>
+                  </TableRow>
+                ) : cvs.length === 0 ? (
                   <TableRow className="hover:bg-transparent">
                     <TableCell
                       colSpan={16}
@@ -404,7 +389,7 @@ export default function CVs() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedCVs.map((cv, index) => {
+                  cvs.map((cv, index) => {
                     const latestExp = getLatestExperience(cv);
                     const latestEdu = getLatestEducation(cv);
 
@@ -497,7 +482,7 @@ export default function CVs() {
                         )}
                         {columnVisibility.updated_at && (
                           <TableCell className="text-muted-foreground">
-                            {format(new Date(cv.updated_at), "dd MMM yyyy")}
+                            {dayjs(cv.updated_at).format("DD MMM YYYY")}
                           </TableCell>
                         )}
                         {columnVisibility.name && (
@@ -583,14 +568,14 @@ export default function CVs() {
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => handleDuplicate(cv)}
+                                onClick={() => handleDuplicate(cv.id)}
                               >
                                 <Copy className="h-4 w-4 mr-2" />
                                 Duplikasi
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
-                                onClick={() => handleDownload(cv, "docx")}
+                                onClick={() => handleDownload(cv.id, "docx")}
                               >
                                 <Download className="h-4 w-4 mr-2" />
                                 Download Docx
@@ -623,7 +608,7 @@ export default function CVs() {
         </div>
 
         {/* Pagination */}
-        {filteredAndSortedCVs.length > 0 && (
+        {pagination && pagination.total_items > 0 && (
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-border/60">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Tampilkan</span>
@@ -644,7 +629,7 @@ export default function CVs() {
                   <SelectItem value="100">100</SelectItem>
                 </SelectContent>
               </Select>
-              <span>dari {filteredAndSortedCVs.length} data</span>
+              <span>dari {pagination?.total_items || 0} data</span>
             </div>
 
             <div className="flex items-center gap-1">

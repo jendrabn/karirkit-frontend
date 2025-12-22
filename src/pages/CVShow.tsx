@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { format } from "date-fns";
+import { dayjs } from "@/lib/date";
 import {
-  ArrowLeft,
   Pencil,
   Download,
   Mail,
@@ -13,14 +13,29 @@ import {
   Users,
   Link as LinkIcon,
   Star,
+  Loader2,
+  Trash2,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { mockCVs } from "@/data/mockCVs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useCV } from "@/features/cvs/api/get-cv";
+import { useDeleteCV } from "@/features/cvs/api/delete-cv";
+import { useDownloadCV } from "@/features/cvs/api/download-cv";
 import { buildImageUrl } from "@/lib/utils";
 import {
   DEGREE_OPTIONS,
@@ -34,22 +49,56 @@ import { toast } from "sonner";
 export default function CVShow() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const cv = mockCVs.find((c) => c.id === id);
+  const { data: cvResponse, isLoading } = useCV({
+    id: id!,
+  });
 
-  if (!cv) {
+  const deleteMutation = useDeleteCV({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("CV berhasil dihapus");
+        navigate("/cvs");
+      },
+    },
+  });
+
+  const { downloadCV } = useDownloadCV();
+
+  const handleDelete = () => {
+    if (id) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const handleDownload = async (format: "docx" | "pdf") => {
+    if (!id) return;
+    
+    try {
+      await downloadCV(id, format);
+      toast.success(`CV berhasil diunduh dalam format ${format.toUpperCase()}`);
+    } catch (error) {
+      toast.error("Gagal mengunduh CV");
+    }
+  };
+
+  if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex flex-col items-center justify-center py-16">
-          <h2 className="text-xl font-semibold mb-2">CV tidak ditemukan</h2>
-          <p className="text-muted-foreground mb-4">
-            CV yang Anda cari tidak tersedia.
-          </p>
-          <Button onClick={() => navigate("/cvs")}>Kembali ke Daftar CV</Button>
+        <PageHeader
+          title="Detail CV"
+          showBackButton
+          backButtonUrl="/cvs"
+        />
+        <div className="flex justify-center items-center h-full min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </DashboardLayout>
     );
   }
+
+  const cv = cvResponse;
 
   const getLabel = (
     value: string | number,
@@ -61,31 +110,44 @@ export default function CVShow() {
   const formatPeriod = (
     startMonth: number,
     startYear: number,
-    endMonth: number,
-    endYear: number,
-    isCurrent: boolean
+    endMonth?: number,
+    endYear?: number,
+    isCurrent?: boolean
   ) => {
     const start = `${getLabel(startMonth, MONTH_OPTIONS)} ${startYear}`;
     if (isCurrent) return `${start} - Sekarang`;
-    if (endMonth === 0 || endYear === 0) return start;
+    if (!endMonth || !endYear || endMonth === 0 || endYear === 0) return start;
     return `${start} - ${getLabel(endMonth, MONTH_OPTIONS)} ${endYear}`;
   };
 
-  const handleDownload = (format: "docx" | "pdf") => {
-    if (format === "pdf") {
-      toast.info("Fitur export PDF akan segera hadir");
-      return;
-    }
-    toast.success(`Mengunduh CV dalam format ${format.toUpperCase()}`);
-  };
+  if (!cv) {
+    return (
+      <DashboardLayout>
+        <PageHeader
+          title="Detail CV"
+          showBackButton
+          backButtonUrl="/cvs"
+        />
+        <div className="flex flex-col items-center justify-center py-16">
+          <h2 className="text-xl font-semibold mb-2">CV tidak ditemukan</h2>
+          <p className="text-muted-foreground mb-4">
+            CV yang Anda cari tidak tersedia.
+          </p>
+          <Button onClick={() => navigate("/cvs")}>Kembali ke Daftar CV</Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
+      <PageHeader
+        title="Detail CV"
+        showBackButton
+        backButtonUrl="/cvs"
+      />
+      
       <div className="flex items-center justify-between mb-6">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/cvs")}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Kembali
-        </Button>
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -93,7 +155,25 @@ export default function CVShow() {
             onClick={() => handleDownload("docx")}
           >
             <Download className="h-4 w-4 mr-2" />
-            Download
+            Download DOCX
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleDownload("pdf")}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download PDF
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Hapus
           </Button>
           <Button size="sm" onClick={() => navigate(`/cvs/${id}/edit`)}>
             <Pencil className="h-4 w-4 mr-2" />
@@ -397,19 +477,41 @@ export default function CVShow() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Dibuat</span>
                 <span>
-                  {format(new Date(cv.created_at), "dd MMM yyyy HH:mm")}
+                  {dayjs(cv.created_at).format("DD MMM YYYY HH:mm")}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Diperbarui</span>
                 <span>
-                  {format(new Date(cv.updated_at), "dd MMM yyyy HH:mm")}
+                  {dayjs(cv.updated_at).format("DD MMM YYYY HH:mm")}
                 </span>
               </div>
             </div>
           </Card>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus CV?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus CV ini? Tindakan ini tidak dapat
+              dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

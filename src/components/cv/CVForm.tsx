@@ -22,7 +22,7 @@ import { PhotoUpload } from "./PhotoUpload";
 import { TemplateSelector } from "@/components/ui/template-selector";
 import { cvTemplates } from "@/data/documentTemplates";
 import {
-  CV,
+  type CV,
   DEGREE_OPTIONS,
   JOB_TYPE_OPTIONS,
   SKILL_LEVEL_OPTIONS,

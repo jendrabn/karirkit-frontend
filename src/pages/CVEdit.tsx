@@ -1,18 +1,58 @@
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { CVForm, CVFormData } from "@/components/cv/CVForm";
-import { mockCVs } from "@/data/mockCVs";
+import { CVForm } from "@/components/cv/CVForm";
+import type { CVFormData } from "@/components/cv/CVForm";
+import { useCV } from "@/features/cvs/api/get-cv";
+import { useUpdateCV } from "@/features/cvs/api/update-cv";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useFormErrors } from "@/hooks/use-form-errors";
+import { useForm } from "react-hook-form";
 
 export default function CVEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [isLoading, setIsLoading] = useState(false);
+  const form = useForm<CVFormData>();
+  
+  useFormErrors(form);
 
-  // Find CV by id
-  const cv = mockCVs.find((c) => c.id === id);
+  const { data: cvResponse, isLoading: isCVLoading } = useCV({
+    id: id!,
+  });
+
+  const updateMutation = useUpdateCV({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("CV berhasil diperbarui");
+        navigate("/cvs");
+      },
+    },
+  });
+
+  const handleSubmit = (data: CVFormData) => {
+    if (id) {
+      updateMutation.mutate({ id, data } as any);
+    }
+  };
+
+  if (isCVLoading) {
+    return (
+      <DashboardLayout>
+        <PageHeader
+          title="Edit CV"
+          subtitle="Perbarui informasi CV Anda."
+          showBackButton
+          backButtonUrl="/cvs"
+        />
+        <div className="flex justify-center items-center h-full min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const cv = cvResponse;
 
   if (!cv) {
     return (
@@ -27,29 +67,19 @@ export default function CVEdit() {
     );
   }
 
-  const handleSubmit = async (data: CVFormData) => {
-    setIsLoading(true);
-    try {
-      // In real implementation, call API to update CV
-      console.log("Updating CV:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success("CV berhasil diperbarui");
-      navigate("/cvs");
-    } catch {
-      toast.error("Gagal memperbarui CV");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <DashboardLayout>
-      <PageHeader title="Edit CV" subtitle="Perbarui informasi CV Anda." />
+      <PageHeader
+        title="Edit CV"
+        subtitle="Perbarui informasi CV Anda."
+        showBackButton
+        backButtonUrl="/cvs"
+      />
       <CVForm
         initialData={cv}
         onSubmit={handleSubmit}
         onCancel={() => navigate("/cvs")}
-        isLoading={isLoading}
+        isLoading={updateMutation.isPending}
       />
     </DashboardLayout>
   );

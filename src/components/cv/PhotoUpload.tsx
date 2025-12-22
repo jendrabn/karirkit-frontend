@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import { Upload, X, User } from "lucide-react";
+import { Upload, X, User, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
+import { useUploadFile } from "@/lib/upload";
 import { toast } from "sonner";
 
 interface PhotoUploadProps {
@@ -11,8 +12,26 @@ interface PhotoUploadProps {
 }
 
 export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
-  const [preview, setPreview] = useState<string>(value);
+  const [preview, setPreview] = useState<string>(value ? buildImageUrl(value) : "");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadMutation = useUploadFile({
+    mutationConfig: {
+      onSuccess: (data) => {
+        // Set the path from API response
+        onChange(data.path);
+        setPreview(buildImageUrl(data.path));
+        toast.success("Foto berhasil diunggah");
+      },
+      onError: () => {
+        toast.error("Gagal mengunggah foto");
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      },
+    },
+  });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,17 +49,8 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
       return;
     }
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result as string;
-      setPreview(result);
-      // In real implementation, upload to server and get path
-      // For now, using base64 as placeholder
-      onChange(result);
-      toast.success("Foto berhasil diunggah");
-    };
-    reader.readAsDataURL(file);
+    // Upload to server
+    uploadMutation.mutate(file);
   };
 
   const handleRemove = () => {
@@ -59,10 +69,13 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
         <div 
           className={cn(
             "w-32 h-32 rounded-lg border-2 border-dashed flex items-center justify-center overflow-hidden bg-muted/50",
-            !preview && "border-muted-foreground/25"
+            !preview && "border-muted-foreground/25",
+            uploadMutation.isPending && "opacity-50"
           )}
         >
-          {preview ? (
+          {uploadMutation.isPending ? (
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          ) : preview ? (
             <img 
               src={preview} 
               alt="Preview" 
@@ -80,6 +93,7 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
             accept="image/*"
             onChange={handleFileChange}
             className="hidden"
+            disabled={uploadMutation.isPending}
           />
           
           <Button
@@ -87,12 +101,18 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
             variant="outline"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
+            disabled={uploadMutation.isPending}
           >
             <Upload className="h-4 w-4 mr-2" />
-            {preview ? "Ganti Foto" : "Unggah Foto"}
+            {uploadMutation.isPending 
+              ? "Mengunggah..." 
+              : preview 
+              ? "Ganti Foto" 
+              : "Unggah Foto"
+            }
           </Button>
 
-          {preview && (
+          {preview && !uploadMutation.isPending && (
             <Button
               type="button"
               variant="outline"
