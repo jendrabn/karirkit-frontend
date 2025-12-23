@@ -12,13 +12,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
+import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "./GoogleLoginButton";
@@ -88,151 +88,110 @@ const RegisterForm = () => {
 
         {/* Registration Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <fieldset disabled={isSubmitting} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nama Lengkap</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Masukkan nama lengkap"
-                        {...field}
-                        className="h-12"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FieldSet disabled={isSubmitting}>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="name">Nama Lengkap</FieldLabel>
+                  <Input
+                    id="name"
+                    placeholder="Masukkan nama lengkap"
+                    className="h-12"
+                    {...form.register("name")}
+                  />
+                  <FieldError>{form.formState.errors.name?.message}</FieldError>
+                </Field>
 
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Masukkan username"
-                        {...field}
-                        className="h-12"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <Field>
+                  <FieldLabel htmlFor="username">Username</FieldLabel>
+                  <Input
+                    id="username"
+                    placeholder="Masukkan username"
+                    className="h-12"
+                    {...form.register("username")}
+                  />
+                  <FieldError>
+                    {form.formState.errors.username?.message}
+                  </FieldError>
+                </Field>
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="nama@email.com"
-                        {...field}
-                        className="h-12"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <Field>
+                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="nama@email.com"
+                    className="h-12"
+                    {...form.register("email")}
+                  />
+                  <FieldError>
+                    {form.formState.errors.email?.message}
+                  </FieldError>
+                </Field>
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Minimal 8 karakter"
-                          {...field}
-                          className="h-12 pr-12"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-5 w-5" />
-                          ) : (
-                            <Eye className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <Field>
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Minimal 8 karakter"
+                      className="h-12 pr-12"
+                      {...form.register("password")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  <FieldError>
+                    {form.formState.errors.password?.message}
+                  </FieldError>
+                </Field>
 
-              <FormField
-                control={form.control}
-                name="confirm_password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Konfirmasi Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Masukkan ulang password"
-                          {...field}
-                          className="h-12 pr-12"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          {showConfirmPassword ? (
-                            <EyeOff className="h-5 w-5" />
-                          ) : (
-                            <Eye className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Dengan mendaftar, Anda menyetujui{" "}
-                <Link
-                  to="/syarat-ketentuan"
-                  className="text-primary hover:underline"
-                >
-                  Syarat & Ketentuan
-                </Link>{" "}
-                dan{" "}
-                <Link
-                  to="/kebijakan-privasi"
-                  className="text-primary hover:underline"
-                >
-                  Kebijakan Privasi
-                </Link>{" "}
-                KarirKit
-              </p>
-            </fieldset>
+                <Field>
+                  <FieldLabel htmlFor="confirm_password">
+                    Konfirmasi Password
+                  </FieldLabel>
+                  <div className="relative">
+                    <Input
+                      id="confirm_password"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Masukkan ulang password"
+                      className="h-12 pr-12"
+                      {...form.register("confirm_password")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  <FieldError>
+                    {form.formState.errors.confirm_password?.message}
+                  </FieldError>
+                </Field>
+              </FieldGroup>
+            </FieldSet>
 
             <Button
               type="submit"
-              className="w-full h-12 text-base font-semibold"
+              className="w-full h-12 text-base font-semibold mt-6"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Mendaftar..." : "Daftar"}

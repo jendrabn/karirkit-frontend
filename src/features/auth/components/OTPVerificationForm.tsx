@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { FieldGroup, FieldSet } from "@/components/ui/field";
 import { useCheckOtpStatus, useVerifyOtp, useResendOtp } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -272,25 +273,28 @@ const OTPVerificationForm = () => {
   return (
     <>
       {/* OTP Input */}
-      <div className="flex justify-center gap-2 sm:gap-3 mb-6">
-        {otp.map((digit, index) => (
-          <input
-            key={index}
-            ref={(el) => {
-              inputRefs.current[index] = el;
-            }}
-            type="text"
-            inputMode="text"
-            maxLength={1}
-            value={digit}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
-            onPaste={index === 0 ? handlePaste : undefined}
-            className="w-11 h-12 sm:w-12 sm:h-14 text-center text-xl font-semibold border-2 rounded-lg bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all uppercase"
-            disabled={isVerifying}
-          />
-        ))}
-      </div>
+      <FieldSet disabled={isVerifying}>
+        <FieldGroup>
+          <div className="flex justify-center gap-2 sm:gap-3 mb-6">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
+                type="text"
+                inputMode="text"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={index === 0 ? handlePaste : undefined}
+                className="w-11 h-12 sm:w-12 sm:h-14 text-center text-xl font-semibold border-2 rounded-lg bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            ))}
+          </div>
+        </FieldGroup>
+      </FieldSet>
 
       {/* Countdown Timer */}
       <div className="text-center mb-6">

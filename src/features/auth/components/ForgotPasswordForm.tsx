@@ -8,13 +8,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
+import { Form } from "@/components/ui/form";
 import { Mail, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -87,31 +87,28 @@ const ForgotPasswordForm = () => {
       <CardContent className="space-y-6">
         {!submitted ? (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <fieldset disabled={isSubmitting} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="nama@email.com"
-                          {...field}
-                          className="h-12"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </fieldset>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FieldSet disabled={isSubmitting}>
+                <FieldGroup>
+                  <Field>
+                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="nama@email.com"
+                      className="h-12"
+                      {...form.register("email")}
+                    />
+                    <FieldError>
+                      {form.formState.errors.email?.message}
+                    </FieldError>
+                  </Field>
+                </FieldGroup>
+              </FieldSet>
 
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-semibold"
+                className="w-full h-12 text-base font-semibold mt-6"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Mengirim..." : "Kirim Link Reset"}

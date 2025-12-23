@@ -12,13 +12,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
+import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "./GoogleLoginButton";
@@ -90,70 +90,64 @@ const LoginForm = () => {
 
         {/* Login Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <fieldset disabled={isSubmitting} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="identifier"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email atau Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="nama@email.com atau username"
-                        {...field}
-                        className="h-12"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FieldSet disabled={isSubmitting}>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="identifier">
+                    Email atau Username
+                  </FieldLabel>
+                  <Input
+                    id="identifier"
+                    placeholder="nama@email.com atau username"
+                    className="h-12"
+                    {...form.register("identifier")}
+                  />
+                  <FieldError>
+                    {form.formState.errors.identifier?.message}
+                  </FieldError>
+                </Field>
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
-                      <Link
-                        to="/auth/forgot-password"
-                        className="text-sm text-primary hover:underline"
-                      >
-                        Lupa password?
-                      </Link>
-                    </div>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Masukkan password"
-                          {...field}
-                          className="h-12 pr-12"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-5 w-5" />
-                          ) : (
-                            <Eye className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </fieldset>
+                <Field>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel htmlFor="password">Password</FieldLabel>
+                    <Link
+                      to="/auth/forgot-password"
+                      className="text-sm text-primary hover:underline"
+                    >
+                      Lupa password?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Masukkan password"
+                      className="h-12 pr-12"
+                      {...form.register("password")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  <FieldError>
+                    {form.formState.errors.password?.message}
+                  </FieldError>
+                </Field>
+              </FieldGroup>
+            </FieldSet>
 
             <Button
               type="submit"
-              className="w-full h-12 text-base font-semibold"
+              className="w-full h-12 text-base font-semibold mt-6"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Masuk..." : "Masuk"}

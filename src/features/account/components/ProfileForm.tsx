@@ -8,7 +8,15 @@ import { z } from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
 import { useUploadFile, type UploadResponse } from "@/lib/upload";
 import { dayjs } from "@/lib/date";
 import { buildImageUrl } from "@/lib/utils";
@@ -119,109 +127,96 @@ const ProfileForm = () => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      {/* Avatar Upload */}
-      <div className="flex flex-col items-center gap-4">
-        <div className="relative">
-          <Avatar className="h-24 w-24">
-            <AvatarImage src={buildImageUrl(avatarPreview)} />
-            <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-              {user?.name?.charAt(0) || "U"}
-            </AvatarFallback>
-          </Avatar>
-          <label
-            htmlFor="avatar-upload"
-            className="absolute bottom-0 right-0 p-1.5 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
-          >
-            {uploadMutation.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Camera className="h-4 w-4" />
-            )}
-          </label>
-          <input
-            id="avatar-upload"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleAvatarUpload}
-            disabled={uploadMutation.isPending}
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Klik ikon kamera untuk mengganti foto profil (maks. 2MB)
-        </p>
-      </div>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldSet>
+        <FieldLegend>Informasi Profil</FieldLegend>
+        <FieldDescription>
+          Perbarui informasi profil dan kontak Anda di sini.
+        </FieldDescription>
 
-      {/* Form Fields */}
-      <div className="grid gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Nama Lengkap</Label>
-          <Input
-            id="name"
-            {...form.register("name")}
-            placeholder="Masukkan nama lengkap"
-            onKeyDown={handleKeyDown}
-          />
-          {form.formState.errors.name && (
-            <p className="text-sm text-destructive">
-              {form.formState.errors.name.message}
-            </p>
-          )}
-        </div>
+        <FieldGroup>
+          {/* Avatar Upload */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative">
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={buildImageUrl(avatarPreview)} />
+                <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+                  {user?.name?.charAt(0) || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <label
+                htmlFor="avatar-upload"
+                className="absolute bottom-0 right-0 p-1.5 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
+              >
+                {uploadMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
+              </label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+                disabled={uploadMutation.isPending}
+              />
+            </div>
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="username">Username</Label>
-          <Input
-            id="username"
-            {...form.register("username")}
-            placeholder="Masukkan username"
-            onKeyDown={handleKeyDown}
-          />
-          {form.formState.errors.username && (
-            <p className="text-sm text-destructive">
-              {form.formState.errors.username.message}
-            </p>
-          )}
-        </div>
+          <Field>
+            <FieldLabel htmlFor="name">Nama Lengkap</FieldLabel>
+            <Input
+              id="name"
+              {...form.register("name")}
+              placeholder="Masukkan nama lengkap"
+              onKeyDown={handleKeyDown}
+            />
+            <FieldError>{form.formState.errors.name?.message}</FieldError>
+          </Field>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            {...form.register("email")}
-            placeholder="Masukkan email"
-            onKeyDown={handleKeyDown}
-          />
-          {form.formState.errors.email && (
-            <p className="text-sm text-destructive">
-              {form.formState.errors.email.message}
-            </p>
-          )}
-        </div>
+          <Field>
+            <FieldLabel htmlFor="username">Username</FieldLabel>
+            <Input
+              id="username"
+              {...form.register("username")}
+              placeholder="Masukkan username"
+              onKeyDown={handleKeyDown}
+            />
+            <FieldError>{form.formState.errors.username?.message}</FieldError>
+          </Field>
 
-        <div className="space-y-2">
-          <Label htmlFor="phone">No. Telepon</Label>
-          <Input
-            id="phone"
-            {...form.register("phone")}
-            placeholder="Masukkan nomor telepon"
-            onKeyDown={handleKeyDown}
-          />
-          {form.formState.errors.phone && (
-            <p className="text-sm text-destructive">
-              {form.formState.errors.phone.message}
-            </p>
-          )}
-        </div>
-      </div>
+          <Field>
+            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <Input
+              id="email"
+              type="email"
+              {...form.register("email")}
+              placeholder="Masukkan email"
+              onKeyDown={handleKeyDown}
+            />
+            <FieldError>{form.formState.errors.email?.message}</FieldError>
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="phone">No. Telepon</FieldLabel>
+            <Input
+              id="phone"
+              {...form.register("phone")}
+              placeholder="Masukkan nomor telepon"
+              onKeyDown={handleKeyDown}
+            />
+            <FieldError>{form.formState.errors.phone?.message}</FieldError>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
 
       {/* Timestamp */}
-      <div className="pt-4 border-t">
+      <div className="pt-4 border-t mt-6">
         <div className="flex items-center justify-center">
           <div className="bg-muted/50 rounded-full px-4 py-2">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Bergabung sejak{" "}
               <span className="font-medium text-foreground">
                 {dayjs.utc(user?.created_at).local().format("DD MMMM YYYY") ||
@@ -234,7 +229,7 @@ const ProfileForm = () => {
 
       <Button
         type="submit"
-        className="w-full"
+        className="w-full mt-6"
         disabled={updateProfileMutation.isPending}
       >
         {updateProfileMutation.isPending ? (
