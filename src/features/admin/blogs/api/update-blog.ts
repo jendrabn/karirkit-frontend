@@ -45,6 +45,8 @@ export const useUpdateBlog = ({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["admin-blogs"] });
       queryClient.invalidateQueries({ queryKey: ["admin-blog", args[1].id] });
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
       onSuccess?.(...args);
     },
     ...restConfig,

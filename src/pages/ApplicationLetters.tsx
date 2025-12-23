@@ -193,7 +193,7 @@ export default function ApplicationLetters() {
   };
 
   const confirmBulkDelete = () => {
-    massDeleteMutation.mutate(selectedIds);
+    massDeleteMutation.mutate({ ids: selectedIds });
   };
 
   const handleDuplicate = (id: string) => {

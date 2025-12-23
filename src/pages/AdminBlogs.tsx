@@ -87,6 +87,7 @@ import {
   type GetBlogsParams,
 } from "@/features/admin/blogs/api/get-blogs";
 import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
+import { useMassDeleteBlogs } from "@/features/admin/blogs/api/mass-delete-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 
 type SortField = "updated_at" | "published_at" | "views" | "title";
@@ -126,6 +127,15 @@ const AdminBlogs = () => {
   const { data: blogsData, isLoading } = useBlogs({ params: apiParams });
   const { data: categoriesData } = useBlogCategories();
   const deleteBlogMutation = useDeleteBlog();
+  const massDeleteBlogsMutation = useMassDeleteBlogs({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Blog terpilih berhasil dihapus");
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+      },
+    },
+  });
 
   const blogs = blogsData?.items || [];
   const totalPages = blogsData?.pagination.total_pages || 0;
@@ -172,18 +182,8 @@ const AdminBlogs = () => {
     );
   };
 
-  const confirmBulkDelete = async () => {
-    // TODO: Implement bulk delete API endpoint when available
-    try {
-      await Promise.all(
-        selectedIds.map((id) => deleteBlogMutation.mutateAsync(id))
-      );
-      setSelectedIds([]);
-      setBulkDeleteDialogOpen(false);
-      toast.success(`${selectedIds.length} blog berhasil dihapus`);
-    } catch (error) {
-      toast.error("Gagal menghapus beberapa blog");
-    }
+  const confirmBulkDelete = () => {
+    massDeleteBlogsMutation.mutate({ ids: selectedIds });
   };
 
   // Note: Status change would require update API - simplified for now
@@ -645,10 +645,16 @@ const AdminBlogs = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogCancel disabled={massDeleteBlogsMutation.isPending}>
+              Batal
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmBulkDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmBulkDelete();
+              }}
+              disabled={massDeleteBlogsMutation.isPending}
             >
               Hapus Semua
             </AlertDialogAction>

@@ -55,6 +55,7 @@ import { useBlogCategories } from "@/features/admin/blogs/api/get-blog-categorie
 import { useDeleteBlogCategory } from "@/features/admin/blogs/api/delete-blog-category";
 import { useCreateBlogCategory } from "@/features/admin/blogs/api/create-blog-category";
 import { useUpdateBlogCategory } from "@/features/admin/blogs/api/update-blog-category";
+import { useMassDeleteBlogCategories } from "@/features/admin/blogs/api/mass-delete-blog-categories";
 import type { BlogCategory } from "@/features/admin/blogs/api/get-blog-categories";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -120,6 +121,16 @@ const AdminBlogCategories = () => {
     },
   });
 
+  const massDeleteMutation = useMassDeleteBlogCategories({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Kategori terpilih berhasil dihapus");
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+      },
+    },
+  });
+
   const categories = categoriesResponse?.items || [];
   const pagination = categoriesResponse?.pagination;
   const totalPages = pagination?.total_pages || 1;
@@ -159,11 +170,7 @@ const AdminBlogCategories = () => {
   };
 
   const confirmBulkDelete = () => {
-    // Note: Implement mass delete API if available
-    selectedIds.forEach((id) => deleteMutation.mutate(id));
-    setSelectedIds([]);
-    setBulkDeleteDialogOpen(false);
-    toast.success(`${selectedIds.length} kategori berhasil dihapus`);
+    massDeleteMutation.mutate({ ids: selectedIds });
   };
 
   const handleOpenModal = (category?: BlogCategory) => {
@@ -466,10 +473,16 @@ const AdminBlogCategories = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogCancel disabled={massDeleteMutation.isPending}>
+              Batal
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmBulkDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmBulkDelete();
+              }}
+              disabled={massDeleteMutation.isPending}
             >
               Hapus Semua
             </AlertDialogAction>

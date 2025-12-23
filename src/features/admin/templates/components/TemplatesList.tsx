@@ -16,7 +16,9 @@ import {
   MoreVertical,
   FileStack,
   Crown,
+  Loader2,
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -57,6 +59,7 @@ import { TemplatesColumnToggle } from "./TemplatesColumnToggle";
 import { cn, buildImageUrl } from "@/lib/utils";
 import { useTemplates } from "../api/get-templates";
 import { useDeleteTemplate } from "../api/delete-template";
+import { useMassDeleteTemplates } from "../api/mass-delete-templates";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
 import { getTemplateTypeLabel } from "@/types/template";
@@ -141,6 +144,37 @@ export const TemplatesList = () => {
     }
   };
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+
+  const massDeleteMutation = useMassDeleteTemplates({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Template terpilih berhasil dihapus");
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+      },
+    },
+  });
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === templates.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(templates.map((t) => t.id));
+    }
+  };
+
+  const handleSelectOne = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const confirmBulkDelete = () => {
+    massDeleteMutation.mutate({ ids: selectedIds });
+  };
+
   const SortableHeader = ({
     field,
     children,
@@ -220,6 +254,16 @@ export const TemplatesList = () => {
             <Plus className="h-4 w-4 mr-2" />
             Buat Template
           </Button>
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setBulkDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Hapus ({selectedIds.length})
+            </Button>
+          )}
         </div>
       </div>
 
@@ -228,6 +272,15 @@ export const TemplatesList = () => {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[40px]">
+                  <Checkbox
+                    checked={
+                      templates.length > 0 &&
+                      selectedIds.length === templates.length
+                    }
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
                 {visibleColumns.preview && (
                   <TableHead className="uppercase text-xs font-medium tracking-wider">
                     Preview
@@ -290,17 +343,24 @@ export const TemplatesList = () => {
                   >
                     {visibleColumns.preview && (
                       <TableCell>
-                        {template.preview ? (
-                          <img
-                            src={buildImageUrl(template.preview)}
-                            alt={template.name}
-                            className="w-16 h-20 object-cover rounded border"
+                        <div className="flex items-center gap-3">
+                          <Checkbox
+                            checked={selectedIds.includes(template.id)}
+                            onCheckedChange={() => handleSelectOne(template.id)}
+                            className="mr-2"
                           />
-                        ) : (
-                          <div className="w-16 h-20 bg-muted rounded border flex items-center justify-center text-xs text-muted-foreground">
-                            No Image
-                          </div>
-                        )}
+                          {template.preview ? (
+                            <img
+                              src={buildImageUrl(template.preview)}
+                              alt={template.name}
+                              className="w-16 h-20 object-cover rounded border"
+                            />
+                          ) : (
+                            <div className="w-16 h-20 bg-muted rounded border flex items-center justify-center text-xs text-muted-foreground">
+                              No Image
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
                     )}
                     {visibleColumns.name && (
@@ -482,6 +542,41 @@ export const TemplatesList = () => {
               disabled={deleteTemplateMutation.isPending}
             >
               {deleteTemplateMutation.isPending ? "Menghapus..." : "Hapus"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Hapus {selectedIds.length} Template
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus template yang dipilih? Tindakan
+              ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={massDeleteMutation.isPending}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmBulkDelete();
+              }}
+              disabled={massDeleteMutation.isPending}
+            >
+              {massDeleteMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Hapus Semua
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

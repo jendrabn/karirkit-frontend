@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TemplatePreviewModal } from "./template-preview-modal";
-import type { DocumentTemplate } from "@/data/documentTemplates";
+import { DocumentTemplate } from "@/data/documentTemplates";
 
 interface TemplateSelectorProps {
   label: string;

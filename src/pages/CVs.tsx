@@ -76,6 +76,7 @@ import { useCVs } from "@/features/cvs/api/get-cvs";
 import { useDeleteCV } from "@/features/cvs/api/delete-cv";
 import { useDuplicateCV } from "@/features/cvs/api/duplicate-cv";
 import { useDownloadCV } from "@/features/cvs/api/download-cv";
+import { useMassDeleteCVs } from "@/features/cvs/api/mass-delete-cvs";
 import type { CV } from "@/features/cvs/api/get-cvs";
 import { DEGREE_OPTIONS } from "@/types/cv";
 import { cn } from "@/lib/utils";
@@ -136,6 +137,16 @@ export default function CVs() {
 
   const { downloadCV } = useDownloadCV();
 
+  const massDeleteMutation = useMassDeleteCVs({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("CV terpilih berhasil dihapus");
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+      },
+    },
+  });
+
   const cvs = cvsResponse?.items || [];
   const pagination = cvsResponse?.pagination;
   const totalPages = pagination?.total_pages || 1;
@@ -175,11 +186,7 @@ export default function CVs() {
   };
 
   const confirmBulkDelete = () => {
-    // Note: Implement mass delete API if available
-    selectedIds.forEach((id) => deleteMutation.mutate(id));
-    setSelectedIds([]);
-    setBulkDeleteDialogOpen(false);
-    toast.success(`${selectedIds.length} CV berhasil dihapus`);
+    massDeleteMutation.mutate({ ids: selectedIds });
   };
 
   const handleDuplicate = (id: string) => {
@@ -284,8 +291,7 @@ export default function CVs() {
                   <TableHead className="w-[40px]">
                     <Checkbox
                       checked={
-                        cvs.length > 0 &&
-                        selectedIds.length === cvs.length
+                        cvs.length > 0 && selectedIds.length === cvs.length
                       }
                       onCheckedChange={handleSelectAll}
                     />
@@ -368,10 +374,7 @@ export default function CVs() {
               <TableBody>
                 {isLoading ? (
                   <TableRow className="hover:bg-transparent">
-                    <TableCell
-                      colSpan={16}
-                      className="text-center py-16"
-                    >
+                    <TableCell colSpan={16} className="text-center py-16">
                       <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                     </TableCell>
                   </TableRow>
@@ -723,11 +726,20 @@ export default function CVs() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogCancel disabled={massDeleteMutation.isPending}>
+              Batal
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmBulkDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmBulkDelete();
+              }}
+              disabled={massDeleteMutation.isPending}
             >
+              {massDeleteMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Hapus Semua
             </AlertDialogAction>
           </AlertDialogFooter>

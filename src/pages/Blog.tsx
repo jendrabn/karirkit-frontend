@@ -46,7 +46,12 @@ const Blog = () => {
 
   // Prepare categories with count
   const allCategories = [
-    { id: "all", name: "Semua", slug: "all", count: pagination?.total_items || 0 },
+    {
+      id: "all",
+      name: "Semua",
+      slug: "all",
+      count: pagination?.total_items || 0,
+    },
     ...(categoriesData?.items.map((cat) => ({
       ...cat,
       count: 0, // We don't have individual counts from API
@@ -89,7 +94,8 @@ const Blog = () => {
                   Blog & Artikel Karier
                 </h1>
                 <p className="text-muted-foreground text-lg">
-                  Tips, panduan, dan insight untuk membantu perjalanan karier Anda
+                  Tips, panduan, dan insight untuk membantu perjalanan karier
+                  Anda
                 </p>
                 <div className="max-w-md mx-auto pt-4">
                   <div className="relative">
@@ -153,7 +159,11 @@ const Blog = () => {
                         <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow group">
                           <div className="aspect-video overflow-hidden">
                             <img
-                              src={post.featured_image ? buildImageUrl(post.featured_image) : "https://placehold.co/800x450"}
+                              src={
+                                post.featured_image
+                                  ? buildImageUrl(post.featured_image)
+                                  : "https://placehold.co/800x450"
+                              }
                               alt={post.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />

@@ -30,9 +30,7 @@ type UseBlogTagsOptions = {
   queryConfig?: QueryConfig<typeof getBlogTagsQueryOptions>;
 };
 
-export const useBlogTags = ({
-  queryConfig,
-}: UseBlogTagsOptions = {}) => {
+export const useBlogTags = ({ queryConfig }: UseBlogTagsOptions = {}) => {
   return useQuery({
     ...getBlogTagsQueryOptions(),
     ...queryConfig,

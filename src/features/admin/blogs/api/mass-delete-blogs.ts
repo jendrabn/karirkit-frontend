@@ -3,19 +3,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 
-export const massDeleteApplicationLetters = ({ ids }: { ids: string[] }) => {
-  return api.delete(`/application-letters/mass-delete`, {
+export const massDeleteBlogs = ({ ids }: { ids: string[] }) => {
+  return api.delete(`/admin/blogs/mass-delete`, {
     data: { ids },
   });
 };
 
-type UseMassDeleteApplicationLettersOptions = {
-  mutationConfig?: MutationConfig<typeof massDeleteApplicationLetters>;
+type UseMassDeleteBlogsOptions = {
+  mutationConfig?: MutationConfig<typeof massDeleteBlogs>;
 };
 
-export const useMassDeleteApplicationLetters = ({
+export const useMassDeleteBlogs = ({
   mutationConfig,
-}: UseMassDeleteApplicationLettersOptions = {}) => {
+}: UseMassDeleteBlogsOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};
@@ -23,11 +23,14 @@ export const useMassDeleteApplicationLetters = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: ["application-letters"],
+        queryKey: ["admin-blogs"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["blogs"],
       });
       onSuccess?.(...args);
     },
     ...restConfig,
-    mutationFn: massDeleteApplicationLetters,
+    mutationFn: massDeleteBlogs,
   });
 };

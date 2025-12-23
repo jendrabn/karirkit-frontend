@@ -34,14 +34,7 @@ const ProfileForm = () => {
         form.setValue("avatar", data.path);
         // Update avatar preview with the uploaded image URL
         setAvatarPreview(buildImageUrl(data.path));
-
-        // Automatically update profile with new avatar
-        const currentFormData = form.getValues();
-        updateProfileMutation.mutate({
-          data: { ...currentFormData, avatar: data.path },
-        });
-
-        toast.success("Avatar berhasil diupload dan disimpan");
+        toast.success("Foto berhasil diupload, silakan klik Simpan Perubahan");
       },
       onError: (error: Error) => {
         toast.error("Gagal mengupload avatar");
@@ -53,10 +46,7 @@ const ProfileForm = () => {
   const updateProfileMutation = useUpdateProfile({
     mutationConfig: {
       onSuccess: (data: User) => {
-        // Only show success message if this is not an automatic update from avatar upload
-        if (!uploadMutation.isPending) {
-          toast.success("Profil berhasil diperbarui");
-        }
+        toast.success("Profil berhasil diperbarui");
         console.log("Updated profile:", data);
       },
       onError: (error: Error) => {

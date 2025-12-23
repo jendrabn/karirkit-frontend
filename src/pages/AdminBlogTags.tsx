@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import {
   Search,
@@ -12,6 +12,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Loader2,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -50,30 +51,91 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { TagModal } from "@/components/blog/TagModal";
-import { mockTags as initialTags } from "@/data/mockBlogs";
 import { type BlogTag } from "@/types/blog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useBlogTags } from "@/features/admin/blogs/api/get-blog-tags";
+import { useCreateBlogTag } from "@/features/admin/blogs/api/create-blog-tag";
+import { useUpdateBlogTag } from "@/features/admin/blogs/api/update-blog-tag";
+import { useDeleteBlogTag } from "@/features/admin/blogs/api/delete-blog-tag";
+import { useMassDeleteBlogTags } from "@/features/admin/blogs/api/mass-delete-blog-tags";
+import { useDebounce } from "@/hooks/use-debounce";
 
 type SortField = "name" | "created_at";
 type SortOrder = "asc" | "desc";
 
 const AdminBlogTags = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 500);
   const [sortField, setSortField] = useState<SortField | null>("created_at");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-  const [tags, setTags] = useState<BlogTag[]>(initialTags);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [tagToDelete, setTagToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTag, setEditingTag] = useState<BlogTag | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  const { data: tagsData, isLoading } = useBlogTags({
+    params: {
+      page: currentPage,
+      per_page: perPage,
+      q: debouncedSearch,
+      sort_by: sortField || undefined,
+      sort_order: sortOrder,
+    },
+  });
+
+  const tags = tagsData?.items || [];
+  const pagination = tagsData?.pagination || {
+    page: 1,
+    per_page: 10,
+    total_items: 0,
+    total_pages: 0,
+  };
+
+  const createTagMutation = useCreateBlogTag({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Tag berhasil ditambahkan");
+        setModalOpen(false);
+      },
+    },
+  });
+
+  const updateTagMutation = useUpdateBlogTag({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Tag berhasil diperbarui");
+        setModalOpen(false);
+        setEditingTag(null);
+      },
+    },
+  });
+
+  const deleteTagMutation = useDeleteBlogTag({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Tag berhasil dihapus");
+        setDeleteDialogOpen(false);
+        setTagToDelete(null);
+      },
+    },
+  });
+
+  const massDeleteMutation = useMassDeleteBlogTags({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success(`${selectedIds.length} tag berhasil dihapus`);
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+      },
+    },
+  });
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -84,43 +146,6 @@ const AdminBlogTags = () => {
     }
   };
 
-  const filteredAndSortedTags = useMemo(() => {
-    let result = [...tags];
-
-    // Search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (tag) =>
-          tag.name.toLowerCase().includes(query) ||
-          tag.slug.toLowerCase().includes(query)
-      );
-    }
-
-    // Sort
-    if (sortField) {
-      result.sort((a, b) => {
-        const aVal = a[sortField] || "";
-        const bVal = b[sortField] || "";
-
-        if (typeof aVal === "string" && typeof bVal === "string") {
-          return sortOrder === "asc"
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal);
-        }
-        return 0;
-      });
-    }
-
-    return result;
-  }, [tags, searchQuery, sortField, sortOrder]);
-
-  const totalPages = Math.ceil(filteredAndSortedTags.length / perPage);
-  const paginatedTags = filteredAndSortedTags.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
   const handleDelete = (id: string) => {
     setTagToDelete(id);
     setDeleteDialogOpen(true);
@@ -128,18 +153,15 @@ const AdminBlogTags = () => {
 
   const confirmDelete = () => {
     if (tagToDelete) {
-      setTags((prev) => prev.filter((tag) => tag.id !== tagToDelete));
-      setDeleteDialogOpen(false);
-      setTagToDelete(null);
-      toast.success("Tag berhasil dihapus");
+      deleteTagMutation.mutate(tagToDelete);
     }
   };
 
   const handleSelectAll = () => {
-    if (selectedIds.length === paginatedTags.length) {
+    if (selectedIds.length === tags.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(paginatedTags.map((tag) => tag.id));
+      setSelectedIds(tags.map((tag) => tag.id));
     }
   };
 
@@ -150,10 +172,7 @@ const AdminBlogTags = () => {
   };
 
   const confirmBulkDelete = () => {
-    setTags((prev) => prev.filter((tag) => !selectedIds.includes(tag.id)));
-    setSelectedIds([]);
-    setBulkDeleteDialogOpen(false);
-    toast.success(`${selectedIds.length} tag berhasil dihapus`);
+    massDeleteMutation.mutate({ ids: selectedIds });
   };
 
   const handleOpenModal = (tag?: BlogTag) => {
@@ -161,37 +180,11 @@ const AdminBlogTags = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = async (data: { name: string; slug: string }) => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      if (editingTag) {
-        setTags((prev) =>
-          prev.map((tag) =>
-            tag.id === editingTag.id
-              ? { ...tag, ...data, updated_at: new Date().toISOString() }
-              : tag
-          )
-        );
-        toast.success("Tag berhasil diperbarui");
-      } else {
-        const newTag: BlogTag = {
-          id: Date.now().toString(),
-          ...data,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        setTags((prev) => [newTag, ...prev]);
-        toast.success("Tag berhasil ditambahkan");
-      }
-
-      setModalOpen(false);
-      setEditingTag(null);
-    } catch {
-      toast.error("Gagal menyimpan tag");
-    } finally {
-      setIsLoading(false);
+  const handleSubmit = (data: { name: string; slug: string }) => {
+    if (editingTag) {
+      updateTagMutation.mutate({ id: editingTag.id, data });
+    } else {
+      createTagMutation.mutate(data);
     }
   };
 
@@ -259,8 +252,7 @@ const AdminBlogTags = () => {
                 <TableHead className="w-[40px]">
                   <Checkbox
                     checked={
-                      paginatedTags.length > 0 &&
-                      selectedIds.length === paginatedTags.length
+                      tags.length > 0 && selectedIds.length === tags.length
                     }
                     onCheckedChange={handleSelectAll}
                   />
@@ -280,7 +272,13 @@ const AdminBlogTags = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedTags.length === 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    Memuat data...
+                  </TableCell>
+                </TableRow>
+              ) : tags.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
                     colSpan={5}
@@ -294,7 +292,7 @@ const AdminBlogTags = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedTags.map((tag, index) => (
+                tags.map((tag, index) => (
                   <TableRow
                     key={tag.id}
                     className={cn(
@@ -353,70 +351,80 @@ const AdminBlogTags = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-4 border-t">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>Menampilkan</span>
-            <Select
-              value={perPage.toString()}
-              onValueChange={(value) => {
-                setPerPage(Number(value));
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="w-[70px] h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-            <span>dari {filteredAndSortedTags.length} data</span>
-          </div>
+        {pagination.total_items > 0 && (
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-4 border-t">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Menampilkan</span>
+              <Select
+                value={perPage.toString()}
+                onValueChange={(value) => {
+                  setPerPage(Number(value));
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-[70px] h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+              <span>dari {pagination.total_items} data</span>
+            </div>
 
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="px-3 text-sm">
-              {currentPage} / {totalPages || 1}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages || totalPages === 0}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages || totalPages === 0}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="px-3 text-sm">
+                {currentPage} / {pagination.total_pages || 1}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(pagination.total_pages, p + 1))
+                }
+                disabled={
+                  currentPage === pagination.total_pages ||
+                  pagination.total_pages === 0
+                }
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(pagination.total_pages)}
+                disabled={
+                  currentPage === pagination.total_pages ||
+                  pagination.total_pages === 0
+                }
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Tag Modal */}
@@ -425,7 +433,7 @@ const AdminBlogTags = () => {
         onOpenChange={setModalOpen}
         tag={editingTag}
         onSubmit={handleSubmit}
-        isLoading={isLoading}
+        isLoading={createTagMutation.isPending || updateTagMutation.isPending}
       />
 
       {/* Delete Dialog */}
@@ -441,10 +449,14 @@ const AdminBlogTags = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDelete}
+              onClick={(e) => {
+                e.preventDefault();
+                confirmDelete();
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteTagMutation.isPending}
             >
-              Hapus
+              {deleteTagMutation.isPending ? "Menghapus..." : "Hapus"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -466,9 +478,16 @@ const AdminBlogTags = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmBulkDelete}
+              onClick={(e) => {
+                e.preventDefault();
+                confirmBulkDelete();
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={massDeleteMutation.isPending}
             >
+              {massDeleteMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Hapus Semua
             </AlertDialogAction>
           </AlertDialogFooter>

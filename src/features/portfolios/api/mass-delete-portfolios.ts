@@ -3,19 +3,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 
-export const massDeleteApplicationLetters = ({ ids }: { ids: string[] }) => {
-  return api.delete(`/application-letters/mass-delete`, {
+export const massDeletePortfolios = ({ ids }: { ids: string[] }) => {
+  return api.delete(`/portfolios/mass-delete`, {
     data: { ids },
   });
 };
 
-type UseMassDeleteApplicationLettersOptions = {
-  mutationConfig?: MutationConfig<typeof massDeleteApplicationLetters>;
+type UseMassDeletePortfoliosOptions = {
+  mutationConfig?: MutationConfig<typeof massDeletePortfolios>;
 };
 
-export const useMassDeleteApplicationLetters = ({
+export const useMassDeletePortfolios = ({
   mutationConfig,
-}: UseMassDeleteApplicationLettersOptions = {}) => {
+}: UseMassDeletePortfoliosOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};
@@ -23,11 +23,11 @@ export const useMassDeleteApplicationLetters = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: ["application-letters"],
+        queryKey: ["portfolios"],
       });
       onSuccess?.(...args);
     },
     ...restConfig,
-    mutationFn: massDeleteApplicationLetters,
+    mutationFn: massDeletePortfolios,
   });
 };

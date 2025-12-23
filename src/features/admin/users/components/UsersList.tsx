@@ -15,7 +15,9 @@ import {
   ChevronsRight,
   MoreVertical,
   Users as UsersIcon,
+  Loader2,
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +67,7 @@ import { USER_ROLE_OPTIONS } from "@/types/user";
 import { cn, buildImageUrl } from "@/lib/utils";
 import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
+import { useMassDeleteUsers } from "../api/mass-delete-users";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
 
@@ -140,6 +143,37 @@ export const UsersList = () => {
     }
   };
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+
+  const massDeleteMutation = useMassDeleteUsers({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("User terpilih berhasil dihapus");
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+      },
+    },
+  });
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === users.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(users.map((user) => user.id));
+    }
+  };
+
+  const handleSelectOne = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const confirmBulkDelete = () => {
+    massDeleteMutation.mutate({ ids: selectedIds });
+  };
+
   const SortableHeader = ({
     field,
     children,
@@ -213,6 +247,16 @@ export const UsersList = () => {
             <Plus className="h-4 w-4 mr-2" />
             Tambah User
           </Button>
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setBulkDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Hapus ({selectedIds.length})
+            </Button>
+          )}
         </div>
       </div>
 
@@ -222,6 +266,14 @@ export const UsersList = () => {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[40px]">
+                  <Checkbox
+                    checked={
+                      users.length > 0 && selectedIds.length === users.length
+                    }
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
                 {columnVisibility.name && (
                   <TableHead>
                     <SortableHeader field="name">Nama</SortableHeader>
@@ -287,6 +339,11 @@ export const UsersList = () => {
                     {columnVisibility.name && (
                       <TableCell>
                         <div className="flex items-center gap-3">
+                          <Checkbox
+                            checked={selectedIds.includes(user.id)}
+                            onCheckedChange={() => handleSelectOne(user.id)}
+                            className="mr-2"
+                          />
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={buildImageUrl(user.avatar)} />
                             <AvatarFallback className="bg-primary/10 text-primary text-xs">
@@ -480,6 +537,39 @@ export const UsersList = () => {
               disabled={deleteUserMutation.isPending}
             >
               {deleteUserMutation.isPending ? "Menghapus..." : "Hapus"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus {selectedIds.length} User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus user yang dipilih? Tindakan ini
+              tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={massDeleteMutation.isPending}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmBulkDelete();
+              }}
+              disabled={massDeleteMutation.isPending}
+            >
+              {massDeleteMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Hapus Semua
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

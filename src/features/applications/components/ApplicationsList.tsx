@@ -69,6 +69,7 @@ import { useApplicationStats } from "../api/get-application-stats";
 import { useDeleteApplication } from "../api/delete-application";
 import { useDuplicateApplication } from "../api/duplicate-application";
 import { useUpdateApplication } from "../api/update-application";
+import { useMassDeleteApplications } from "../api/mass-delete-applications";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -213,7 +214,18 @@ export const ApplicationsList = () => {
 
   const updateApplicationMutation = useUpdateApplication();
 
+  const massDeleteApplicationMutation = useMassDeleteApplications({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Lamaran terpilih berhasil dihapus");
+        setMassDeleteDialogOpen(false);
+        setSelectedIds([]);
+      },
+    },
+  });
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [massDeleteDialogOpen, setMassDeleteDialogOpen] = useState(false);
   const [applicationToDelete, setApplicationToDelete] = useState<string | null>(
     null
   );
@@ -245,6 +257,10 @@ export const ApplicationsList = () => {
     if (applicationToDelete) {
       deleteApplicationMutation.mutate({ id: applicationToDelete });
     }
+  };
+
+  const confirmMassDelete = () => {
+    massDeleteApplicationMutation.mutate({ ids: selectedIds });
   };
 
   const handleDuplicate = (id: string) => {
@@ -437,6 +453,16 @@ export const ApplicationsList = () => {
         </div>
 
         <div className="flex gap-2 flex-wrap">
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setMassDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Hapus {selectedIds.length} Terpilih
+            </Button>
+          )}
           {activeStatFilter && (
             <Button
               variant="ghost"
@@ -808,6 +834,43 @@ export const ApplicationsList = () => {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleteApplicationMutation.isPending}
             >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={massDeleteDialogOpen}
+        onOpenChange={setMassDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Hapus {selectedIds.length} Lamaran?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. {selectedIds.length} lamaran
+              yang dipilih akan dihapus secara permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={massDeleteApplicationMutation.isPending}
+            >
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmMassDelete();
+              }}
+              disabled={massDeleteApplicationMutation.isPending}
+            >
+              {massDeleteApplicationMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Hapus
             </AlertDialogAction>
           </AlertDialogFooter>

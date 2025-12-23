@@ -3,28 +3,31 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 
-export const deleteBlog = (id: string): Promise<void> => {
-  return api.delete(`/admin/blogs/${id}`);
+export const massDeleteCVs = ({ ids }: { ids: string[] }) => {
+  return api.delete(`/cvs/mass-delete`, {
+    data: { ids },
+  });
 };
 
-type UseDeleteBlogOptions = {
-  mutationConfig?: MutationConfig<typeof deleteBlog>;
+type UseMassDeleteCVsOptions = {
+  mutationConfig?: MutationConfig<typeof massDeleteCVs>;
 };
 
-export const useDeleteBlog = ({
+export const useMassDeleteCVs = ({
   mutationConfig,
-}: UseDeleteBlogOptions = {}) => {
+}: UseMassDeleteCVsOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
-    mutationFn: deleteBlog,
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-blogs"] });
-      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      queryClient.invalidateQueries({
+        queryKey: ["cvs"],
+      });
       onSuccess?.(...args);
     },
     ...restConfig,
+    mutationFn: massDeleteCVs,
   });
 };

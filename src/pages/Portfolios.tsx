@@ -42,6 +42,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +59,7 @@ import {
 } from "@/components/portfolios/PortfolioFilterModal";
 import { usePortfolios } from "@/features/portfolios/api/get-portfolios";
 import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
+import { useMassDeletePortfolios } from "@/features/portfolios/api/mass-delete-portfolios";
 import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
@@ -97,6 +99,8 @@ export default function Portfolios() {
   const [portfolioToDelete, setPortfolioToDelete] = useState<string | null>(
     null
   );
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [massDeleteDialogOpen, setMassDeleteDialogOpen] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -127,6 +131,16 @@ export default function Portfolios() {
     },
   });
 
+  const massDeleteMutation = useMassDeletePortfolios({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Portfolio terpilih berhasil dihapus");
+        setMassDeleteDialogOpen(false);
+        setSelectedIds([]);
+      },
+    },
+  });
+
   const portfolios = portfoliosResponse?.items || [];
   const pagination = portfoliosResponse?.pagination;
   const totalPages = pagination?.total_pages || 1;
@@ -139,6 +153,26 @@ export default function Portfolios() {
   const confirmDelete = () => {
     if (portfolioToDelete) {
       deleteMutation.mutate(portfolioToDelete);
+    }
+  };
+
+  const confirmMassDelete = () => {
+    massDeleteMutation.mutate({ ids: selectedIds });
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(portfolios.map((p) => p.id));
+    } else {
+      setSelectedIds([]);
     }
   };
 
@@ -219,7 +253,33 @@ export default function Portfolios() {
         </div>
 
         <div className="flex gap-2 flex-wrap items-center">
-          {/* Sort */}
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setMassDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Hapus {selectedIds.length} Terpilih
+            </Button>
+          )}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={
+                portfolios.length > 0 &&
+                selectedIds.length === portfolios.length
+              }
+              onCheckedChange={(checked) => handleSelectAll(!!checked)}
+              id="select-all"
+            />
+            <label
+              htmlFor="select-all"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Pilih Semua
+            </label>
+          </div>
+
           <Select
             value={`${sortField}-${sortOrder}`}
             onValueChange={(value) => {
@@ -301,6 +361,17 @@ export default function Portfolios() {
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
+                {/* Checkbox */}
+                <div className="absolute top-2 left-2 z-10">
+                  <Checkbox
+                    checked={selectedIds.includes(portfolio.id)}
+                    onCheckedChange={(checked) =>
+                      handleSelectOne(portfolio.id, !!checked)
+                    }
+                    className="bg-background/80 border-white/50 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                </div>
+
                 {/* Action Menu */}
                 <div className="absolute top-2 right-2">
                   <DropdownMenu>
@@ -341,7 +412,7 @@ export default function Portfolios() {
                 </div>
 
                 {/* Project Type Badge */}
-                <div className="absolute top-2 left-2">
+                <div className="absolute bottom-2 left-2">
                   <Badge
                     variant={
                       getProjectTypeBadgeVariant(portfolio.project_type) as any
@@ -528,6 +599,41 @@ export default function Portfolios() {
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={massDeleteDialogOpen}
+        onOpenChange={setMassDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Hapus {selectedIds.length} Portfolio?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. {selectedIds.length}{" "}
+              portfolio yang dipilih akan dihapus secara permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={massDeleteMutation.isPending}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmMassDelete();
+              }}
+              disabled={massDeleteMutation.isPending}
+            >
+              {massDeleteMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Hapus
             </AlertDialogAction>
           </AlertDialogFooter>

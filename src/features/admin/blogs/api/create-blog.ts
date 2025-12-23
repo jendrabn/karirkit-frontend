@@ -40,6 +40,7 @@ export const useCreateBlog = ({
     mutationFn: createBlog,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["admin-blogs"] });
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
       onSuccess?.(...args);
     },
     ...restConfig,
