@@ -31,7 +31,10 @@ import {
 } from "@/types/application";
 import { type GetApplicationsParams } from "../api/get-applications";
 
-type FilterParams = Omit<GetApplicationsParams, "page" | "per_page" | "q" | "sort_by" | "sort_order">;
+type FilterParams = Omit<
+  GetApplicationsParams,
+  "page" | "per_page" | "q" | "sort_by" | "sort_order"
+>;
 
 interface ApplicationFilterModalProps {
   open: boolean;
@@ -51,20 +54,22 @@ export function ApplicationFilterModal({
     filters.date_from ? dayjs(filters.date_from).toDate() : undefined
   );
   const [dateTo, setDateTo] = useState<Date | undefined>(
-      filters.date_to ? dayjs(filters.date_to).toDate() : undefined
+    filters.date_to ? dayjs(filters.date_to).toDate() : undefined
   );
 
   useEffect(() => {
-      setLocalFilters(filters);
-      setDateFrom(filters.date_from ? dayjs(filters.date_from).toDate() : undefined);
-      setDateTo(filters.date_to ? dayjs(filters.date_to).toDate() : undefined);
+    setLocalFilters(filters);
+    setDateFrom(
+      filters.date_from ? dayjs(filters.date_from).toDate() : undefined
+    );
+    setDateTo(filters.date_to ? dayjs(filters.date_to).toDate() : undefined);
   }, [filters, open]);
 
   const handleApply = () => {
     onApplyFilters({
-        ...localFilters,
-        date_from: dateFrom ? dayjs(dateFrom).format("YYYY-MM-DD") : undefined,
-        date_to: dateTo ? dayjs(dateTo).format("YYYY-MM-DD") : undefined,
+      ...localFilters,
+      date_from: dateFrom ? dayjs(dateFrom).format("YYYY-MM-DD") : undefined,
+      date_to: dateTo ? dayjs(dateTo).format("YYYY-MM-DD") : undefined,
     });
     onOpenChange(false);
   };
@@ -139,7 +144,12 @@ export function ApplicationFilterModal({
             <Label>Tipe Pekerjaan</Label>
             <Select
               value={localFilters.job_type || "all"}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, job_type: value === "all" ? undefined : value })}
+              onValueChange={(value) =>
+                setLocalFilters({
+                  ...localFilters,
+                  job_type: value === "all" ? undefined : value,
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih tipe pekerjaan" />
@@ -160,7 +170,12 @@ export function ApplicationFilterModal({
             <Label>Sistem Kerja</Label>
             <Select
               value={localFilters.work_system || "all"}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, work_system: value === "all" ? undefined : value })}
+              onValueChange={(value) =>
+                setLocalFilters({
+                  ...localFilters,
+                  work_system: value === "all" ? undefined : value,
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih sistem kerja" />
@@ -181,7 +196,12 @@ export function ApplicationFilterModal({
             <Label>Status</Label>
             <Select
               value={localFilters.status || "all"}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, status: value === "all" ? undefined : value })}
+              onValueChange={(value) =>
+                setLocalFilters({
+                  ...localFilters,
+                  status: value === "all" ? undefined : value,
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih status" />
@@ -202,7 +222,12 @@ export function ApplicationFilterModal({
             <Label>Hasil</Label>
             <Select
               value={localFilters.result_status || "all"}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, result_status: value === "all" ? undefined : value })}
+              onValueChange={(value) =>
+                setLocalFilters({
+                  ...localFilters,
+                  result_status: value === "all" ? undefined : value,
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih hasil" />
@@ -223,9 +248,7 @@ export function ApplicationFilterModal({
           <Button variant="outline" onClick={handleReset}>
             Reset
           </Button>
-          <Button onClick={handleApply}>
-            Terapkan Filter
-          </Button>
+          <Button onClick={handleApply}>Terapkan Filter</Button>
         </div>
       </DialogContent>
     </Dialog>

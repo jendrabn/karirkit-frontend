@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
 import { CalendarIcon } from "lucide-react";
@@ -20,14 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
+import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import {
   JOB_TYPE_OPTIONS,
   WORK_SYSTEM_OPTIONS,
@@ -100,118 +94,86 @@ export function ApplicationForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <fieldset disabled={isLoading} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FieldSet disabled={isLoading} className="space-y-6">
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Informasi Perusahaan</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="company_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nama Perusahaan *</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Nama Perusahaan *</FieldLabel>
+                <Input {...form.register("company_name")} />
+                <FieldError>
+                  {form.formState.errors.company_name?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
-                control={form.control}
-                name="company_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL Perusahaan</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="https://..." />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>URL Perusahaan</FieldLabel>
+                <Input
+                  {...form.register("company_url")}
+                  placeholder="https://..."
+                />
+                <FieldError>
+                  {form.formState.errors.company_url?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
-                control={form.control}
-                name="position"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Posisi *</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Posisi *</FieldLabel>
+                <Input {...form.register("position")} />
+                <FieldError>
+                  {form.formState.errors.position?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
-                control={form.control}
-                name="job_source"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sumber Lowongan</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="LinkedIn, Jobstreet, dll"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Sumber Lowongan</FieldLabel>
+                <Input
+                  {...form.register("job_source")}
+                  placeholder="LinkedIn, Jobstreet, dll"
+                />
+                <FieldError>
+                  {form.formState.errors.job_source?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
-                control={form.control}
-                name="job_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL Lowongan</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="https://..." />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>URL Lowongan</FieldLabel>
+                <Input
+                  {...form.register("job_url")}
+                  placeholder="https://..."
+                />
+                <FieldError>
+                  {form.formState.errors.job_url?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lokasi</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Lokasi</FieldLabel>
+                <Input {...form.register("location")} />
+                <FieldError>
+                  {form.formState.errors.location?.message}
+                </FieldError>
+              </Field>
             </div>
           </Card>
 
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Detail Pekerjaan</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
+              <Controller
                 control={form.control}
                 name="job_type"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipe Pekerjaan</FormLabel>
+                  <Field>
+                    <FieldLabel>Tipe Pekerjaan</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="z-50">
                         {JOB_TYPE_OPTIONS.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
@@ -220,26 +182,26 @@ export function ApplicationForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
+                    <FieldError>
+                      {form.formState.errors.job_type?.message}
+                    </FieldError>
+                  </Field>
                 )}
               />
 
-              <FormField
+              <Controller
                 control={form.control}
                 name="work_system"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sistem Kerja</FormLabel>
+                  <Field>
+                    <FieldLabel>Sistem Kerja</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="z-50">
                         {WORK_SYSTEM_OPTIONS.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
@@ -248,69 +210,59 @@ export function ApplicationForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
+                    <FieldError>
+                      {form.formState.errors.work_system?.message}
+                    </FieldError>
+                  </Field>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="salary_min"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gaji Minimal</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Gaji Minimal</FieldLabel>
+                <Input
+                  type="number"
+                  {...form.register("salary_min", {
+                    setValueAs: (v) => (v === "" ? undefined : Number(v)),
+                  })}
+                />
+                <FieldError>
+                  {form.formState.errors.salary_min?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
-                control={form.control}
-                name="salary_max"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gaji Maksimal</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Gaji Maksimal</FieldLabel>
+                <Input
+                  type="number"
+                  {...form.register("salary_max", {
+                    setValueAs: (v) => (v === "" ? undefined : Number(v)),
+                  })}
+                />
+                <FieldError>
+                  {form.formState.errors.salary_max?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
+              <Controller
                 control={form.control}
                 name="date"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tanggal Lamaran *</FormLabel>
+                  <Field>
+                    <FieldLabel>Tanggal Lamaran *</FieldLabel>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value
-                              ? dayjs(field.value).format("DD/MM/YYYY")
-                              : "Pilih tanggal"}
-                          </Button>
-                        </FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value
+                            ? dayjs(field.value).format("DD/MM/YYYY")
+                            : "Pilih tanggal"}
+                        </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 z-50" align="start">
                         <Calendar
@@ -329,26 +281,26 @@ export function ApplicationForm({
                         />
                       </PopoverContent>
                     </Popover>
-                    <FormMessage />
-                  </FormItem>
+                    <FieldError>
+                      {form.formState.errors.date?.message}
+                    </FieldError>
+                  </Field>
                 )}
               />
 
-              <FormField
+              <Controller
                 control={form.control}
                 name="status"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
+                  <Field>
+                    <FieldLabel>Status</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="z-50 max-h-60">
                         {STATUS_OPTIONS.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
@@ -357,26 +309,26 @@ export function ApplicationForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
+                    <FieldError>
+                      {form.formState.errors.status?.message}
+                    </FieldError>
+                  </Field>
                 )}
               />
 
-              <FormField
+              <Controller
                 control={form.control}
                 name="result_status"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hasil</FormLabel>
+                  <Field>
+                    <FieldLabel>Hasil</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="z-50">
                         {RESULT_STATUS_OPTIONS.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
@@ -385,8 +337,10 @@ export function ApplicationForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
+                    <FieldError>
+                      {form.formState.errors.result_status?.message}
+                    </FieldError>
+                  </Field>
                 )}
               />
             </div>
@@ -395,75 +349,55 @@ export function ApplicationForm({
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Informasi Kontak</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="contact_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nama Kontak</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Nama Kontak</FieldLabel>
+                <Input {...form.register("contact_name")} />
+                <FieldError>
+                  {form.formState.errors.contact_name?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
-                control={form.control}
-                name="contact_email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email Kontak</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="email" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Email Kontak</FieldLabel>
+                <Input type="email" {...form.register("contact_email")} />
+                <FieldError>
+                  {form.formState.errors.contact_email?.message}
+                </FieldError>
+              </Field>
 
-              <FormField
-                control={form.control}
-                name="contact_phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Telepon Kontak</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field>
+                <FieldLabel>Telepon Kontak</FieldLabel>
+                <Input {...form.register("contact_phone")} />
+                <FieldError>
+                  {form.formState.errors.contact_phone?.message}
+                </FieldError>
+              </Field>
             </div>
           </Card>
 
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Follow Up</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
+              <Controller
                 control={form.control}
                 name="follow_up_date"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tanggal Follow Up</FormLabel>
+                  <Field>
+                    <FieldLabel>Tanggal Follow Up</FieldLabel>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value
-                              ? dayjs(field.value).format("DD/MM/YYYY")
-                              : "Pilih tanggal"}
-                          </Button>
-                        </FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value
+                            ? dayjs(field.value).format("DD/MM/YYYY")
+                            : "Pilih tanggal"}
+                        </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 z-50" align="start">
                         <Calendar
@@ -482,44 +416,32 @@ export function ApplicationForm({
                         />
                       </PopoverContent>
                     </Popover>
-                    <FormMessage />
-                  </FormItem>
+                    <FieldError>
+                      {form.formState.errors.follow_up_date?.message}
+                    </FieldError>
+                  </Field>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="follow_up_note"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Catatan Follow Up</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} rows={3} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Field className="md:col-span-2">
+                <FieldLabel>Catatan Follow Up</FieldLabel>
+                <Textarea {...form.register("follow_up_note")} rows={3} />
+                <FieldError>
+                  {form.formState.errors.follow_up_note?.message}
+                </FieldError>
+              </Field>
             </div>
           </Card>
 
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Catatan</h3>
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Catatan</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} rows={4} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <Field>
+              <FieldLabel>Catatan</FieldLabel>
+              <Textarea {...form.register("notes")} rows={4} />
+              <FieldError>{form.formState.errors.notes?.message}</FieldError>
+            </Field>
           </Card>
-        </fieldset>
+        </FieldSet>
 
         <div className="flex justify-end gap-3">
           <Button

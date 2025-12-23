@@ -71,6 +71,7 @@ import { useDuplicateApplication } from "../api/duplicate-application";
 import { useUpdateApplication } from "../api/update-application";
 import { useMassDeleteApplications } from "../api/mass-delete-applications";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -140,8 +141,12 @@ const getStatusBadgeVariant = (status: ApplicationStatus) => {
   return "default";
 };
 
-const formatSalaryRange = (min: number, max: number) => {
-  const formatNum = (n: number) => {
+const formatSalaryRange = (
+  min: number | undefined | null,
+  max: number | undefined | null
+) => {
+  const formatNum = (n: number | undefined | null) => {
+    if (n === undefined || n === null) return "0";
     if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
     if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
     return n.toString();
@@ -161,9 +166,11 @@ export const ApplicationsList = () => {
       "page" | "per_page" | "q" | "sort_by" | "sort_order"
     >
   >({});
-  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(
-    defaultColumnVisibility
-  );
+  const [columnVisibility, setColumnVisibility] =
+    useLocalStorage<ColumnVisibility>(
+      "applications-table-columns",
+      defaultColumnVisibility
+    );
 
   const [sortField, setSortField] =
     useState<GetApplicationsParams["sort_by"]>("date");
@@ -320,7 +327,7 @@ export const ApplicationsList = () => {
     type?: "text" | "number" | "select";
   }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [value, setValue] = useState(app[field]);
+    const [value, setValue] = useState(app[field] ?? "");
 
     const handleBlur = () => {
       setIsEditing(false);
@@ -409,12 +416,17 @@ export const ApplicationsList = () => {
       );
     }
 
+    const displayValue = app[field];
     return (
       <span
         className="cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors whitespace-nowrap block min-h-[1.5rem]"
         onClick={() => setIsEditing(true)}
       >
-        {String(app[field]) || "-"}
+        {displayValue === null ||
+        displayValue === undefined ||
+        displayValue === ""
+          ? "-"
+          : String(displayValue)}
       </span>
     );
   };
@@ -460,7 +472,7 @@ export const ApplicationsList = () => {
               onClick={() => setMassDeleteDialogOpen(true)}
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Hapus {selectedIds.length} Terpilih
+              Hapus ({selectedIds.length})
             </Button>
           )}
           {activeStatFilter && (
@@ -562,6 +574,21 @@ export const ApplicationsList = () => {
                 {columnVisibility.salary_range && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Rentang Gaji
+                  </TableHead>
+                )}
+                {columnVisibility.contact_name && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Kontak HR
+                  </TableHead>
+                )}
+                {columnVisibility.contact_email && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Email HR
+                  </TableHead>
+                )}
+                {columnVisibility.contact_phone && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Telepon HR
                   </TableHead>
                 )}
                 <TableHead className="w-[60px]"></TableHead>
@@ -685,6 +712,21 @@ export const ApplicationsList = () => {
                         >
                           {formatSalaryRange(app.salary_min, app.salary_max)}
                         </Badge>
+                      </TableCell>
+                    )}
+                    {columnVisibility.contact_name && (
+                      <TableCell>
+                        <EditableCell app={app} field="contact_name" />
+                      </TableCell>
+                    )}
+                    {columnVisibility.contact_email && (
+                      <TableCell>
+                        <EditableCell app={app} field="contact_email" />
+                      </TableCell>
+                    )}
+                    {columnVisibility.contact_phone && (
+                      <TableCell>
+                        <EditableCell app={app} field="contact_phone" />
                       </TableCell>
                     )}
                     <TableCell>
