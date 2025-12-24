@@ -35,29 +35,29 @@ const AdminTemplateShow = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const { data: template, isLoading } = useTemplate({
-      id: id as string,
-      queryConfig: {
-          enabled: !!id,
-      },
+    id: id as string,
+    queryConfig: {
+      enabled: !!id,
+    },
   });
 
   const deleteTemplateMutation = useDeleteTemplate({
-      mutationConfig: {
-          onSuccess: () => {
-              toast.success("Template berhasil dihapus");
-              navigate("/admin/templates");
-          },
-          onError: (error) => {
-              console.error(error);
-          }
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Template berhasil dihapus");
+        navigate("/admin/templates");
       },
+      onError: (error) => {
+        console.error(error);
+      },
+    },
   });
 
   if (isLoading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       </DashboardLayout>
     );
@@ -74,9 +74,9 @@ const AdminTemplateShow = () => {
   }
 
   const handleDelete = () => {
-      if (template.id) {
-          deleteTemplateMutation.mutate({ id: template.id });
-      }
+    if (template.id) {
+      deleteTemplateMutation.mutate({ id: template.id });
+    }
   };
 
   return (
@@ -139,10 +139,6 @@ const AdminTemplateShow = () => {
                   </Badge>
                 )}
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Slug</p>
-                <p className="mt-1 font-mono text-sm">{template.slug}</p>
-              </div>
             </div>
 
             {template.path && (
@@ -184,10 +180,14 @@ const AdminTemplateShow = () => {
               </Button>
               {template.path && (
                 <Button variant="outline" asChild>
-                    <a href={template.path} target="_blank" rel="noopener noreferrer">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download File
-                    </a>
+                  <a
+                    href={template.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download File
+                  </a>
                 </Button>
               )}
               <Button
