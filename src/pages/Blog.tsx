@@ -16,7 +16,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
-import { SEO } from "@/components/SEO";
 import { useBlogs, type GetBlogsParams } from "@/features/blogs/api/get-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { buildImageUrl } from "@/lib/utils";
@@ -77,11 +76,6 @@ const Blog = () => {
 
   return (
     <>
-      <SEO
-        title="Blog & Artikel Karier"
-        description="Tips, panduan, dan insight untuk membantu perjalanan karier Anda. Temukan artikel tentang CV, interview, negosiasi gaji, skill development, dan banyak lagi."
-        url="/blog"
-      />
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
 

@@ -19,7 +19,6 @@ import {
   Loader2,
   Tag,
 } from "lucide-react";
-import { SEO } from "@/components/SEO";
 import { BlogCard } from "@/features/blogs/components/BlogCard";
 import { useBlog } from "@/features/blogs/api/get-blog";
 import { useBlogs } from "@/features/blogs/api/get-blogs";
@@ -72,7 +71,6 @@ const BlogDetail = () => {
   if (error || !blogData) {
     return (
       <>
-        <SEO title="Artikel Tidak Ditemukan" description="Artikel yang Anda cari tidak ditemukan" />
         <div className="min-h-screen flex flex-col bg-background">
           <Navbar />
           <main className="flex-1 flex items-center justify-center">
@@ -95,23 +93,13 @@ const BlogDetail = () => {
   }
 
   const blog = blogData;
-  const shareUrl = `${window.location.origin}${paths.blog.detail.getHref(blog.slug)}`;
+  const shareUrl = `${window.location.origin}${paths.blog.detail.getHref(
+    blog.slug
+  )}`;
   const shareTitle = encodeURIComponent(blog.title);
 
   return (
     <>
-      <SEO
-        title={blog.title}
-        description={blog.excerpt}
-        image={blog.featured_image ? buildImageUrl(blog.featured_image) : undefined}
-        url={paths.blog.detail.getHref(blog.slug)}
-        type="article"
-        publishedTime={blog.published_at || blog.created_at}
-        modifiedTime={blog.updated_at}
-        author={blog.user.name}
-        tags={blog.tags?.map((tag) => tag.name)}
-      />
-
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
 
