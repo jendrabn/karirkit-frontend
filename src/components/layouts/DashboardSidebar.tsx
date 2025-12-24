@@ -168,13 +168,13 @@ export function DashboardSidebar() {
                 onClick={() => navigate(paths.account.profile.getHref())}
               >
                 <User className="h-4 w-4 mr-2" />
-                Profile
+                Profil
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigate(paths.account.changePassword.getHref())}
               >
                 <Lock className="h-4 w-4 mr-2" />
-                Change Password
+                Ubah Password
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <div className="px-2 py-1.5">

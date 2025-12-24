@@ -25,6 +25,7 @@ import {
   Globe,
   Sun,
   Moon,
+  LayoutDashboard,
 } from "lucide-react";
 import logo from "@/assets/images/logo.png";
 import { DonationModal } from "./DonationModal";
@@ -33,9 +34,10 @@ import { useTheme } from "@/hooks/use-theme";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
 import { buildImageUrl } from "@/lib/utils";
+import { Link } from "react-router";
 
 const navLinks = [
-  { href: "#beranda", label: "Beranda" },
+  { href: paths.home.getHref(), label: "Beranda" },
   { href: "/#application-tracker", label: "Fitur" },
   { href: paths.blog.list.getHref(), label: "Blog" },
 ];
@@ -75,9 +77,9 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
           {/* Logo */}
-          <a href="#beranda" className="flex items-center gap-2">
+          <Link to={paths.home.getHref()} className="flex items-center gap-2">
             <img src={logo} alt="KarirKit Logo" className="h-8 w-auto" />
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
@@ -131,8 +133,8 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                 <DropdownMenuContent align="end" className="w-56 bg-popover">
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <a href={paths.home.getHref()}>
-                      <Home className="mr-2 h-4 w-4" />
-                      Halaman Utama
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Dashboard
                     </a>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>

@@ -30,12 +30,10 @@ export function SEO({
 
   return (
     <Helmet>
-      {/* Primary Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="title" content={fullTitle} />
       <meta name="description" content={description} />
 
-      {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={fullUrl} />
       <meta property="og:title" content={fullTitle} />
@@ -43,31 +41,27 @@ export function SEO({
       <meta property="og:image" content={fullImage} />
       <meta property="og:site_name" content="KarirKit" />
 
-      {/* Twitter */}
       <meta property="twitter:card" content="summary_large_image" />
       <meta property="twitter:url" content={fullUrl} />
       <meta property="twitter:title" content={fullTitle} />
       <meta property="twitter:description" content={description} />
       <meta property="twitter:image" content={fullImage} />
 
-      {/* Article specific meta tags */}
-      {type === "article" && (
-        <>
-          {publishedTime && (
-            <meta property="article:published_time" content={publishedTime} />
-          )}
-          {modifiedTime && (
-            <meta property="article:modified_time" content={modifiedTime} />
-          )}
-          {author && <meta property="article:author" content={author} />}
-          {tags &&
-            tags.map((tag) => (
-              <meta key={tag} property="article:tag" content={tag} />
-            ))}
-        </>
+      {type === "article" && publishedTime && (
+        <meta property="article:published_time" content={publishedTime} />
       )}
+      {type === "article" && modifiedTime && (
+        <meta property="article:modified_time" content={modifiedTime} />
+      )}
+      {type === "article" && author && (
+        <meta property="article:author" content={author} />
+      )}
+      {type === "article" &&
+        tags &&
+        tags.map((tag) => (
+          <meta key={tag} property="article:tag" content={tag} />
+        ))}
 
-      {/* Canonical URL */}
       <link rel="canonical" href={fullUrl} />
     </Helmet>
   );
