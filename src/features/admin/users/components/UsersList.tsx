@@ -57,12 +57,12 @@ import {
 import {
   UserFilterModal,
   type FilterValues,
-} from "@/components/users/UserFilterModal";
+} from "@/features/admin/users/components/UserFilterModal";
 import {
   UserColumnToggle,
   type ColumnVisibility,
   defaultColumnVisibility,
-} from "@/components/users/UserColumnToggle";
+} from "@/features/admin/users/components/UserColumnToggle";
 import { USER_ROLE_OPTIONS } from "@/types/user";
 import { cn, buildImageUrl } from "@/lib/utils";
 import { useUsers } from "../api/get-users";

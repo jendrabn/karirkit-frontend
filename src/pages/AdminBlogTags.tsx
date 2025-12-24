@@ -50,7 +50,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TagModal } from "@/components/blog/TagModal";
+import { TagModal } from "@/features/admin/blogs/components/TagModal";
 import { type BlogTag } from "@/types/blog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";

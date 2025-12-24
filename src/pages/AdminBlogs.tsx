@@ -68,12 +68,12 @@ import {
 import {
   BlogFilterModal,
   type FilterValues,
-} from "@/components/blog/BlogFilterModal";
+} from "@/features/admin/blogs/components/BlogFilterModal";
 import {
   BlogColumnToggle,
   type ColumnVisibility,
   defaultColumnVisibility,
-} from "@/components/blog/BlogColumnToggle";
+} from "@/features/admin/blogs/components/BlogColumnToggle";
 import {
   type BlogStatus,
   BLOG_STATUS_OPTIONS,

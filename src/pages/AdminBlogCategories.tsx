@@ -50,7 +50,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CategoryModal } from "@/components/blog/CategoryModal";
+import { CategoryModal } from "@/features/admin/blogs/components/CategoryModal";
 import { useBlogCategories } from "@/features/admin/blogs/api/get-blog-categories";
 import { useDeleteBlogCategory } from "@/features/admin/blogs/api/delete-blog-category";
 import { useCreateBlogCategory } from "@/features/admin/blogs/api/create-blog-category";

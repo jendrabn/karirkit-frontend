@@ -1,7 +1,10 @@
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { BlogForm, type BlogFormData } from "@/components/blog/BlogForm";
+import {
+  BlogForm,
+  type BlogFormData,
+} from "@/features/admin/blogs/components/BlogForm";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBlog } from "@/features/admin/blogs/api/get-blog";

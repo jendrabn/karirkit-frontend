@@ -48,7 +48,10 @@ interface ColumnToggleProps {
   onVisibilityChange: (visibility: ColumnVisibility) => void;
 }
 
-export function UserColumnToggle({ visibility, onVisibilityChange }: ColumnToggleProps) {
+export function UserColumnToggle({
+  visibility,
+  onVisibilityChange,
+}: ColumnToggleProps) {
   const [open, setOpen] = useState(false);
 
   const toggleColumn = (column: keyof ColumnVisibility) => {
@@ -73,7 +76,9 @@ export function UserColumnToggle({ visibility, onVisibilityChange }: ColumnToggl
           <DropdownMenuCheckboxItem
             key={column}
             checked={visibility[column as keyof ColumnVisibility]}
-            onCheckedChange={() => toggleColumn(column as keyof ColumnVisibility)}
+            onCheckedChange={() =>
+              toggleColumn(column as keyof ColumnVisibility)
+            }
           >
             {columnLabels[column as keyof ColumnVisibility]}
           </DropdownMenuCheckboxItem>
