@@ -184,7 +184,7 @@ export function ApplicationLetterForm({
                 <Controller
                   control={form.control}
                   name="language"
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <Field>
                       <FieldLabel htmlFor={field.name}>Bahasa *</FieldLabel>
                       <Select
@@ -202,7 +202,9 @@ export function ApplicationLetterForm({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FieldError>{fieldState.error?.message}</FieldError>
+                      <FieldError>
+                        {form.formState.errors.language?.message}
+                      </FieldError>
                     </Field>
                   )}
                 />
@@ -235,40 +237,30 @@ export function ApplicationLetterForm({
           <FieldSet>
             <FieldLegend>Informasi Pelamar</FieldLegend>
             <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Controller
-                control={form.control}
-                name="name"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Nama Lengkap *</FieldLabel>
-                    <Input id={field.name} {...field} />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="name">Nama Lengkap *</FieldLabel>
+                <Input id="name" {...form.register("name")} />
+                <FieldError>{form.formState.errors.name?.message}</FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="birth_place_date"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Tempat, Tanggal Lahir *
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      {...field}
-                      placeholder="Jakarta, 15 Mei 1995"
-                    />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="birth_place_date">
+                  Tempat, Tanggal Lahir *
+                </FieldLabel>
+                <Input
+                  id="birth_place_date"
+                  {...form.register("birth_place_date")}
+                  placeholder="Jakarta, 15 Mei 1995"
+                />
+                <FieldError>
+                  {form.formState.errors.birth_place_date?.message}
+                </FieldError>
+              </Field>
 
               <Controller
                 control={form.control}
                 name="gender"
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <Field>
                     <FieldLabel htmlFor={field.name}>
                       Jenis Kelamin *
@@ -288,7 +280,9 @@ export function ApplicationLetterForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FieldError>{fieldState.error?.message}</FieldError>
+                    <FieldError>
+                      {form.formState.errors.gender?.message}
+                    </FieldError>
                   </Field>
                 )}
               />
@@ -296,7 +290,7 @@ export function ApplicationLetterForm({
               <Controller
                 control={form.control}
                 name="marital_status"
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <Field>
                     <FieldLabel htmlFor={field.name}>
                       Status Pernikahan *
@@ -316,85 +310,67 @@ export function ApplicationLetterForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FieldError>{fieldState.error?.message}</FieldError>
+                    <FieldError>
+                      {form.formState.errors.marital_status?.message}
+                    </FieldError>
                   </Field>
                 )}
               />
 
-              <Controller
-                control={form.control}
-                name="education"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Pendidikan Terakhir *
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      {...field}
-                      placeholder="S1 Teknik Informatika"
-                    />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="education">
+                  Pendidikan Terakhir *
+                </FieldLabel>
+                <Input
+                  id="education"
+                  {...form.register("education")}
+                  placeholder="S1 Teknik Informatika"
+                />
+                <FieldError>
+                  {form.formState.errors.education?.message}
+                </FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="phone"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Nomor Telepon *
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      {...field}
-                      placeholder="081234567890"
-                    />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="phone">Nomor Telepon *</FieldLabel>
+                <Input
+                  id="phone"
+                  {...form.register("phone")}
+                  placeholder="081234567890"
+                />
+                <FieldError>{form.formState.errors.phone?.message}</FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="email"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Email *</FieldLabel>
-                    <Input id={field.name} {...field} type="email" />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="email">Email *</FieldLabel>
+                <Input type="email" id="email" {...form.register("email")} />
+                <FieldError>{form.formState.errors.email?.message}</FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="applicant_city"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Kota Pelamar *</FieldLabel>
-                    <Input id={field.name} {...field} placeholder="Jakarta" />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="applicant_city">Kota Pelamar *</FieldLabel>
+                <Input
+                  id="applicant_city"
+                  {...form.register("applicant_city")}
+                  placeholder="Jakarta"
+                />
+                <FieldError>
+                  {form.formState.errors.applicant_city?.message}
+                </FieldError>
+              </Field>
 
               <div className="md:col-span-2">
-                <Controller
-                  control={form.control}
-                  name="address"
-                  render={({ field, fieldState }) => (
-                    <Field>
-                      <FieldLabel htmlFor={field.name}>
-                        Alamat Lengkap *
-                      </FieldLabel>
-                      <Textarea id={field.name} {...field} rows={2} />
-                      <FieldError>{fieldState.error?.message}</FieldError>
-                    </Field>
-                  )}
-                />
+                <Field>
+                  <FieldLabel htmlFor="address">Alamat Lengkap *</FieldLabel>
+                  <Textarea
+                    id="address"
+                    {...form.register("address")}
+                    rows={2}
+                  />
+                  <FieldError>
+                    {form.formState.errors.address?.message}
+                  </FieldError>
+                </Field>
               </div>
             </FieldGroup>
           </FieldSet>
@@ -404,56 +380,48 @@ export function ApplicationLetterForm({
           <FieldSet>
             <FieldLegend>Informasi Perusahaan</FieldLegend>
             <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Controller
-                control={form.control}
-                name="receiver_title"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Jabatan Penerima *
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      {...field}
-                      placeholder="HRD Manager"
-                    />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="receiver_title">
+                  Jabatan Penerima *
+                </FieldLabel>
+                <Input
+                  id="receiver_title"
+                  {...form.register("receiver_title")}
+                  placeholder="HRD Manager"
+                />
+                <FieldError>
+                  {form.formState.errors.receiver_title?.message}
+                </FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="company_name"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Nama Perusahaan *
-                    </FieldLabel>
-                    <Input id={field.name} {...field} />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="company_name">
+                  Nama Perusahaan *
+                </FieldLabel>
+                <Input id="company_name" {...form.register("company_name")} />
+                <FieldError>
+                  {form.formState.errors.company_name?.message}
+                </FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="company_city"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Kota Perusahaan *
-                    </FieldLabel>
-                    <Input id={field.name} {...field} placeholder="Jakarta" />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="company_city">
+                  Kota Perusahaan *
+                </FieldLabel>
+                <Input
+                  id="company_city"
+                  {...form.register("company_city")}
+                  placeholder="Jakarta"
+                />
+                <FieldError>
+                  {form.formState.errors.company_city?.message}
+                </FieldError>
+              </Field>
 
               <Controller
                 control={form.control}
                 name="application_date"
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <Field>
                     <FieldLabel htmlFor={field.name}>
                       Tanggal Lamaran *
@@ -489,25 +457,27 @@ export function ApplicationLetterForm({
                         />
                       </PopoverContent>
                     </Popover>
-                    <FieldError>{fieldState.error?.message}</FieldError>
+                    <FieldError>
+                      {form.formState.errors.application_date?.message}
+                    </FieldError>
                   </Field>
                 )}
               />
 
               <div className="md:col-span-2">
-                <Controller
-                  control={form.control}
-                  name="company_address"
-                  render={({ field, fieldState }) => (
-                    <Field>
-                      <FieldLabel htmlFor={field.name}>
-                        Alamat Perusahaan *
-                      </FieldLabel>
-                      <Textarea id={field.name} {...field} rows={2} />
-                      <FieldError>{fieldState.error?.message}</FieldError>
-                    </Field>
-                  )}
-                />
+                <Field>
+                  <FieldLabel htmlFor="company_address">
+                    Alamat Perusahaan *
+                  </FieldLabel>
+                  <Textarea
+                    id="company_address"
+                    {...form.register("company_address")}
+                    rows={2}
+                  />
+                  <FieldError>
+                    {form.formState.errors.company_address?.message}
+                  </FieldError>
+                </Field>
               </div>
             </FieldGroup>
           </FieldSet>
@@ -518,133 +488,111 @@ export function ApplicationLetterForm({
             <FieldLegend>Isi Surat</FieldLegend>
             <FieldGroup className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <Controller
-                  control={form.control}
-                  name="subject"
-                  render={({ field, fieldState }) => (
-                    <Field>
-                      <FieldLabel htmlFor={field.name}>
-                        Subjek Surat *
-                      </FieldLabel>
-                      <Input
-                        id={field.name}
-                        {...field}
-                        placeholder="Lamaran Posisi Software Engineer"
-                      />
-                      <FieldError>{fieldState.error?.message}</FieldError>
-                    </Field>
-                  )}
-                />
+                <Field>
+                  <FieldLabel htmlFor="subject">Subjek Surat *</FieldLabel>
+                  <Input
+                    id="subject"
+                    {...form.register("subject")}
+                    placeholder="Lamaran Posisi Software Engineer"
+                  />
+                  <FieldError>
+                    {form.formState.errors.subject?.message}
+                  </FieldError>
+                </Field>
               </div>
 
-              <Controller
-                control={form.control}
-                name="opening_paragraph"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <div className="flex items-center justify-between">
-                      <FieldLabel htmlFor={field.name}>
-                        Paragraf Pembuka *
-                      </FieldLabel>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOpenTemplateModal("opening")}
-                      >
-                        <FileText className="h-4 w-4 mr-1" />
-                        Gunakan Template
-                      </Button>
-                    </div>
-                    <Textarea
-                      id={field.name}
-                      {...field}
-                      rows={3}
-                      placeholder="Dengan hormat, saya yang bertanda tangan di bawah ini..."
-                    />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <div className="flex items-center justify-between">
+                  <FieldLabel htmlFor="opening_paragraph">
+                    Paragraf Pembuka *
+                  </FieldLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleOpenTemplateModal("opening")}
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    Gunakan Template
+                  </Button>
+                </div>
+                <Textarea
+                  id="opening_paragraph"
+                  {...form.register("opening_paragraph")}
+                  rows={3}
+                  placeholder="Dengan hormat, saya yang bertanda tangan di bawah ini..."
+                />
+                <FieldError>
+                  {form.formState.errors.opening_paragraph?.message}
+                </FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="body_paragraph"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <div className="flex items-center justify-between">
-                      <FieldLabel htmlFor={field.name}>
-                        Paragraf Isi *
-                      </FieldLabel>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOpenTemplateModal("body")}
-                      >
-                        <FileText className="h-4 w-4 mr-1" />
-                        Gunakan Template
-                      </Button>
-                    </div>
-                    <Textarea
-                      id={field.name}
-                      {...field}
-                      rows={5}
-                      placeholder="Saya memiliki pengalaman dalam bidang..."
-                    />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <div className="flex items-center justify-between">
+                  <FieldLabel htmlFor="body_paragraph">
+                    Paragraf Isi *
+                  </FieldLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleOpenTemplateModal("body")}
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    Gunakan Template
+                  </Button>
+                </div>
+                <Textarea
+                  id="body_paragraph"
+                  {...form.register("body_paragraph")}
+                  rows={5}
+                  placeholder="Saya memiliki pengalaman dalam bidang..."
+                />
+                <FieldError>
+                  {form.formState.errors.body_paragraph?.message}
+                </FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="attachments"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Lampiran</FieldLabel>
-                    <Input
-                      id={field.name}
-                      {...field}
-                      placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
-                    />
-                    <FieldDescription>
-                      Pisahkan setiap item lampiran dengan tanda koma (,)
-                    </FieldDescription>
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <FieldLabel htmlFor="attachments">Lampiran</FieldLabel>
+                <Input
+                  id="attachments"
+                  {...form.register("attachments")}
+                  placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
+                />
+                <FieldDescription>
+                  Pisahkan setiap item lampiran dengan tanda koma (,)
+                </FieldDescription>
+                <FieldError>
+                  {form.formState.errors.attachments?.message}
+                </FieldError>
+              </Field>
 
-              <Controller
-                control={form.control}
-                name="closing_paragraph"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <div className="flex items-center justify-between">
-                      <FieldLabel htmlFor={field.name}>
-                        Paragraf Penutup *
-                      </FieldLabel>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOpenTemplateModal("closing")}
-                      >
-                        <FileText className="h-4 w-4 mr-1" />
-                        Gunakan Template
-                      </Button>
-                    </div>
-                    <Textarea
-                      id={field.name}
-                      {...field}
-                      rows={3}
-                      placeholder="Demikian surat lamaran ini saya buat..."
-                    />
-                    <FieldError>{fieldState.error?.message}</FieldError>
-                  </Field>
-                )}
-              />
+              <Field>
+                <div className="flex items-center justify-between">
+                  <FieldLabel htmlFor="closing_paragraph">
+                    Paragraf Penutup *
+                  </FieldLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleOpenTemplateModal("closing")}
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    Gunakan Template
+                  </Button>
+                </div>
+                <Textarea
+                  id="closing_paragraph"
+                  {...form.register("closing_paragraph")}
+                  rows={3}
+                  placeholder="Demikian surat lamaran ini saya buat..."
+                />
+                <FieldError>
+                  {form.formState.errors.closing_paragraph?.message}
+                </FieldError>
+              </Field>
 
               <div className="space-y-3">
                 <FieldLabel>Tanda Tangan</FieldLabel>

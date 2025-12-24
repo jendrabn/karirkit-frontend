@@ -50,7 +50,7 @@ export function TemplateForm({
     resolver: zodResolver(createTemplateInputSchema) as any,
     defaultValues: initialData || {
       name: "",
-      slug: "",
+
       type: "cv",
       language: "id",
       is_premium: false,
@@ -188,32 +188,10 @@ export function TemplateForm({
               <Field>
                 <FieldLabel>Nama Template *</FieldLabel>
                 <Input
-                  {...form.register("name", {
-                    onChange: (e) => {
-                      if (!initialData && !form.getValues("slug")) {
-                        const slug = e.target.value
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]+/g, "-")
-                          .replace(/(^-|-$)+/g, "");
-                        form.setValue("slug", slug);
-                      }
-                    },
-                  })}
+                  {...form.register("name")}
                   placeholder="Contoh: Simple Professional CV"
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel>Slug *</FieldLabel>
-                <Input
-                  {...form.register("slug")}
-                  placeholder="contoh: simple-professional-cv"
-                />
-                <FieldDescription>
-                  URL-friendly identifier untuk template.
-                </FieldDescription>
-                <FieldError>{form.formState.errors.slug?.message}</FieldError>
               </Field>
             </div>
 

@@ -5,7 +5,7 @@ import type { QueryConfig } from "@/lib/react-query";
 export interface Template {
   id: string;
   name: string;
-  slug: string;
+
   type: "cv" | "application_letter";
   language: "en" | "id";
   path: string;
@@ -32,13 +32,21 @@ export interface GetTemplatesParams {
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "created_at" | "updated_at" | "name" | "type" | "language" | "is_premium";
+  sort_by?:
+    | "created_at"
+    | "updated_at"
+    | "name"
+    | "type"
+    | "language"
+    | "is_premium";
   type?: "cv" | "application_letter";
   language?: "en" | "id";
   is_premium?: boolean;
 }
 
-export const getTemplates = (params?: GetTemplatesParams): Promise<TemplatesListResponse> => {
+export const getTemplates = (
+  params?: GetTemplatesParams
+): Promise<TemplatesListResponse> => {
   return api.get("/admin/templates", {
     params,
   });
@@ -56,7 +64,10 @@ type UseTemplatesOptions = {
   queryConfig?: QueryConfig<typeof getTemplatesQueryOptions>;
 };
 
-export const useTemplates = ({ params, queryConfig }: UseTemplatesOptions = {}) => {
+export const useTemplates = ({
+  params,
+  queryConfig,
+}: UseTemplatesOptions = {}) => {
   return useQuery({
     ...getTemplatesQueryOptions(params),
     ...queryConfig,

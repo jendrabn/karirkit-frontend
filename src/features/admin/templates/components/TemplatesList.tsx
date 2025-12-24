@@ -316,15 +316,15 @@ export const TemplatesList = () => {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={10} className="h-24 text-center">
                     Memuat data...
                   </TableCell>
                 </TableRow>
               ) : templates.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
-                    colSpan={7}
+                    colSpan={10}
                     className="text-center py-16 text-muted-foreground"
                   >
                     <div className="flex flex-col items-center gap-2">
@@ -339,16 +339,20 @@ export const TemplatesList = () => {
                 templates.map((template, index) => (
                   <TableRow
                     key={template.id}
-                    className={cn(index % 2 === 1 && "bg-muted/30")}
+                    className={cn(
+                      index % 2 === 0 ? "bg-background" : "bg-muted/20",
+                      selectedIds.includes(template.id) && "bg-primary/5"
+                    )}
                   >
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.includes(template.id)}
+                        onCheckedChange={() => handleSelectOne(template.id)}
+                      />
+                    </TableCell>
                     {visibleColumns.preview && (
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <Checkbox
-                            checked={selectedIds.includes(template.id)}
-                            onCheckedChange={() => handleSelectOne(template.id)}
-                            className="mr-2"
-                          />
                           {template.preview ? (
                             <img
                               src={buildImageUrl(template.preview)}

@@ -7,7 +7,7 @@ import type { Template } from "./get-templates";
 
 export const createTemplateInputSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
-  slug: z.string().min(1, "Slug wajib diisi"),
+
   type: z.enum(["cv", "application_letter"], {
     message: "Tipe wajib dipilih",
   }),
