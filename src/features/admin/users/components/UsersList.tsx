@@ -193,10 +193,7 @@ export const UsersList = () => {
   );
 
   const hasActiveFilters =
-    filters.role ||
-    filters.status ||
-    filters.created_from ||
-    filters.created_to;
+    filters.role || filters.created_from || filters.created_to;
 
   const users = usersData?.items || [];
   const pagination = usersData?.pagination || {
@@ -309,21 +306,19 @@ export const UsersList = () => {
                     <SortableHeader field="updated_at">Diupdate</SortableHeader>
                   </TableHead>
                 )}
-                <TableHead className="text-right uppercase text-xs font-medium tracking-wide">
-                  Aksi
-                </TableHead>
+                <TableHead className="w-[60px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center">
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={10} className="h-24 text-center">
                     Memuat data...
                   </TableCell>
                 </TableRow>
               ) : users.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-32 text-center">
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={10} className="h-32 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
                       <UsersIcon className="h-10 w-10 mb-2 opacity-50" />
                       <p>Tidak ada user ditemukan.</p>
@@ -334,16 +329,20 @@ export const UsersList = () => {
                 users.map((user, index) => (
                   <TableRow
                     key={user.id}
-                    className={cn(index % 2 === 1 && "bg-muted/30")}
+                    className={cn(
+                      index % 2 === 0 ? "bg-background" : "bg-muted/20",
+                      selectedIds.includes(user.id) && "bg-primary/5"
+                    )}
                   >
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.includes(user.id)}
+                        onCheckedChange={() => handleSelectOne(user.id)}
+                      />
+                    </TableCell>
                     {columnVisibility.name && (
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <Checkbox
-                            checked={selectedIds.includes(user.id)}
-                            onCheckedChange={() => handleSelectOne(user.id)}
-                            className="mr-2"
-                          />
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={buildImageUrl(user.avatar)} />
                             <AvatarFallback className="bg-primary/10 text-primary text-xs">

@@ -23,13 +23,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import type { UserRole, UserStatus } from "@/types/user";
-import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from "@/types/user";
+import type { UserRole } from "@/types/user";
+import { USER_ROLE_OPTIONS } from "@/types/user";
 import { cn } from "@/lib/utils";
 
 export interface FilterValues {
   role?: UserRole;
-  status?: UserStatus;
   created_from?: Date;
   created_to?: Date;
 }
@@ -71,7 +70,10 @@ export function UserFilterModal({
             <Select
               value={localFilters.role || "all"}
               onValueChange={(val) =>
-                setLocalFilters({ ...localFilters, role: val === "all" ? undefined : val as UserRole })
+                setLocalFilters({
+                  ...localFilters,
+                  role: val === "all" ? undefined : (val as UserRole),
+                })
               }
             >
               <SelectTrigger>
@@ -80,28 +82,6 @@ export function UserFilterModal({
               <SelectContent className="bg-popover z-50">
                 <SelectItem value="all">Semua</SelectItem>
                 {USER_ROLE_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <Select
-              value={localFilters.status || "all"}
-              onValueChange={(val) =>
-                setLocalFilters({ ...localFilters, status: val === "all" ? undefined : val as UserStatus })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih status" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                <SelectItem value="all">Semua</SelectItem>
-                {USER_STATUS_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>
@@ -127,7 +107,10 @@ export function UserFilterModal({
                     : "Pilih tanggal"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-popover z-50" align="start">
+              <PopoverContent
+                className="w-auto p-0 bg-popover z-50"
+                align="start"
+              >
                 <Calendar
                   mode="single"
                   selected={localFilters.created_from}
@@ -157,7 +140,10 @@ export function UserFilterModal({
                     : "Pilih tanggal"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-popover z-50" align="start">
+              <PopoverContent
+                className="w-auto p-0 bg-popover z-50"
+                align="start"
+              >
                 <Calendar
                   mode="single"
                   selected={localFilters.created_to}

@@ -62,7 +62,11 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
         render={({ field }) => (
           <div className="flex justify-center mb-6">
             <Field>
-              <AvatarUpload value={field.value} onChange={field.onChange} />
+              <AvatarUpload
+                value={field.value}
+                onChange={field.onChange}
+                name={form.watch("name")}
+              />
               <FieldError>{form.formState.errors.avatar?.message}</FieldError>
             </Field>
           </div>

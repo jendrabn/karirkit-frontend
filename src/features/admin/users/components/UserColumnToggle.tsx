@@ -16,7 +16,6 @@ export interface ColumnVisibility {
   email: boolean;
   phone: boolean;
   role: boolean;
-  status: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
@@ -27,7 +26,6 @@ export const defaultColumnVisibility: ColumnVisibility = {
   email: true,
   phone: true,
   role: true,
-  status: true,
   created_at: true,
   updated_at: false,
 };
@@ -38,7 +36,6 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   email: "Email",
   phone: "Telepon",
   role: "Role",
-  status: "Status",
   created_at: "Dibuat",
   updated_at: "Diupdate",
 };
