@@ -24,6 +24,7 @@ export interface ColumnVisibility {
   certificates_count: boolean;
   awards_count: boolean;
   organizations_count: boolean;
+  language: boolean;
 }
 
 export const defaultColumnVisibility: ColumnVisibility = {
@@ -41,6 +42,7 @@ export const defaultColumnVisibility: ColumnVisibility = {
   certificates_count: false,
   awards_count: false,
   organizations_count: false,
+  language: true,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
@@ -58,6 +60,7 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   certificates_count: "Jumlah Sertifikat",
   awards_count: "Jumlah Penghargaan",
   organizations_count: "Organisasi",
+  language: "Bahasa",
 };
 
 interface CVColumnToggleProps {
@@ -81,9 +84,13 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "certificates_count",
   "awards_count",
   "organizations_count",
+  "language",
 ];
 
-export function CVColumnToggle({ visibility, onVisibilityChange }: CVColumnToggleProps) {
+export function CVColumnToggle({
+  visibility,
+  onVisibilityChange,
+}: CVColumnToggleProps) {
   const handleToggle = (column: keyof ColumnVisibility) => {
     onVisibilityChange({ ...visibility, [column]: !visibility[column] });
   };
@@ -96,7 +103,10 @@ export function CVColumnToggle({ visibility, onVisibilityChange }: CVColumnToggl
           View
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 z-50 bg-popover max-h-80 overflow-y-auto">
+      <DropdownMenuContent
+        align="end"
+        className="w-56 z-50 bg-popover max-h-80 overflow-y-auto"
+      >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {columnOrder.map((column) => (

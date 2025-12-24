@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { PortfolioForm } from "@/components/portfolios/PortfolioForm";
+import { PortfolioForm } from "@/features/portfolios/components/PortfolioForm";
 import { useCreatePortfolio } from "@/features/portfolios/api/create-portfolio";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { useForm } from "react-hook-form";
@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 const PortfolioCreate = () => {
   const navigate = useNavigate();
   const form = useForm();
-  
+
   useFormErrors(form);
 
   const createMutation = useCreatePortfolio({
@@ -35,7 +35,7 @@ const PortfolioCreate = () => {
         backButtonUrl="/portfolios"
       />
       <div className="max-w-4xl">
-        <PortfolioForm 
+        <PortfolioForm
           onSubmit={handleSubmit}
           isLoading={createMutation.isPending}
         />

@@ -107,7 +107,13 @@ export interface CV {
   awards: Award[];
   social_links: SocialLink[];
   organizations: Organization[];
+  language?: "id" | "en";
 }
+
+export const LANGUAGE_OPTIONS = [
+  { value: "id", label: "Indonesia" },
+  { value: "en", label: "Inggris" },
+];
 
 export const DEGREE_OPTIONS = [
   { value: "highschool", label: "SMA/SMK" },

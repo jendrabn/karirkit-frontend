@@ -5,7 +5,6 @@ import { z } from "zod";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -17,11 +16,12 @@ import {
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { FormError } from "@/components/ui/form-error";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { PhotoUpload } from "./PhotoUpload";
 import { TemplateSelector } from "@/components/ui/template-selector";
 import { useTemplates } from "@/features/landing/api/get-templates";
 import { buildImageUrl } from "@/lib/utils";
+import { useFormErrors } from "@/hooks/use-form-errors";
 import {
   type CV,
   DEGREE_OPTIONS,
@@ -29,6 +29,7 @@ import {
   SKILL_LEVEL_OPTIONS,
   ORGANIZATION_TYPE_OPTIONS,
   MONTH_OPTIONS,
+  LANGUAGE_OPTIONS,
 } from "@/types/cv";
 
 const educationSchema = z.object({
@@ -134,6 +135,7 @@ const cvSchema = z.object({
   awards: z.array(awardSchema),
   social_links: z.array(socialLinkSchema),
   organizations: z.array(organizationSchema),
+  language: z.enum(["en", "id"]).optional(),
 });
 
 export type CVFormData = z.infer<typeof cvSchema>;
@@ -154,8 +156,42 @@ export function CVForm({
   onCancel,
   isLoading,
 }: CVFormProps) {
-  const { data: templatesData } = useTemplates({
-    params: { type: "cv" },
+  const form = useForm<CVFormData>({
+    resolver: zodResolver(cvSchema),
+    defaultValues: {
+      template_id: initialData?.template_id || "",
+      name: initialData?.name || "",
+      headline: initialData?.headline || "",
+      email: initialData?.email || "",
+      phone: initialData?.phone || "",
+      address: initialData?.address || "",
+      about: initialData?.about || "",
+      photo: initialData?.photo || "",
+      educations: initialData?.educations || [],
+      certificates: initialData?.certificates || [],
+      experiences: initialData?.experiences || [],
+      skills: initialData?.skills || [],
+      awards: initialData?.awards || [],
+      social_links: initialData?.social_links || [],
+      organizations: initialData?.organizations || [],
+      language: initialData?.language || "id",
+    },
+  });
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = form;
+
+  // Handle form validation errors from API
+  useFormErrors(form);
+
+  const { data: templatesData, isLoading: isTemplatesLoading } = useTemplates({
+    params: { type: "cv", language: watch("language") },
   });
 
   const apiTemplates =
@@ -174,34 +210,6 @@ export function CVForm({
     setSelectedTemplate(apiTemplates[0].id);
   }
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<CVFormData>({
-    resolver: zodResolver(cvSchema),
-    defaultValues: {
-      template_id: initialData?.template_id || "",
-      name: initialData?.name || "",
-      headline: initialData?.headline || "",
-      email: initialData?.email || "",
-      phone: initialData?.phone || "",
-      address: initialData?.address || "",
-      about: initialData?.about || "",
-      photo: initialData?.photo || "",
-      educations: initialData?.educations || [],
-      certificates: initialData?.certificates || [],
-      experiences: initialData?.experiences || [],
-      skills: initialData?.skills || [],
-      awards: initialData?.awards || [],
-      social_links: initialData?.social_links || [],
-      organizations: initialData?.organizations || [],
-    },
-  });
-
   const educations = useFieldArray({ control, name: "educations" });
   const certificates = useFieldArray({ control, name: "certificates" });
   const experiences = useFieldArray({ control, name: "experiences" });
@@ -217,15 +225,49 @@ export function CVForm({
       {/* Template Selection */}
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Template CV</h3>
-        <TemplateSelector
-          label="Pilih Template"
-          templates={apiTemplates}
-          value={selectedTemplate}
-          onChange={(value) => {
-            setSelectedTemplate(value);
-            setValue("template_id", value);
-          }}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="md:col-span-1">
+            <Field>
+              <FieldLabel>Bahasa *</FieldLabel>
+              <Select
+                value={watch("language")}
+                onValueChange={(v) => setValue("language", v as "id" | "en")}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="z-50">
+                  {LANGUAGE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError>{errors.language?.message}</FieldError>
+            </Field>
+          </div>
+
+          <div className="md:col-span-3">
+            {isTemplatesLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="text-sm text-muted-foreground">
+                  Memuat templates...
+                </div>
+              </div>
+            ) : (
+              <TemplateSelector
+                label="Pilih Template"
+                templates={apiTemplates}
+                value={selectedTemplate}
+                onChange={(value) => {
+                  setSelectedTemplate(value);
+                  setValue("template_id", value);
+                }}
+              />
+            )}
+          </div>
+        </div>
       </Card>
 
       {/* Personal Info */}
@@ -239,68 +281,68 @@ export function CVForm({
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="name">Nama Lengkap *</Label>
+          <Field>
+            <FieldLabel htmlFor="name">Nama Lengkap *</FieldLabel>
             <Input
               id="name"
               {...register("name")}
               className={cn(errors.name && "border-destructive")}
             />
-            <FormError message={errors.name?.message} />
-          </div>
+            <FieldError>{errors.name?.message}</FieldError>
+          </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="headline">Headline *</Label>
+          <Field>
+            <FieldLabel htmlFor="headline">Headline *</FieldLabel>
             <Input
               id="headline"
               {...register("headline")}
               placeholder="Software Engineer | Full Stack Developer"
               className={cn(errors.headline && "border-destructive")}
             />
-            <FormError message={errors.headline?.message} />
-          </div>
+            <FieldError>{errors.headline?.message}</FieldError>
+          </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+          <Field>
+            <FieldLabel htmlFor="email">Email *</FieldLabel>
             <Input
               id="email"
               type="email"
               {...register("email")}
               className={cn(errors.email && "border-destructive")}
             />
-            <FormError message={errors.email?.message} />
-          </div>
+            <FieldError>{errors.email?.message}</FieldError>
+          </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone">Nomor Telepon *</Label>
+          <Field>
+            <FieldLabel htmlFor="phone">Nomor Telepon *</FieldLabel>
             <Input
               id="phone"
               {...register("phone")}
               placeholder="081234567890"
               className={cn(errors.phone && "border-destructive")}
             />
-            <FormError message={errors.phone?.message} />
-          </div>
+            <FieldError>{errors.phone?.message}</FieldError>
+          </Field>
 
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="address">Alamat *</Label>
+          <Field className="md:col-span-2">
+            <FieldLabel htmlFor="address">Alamat *</FieldLabel>
             <Input
               id="address"
               {...register("address")}
               className={cn(errors.address && "border-destructive")}
             />
-            <FormError message={errors.address?.message} />
-          </div>
+            <FieldError>{errors.address?.message}</FieldError>
+          </Field>
 
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="about">Tentang Saya</Label>
+          <Field className="md:col-span-2">
+            <FieldLabel htmlFor="about">Tentang Saya</FieldLabel>
             <Textarea
               id="about"
               {...register("about")}
               rows={4}
               placeholder="Ceritakan tentang diri Anda..."
             />
-          </div>
+          </Field>
         </div>
       </Card>
 
@@ -354,8 +396,8 @@ export function CVForm({
                   </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Jenjang *</Label>
+                  <Field>
+                    <FieldLabel>Jenjang *</FieldLabel>
                     <Select
                       value={watch(`educations.${index}.degree`)}
                       onValueChange={(v) =>
@@ -381,24 +423,24 @@ export function CVForm({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Nama Sekolah/Universitas *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Nama Sekolah/Universitas *</FieldLabel>
                     <Input {...register(`educations.${index}.school_name`)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Lokasi *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Lokasi *</FieldLabel>
                     <Input
                       {...register(`educations.${index}.school_location`)}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Jurusan</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Jurusan</FieldLabel>
                     <Input {...register(`educations.${index}.major`)} />
-                  </div>
+                  </Field>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label>Bulan Mulai</Label>
+                    <Field>
+                      <FieldLabel>Bulan Mulai</FieldLabel>
                       <Select
                         value={String(watch(`educations.${index}.start_month`))}
                         onValueChange={(v) =>
@@ -419,9 +461,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tahun Mulai</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Tahun Mulai</FieldLabel>
                       <Select
                         value={String(watch(`educations.${index}.start_year`))}
                         onValueChange={(v) =>
@@ -442,11 +484,11 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label>Bulan Selesai</Label>
+                    <Field>
+                      <FieldLabel>Bulan Selesai</FieldLabel>
                       <Select
                         value={String(watch(`educations.${index}.end_month`))}
                         onValueChange={(v) =>
@@ -466,9 +508,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tahun Selesai</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Tahun Selesai</FieldLabel>
                       <Select
                         value={String(watch(`educations.${index}.end_year`))}
                         onValueChange={(v) =>
@@ -488,9 +530,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </Field>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <Field orientation="horizontal">
                     <Checkbox
                       id={`edu-current-${index}`}
                       checked={watch(`educations.${index}.is_current`)}
@@ -498,12 +540,12 @@ export function CVForm({
                         setValue(`educations.${index}.is_current`, !!v)
                       }
                     />
-                    <Label htmlFor={`edu-current-${index}`}>
+                    <FieldLabel htmlFor={`edu-current-${index}`}>
                       Masih berlangsung
-                    </Label>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>IPK</Label>
+                    </FieldLabel>
+                  </Field>
+                  <Field>
+                    <FieldLabel>IPK</FieldLabel>
                     <Input
                       type="number"
                       step="0.01"
@@ -513,14 +555,14 @@ export function CVForm({
                         valueAsNumber: true,
                       })}
                     />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label>Deskripsi</Label>
+                  </Field>
+                  <Field className="md:col-span-2">
+                    <FieldLabel>Deskripsi</FieldLabel>
                     <Textarea
                       {...register(`educations.${index}.description`)}
                       rows={2}
                     />
-                  </div>
+                  </Field>
                 </div>
               </div>
             ))}
@@ -577,22 +619,22 @@ export function CVForm({
                   </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Jabatan *</Label>
+                  <Field>
+                    <FieldLabel>Jabatan *</FieldLabel>
                     <Input {...register(`experiences.${index}.job_title`)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Nama Perusahaan *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Nama Perusahaan *</FieldLabel>
                     <Input {...register(`experiences.${index}.company_name`)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Lokasi *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Lokasi *</FieldLabel>
                     <Input
                       {...register(`experiences.${index}.company_location`)}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Tipe Pekerjaan *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Tipe Pekerjaan *</FieldLabel>
                     <Select
                       value={watch(`experiences.${index}.job_type`)}
                       onValueChange={(v) =>
@@ -618,10 +660,10 @@ export function CVForm({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
+                  </Field>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label>Bulan Mulai</Label>
+                    <Field>
+                      <FieldLabel>Bulan Mulai</FieldLabel>
                       <Select
                         value={String(
                           watch(`experiences.${index}.start_month`)
@@ -644,9 +686,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tahun Mulai</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Tahun Mulai</FieldLabel>
                       <Select
                         value={String(watch(`experiences.${index}.start_year`))}
                         onValueChange={(v) =>
@@ -667,11 +709,11 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label>Bulan Selesai</Label>
+                    <Field>
+                      <FieldLabel>Bulan Selesai</FieldLabel>
                       <Select
                         value={String(watch(`experiences.${index}.end_month`))}
                         onValueChange={(v) =>
@@ -694,9 +736,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tahun Selesai</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Tahun Selesai</FieldLabel>
                       <Select
                         value={String(watch(`experiences.${index}.end_year`))}
                         onValueChange={(v) =>
@@ -716,9 +758,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </Field>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <Field orientation="horizontal">
                     <Checkbox
                       id={`exp-current-${index}`}
                       checked={watch(`experiences.${index}.is_current`)}
@@ -726,17 +768,17 @@ export function CVForm({
                         setValue(`experiences.${index}.is_current`, !!v)
                       }
                     />
-                    <Label htmlFor={`exp-current-${index}`}>
+                    <FieldLabel htmlFor={`exp-current-${index}`}>
                       Masih bekerja
-                    </Label>
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label>Deskripsi</Label>
+                    </FieldLabel>
+                  </Field>
+                  <Field className="md:col-span-2">
+                    <FieldLabel>Deskripsi</FieldLabel>
                     <Textarea
                       {...register(`experiences.${index}.description`)}
                       rows={3}
                     />
-                  </div>
+                  </Field>
                 </div>
               </div>
             ))}
@@ -857,17 +899,17 @@ export function CVForm({
                   </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Judul *</Label>
+                  <Field>
+                    <FieldLabel>Judul *</FieldLabel>
                     <Input {...register(`certificates.${index}.title`)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Penerbit *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Penerbit *</FieldLabel>
                     <Input {...register(`certificates.${index}.issuer`)} />
-                  </div>
+                  </Field>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label>Bulan Terbit</Label>
+                    <Field>
+                      <FieldLabel>Bulan Terbit</FieldLabel>
                       <Select
                         value={String(
                           watch(`certificates.${index}.issue_month`)
@@ -890,9 +932,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tahun Terbit</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Tahun Terbit</FieldLabel>
                       <Select
                         value={String(
                           watch(`certificates.${index}.issue_year`)
@@ -915,9 +957,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </Field>
                   </div>
-                  <div className="flex items-center space-x-2 md:col-span-2">
+                  <Field orientation="horizontal" className="md:col-span-2">
                     <Checkbox
                       id={`cert-no-expiry-${index}`}
                       checked={watch(`certificates.${index}.no_expiry`)}
@@ -925,15 +967,15 @@ export function CVForm({
                         setValue(`certificates.${index}.no_expiry`, !!v)
                       }
                     />
-                    <Label htmlFor={`cert-no-expiry-${index}`}>
+                    <FieldLabel htmlFor={`cert-no-expiry-${index}`}>
                       Tidak ada masa berlaku
-                    </Label>
-                  </div>
+                    </FieldLabel>
+                  </Field>
 
                   {!watch(`certificates.${index}.no_expiry`) && (
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-2">
-                        <Label>Bulan Kedaluwarsa</Label>
+                      <Field>
+                        <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
                         <Select
                           value={String(
                             watch(`certificates.${index}.expiry_month`)
@@ -957,9 +999,9 @@ export function CVForm({
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Tahun Kedaluwarsa</Label>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
                         <Select
                           value={String(
                             watch(`certificates.${index}.expiry_year`)
@@ -983,29 +1025,29 @@ export function CVForm({
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>
+                      </Field>
                     </div>
                   )}
 
-                  <div className="space-y-2">
-                    <Label>ID Kredensial</Label>
+                  <Field>
+                    <FieldLabel>ID Kredensial</FieldLabel>
                     <Input
                       {...register(`certificates.${index}.credential_id`)}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>URL Kredensial</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>URL Kredensial</FieldLabel>
                     <Input
                       {...register(`certificates.${index}.credential_url`)}
                     />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label>Deskripsi</Label>
+                  </Field>
+                  <Field className="md:col-span-2">
+                    <FieldLabel>Deskripsi</FieldLabel>
                     <Textarea
                       {...register(`certificates.${index}.description`)}
                       rows={2}
                     />
-                  </div>
+                  </Field>
                 </div>
               </div>
             ))}
@@ -1056,16 +1098,16 @@ export function CVForm({
                   </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>Judul *</Label>
+                  <Field>
+                    <FieldLabel>Judul *</FieldLabel>
                     <Input {...register(`awards.${index}.title`)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Pemberi *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Pemberi *</FieldLabel>
                     <Input {...register(`awards.${index}.issuer`)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Tahun</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Tahun</FieldLabel>
                     <Select
                       value={String(watch(`awards.${index}.year`))}
                       onValueChange={(v) =>
@@ -1083,11 +1125,11 @@ export function CVForm({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="space-y-2 md:col-span-3">
-                    <Label>Deskripsi</Label>
+                  </Field>
+                  <Field className="md:col-span-3">
+                    <FieldLabel>Deskripsi</FieldLabel>
                     <Input {...register(`awards.${index}.description`)} />
-                  </div>
+                  </Field>
                 </div>
               </div>
             ))}
@@ -1144,18 +1186,18 @@ export function CVForm({
                   </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Nama Organisasi *</Label>
+                  <Field>
+                    <FieldLabel>Nama Organisasi *</FieldLabel>
                     <Input
                       {...register(`organizations.${index}.organization_name`)}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Jabatan *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Jabatan *</FieldLabel>
                     <Input {...register(`organizations.${index}.role_title`)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Tipe Organisasi *</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Tipe Organisasi *</FieldLabel>
                     <Select
                       value={watch(`organizations.${index}.organization_type`)}
                       onValueChange={(v) =>
@@ -1180,14 +1222,14 @@ export function CVForm({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Lokasi</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Lokasi</FieldLabel>
                     <Input {...register(`organizations.${index}.location`)} />
-                  </div>
+                  </Field>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label>Bulan Mulai</Label>
+                    <Field>
+                      <FieldLabel>Bulan Mulai</FieldLabel>
                       <Select
                         value={String(
                           watch(`organizations.${index}.start_month`)
@@ -1210,9 +1252,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tahun Mulai</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Tahun Mulai</FieldLabel>
                       <Select
                         value={String(
                           watch(`organizations.${index}.start_year`)
@@ -1235,11 +1277,11 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-2">
-                      <Label>Bulan Selesai</Label>
+                    <Field>
+                      <FieldLabel>Bulan Selesai</FieldLabel>
                       <Select
                         value={String(
                           watch(`organizations.${index}.end_month`)
@@ -1264,9 +1306,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tahun Selesai</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Tahun Selesai</FieldLabel>
                       <Select
                         value={String(watch(`organizations.${index}.end_year`))}
                         onValueChange={(v) =>
@@ -1289,9 +1331,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </Field>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <Field orientation="horizontal">
                     <Checkbox
                       id={`org-current-${index}`}
                       checked={watch(`organizations.${index}.is_current`)}
@@ -1299,15 +1341,17 @@ export function CVForm({
                         setValue(`organizations.${index}.is_current`, !!v)
                       }
                     />
-                    <Label htmlFor={`org-current-${index}`}>Masih aktif</Label>
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label>Deskripsi</Label>
+                    <FieldLabel htmlFor={`org-current-${index}`}>
+                      Masih aktif
+                    </FieldLabel>
+                  </Field>
+                  <Field className="md:col-span-2">
+                    <FieldLabel>Deskripsi</FieldLabel>
                     <Textarea
                       {...register(`organizations.${index}.description`)}
                       rows={2}
                     />
-                  </div>
+                  </Field>
                 </div>
               </div>
             ))}

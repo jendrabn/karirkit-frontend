@@ -18,11 +18,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { LANGUAGE_OPTIONS } from "@/types/cv";
 
 export interface FilterValues {
   name?: string;
   dateFrom?: Date;
   dateTo?: Date;
+  language?: "id" | "en";
 }
 
 interface CVFilterModalProps {
@@ -61,9 +70,37 @@ export function CVFilterModal({
             <Label>Nama</Label>
             <Input
               value={localFilters.name || ""}
-              onChange={(e) => setLocalFilters({ ...localFilters, name: e.target.value })}
+              onChange={(e) =>
+                setLocalFilters({ ...localFilters, name: e.target.value })
+              }
               placeholder="Cari berdasarkan nama..."
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Bahasa</Label>
+            <Select
+              value={localFilters.language || "all"}
+              onValueChange={(value) =>
+                setLocalFilters({
+                  ...localFilters,
+                  language:
+                    value === "all" ? undefined : (value as "id" | "en"),
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Semua Bahasa" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Bahasa</SelectItem>
+                {LANGUAGE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -79,14 +116,18 @@ export function CVFilterModal({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateFrom ? format(localFilters.dateFrom, "dd/MM/yyyy") : "Dari"}
+                    {localFilters.dateFrom
+                      ? format(localFilters.dateFrom, "dd/MM/yyyy")
+                      : "Dari"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">
                   <Calendar
                     mode="single"
                     selected={localFilters.dateFrom}
-                    onSelect={(date) => setLocalFilters({ ...localFilters, dateFrom: date })}
+                    onSelect={(date) =>
+                      setLocalFilters({ ...localFilters, dateFrom: date })
+                    }
                     className="pointer-events-auto"
                   />
                 </PopoverContent>
@@ -102,14 +143,18 @@ export function CVFilterModal({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateTo ? format(localFilters.dateTo, "dd/MM/yyyy") : "Sampai"}
+                    {localFilters.dateTo
+                      ? format(localFilters.dateTo, "dd/MM/yyyy")
+                      : "Sampai"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">
                   <Calendar
                     mode="single"
                     selected={localFilters.dateTo}
-                    onSelect={(date) => setLocalFilters({ ...localFilters, dateTo: date })}
+                    onSelect={(date) =>
+                      setLocalFilters({ ...localFilters, dateTo: date })
+                    }
                     className="pointer-events-auto"
                   />
                 </PopoverContent>

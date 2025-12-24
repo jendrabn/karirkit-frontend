@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { PortfolioForm } from "@/components/portfolios/PortfolioForm";
+import { PortfolioForm } from "@/features/portfolios/components/PortfolioForm";
 import { usePortfolio } from "@/features/portfolios/api/get-portfolio";
 import { useUpdatePortfolio } from "@/features/portfolios/api/update-portfolio";
 import { useFormErrors } from "@/hooks/use-form-errors";
@@ -13,7 +13,7 @@ const PortfolioEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const form = useForm();
-  
+
   useFormErrors(form);
 
   const { data: portfolioResponse, isLoading } = usePortfolio({
@@ -78,8 +78,8 @@ const PortfolioEdit = () => {
         backButtonUrl="/portfolios"
       />
       <div className="max-w-4xl">
-        <PortfolioForm 
-          initialData={portfolio} 
+        <PortfolioForm
+          initialData={portfolio}
           onSubmit={handleSubmit}
           isLoading={updateMutation.isPending}
         />

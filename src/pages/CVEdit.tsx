@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { CVForm } from "@/components/cv/CVForm";
-import type { CVFormData } from "@/components/cv/CVForm";
+import { CVForm } from "@/features/cvs/components/CVForm";
+import type { CVFormData } from "@/features/cvs/components/CVForm";
 import { useCV } from "@/features/cvs/api/get-cv";
 import { useUpdateCV } from "@/features/cvs/api/update-cv";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ export default function CVEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const form = useForm<CVFormData>();
-  
+
   useFormErrors(form);
 
   const { data: cvResponse, isLoading: isCVLoading } = useCV({

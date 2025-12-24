@@ -39,6 +39,7 @@ export type CV = {
   awards: Award[];
   social_links: SocialLink[];
   organizations: Organization[];
+  language?: "id" | "en";
 };
 
 export type Education = {
@@ -119,6 +120,7 @@ export type GetCVsParams = {
   sort_by?: "created_at" | "updated_at" | "name";
   name?: string;
   email?: string;
+  language?: "id" | "en";
 };
 
 export const getCVs = (params?: GetCVsParams): Promise<CVsResponse> => {

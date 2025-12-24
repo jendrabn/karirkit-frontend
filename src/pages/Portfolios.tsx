@@ -56,7 +56,7 @@ import {
 import {
   PortfolioFilterModal,
   type PortfolioFilterValues,
-} from "@/components/portfolios/PortfolioFilterModal";
+} from "@/features/portfolios/components/PortfolioFilterModal";
 import { usePortfolios } from "@/features/portfolios/api/get-portfolios";
 import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
 import { useMassDeletePortfolios } from "@/features/portfolios/api/mass-delete-portfolios";

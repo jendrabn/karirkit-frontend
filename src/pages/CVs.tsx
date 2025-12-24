@@ -65,13 +65,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CVFilterModal } from "@/components/cv/CVFilterModal";
-import type { FilterValues } from "@/components/cv/CVFilterModal";
+import { CVFilterModal } from "@/features/cvs/components/CVFilterModal";
+import type { FilterValues } from "@/features/cvs/components/CVFilterModal";
 import {
   CVColumnToggle,
   defaultColumnVisibility,
-} from "@/components/cv/CVColumnToggle";
-import type { ColumnVisibility } from "@/components/cv/CVColumnToggle";
+} from "@/features/cvs/components/CVColumnToggle";
+import type { ColumnVisibility } from "@/features/cvs/components/CVColumnToggle";
 import { useCVs } from "@/features/cvs/api/get-cvs";
 import { useDeleteCV } from "@/features/cvs/api/delete-cv";
 import { useDuplicateCV } from "@/features/cvs/api/duplicate-cv";
