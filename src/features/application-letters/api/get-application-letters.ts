@@ -2,6 +2,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
+import type { Gender, MaritalStatus } from "@/types/applicationLetter";
 
 export type ApplicationLettersResponse = {
   items: ApplicationLetter[];
@@ -18,8 +19,8 @@ export type ApplicationLetter = {
   user_id: string;
   name: string;
   birth_place_date: string;
-  gender: "male" | "female";
-  marital_status: "single" | "married" | "divorced" | "widowed";
+  gender: Gender;
+  marital_status: MaritalStatus;
   education: string;
   phone: string;
   email: string;
@@ -53,7 +54,12 @@ export type GetApplicationLettersParams = {
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "created_at" | "updated_at" | "application_date" | "company_name" | "subject";
+  sort_by?:
+    | "created_at"
+    | "updated_at"
+    | "application_date"
+    | "company_name"
+    | "subject";
   company_name?: string;
   application_date?: string;
 };
@@ -74,7 +80,9 @@ export const getApplicationLetters = (
   });
 };
 
-export const getApplicationLettersQueryOptions = (params?: GetApplicationLettersParams) => {
+export const getApplicationLettersQueryOptions = (
+  params?: GetApplicationLettersParams
+) => {
   return queryOptions({
     queryKey: ["application-letters", params],
     queryFn: () => getApplicationLetters(params),

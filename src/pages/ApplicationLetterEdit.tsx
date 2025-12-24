@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { ApplicationLetterForm } from "@/components/application-letters/ApplicationLetterForm";
-import type { ApplicationLetterFormData } from "@/components/application-letters/ApplicationLetterForm";
+import { ApplicationLetterForm } from "@/features/application-letters/components/ApplicationLetterForm";
+import type { ApplicationLetterFormData } from "@/features/application-letters/components/ApplicationLetterForm";
 import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
 import { useUpdateApplicationLetter } from "@/features/application-letters/api/update-application-letter";
 import { toast } from "sonner";
@@ -14,12 +14,13 @@ export default function ApplicationLetterEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
   const form = useForm<ApplicationLetterFormData>();
-  
+
   useFormErrors(form);
 
-  const { data: letterResponse, isLoading: isLetterLoading } = useApplicationLetter({
-    id: id!,
-  });
+  const { data: letterResponse, isLoading: isLetterLoading } =
+    useApplicationLetter({
+      id: id!,
+    });
 
   const updateMutation = useUpdateApplicationLetter({
     mutationConfig: {
@@ -56,7 +57,7 @@ export default function ApplicationLetterEdit() {
   if (!letter) {
     return (
       <DashboardLayout>
-        <PageHeader 
+        <PageHeader
           title="Surat Lamaran Tidak Ditemukan"
           showBackButton
           backButtonUrl="/application-letters"

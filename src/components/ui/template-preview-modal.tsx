@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DocumentTemplate } from "@/data/documentTemplates";
+import type { DocumentTemplate } from "@/data/documentTemplates";
 
 interface TemplatePreviewModalProps {
   open: boolean;
@@ -27,13 +27,11 @@ export function TemplatePreviewModal({
           <DialogTitle>{template.name}</DialogTitle>
         </DialogHeader>
         <ScrollArea className="flex-1 max-h-[70vh]">
-          <div className="pr-4">
-            <img
-              src={template.previewImage}
-              alt={template.name}
-              className="w-full h-auto rounded-lg border border-border shadow-xs"
-            />
-          </div>
+          <img
+            src={template.previewImage}
+            alt={template.name}
+            className="w-full h-auto border border-border shadow-xs"
+          />
         </ScrollArea>
       </DialogContent>
     </Dialog>

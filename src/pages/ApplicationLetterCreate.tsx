@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { ApplicationLetterForm } from "@/components/application-letters/ApplicationLetterForm";
-import type { ApplicationLetterFormData } from "@/components/application-letters/ApplicationLetterForm";
+import { ApplicationLetterForm } from "@/features/application-letters/components/ApplicationLetterForm";
+import type { ApplicationLetterFormData } from "@/features/application-letters/components/ApplicationLetterForm";
 import { useCreateApplicationLetter } from "@/features/application-letters/api/create-application-letter";
 import { toast } from "sonner";
 import { useFormErrors } from "@/hooks/use-form-errors";
@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 export default function ApplicationLetterCreate() {
   const navigate = useNavigate();
   const form = useForm<ApplicationLetterFormData>();
-  
+
   useFormErrors(form);
 
   const createMutation = useCreateApplicationLetter({

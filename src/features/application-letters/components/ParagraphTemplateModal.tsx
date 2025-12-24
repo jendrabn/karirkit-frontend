@@ -32,6 +32,7 @@ interface ParagraphTemplateModalProps {
   paragraphType: ParagraphType | null;
   currentValue: string;
   onSelectTemplate: (content: string) => void;
+  language?: string;
 }
 
 export function ParagraphTemplateModal({
@@ -40,13 +41,20 @@ export function ParagraphTemplateModal({
   paragraphType,
   currentValue,
   onSelectTemplate,
+  language = "id",
 }: ParagraphTemplateModalProps) {
-  const [selectedTemplate, setSelectedTemplate] = useState<ParagraphTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<ParagraphTemplate | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   if (!paragraphType) return null;
 
-  const templates = paragraphTemplates[paragraphType];
+  const templates = paragraphTemplates[paragraphType].filter(
+    (t) =>
+      !t.language ||
+      t.language === language ||
+      (!language && t.language === "id")
+  );
   const typeLabel = paragraphTypeLabels[paragraphType];
 
   const handleSelectTemplate = (template: ParagraphTemplate) => {
@@ -110,7 +118,8 @@ export function ParagraphTemplateModal({
           <AlertDialogHeader>
             <AlertDialogTitle>Ganti Teks yang Ada?</AlertDialogTitle>
             <AlertDialogDescription>
-              Field ini sudah memiliki isi. Apakah Anda yakin ingin mengganti dengan template yang dipilih? Teks yang ada akan hilang.
+              Field ini sudah memiliki isi. Apakah Anda yakin ingin mengganti
+              dengan template yang dipilih? Teks yang ada akan hilang.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

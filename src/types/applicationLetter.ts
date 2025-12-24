@@ -1,5 +1,5 @@
 export type Gender = "male" | "female";
-export type MaritalStatus = "single" | "married" | "divorced" | "widowed";
+export type MaritalStatus = "single" | "married" | "widowed" | "divorced";
 export type Language = "en" | "id";
 
 export interface ApplicationLetter {
@@ -46,12 +46,13 @@ export const GENDER_OPTIONS: { value: Gender; label: string }[] = [
   { value: "female", label: "Perempuan" },
 ];
 
-export const MARITAL_STATUS_OPTIONS: { value: MaritalStatus; label: string }[] = [
-  { value: "single", label: "Belum Menikah" },
-  { value: "married", label: "Menikah" },
-  { value: "divorced", label: "Cerai" },
-  { value: "widowed", label: "Janda/Duda" },
-];
+export const MARITAL_STATUS_OPTIONS: { value: MaritalStatus; label: string }[] =
+  [
+    { value: "single", label: "Belum Menikah" },
+    { value: "married", label: "Menikah" },
+    { value: "divorced", label: "Cerai" },
+    { value: "widowed", label: "Janda/Duda" },
+  ];
 
 export const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
   { value: "id", label: "Bahasa Indonesia" },

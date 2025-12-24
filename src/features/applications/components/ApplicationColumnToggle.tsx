@@ -83,7 +83,10 @@ interface ColumnToggleProps {
   onVisibilityChange: (visibility: ColumnVisibility) => void;
 }
 
-export function ColumnToggle({ visibility, onVisibilityChange }: ColumnToggleProps) {
+export function ApplicationColumnToggle({
+  visibility,
+  onVisibilityChange,
+}: ColumnToggleProps) {
   const toggleColumn = (column: keyof ColumnVisibility) => {
     onVisibilityChange({
       ...visibility,
@@ -99,7 +102,10 @@ export function ColumnToggle({ visibility, onVisibilityChange }: ColumnTogglePro
           View
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 z-50 bg-popover max-h-80 overflow-y-auto">
+      <DropdownMenuContent
+        align="end"
+        className="w-56 z-50 bg-popover max-h-80 overflow-y-auto"
+      >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {columnOrder.map((column) => (

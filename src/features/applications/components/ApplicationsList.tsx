@@ -56,10 +56,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ApplicationFilterModal } from "./ApplicationFilterModal";
 import {
-  ColumnToggle,
+  ApplicationColumnToggle,
   defaultColumnVisibility,
   type ColumnVisibility,
-} from "./ColumnToggle";
+} from "./ApplicationColumnToggle";
 import { ApplicationStats } from "./ApplicationStats";
 import {
   useApplications,
@@ -493,7 +493,7 @@ export const ApplicationsList = () => {
             <Filter className="h-4 w-4 mr-2" />
             Filter
           </Button>
-          <ColumnToggle
+          <ApplicationColumnToggle
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
           />
@@ -785,7 +785,7 @@ export const ApplicationsList = () => {
         {pagination.total_items > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-border/60">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Menampilkan</span>
+              <span>Tampilkan</span>
               <Select
                 value={String(perPage)}
                 onValueChange={(val) => {
