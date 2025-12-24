@@ -178,26 +178,30 @@ export function DashboardSidebar() {
             <DropdownMenuSeparator />
             <div className="px-2 py-1.5">
               <p className="text-xs text-muted-foreground mb-2">Tema</p>
-              <button
-                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                className={`w-full flex items-center justify-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${
-                  theme === "dark"
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                }`}
-              >
-                {theme === "dark" ? (
-                  <>
-                    <Sun className="h-3 w-3" />
-                    Terang
-                  </>
-                ) : (
-                  <>
-                    <Moon className="h-3 w-3" />
-                    Gelap
-                  </>
-                )}
-              </button>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setTheme("light")}
+                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${
+                    theme === "light"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  <Sun className="h-3 w-3" />
+                  Terang
+                </button>
+                <button
+                  onClick={() => setTheme("dark")}
+                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${
+                    theme === "dark"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  <Moon className="h-3 w-3" />
+                  Gelap
+                </button>
+              </div>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem
