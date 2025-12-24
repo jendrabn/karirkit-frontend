@@ -168,6 +168,9 @@ export const paths = {
       detail: {
         getHref: (id: string) => `/admin/templates/${id}`,
       },
+      guide: {
+        getHref: () => "/admin/templates/guide",
+      },
     },
   },
 } as const;

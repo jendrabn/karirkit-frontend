@@ -328,6 +328,13 @@ export const createAppRouter = (queryClient: QueryClient) =>
         ),
     },
     {
+      path: "/admin/templates/guide",
+      lazy: () =>
+        import("./pages/AdminTemplateGuide").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
       path: "/admin/templates/:id/edit",
       lazy: () =>
         import("./pages/AdminTemplateEdit").then(

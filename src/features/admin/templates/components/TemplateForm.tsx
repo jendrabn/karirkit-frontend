@@ -21,7 +21,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, X, FileText } from "lucide-react";
+import { Upload, X, FileText, CircleHelp } from "lucide-react";
 import { toast } from "sonner";
 import { useUploadFile } from "@/lib/upload";
 import {
@@ -125,8 +125,17 @@ export function TemplateForm({
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <FieldSet disabled={isLoading || isUploading} className="space-y-6">
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>Informasi Template</CardTitle>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => window.open("/admin/templates/guide", "_blank")}
+            >
+              <CircleHelp className="w-4 h-4 mr-2" />
+              Panduan Pembuatan Template
+            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
