@@ -11,14 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import type { BlogCategory } from "@/features/admin/blogs/api/get-blog-categories";
 import { useEffect } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
@@ -103,72 +96,49 @@ export function CategoryModal({
           </DialogTitle>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama Kategori *</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      onChange={handleNameChange}
-                      placeholder="Masukkan nama kategori"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <Field>
+            <FieldLabel>Nama Kategori *</FieldLabel>
+            <Input
+              {...form.register("name", {
+                onChange: handleNameChange,
+              })}
+              placeholder="Masukkan nama kategori"
             />
+            <FieldError>{form.formState.errors.name?.message}</FieldError>
+          </Field>
 
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Slug *</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="nama-kategori" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          <Field>
+            <FieldLabel>Slug *</FieldLabel>
+            <Input {...form.register("slug")} placeholder="nama-kategori" />
+            <FieldError>{form.formState.errors.slug?.message}</FieldError>
+          </Field>
+
+          <Field>
+            <FieldLabel>Deskripsi *</FieldLabel>
+            <Textarea
+              {...form.register("description")}
+              placeholder="Masukkan deskripsi kategori"
+              rows={3}
             />
+            <FieldError>
+              {form.formState.errors.description?.message}
+            </FieldError>
+          </Field>
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Deskripsi *</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Masukkan deskripsi kategori"
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Batal
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Menyimpan..." : category ? "Perbarui" : "Simpan"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              Batal
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Menyimpan..." : category ? "Perbarui" : "Simpan"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

@@ -10,14 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import type { BlogTag } from "@/types/blog";
 import { useEffect } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
@@ -96,57 +89,37 @@ export function TagModal({
           <DialogTitle>{tag ? "Edit Tag" : "Tambah Tag"}</DialogTitle>
         </DialogHeader>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama Tag *</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      onChange={handleNameChange}
-                      placeholder="Masukkan nama tag"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <Field>
+            <FieldLabel>Nama Tag *</FieldLabel>
+            <Input
+              {...form.register("name", {
+                onChange: handleNameChange,
+              })}
+              placeholder="Masukkan nama tag"
             />
+            <FieldError>{form.formState.errors.name?.message}</FieldError>
+          </Field>
 
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Slug *</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="nama-tag" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Field>
+            <FieldLabel>Slug *</FieldLabel>
+            <Input {...form.register("slug")} placeholder="nama-tag" />
+            <FieldError>{form.formState.errors.slug?.message}</FieldError>
+          </Field>
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Batal
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Menyimpan..." : tag ? "Perbarui" : "Simpan"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              Batal
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Menyimpan..." : tag ? "Perbarui" : "Simpan"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

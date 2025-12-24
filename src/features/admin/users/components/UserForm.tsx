@@ -9,18 +9,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"; // Assuming these exist in @/components/ui/form
+import { Controller } from "react-hook-form";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { useFormErrors } from "@/hooks/use-form-errors";
 import { AvatarUpload } from "./AvatarUpload";
 import { USER_ROLE_OPTIONS } from "@/types/user";
-import { createUserInputSchema, type CreateUserInput } from "../api/create-user";
-import { updateUserInputSchema, type UpdateUserInput } from "../api/update-user";
+import {
+  createUserInputSchema,
+  type CreateUserInput,
+} from "../api/create-user";
+import {
+  updateUserInputSchema,
+  type UpdateUserInput,
+} from "../api/update-user";
 import type { User } from "../api/get-users";
 
 interface UserFormProps {
@@ -33,7 +34,9 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
   const isEdit = !!initialData;
 
   const form = useForm<CreateUserInput | UpdateUserInput>({
-    resolver: zodResolver(isEdit ? updateUserInputSchema : createUserInputSchema),
+    resolver: zodResolver(
+      isEdit ? updateUserInputSchema : createUserInputSchema
+    ),
     defaultValues: {
       name: initialData?.name || "",
       username: initialData?.username || "",
@@ -45,152 +48,115 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
     },
   });
 
+  useFormErrors(form);
+
   const handleSubmit = (data: CreateUserInput | UpdateUserInput) => {
     onSubmit(data);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="flex justify-center mb-6">
-          <FormField
-            control={form.control}
-            name="avatar"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <AvatarUpload value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <Controller
+        control={form.control}
+        name="avatar"
+        render={({ field }) => (
+          <div className="flex justify-center mb-6">
+            <Field>
+              <AvatarUpload value={field.value} onChange={field.onChange} />
+              <FieldError>{form.formState.errors.avatar?.message}</FieldError>
+            </Field>
+          </div>
+        )}
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nama Lengkap *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Masukkan nama lengkap" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Field>
+          <FieldLabel>Nama Lengkap *</FieldLabel>
+          <Input
+            placeholder="Masukkan nama lengkap"
+            {...form.register("name")}
           />
+          <FieldError>{form.formState.errors.name?.message}</FieldError>
+        </Field>
 
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Masukkan username" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        <Field>
+          <FieldLabel>Username *</FieldLabel>
+          <Input
+            placeholder="Masukkan username"
+            {...form.register("username")}
           />
+          <FieldError>{form.formState.errors.username?.message}</FieldError>
+        </Field>
 
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email *</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="Masukkan email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        <Field>
+          <FieldLabel>Email *</FieldLabel>
+          <Input
+            type="email"
+            placeholder="Masukkan email"
+            {...form.register("email")}
           />
+          <FieldError>{form.formState.errors.email?.message}</FieldError>
+        </Field>
 
-          {!isEdit && (
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Masukkan password"
-                      {...field}
-                      value={(field.value as string) || ""}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        {!isEdit && (
+          <Field>
+            <FieldLabel>Password *</FieldLabel>
+            <Input
+              type="password"
+              placeholder="Masukkan password"
+              {...form.register("password")}
             />
+            <FieldError>
+              {(form.formState.errors as any).password?.message}
+            </FieldError>
+          </Field>
+        )}
+
+        <Field>
+          <FieldLabel>Nomor Telepon</FieldLabel>
+          <Input
+            placeholder="Masukkan nomor telepon"
+            {...form.register("phone")}
+          />
+          <FieldError>{form.formState.errors.phone?.message}</FieldError>
+        </Field>
+
+        <Controller
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <Field>
+              <FieldLabel>Role *</FieldLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih role" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  {USER_ROLE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError>{form.formState.errors.role?.message}</FieldError>
+            </Field>
           )}
+        />
+      </div>
 
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nomor Telepon</FormLabel>
-                <FormControl>
-                  <Input placeholder="Masukkan nomor telepon" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Role *</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih role" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="bg-popover z-50">
-                    {USER_ROLE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => window.history.back()}
-          >
-            Batal
-          </Button>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading
-              ? "Menyimpan..."
-              : isEdit
-              ? "Update User"
-              : "Tambah User"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <div className="flex justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => window.history.back()}
+        >
+          Batal
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Menyimpan..." : isEdit ? "Update User" : "Tambah User"}
+        </Button>
+      </div>
+    </form>
   );
 }
