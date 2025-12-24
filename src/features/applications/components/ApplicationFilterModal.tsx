@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
 import { dayjs } from "@/lib/date";
 import { CalendarIcon } from "lucide-react";

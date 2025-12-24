@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {

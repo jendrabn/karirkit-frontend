@@ -27,11 +27,13 @@ export function TemplatePreviewModal({
           <DialogTitle>{template.name}</DialogTitle>
         </DialogHeader>
         <ScrollArea className="flex-1 max-h-[70vh]">
-          <img
-            src={template.previewImage}
-            alt={template.name}
-            className="w-full h-auto border border-border shadow-xs"
-          />
+          <div className="pr-4">
+            <img
+              src={template.previewImage}
+              alt={template.name}
+              className="w-full h-auto rounded-lg border border-border shadow-xs"
+            />
+          </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>

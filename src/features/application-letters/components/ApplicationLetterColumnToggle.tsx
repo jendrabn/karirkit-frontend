@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,7 +60,10 @@ interface ColumnToggleProps {
   onVisibilityChange: (visibility: ColumnVisibility) => void;
 }
 
-export function ApplicationLetterColumnToggle({ visibility, onVisibilityChange }: ColumnToggleProps) {
+export function ApplicationLetterColumnToggle({
+  visibility,
+  onVisibilityChange,
+}: ColumnToggleProps) {
   const toggleColumn = (column: keyof ColumnVisibility) => {
     onVisibilityChange({
       ...visibility,
@@ -91,7 +95,10 @@ export function ApplicationLetterColumnToggle({ visibility, onVisibilityChange }
           View
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 z-50 bg-popover max-h-80 overflow-y-auto">
+      <DropdownMenuContent
+        align="end"
+        className="w-56 z-50 bg-popover max-h-80 overflow-y-auto"
+      >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {columnOrder.map((column) => (

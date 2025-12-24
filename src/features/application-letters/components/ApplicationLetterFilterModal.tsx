@@ -79,14 +79,18 @@ export function ApplicationLetterFilterModal({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateFrom ? dayjs(localFilters.dateFrom).format("DD/MM/YYYY") : "Dari"}
+                    {localFilters.dateFrom
+                      ? dayjs(localFilters.dateFrom).format("DD/MM/YYYY")
+                      : "Dari"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">
                   <Calendar
                     mode="single"
                     selected={localFilters.dateFrom}
-                    onSelect={(date) => setLocalFilters({ ...localFilters, dateFrom: date })}
+                    onSelect={(date) =>
+                      setLocalFilters({ ...localFilters, dateFrom: date })
+                    }
                     className="pointer-events-auto"
                   />
                 </PopoverContent>
@@ -101,14 +105,18 @@ export function ApplicationLetterFilterModal({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateTo ? dayjs(localFilters.dateTo).format("DD/MM/YYYY") : "Sampai"}
+                    {localFilters.dateTo
+                      ? dayjs(localFilters.dateTo).format("DD/MM/YYYY")
+                      : "Sampai"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">
                   <Calendar
                     mode="single"
                     selected={localFilters.dateTo}
-                    onSelect={(date) => setLocalFilters({ ...localFilters, dateTo: date })}
+                    onSelect={(date) =>
+                      setLocalFilters({ ...localFilters, dateTo: date })
+                    }
                     className="pointer-events-auto"
                   />
                 </PopoverContent>
@@ -121,7 +129,12 @@ export function ApplicationLetterFilterModal({
             <Label>Bahasa</Label>
             <Select
               value={localFilters.language || ""}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, language: value as Language })}
+              onValueChange={(value) =>
+                setLocalFilters({
+                  ...localFilters,
+                  language: value as Language,
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih bahasa" />
@@ -142,7 +155,12 @@ export function ApplicationLetterFilterModal({
             <Input
               placeholder="Cari nama perusahaan..."
               value={localFilters.company_name || ""}
-              onChange={(e) => setLocalFilters({ ...localFilters, company_name: e.target.value })}
+              onChange={(e) =>
+                setLocalFilters({
+                  ...localFilters,
+                  company_name: e.target.value,
+                })
+              }
             />
           </div>
         </div>
@@ -151,9 +169,7 @@ export function ApplicationLetterFilterModal({
           <Button variant="outline" onClick={handleReset}>
             Reset
           </Button>
-          <Button onClick={handleApply}>
-            Terapkan Filter
-          </Button>
+          <Button onClick={handleApply}>Terapkan Filter</Button>
         </div>
       </DialogContent>
     </Dialog>

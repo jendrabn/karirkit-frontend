@@ -27,6 +27,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import type { User } from "@/types/api";
 import { useFormErrors } from "@/hooks/use-form-errors";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 type ProfileFormData = UpdateProfileInput;
 
@@ -127,121 +128,132 @@ const ProfileForm = () => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldSet>
-        <FieldLegend>Informasi Profil</FieldLegend>
-        <FieldDescription>
-          Perbarui informasi profil dan kontak Anda di sini.
-        </FieldDescription>
+    <Card>
+      <CardHeader>
+        <CardTitle>Informasi Profil</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FieldSet>
+            <FieldLegend>Informasi Profil</FieldLegend>
+            <FieldDescription>
+              Perbarui informasi profil dan kontak Anda di sini.
+            </FieldDescription>
 
-        <FieldGroup>
-          {/* Avatar Upload */}
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={buildImageUrl(avatarPreview)} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-                  {user?.name?.charAt(0) || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <label
-                htmlFor="avatar-upload"
-                className="absolute bottom-0 right-0 p-1.5 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
-              >
-                {uploadMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Camera className="h-4 w-4" />
-                )}
-              </label>
-              <input
-                id="avatar-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarUpload}
-                disabled={uploadMutation.isPending}
-              />
+            <FieldGroup>
+              {/* Avatar Upload */}
+              <div className="flex flex-col items-center gap-4">
+                <div className="relative">
+                  <Avatar className="h-24 w-24">
+                    <AvatarImage src={buildImageUrl(avatarPreview)} />
+                    <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+                      {user?.name?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute bottom-0 right-0 p-1.5 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
+                  >
+                    {uploadMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Camera className="h-4 w-4" />
+                    )}
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                    disabled={uploadMutation.isPending}
+                  />
+                </div>
+              </div>
+
+              <Field>
+                <FieldLabel htmlFor="name">Nama Lengkap</FieldLabel>
+                <Input
+                  id="name"
+                  {...form.register("name")}
+                  placeholder="Masukkan nama lengkap"
+                  onKeyDown={handleKeyDown}
+                />
+                <FieldError>{form.formState.errors.name?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="username">Username</FieldLabel>
+                <Input
+                  id="username"
+                  {...form.register("username")}
+                  placeholder="Masukkan username"
+                  onKeyDown={handleKeyDown}
+                />
+                <FieldError>
+                  {form.formState.errors.username?.message}
+                </FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  {...form.register("email")}
+                  placeholder="Masukkan email"
+                  onKeyDown={handleKeyDown}
+                />
+                <FieldError>{form.formState.errors.email?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="phone">No. Telepon</FieldLabel>
+                <Input
+                  id="phone"
+                  {...form.register("phone")}
+                  placeholder="Masukkan nomor telepon"
+                  onKeyDown={handleKeyDown}
+                />
+                <FieldError>{form.formState.errors.phone?.message}</FieldError>
+              </Field>
+            </FieldGroup>
+          </FieldSet>
+
+          {/* Timestamp */}
+          <div className="pt-4 border-t mt-6">
+            <div className="flex items-center justify-center">
+              <div className="bg-muted/50 rounded-full px-4 py-2">
+                <p className="text-sm text-muted-foreground">
+                  Bergabung sejak{" "}
+                  <span className="font-medium text-foreground">
+                    {dayjs
+                      .utc(user?.created_at)
+                      .local()
+                      .format("DD MMMM YYYY") || "-"}
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
 
-          <Field>
-            <FieldLabel htmlFor="name">Nama Lengkap</FieldLabel>
-            <Input
-              id="name"
-              {...form.register("name")}
-              placeholder="Masukkan nama lengkap"
-              onKeyDown={handleKeyDown}
-            />
-            <FieldError>{form.formState.errors.name?.message}</FieldError>
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="username">Username</FieldLabel>
-            <Input
-              id="username"
-              {...form.register("username")}
-              placeholder="Masukkan username"
-              onKeyDown={handleKeyDown}
-            />
-            <FieldError>{form.formState.errors.username?.message}</FieldError>
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input
-              id="email"
-              type="email"
-              {...form.register("email")}
-              placeholder="Masukkan email"
-              onKeyDown={handleKeyDown}
-            />
-            <FieldError>{form.formState.errors.email?.message}</FieldError>
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="phone">No. Telepon</FieldLabel>
-            <Input
-              id="phone"
-              {...form.register("phone")}
-              placeholder="Masukkan nomor telepon"
-              onKeyDown={handleKeyDown}
-            />
-            <FieldError>{form.formState.errors.phone?.message}</FieldError>
-          </Field>
-        </FieldGroup>
-      </FieldSet>
-
-      {/* Timestamp */}
-      <div className="pt-4 border-t mt-6">
-        <div className="flex items-center justify-center">
-          <div className="bg-muted/50 rounded-full px-4 py-2">
-            <p className="text-sm text-muted-foreground">
-              Bergabung sejak{" "}
-              <span className="font-medium text-foreground">
-                {dayjs.utc(user?.created_at).local().format("DD MMMM YYYY") ||
-                  "-"}
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <Button
-        type="submit"
-        className="w-full mt-6"
-        disabled={updateProfileMutation.isPending}
-      >
-        {updateProfileMutation.isPending ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Menyimpan...
-          </>
-        ) : (
-          "Simpan Perubahan"
-        )}
-      </Button>
-    </form>
+          <Button
+            type="submit"
+            className="w-full mt-6"
+            disabled={updateProfileMutation.isPending}
+          >
+            {updateProfileMutation.isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Menyimpan...
+              </>
+            ) : (
+              "Simpan Perubahan"
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 

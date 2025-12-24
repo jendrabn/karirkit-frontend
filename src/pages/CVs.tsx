@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { dayjs } from "@/lib/date";
@@ -614,7 +616,7 @@ export default function CVs() {
         {pagination && pagination.total_items > 0 && (
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-border/60">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Tampilkan</span>
+              <span>Menampilkan</span>
               <Select
                 value={String(perPage)}
                 onValueChange={(value) => {

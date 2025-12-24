@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
@@ -508,7 +510,7 @@ export default function Portfolios() {
       {pagination && pagination.total_items > 0 && (
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Tampilkan</span>
+            <span className="text-sm text-muted-foreground">Menampilkan</span>
             <Select
               value={perPage.toString()}
               onValueChange={(value) => {

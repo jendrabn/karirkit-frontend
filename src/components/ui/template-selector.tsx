@@ -1,7 +1,7 @@
-import { useState, useId } from "react";
+import { useState } from "react";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -27,14 +27,13 @@ export function TemplateSelector({
 }: TemplateSelectorProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const selectedTemplate = templates.find((t) => t.id === value) || null;
-  const id = useId();
 
   return (
-    <Field>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+    <div className="space-y-2">
+      <Label>{label}</Label>
       <div className="flex gap-2">
         <Select value={value} onValueChange={onChange}>
-          <SelectTrigger id={id} className="flex-1">
+          <SelectTrigger className="flex-1">
             <SelectValue placeholder="Pilih template" />
           </SelectTrigger>
           <SelectContent className="z-50">
@@ -49,7 +48,6 @@ export function TemplateSelector({
           type="button"
           variant="outline"
           size="icon"
-          className="h-9 w-9"
           onClick={() => setPreviewOpen(true)}
           disabled={!value}
           title="Lihat Contoh Template"
@@ -63,6 +61,6 @@ export function TemplateSelector({
         onOpenChange={setPreviewOpen}
         template={selectedTemplate}
       />
-    </Field>
+    </div>
   );
 }
