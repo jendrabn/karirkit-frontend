@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { buildImageUrl } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,51 +18,57 @@ import {
   X,
   LogOut,
   User,
+  Home,
   FileText,
   Briefcase,
   FolderOpen,
   Globe,
-  LayoutDashboard,
+  Sun,
+  Moon,
 } from "lucide-react";
+import logo from "@/assets/images/logo.png";
 import { DonationModal } from "./DonationModal";
-import { useAuth } from "@/contexts/AuthContext";
-import logo from "../assets/images/logo.png";
-import { paths } from "@/config/paths";
+import { ThemeToggle } from "./ThemeToggle";
+import { useTheme } from "@/hooks/use-theme";
 
 const navLinks = [
-  { href: paths.home.getHref(), label: "Beranda" },
-  { href: "/#application-tracker", label: "Pelacak Lamaran" },
-  { href: "/#surat-lamaran", label: "Surat Lamaran" },
-  { href: "/#cv", label: "CV" },
-  { href: "/#portofolio", label: "Portofolio" },
-  { href: paths.blog.list.getHref(), label: "Blog" },
+  { href: "#beranda", label: "Beranda" },
+  { href: "#application-tracker", label: "Application Tracker" },
+  { href: "#surat-lamaran", label: "Surat Lamaran" },
+  { href: "#cv", label: "CV" },
+  { href: "#portofolio", label: "Portofolio" },
+  { href: "/blog", label: "Blog" },
 ];
 
-export function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
+interface NavbarProps {
+  isLoggedIn?: boolean;
+  onLoginToggle?: () => void;
+}
+
+export function Navbar({ isLoggedIn = false, onLoginToggle }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [donationModalOpen, setDonationModalOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
           {/* Logo */}
-          <Link to={paths.home.getHref()} className="flex items-center gap-2">
+          <a href="#beranda" className="flex items-center gap-2">
             <img src={logo} alt="KarirKit Logo" className="h-8 w-auto" />
-          </Link>
+          </a>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <NavLink
+              <a
                 key={link.href}
-                to={link.href}
+                href={link.href}
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
-              </NavLink>
+              </a>
             ))}
             <button
               onClick={() => setDonationModalOpen(true)}
@@ -76,67 +80,49 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons / User Menu */}
           <div className="hidden lg:flex items-center gap-3">
-            {isAuthenticated && user ? (
+            <ThemeToggle />
+            {isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <Avatar className="h-9 w-9">
                       <AvatarImage
-                        src={buildImageUrl(user.avatar)}
-                        alt={user.name}
+                        src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face"
+                        alt="Selena Gomez"
                       />
-                      <AvatarFallback>
-                        {user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                          .slice(0, 2)}
-                      </AvatarFallback>
+                      <AvatarFallback>SG</AvatarFallback>
                     </Avatar>
                     <span className="text-sm font-medium text-foreground">
-                      {user.name}
+                      Selena Gomez
                     </span>
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-popover">
-                  <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={paths.dashboard.getHref()}>
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
-                      Dashboard
-                    </Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Home className="mr-2 h-4 w-4" />
+                    Halaman Utama
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={paths.applications.list.getHref()}>
-                      <Briefcase className="mr-2 h-4 w-4" />
-                      Pelacak Lamaran
-                    </Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    Application Tracker
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={paths.applicationLetters.list.getHref()}>
-                      <FileText className="mr-2 h-4 w-4" />
-                      Surat Lamaran
-                    </Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Surat Lamaran
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={paths.cvs.list.getHref()}>
-                      <FileText className="mr-2 h-4 w-4" />
-                      CV
-                    </Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <FileText className="mr-2 h-4 w-4" />
+                    CV
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={paths.portfolios.list.getHref()}>
-                      <FolderOpen className="mr-2 h-4 w-4" />
-                      Portofolio
-                    </Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <FolderOpen className="mr-2 h-4 w-4" />
+                    Portofolio
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={paths.account.profile.getHref()}>
-                      <User className="mr-2 h-4 w-4" />
-                      Akun
-                    </Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    Akun
                   </DropdownMenuItem>
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
@@ -154,13 +140,23 @@ export function Navbar() {
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                   </DropdownMenuSub>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() =>
+                      setTheme(theme === "light" ? "dark" : "light")
+                    }
+                  >
+                    {theme === "dark" ? (
+                      <Sun className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Moon className="mr-2 h-4 w-4" />
+                    )}
+                    {theme === "dark" ? "Terang" : "Gelap"}
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-destructive"
-                    onClick={() => {
-                      logout();
-                      navigate("/");
-                    }}
+                    onClick={onLoginToggle}
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Keluar
@@ -170,26 +166,29 @@ export function Navbar() {
             ) : (
               <>
                 <Button variant="outline" asChild>
-                  <Link to={paths.auth.login.getHref()}>Masuk</Link>
+                  <a href="/auth/login">Masuk</a>
                 </Button>
                 <Button variant="default" asChild>
-                  <Link to={paths.auth.register.getHref()}>Daftar</Link>
+                  <a href="/auth/register">Daftar</a>
                 </Button>
               </>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          {/* Mobile Theme Toggle & Menu Button */}
+          <div className="lg:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              className="p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -216,24 +215,21 @@ export function Navbar() {
                 Donasi
               </button>
               <div className="flex gap-3 pt-4 border-t border-border">
-                {isAuthenticated && user ? (
+                {isLoggedIn ? (
                   <Button
                     variant="outline"
                     className="flex-1"
-                    onClick={() => {
-                      logout();
-                      navigate("/");
-                    }}
+                    onClick={onLoginToggle}
                   >
                     Keluar
                   </Button>
                 ) : (
                   <>
                     <Button variant="outline" className="flex-1" asChild>
-                      <Link to={paths.auth.login.getHref()}>Masuk</Link>
+                      <a href="/auth/login">Masuk</a>
                     </Button>
                     <Button variant="default" className="flex-1" asChild>
-                      <Link to={paths.auth.register.getHref()}>Daftar</Link>
+                      <a href="/auth/register">Daftar</a>
                     </Button>
                   </>
                 )}

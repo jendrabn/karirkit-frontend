@@ -12,6 +12,7 @@ import { Toaster } from "sonner";
 import { RouterProvider } from "react-router";
 import { createAppRouter } from "./router";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "./hooks/use-theme";
 
 export const App = () => {
   const [queryClient] = React.useState(
@@ -25,18 +26,20 @@ export const App = () => {
 
   return (
     <ErrorBoundary FallbackComponent={MainErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
-          <AuthProvider>
-            <ReactQueryDevtools initialIsOpen={env.DEBUG} />
+      <ThemeProvider defaultTheme="light" storageKey="karirkit-ui-theme">
+        <QueryClientProvider client={queryClient}>
+          <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
+            <AuthProvider>
+              <ReactQueryDevtools initialIsOpen={env.DEBUG} />
 
-            <React.Suspense fallback={<LoadingFallback />}>
-              <RouterProvider router={router} />
-              <Toaster position="top-center" />
-            </React.Suspense>
-          </AuthProvider>
-        </GoogleOAuthProvider>
-      </QueryClientProvider>
+              <React.Suspense fallback={<LoadingFallback />}>
+                <RouterProvider router={router} />
+                <Toaster position="top-center" />
+              </React.Suspense>
+            </AuthProvider>
+          </GoogleOAuthProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 };
