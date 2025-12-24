@@ -45,10 +45,10 @@ const educationSchema = z.object({
   major: z.string().optional(),
   start_month: z.number().min(1).max(12),
   start_year: z.number().min(1900).max(2100),
-  end_month: z.number().min(0).max(12),
-  end_year: z.number().min(0).max(2100),
+  end_month: z.number().min(0).max(12).nullable().optional(),
+  end_year: z.number().min(0).max(2100).nullable().optional(),
   is_current: z.boolean(),
-  gpa: z.number().min(0).max(4).optional(),
+  gpa: z.number().min(0).max(4).nullable().optional(),
   description: z.string().optional(),
 });
 
@@ -57,8 +57,8 @@ const certificateSchema = z.object({
   issuer: z.string().min(1, "Penerbit wajib diisi"),
   issue_month: z.number().min(1).max(12),
   issue_year: z.number().min(1900).max(2100),
-  expiry_month: z.number().min(0).max(12),
-  expiry_year: z.number().min(0).max(2100),
+  expiry_month: z.number().min(0).max(12).nullable().optional(),
+  expiry_year: z.number().min(0).max(2100).nullable().optional(),
   no_expiry: z.boolean(),
   credential_id: z.string().optional(),
   credential_url: z.string().optional(),
@@ -78,8 +78,8 @@ const experienceSchema = z.object({
   ]),
   start_month: z.number().min(1).max(12),
   start_year: z.number().min(1900).max(2100),
-  end_month: z.number().min(0).max(12),
-  end_year: z.number().min(0).max(2100),
+  end_month: z.number().min(0).max(12).nullable().optional(),
+  end_year: z.number().min(0).max(2100).nullable().optional(),
   is_current: z.boolean(),
   description: z.string().optional(),
 });
@@ -93,7 +93,7 @@ const awardSchema = z.object({
   title: z.string().min(1, "Judul penghargaan wajib diisi"),
   issuer: z.string().min(1, "Pemberi penghargaan wajib diisi"),
   description: z.string().optional(),
-  year: z.number().min(1900).max(2100),
+  year: z.number().min(1900).max(2100).nullable().optional(),
 });
 
 const socialLinkSchema = z.object({
@@ -113,8 +113,8 @@ const organizationSchema = z.object({
   location: z.string().optional(),
   start_month: z.number().min(1).max(12),
   start_year: z.number().min(1900).max(2100),
-  end_month: z.number().min(0).max(12),
-  end_year: z.number().min(0).max(2100),
+  end_month: z.number().min(0).max(12).nullable().optional(),
+  end_year: z.number().min(0).max(2100).nullable().optional(),
   is_current: z.boolean(),
   description: z.string().optional(),
 });
@@ -221,7 +221,12 @@ export function CVForm({
   const photoValue = watch("photo");
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, (errors) => {
+        console.log("KV Validation Errors:", errors);
+      })}
+      className="space-y-6"
+    >
       {/* Template Selection */}
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Template CV</h3>
@@ -256,15 +261,22 @@ export function CVForm({
                 </div>
               </div>
             ) : (
-              <TemplateSelector
-                label="Pilih Template"
-                templates={apiTemplates}
-                value={selectedTemplate}
-                onChange={(value) => {
-                  setSelectedTemplate(value);
-                  setValue("template_id", value);
-                }}
-              />
+              <>
+                <TemplateSelector
+                  label="Pilih Template"
+                  templates={apiTemplates}
+                  value={selectedTemplate}
+                  onChange={(value) => {
+                    setSelectedTemplate(value);
+                    setValue("template_id", value);
+                  }}
+                />
+                {errors.template_id && (
+                  <p className="text-sm font-medium text-destructive mt-2">
+                    {errors.template_id.message}
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -278,7 +290,15 @@ export function CVForm({
             <PhotoUpload
               value={photoValue || ""}
               onChange={(value) => setValue("photo", value)}
+              quality={75}
+              webp={false}
+              format="jpg,png"
             />
+            {errors.photo && (
+              <p className="text-sm font-medium text-destructive mt-2">
+                {errors.photo.message}
+              </p>
+            )}
           </div>
 
           <Field>
@@ -342,6 +362,7 @@ export function CVForm({
               rows={4}
               placeholder="Ceritakan tentang diri Anda..."
             />
+            <FieldError>{errors.about?.message}</FieldError>
           </Field>
         </div>
       </Card>
@@ -423,26 +444,50 @@ export function CVForm({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FieldError>
+                      {errors.educations?.[index]?.degree?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Nama Sekolah/Universitas *</FieldLabel>
-                    <Input {...register(`educations.${index}.school_name`)} />
+                    <Input
+                      {...register(`educations.${index}.school_name`)}
+                      className={cn(
+                        errors.educations?.[index]?.school_name &&
+                          "border-destructive"
+                      )}
+                    />
+                    <FieldError>
+                      {errors.educations?.[index]?.school_name?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Lokasi *</FieldLabel>
                     <Input
                       {...register(`educations.${index}.school_location`)}
+                      className={cn(
+                        errors.educations?.[index]?.school_location &&
+                          "border-destructive"
+                      )}
                     />
+                    <FieldError>
+                      {errors.educations?.[index]?.school_location?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Jurusan</FieldLabel>
                     <Input {...register(`educations.${index}.major`)} />
+                    <FieldError>
+                      {errors.educations?.[index]?.major?.message}
+                    </FieldError>
                   </Field>
                   <div className="grid grid-cols-2 gap-2">
                     <Field>
                       <FieldLabel>Bulan Mulai</FieldLabel>
                       <Select
-                        value={String(watch(`educations.${index}.start_month`))}
+                        value={String(
+                          watch(`educations.${index}.start_month`) || 1
+                        )}
                         onValueChange={(v) =>
                           setValue(
                             `educations.${index}.start_month`,
@@ -461,11 +506,16 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.educations?.[index]?.start_month?.message}
+                      </FieldError>
                     </Field>
                     <Field>
                       <FieldLabel>Tahun Mulai</FieldLabel>
                       <Select
-                        value={String(watch(`educations.${index}.start_year`))}
+                        value={String(
+                          watch(`educations.${index}.start_year`) || currentYear
+                        )}
                         onValueChange={(v) =>
                           setValue(
                             `educations.${index}.start_year`,
@@ -484,13 +534,18 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.educations?.[index]?.start_year?.message}
+                      </FieldError>
                     </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <Field>
                       <FieldLabel>Bulan Selesai</FieldLabel>
                       <Select
-                        value={String(watch(`educations.${index}.end_month`))}
+                        value={String(
+                          watch(`educations.${index}.end_month`) || 0
+                        )}
                         onValueChange={(v) =>
                           setValue(`educations.${index}.end_month`, parseInt(v))
                         }
@@ -508,11 +563,16 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.educations?.[index]?.end_month?.message}
+                      </FieldError>
                     </Field>
                     <Field>
                       <FieldLabel>Tahun Selesai</FieldLabel>
                       <Select
-                        value={String(watch(`educations.${index}.end_year`))}
+                        value={String(
+                          watch(`educations.${index}.end_year`) || 0
+                        )}
                         onValueChange={(v) =>
                           setValue(`educations.${index}.end_year`, parseInt(v))
                         }
@@ -530,15 +590,22 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.educations?.[index]?.end_year?.message}
+                      </FieldError>
                     </Field>
                   </div>
                   <Field orientation="horizontal">
                     <Checkbox
                       id={`edu-current-${index}`}
                       checked={watch(`educations.${index}.is_current`)}
-                      onCheckedChange={(v) =>
-                        setValue(`educations.${index}.is_current`, !!v)
-                      }
+                      onCheckedChange={(v) => {
+                        setValue(`educations.${index}.is_current`, !!v);
+                        if (v) {
+                          setValue(`educations.${index}.end_month`, 0);
+                          setValue(`educations.${index}.end_year`, 0);
+                        }
+                      }}
                     />
                     <FieldLabel htmlFor={`edu-current-${index}`}>
                       Masih berlangsung
@@ -555,6 +622,9 @@ export function CVForm({
                         valueAsNumber: true,
                       })}
                     />
+                    <FieldError>
+                      {errors.educations?.[index]?.gpa?.message}
+                    </FieldError>
                   </Field>
                   <Field className="md:col-span-2">
                     <FieldLabel>Deskripsi</FieldLabel>
@@ -562,6 +632,9 @@ export function CVForm({
                       {...register(`educations.${index}.description`)}
                       rows={2}
                     />
+                    <FieldError>
+                      {errors.educations?.[index]?.description?.message}
+                    </FieldError>
                   </Field>
                 </div>
               </div>
@@ -621,17 +694,42 @@ export function CVForm({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field>
                     <FieldLabel>Jabatan *</FieldLabel>
-                    <Input {...register(`experiences.${index}.job_title`)} />
+                    <Input
+                      {...register(`experiences.${index}.job_title`)}
+                      className={cn(
+                        errors.experiences?.[index]?.job_title &&
+                          "border-destructive"
+                      )}
+                    />
+                    <FieldError>
+                      {errors.experiences?.[index]?.job_title?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Nama Perusahaan *</FieldLabel>
-                    <Input {...register(`experiences.${index}.company_name`)} />
+                    <Input
+                      {...register(`experiences.${index}.company_name`)}
+                      className={cn(
+                        errors.experiences?.[index]?.company_name &&
+                          "border-destructive"
+                      )}
+                    />
+                    <FieldError>
+                      {errors.experiences?.[index]?.company_name?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Lokasi *</FieldLabel>
                     <Input
                       {...register(`experiences.${index}.company_location`)}
+                      className={cn(
+                        errors.experiences?.[index]?.company_location &&
+                          "border-destructive"
+                      )}
                     />
+                    <FieldError>
+                      {errors.experiences?.[index]?.company_location?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Tipe Pekerjaan *</FieldLabel>
@@ -660,13 +758,16 @@ export function CVForm({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FieldError>
+                      {errors.experiences?.[index]?.job_type?.message}
+                    </FieldError>
                   </Field>
                   <div className="grid grid-cols-2 gap-2">
                     <Field>
                       <FieldLabel>Bulan Mulai</FieldLabel>
                       <Select
                         value={String(
-                          watch(`experiences.${index}.start_month`)
+                          watch(`experiences.${index}.start_month`) || 1
                         )}
                         onValueChange={(v) =>
                           setValue(
@@ -686,11 +787,17 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.experiences?.[index]?.start_month?.message}
+                      </FieldError>
                     </Field>
                     <Field>
                       <FieldLabel>Tahun Mulai</FieldLabel>
                       <Select
-                        value={String(watch(`experiences.${index}.start_year`))}
+                        value={String(
+                          watch(`experiences.${index}.start_year`) ||
+                            currentYear
+                        )}
                         onValueChange={(v) =>
                           setValue(
                             `experiences.${index}.start_year`,
@@ -709,13 +816,18 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.experiences?.[index]?.start_year?.message}
+                      </FieldError>
                     </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <Field>
                       <FieldLabel>Bulan Selesai</FieldLabel>
                       <Select
-                        value={String(watch(`experiences.${index}.end_month`))}
+                        value={String(
+                          watch(`experiences.${index}.end_month`) || 0
+                        )}
                         onValueChange={(v) =>
                           setValue(
                             `experiences.${index}.end_month`,
@@ -736,11 +848,16 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.experiences?.[index]?.end_month?.message}
+                      </FieldError>
                     </Field>
                     <Field>
                       <FieldLabel>Tahun Selesai</FieldLabel>
                       <Select
-                        value={String(watch(`experiences.${index}.end_year`))}
+                        value={String(
+                          watch(`experiences.${index}.end_year`) || 0
+                        )}
                         onValueChange={(v) =>
                           setValue(`experiences.${index}.end_year`, parseInt(v))
                         }
@@ -758,15 +875,22 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.experiences?.[index]?.end_year?.message}
+                      </FieldError>
                     </Field>
                   </div>
                   <Field orientation="horizontal">
                     <Checkbox
                       id={`exp-current-${index}`}
                       checked={watch(`experiences.${index}.is_current`)}
-                      onCheckedChange={(v) =>
-                        setValue(`experiences.${index}.is_current`, !!v)
-                      }
+                      onCheckedChange={(v) => {
+                        setValue(`experiences.${index}.is_current`, !!v);
+                        if (v) {
+                          setValue(`experiences.${index}.end_month`, 0);
+                          setValue(`experiences.${index}.end_year`, 0);
+                        }
+                      }}
                     />
                     <FieldLabel htmlFor={`exp-current-${index}`}>
                       Masih bekerja
@@ -778,6 +902,9 @@ export function CVForm({
                       {...register(`experiences.${index}.description`)}
                       rows={3}
                     />
+                    <FieldError>
+                      {errors.experiences?.[index]?.description?.message}
+                    </FieldError>
                   </Field>
                 </div>
               </div>
@@ -812,7 +939,15 @@ export function CVForm({
                   <Input
                     placeholder="Nama Keahlian"
                     {...register(`skills.${index}.name`)}
+                    className={cn(
+                      errors.skills?.[index]?.name && "border-destructive"
+                    )}
                   />
+                  {errors.skills?.[index]?.name && (
+                    <p className="text-sm font-medium text-destructive">
+                      {errors.skills?.[index]?.name?.message}
+                    </p>
+                  )}
                 </div>
                 <div className="w-40 space-y-2">
                   <Select
@@ -835,6 +970,11 @@ export function CVForm({
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.skills?.[index]?.level && (
+                    <p className="text-sm font-medium text-destructive">
+                      {errors.skills?.[index]?.level?.message}
+                    </p>
+                  )}
                 </div>
                 <Button
                   type="button"
@@ -901,11 +1041,29 @@ export function CVForm({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field>
                     <FieldLabel>Judul *</FieldLabel>
-                    <Input {...register(`certificates.${index}.title`)} />
+                    <Input
+                      {...register(`certificates.${index}.title`)}
+                      className={cn(
+                        errors.certificates?.[index]?.title &&
+                          "border-destructive"
+                      )}
+                    />
+                    <FieldError>
+                      {errors.certificates?.[index]?.title?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Penerbit *</FieldLabel>
-                    <Input {...register(`certificates.${index}.issuer`)} />
+                    <Input
+                      {...register(`certificates.${index}.issuer`)}
+                      className={cn(
+                        errors.certificates?.[index]?.issuer &&
+                          "border-destructive"
+                      )}
+                    />
+                    <FieldError>
+                      {errors.certificates?.[index]?.issuer?.message}
+                    </FieldError>
                   </Field>
                   <div className="grid grid-cols-2 gap-2">
                     <Field>
@@ -932,6 +1090,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.certificates?.[index]?.issue_month?.message}
+                      </FieldError>
                     </Field>
                     <Field>
                       <FieldLabel>Tahun Terbit</FieldLabel>
@@ -957,89 +1118,116 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.certificates?.[index]?.issue_year?.message}
+                      </FieldError>
                     </Field>
                   </div>
-                  <Field orientation="horizontal" className="md:col-span-2">
-                    <Checkbox
-                      id={`cert-no-expiry-${index}`}
-                      checked={watch(`certificates.${index}.no_expiry`)}
-                      onCheckedChange={(v) =>
-                        setValue(`certificates.${index}.no_expiry`, !!v)
-                      }
-                    />
-                    <FieldLabel htmlFor={`cert-no-expiry-${index}`}>
-                      Tidak ada masa berlaku
-                    </FieldLabel>
-                  </Field>
 
-                  {!watch(`certificates.${index}.no_expiry`) && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field>
-                        <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`certificates.${index}.expiry_month`)
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `certificates.${index}.expiry_month`,
-                              parseInt(v)
-                            )
+                  <div className="space-y-2">
+                    {!watch(`certificates.${index}.no_expiry`) && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field>
+                          <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`certificates.${index}.expiry_month`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `certificates.${index}.expiry_month`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              <SelectItem value="0">-</SelectItem>
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {
+                              errors.certificates?.[index]?.expiry_month
+                                ?.message
+                            }
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`certificates.${index}.expiry_year`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `certificates.${index}.expiry_year`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              <SelectItem value="0">-</SelectItem>
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.certificates?.[index]?.expiry_year?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+                    )}
+                    <Field orientation="horizontal">
+                      <Checkbox
+                        id={`cert-no-expiry-${index}`}
+                        checked={watch(`certificates.${index}.no_expiry`)}
+                        onCheckedChange={(v) => {
+                          setValue(`certificates.${index}.no_expiry`, !!v);
+                          if (v) {
+                            setValue(`certificates.${index}.expiry_month`, 0);
+                            setValue(`certificates.${index}.expiry_year`, 0);
                           }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            <SelectItem value="0">-</SelectItem>
-                            {MONTH_OPTIONS.map((m) => (
-                              <SelectItem key={m.value} value={String(m.value)}>
-                                {m.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`certificates.${index}.expiry_year`)
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `certificates.${index}.expiry_year`,
-                              parseInt(v)
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 max-h-48">
-                            <SelectItem value="0">-</SelectItem>
-                            {yearOptions.map((y) => (
-                              <SelectItem key={y} value={String(y)}>
-                                {y}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </Field>
-                    </div>
-                  )}
+                        }}
+                      />
+                      <FieldLabel htmlFor={`cert-no-expiry-${index}`}>
+                        Tidak ada masa berlaku
+                      </FieldLabel>
+                    </Field>
+                  </div>
 
                   <Field>
                     <FieldLabel>ID Kredensial</FieldLabel>
                     <Input
                       {...register(`certificates.${index}.credential_id`)}
                     />
+                    <FieldError>
+                      {errors.certificates?.[index]?.credential_id?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>URL Kredensial</FieldLabel>
                     <Input
                       {...register(`certificates.${index}.credential_url`)}
                     />
+                    <FieldError>
+                      {errors.certificates?.[index]?.credential_url?.message}
+                    </FieldError>
                   </Field>
                   <Field className="md:col-span-2">
                     <FieldLabel>Deskripsi</FieldLabel>
@@ -1047,6 +1235,9 @@ export function CVForm({
                       {...register(`certificates.${index}.description`)}
                       rows={2}
                     />
+                    <FieldError>
+                      {errors.certificates?.[index]?.description?.message}
+                    </FieldError>
                   </Field>
                 </div>
               </div>
@@ -1100,16 +1291,34 @@ export function CVForm({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Field>
                     <FieldLabel>Judul *</FieldLabel>
-                    <Input {...register(`awards.${index}.title`)} />
+                    <Input
+                      {...register(`awards.${index}.title`)}
+                      className={cn(
+                        errors.awards?.[index]?.title && "border-destructive"
+                      )}
+                    />
+                    <FieldError>
+                      {errors.awards?.[index]?.title?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Pemberi *</FieldLabel>
-                    <Input {...register(`awards.${index}.issuer`)} />
+                    <Input
+                      {...register(`awards.${index}.issuer`)}
+                      className={cn(
+                        errors.awards?.[index]?.issuer && "border-destructive"
+                      )}
+                    />
+                    <FieldError>
+                      {errors.awards?.[index]?.issuer?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Tahun</FieldLabel>
                     <Select
-                      value={String(watch(`awards.${index}.year`))}
+                      value={String(
+                        watch(`awards.${index}.year`) || currentYear
+                      )}
                       onValueChange={(v) =>
                         setValue(`awards.${index}.year`, parseInt(v))
                       }
@@ -1125,10 +1334,16 @@ export function CVForm({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FieldError>
+                      {errors.awards?.[index]?.year?.message}
+                    </FieldError>
                   </Field>
                   <Field className="md:col-span-3">
                     <FieldLabel>Deskripsi</FieldLabel>
                     <Input {...register(`awards.${index}.description`)} />
+                    <FieldError>
+                      {errors.awards?.[index]?.description?.message}
+                    </FieldError>
                   </Field>
                 </div>
               </div>
@@ -1190,11 +1405,30 @@ export function CVForm({
                     <FieldLabel>Nama Organisasi *</FieldLabel>
                     <Input
                       {...register(`organizations.${index}.organization_name`)}
+                      className={cn(
+                        errors.organizations?.[index]?.organization_name &&
+                          "border-destructive"
+                      )}
                     />
+                    <FieldError>
+                      {
+                        errors.organizations?.[index]?.organization_name
+                          ?.message
+                      }
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Jabatan *</FieldLabel>
-                    <Input {...register(`organizations.${index}.role_title`)} />
+                    <Input
+                      {...register(`organizations.${index}.role_title`)}
+                      className={cn(
+                        errors.organizations?.[index]?.role_title &&
+                          "border-destructive"
+                      )}
+                    />
+                    <FieldError>
+                      {errors.organizations?.[index]?.role_title?.message}
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Tipe Organisasi *</FieldLabel>
@@ -1222,17 +1456,26 @@ export function CVForm({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FieldError>
+                      {
+                        errors.organizations?.[index]?.organization_type
+                          ?.message
+                      }
+                    </FieldError>
                   </Field>
                   <Field>
                     <FieldLabel>Lokasi</FieldLabel>
                     <Input {...register(`organizations.${index}.location`)} />
+                    <FieldError>
+                      {errors.organizations?.[index]?.location?.message}
+                    </FieldError>
                   </Field>
                   <div className="grid grid-cols-2 gap-2">
                     <Field>
                       <FieldLabel>Bulan Mulai</FieldLabel>
                       <Select
                         value={String(
-                          watch(`organizations.${index}.start_month`)
+                          watch(`organizations.${index}.start_month`) || 1
                         )}
                         onValueChange={(v) =>
                           setValue(
@@ -1252,12 +1495,16 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.organizations?.[index]?.start_month?.message}
+                      </FieldError>
                     </Field>
                     <Field>
                       <FieldLabel>Tahun Mulai</FieldLabel>
                       <Select
                         value={String(
-                          watch(`organizations.${index}.start_year`)
+                          watch(`organizations.${index}.start_year`) ||
+                            currentYear
                         )}
                         onValueChange={(v) =>
                           setValue(
@@ -1277,6 +1524,9 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.organizations?.[index]?.start_year?.message}
+                      </FieldError>
                     </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -1284,7 +1534,7 @@ export function CVForm({
                       <FieldLabel>Bulan Selesai</FieldLabel>
                       <Select
                         value={String(
-                          watch(`organizations.${index}.end_month`)
+                          watch(`organizations.${index}.end_month`) || 0
                         )}
                         onValueChange={(v) =>
                           setValue(
@@ -1306,11 +1556,16 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.organizations?.[index]?.end_month?.message}
+                      </FieldError>
                     </Field>
                     <Field>
                       <FieldLabel>Tahun Selesai</FieldLabel>
                       <Select
-                        value={String(watch(`organizations.${index}.end_year`))}
+                        value={String(
+                          watch(`organizations.${index}.end_year`) || 0
+                        )}
                         onValueChange={(v) =>
                           setValue(
                             `organizations.${index}.end_year`,
@@ -1331,15 +1586,22 @@ export function CVForm({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FieldError>
+                        {errors.organizations?.[index]?.end_year?.message}
+                      </FieldError>
                     </Field>
                   </div>
                   <Field orientation="horizontal">
                     <Checkbox
                       id={`org-current-${index}`}
                       checked={watch(`organizations.${index}.is_current`)}
-                      onCheckedChange={(v) =>
-                        setValue(`organizations.${index}.is_current`, !!v)
-                      }
+                      onCheckedChange={(v) => {
+                        setValue(`organizations.${index}.is_current`, !!v);
+                        if (v) {
+                          setValue(`organizations.${index}.end_month`, 0);
+                          setValue(`organizations.${index}.end_year`, 0);
+                        }
+                      }}
                     />
                     <FieldLabel htmlFor={`org-current-${index}`}>
                       Masih aktif
@@ -1351,6 +1613,9 @@ export function CVForm({
                       {...register(`organizations.${index}.description`)}
                       rows={2}
                     />
+                    <FieldError>
+                      {errors.organizations?.[index]?.description?.message}
+                    </FieldError>
                   </Field>
                 </div>
               </div>
@@ -1385,13 +1650,30 @@ export function CVForm({
                   <Input
                     placeholder="Platform"
                     {...register(`social_links.${index}.platform`)}
+                    className={cn(
+                      errors.social_links?.[index]?.platform &&
+                        "border-destructive"
+                    )}
                   />
+                  {errors.social_links?.[index]?.platform && (
+                    <p className="text-sm font-medium text-destructive">
+                      {errors.social_links?.[index]?.platform?.message}
+                    </p>
+                  )}
                 </div>
                 <div className="flex-1 space-y-2">
                   <Input
                     placeholder="URL"
                     {...register(`social_links.${index}.url`)}
+                    className={cn(
+                      errors.social_links?.[index]?.url && "border-destructive"
+                    )}
                   />
+                  {errors.social_links?.[index]?.url && (
+                    <p className="text-sm font-medium text-destructive">
+                      {errors.social_links?.[index]?.url?.message}
+                    </p>
+                  )}
                 </div>
                 <Button
                   type="button"

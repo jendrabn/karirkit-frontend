@@ -9,10 +9,21 @@ import { toast } from "sonner";
 interface PhotoUploadProps {
   value: string;
   onChange: (value: string) => void;
+  quality?: number;
+  webp?: boolean;
+  format?: string;
 }
 
-export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
-  const [preview, setPreview] = useState<string>(value ? buildImageUrl(value) : "");
+export function PhotoUpload({
+  value,
+  onChange,
+  quality,
+  webp,
+  format,
+}: PhotoUploadProps) {
+  const [preview, setPreview] = useState<string>(
+    value ? buildImageUrl(value) : ""
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const uploadMutation = useUploadFile({
@@ -50,7 +61,12 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
     }
 
     // Upload to server
-    uploadMutation.mutate(file);
+    uploadMutation.mutate({
+      file,
+      quality,
+      webp,
+      format,
+    });
   };
 
   const handleRemove = () => {
@@ -64,9 +80,9 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
   return (
     <div className="space-y-3">
       <Label>Foto (Opsional)</Label>
-      
+
       <div className="flex items-start gap-4">
-        <div 
+        <div
           className={cn(
             "w-32 h-32 rounded-lg border-2 border-dashed flex items-center justify-center overflow-hidden bg-muted/50",
             !preview && "border-muted-foreground/25",
@@ -76,9 +92,9 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
           {uploadMutation.isPending ? (
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           ) : preview ? (
-            <img 
-              src={preview} 
-              alt="Preview" 
+            <img
+              src={preview}
+              alt="Preview"
               className="w-full h-full object-cover"
             />
           ) : (
@@ -95,7 +111,7 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
             className="hidden"
             disabled={uploadMutation.isPending}
           />
-          
+
           <Button
             type="button"
             variant="outline"
@@ -104,12 +120,11 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
             disabled={uploadMutation.isPending}
           >
             <Upload className="h-4 w-4 mr-2" />
-            {uploadMutation.isPending 
-              ? "Mengunggah..." 
-              : preview 
-              ? "Ganti Foto" 
-              : "Unggah Foto"
-            }
+            {uploadMutation.isPending
+              ? "Mengunggah..."
+              : preview
+              ? "Ganti Foto"
+              : "Unggah Foto"}
           </Button>
 
           {preview && !uploadMutation.isPending && (
