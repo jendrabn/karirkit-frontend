@@ -47,172 +47,174 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { paths } from "@/config/paths";
+import { useAuth } from "@/contexts/AuthContext";
+import { buildImageUrl } from "@/lib/utils";
 
 const menuItems = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: paths.dashboard.getHref(),
     icon: LayoutDashboard,
   },
   {
-    title: "Applications",
-    url: "/applications",
+    title: "Lamaran Kerja",
+    url: paths.applications.list.getHref(),
     icon: FileText,
   },
   {
-    title: "Application Letter",
-    url: "/application-letters",
+    title: "Surat Lamaran Kerja",
+    url: paths.applicationLetters.list.getHref(),
     icon: FileText,
   },
   {
     title: "CV",
-    url: "/cvs",
+    url: paths.cvs.list.getHref(),
     icon: FileText,
   },
   {
-    title: "Portfolio",
-    url: "/portfolios",
+    title: "Portofolio",
+    url: paths.portfolios.list.getHref(),
     icon: FolderOpen,
   },
 ];
 
 const blogMenuItems = [
-  { title: "Semua Blog", url: "/blogs" },
-  { title: "Buat Blog", url: "/blogs/create" },
-  { title: "Kategori", url: "/categories" },
-  { title: "Tag", url: "/tags" },
+  { title: "Blog", url: paths.admin.blogs.list.getHref() },
+  { title: "Kategori", url: paths.admin.blogs.categories.getHref() },
+  { title: "Tag", url: paths.admin.blogs.tags.getHref() },
 ];
-
-const templateMenuItems = [
-  { title: "Semua Template", url: "/templates" },
-  { title: "Buat Template", url: "/templates/create" },
-];
-
-// Mock user data - replace with actual user data later
-const mockUser = {
-  name: "Jendra Bayu",
-  email: "jendra455@gmail.com",
-  avatar: "",
-};
 
 export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { state } = useSidebar();
   const { theme, setTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
   const isCollapsed = state === "collapsed";
   const [blogOpen, setBlogOpen] = useState(
-    location.pathname.startsWith("/blogs") ||
-      location.pathname === "/categories" ||
-      location.pathname === "/tags"
-  );
-  const [templateOpen, setTemplateOpen] = useState(
-    location.pathname.startsWith("/templates")
+    location.pathname.startsWith("/admin/blogs") ||
+      location.pathname.startsWith("/admin/blogs/m")
   );
   const [donationOpen, setDonationOpen] = useState(false);
 
+  const isAdmin =
+    isAuthenticated &&
+    user &&
+    (user.role === "admin" || user.role === "superadmin");
+
+  const handleLogout = () => {
+    logout();
+    navigate(paths.auth.login.getHref());
+  };
+
   const isActive = (path: string) => {
-    if (path === "/applications") {
+    if (path === paths.applications.list.getHref()) {
       return location.pathname.startsWith("/applications");
     }
     return location.pathname === path;
   };
 
   const isBlogActive =
-    location.pathname.startsWith("/blogs") ||
-    location.pathname === "/categories" ||
-    location.pathname === "/tags";
-  const isTemplateActive = location.pathname.startsWith("/templates");
+    location.pathname.startsWith("/admin/blogs") ||
+    location.pathname.startsWith("/admin/blogs/m");
+  const isTemplateActive = location.pathname.startsWith("/admin/templates");
 
   return (
     <Sidebar collapsible="icon" className="border-r">
       <SidebarHeader className={cn("border-b", isCollapsed ? "p-2" : "p-4")}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className={cn(
-                "flex items-center w-full rounded-lg hover:bg-muted transition-colors",
-                isCollapsed ? "justify-center p-2" : "gap-3 p-2"
-              )}
-            >
-              <Avatar
+        {isAuthenticated && user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
                 className={cn(
-                  "shrink-0",
-                  isCollapsed ? "h-8 w-8" : "h-10 w-10"
+                  "flex items-center w-full rounded-lg hover:bg-muted transition-colors",
+                  isCollapsed ? "justify-center p-2" : "gap-3 p-2"
                 )}
               >
-                <AvatarImage src={mockUser.avatar} />
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {mockUser.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              {!isCollapsed && (
-                <>
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {mockUser.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {mockUser.email}
-                    </p>
-                  </div>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
-                </>
-              )}
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56 bg-popover z-50">
-            <div className="px-3 py-2">
-              <p className="text-sm font-medium">{mockUser.name}</p>
-              <p className="text-xs text-muted-foreground">{mockUser.email}</p>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/profile")}>
-              <User className="h-4 w-4 mr-2" />
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/change-password")}>
-              <Lock className="h-4 w-4 mr-2" />
-              Change Password
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <div className="px-2 py-1.5">
-              <p className="text-xs text-muted-foreground mb-2">Tema</p>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => setTheme("light")}
-                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${
-                    theme === "light"
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted"
-                  }`}
+                <Avatar
+                  className={cn(
+                    "shrink-0",
+                    isCollapsed ? "h-8 w-8" : "h-10 w-10"
+                  )}
                 >
-                  <Sun className="h-3 w-3" />
-                  Terang
-                </button>
-                <button
-                  onClick={() => setTheme("dark")}
-                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${
-                    theme === "dark"
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted"
-                  }`}
-                >
-                  <Moon className="h-3 w-3" />
-                  Gelap
-                </button>
+                  <AvatarImage src={buildImageUrl(user.avatar)} />
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {user.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                {!isCollapsed && (
+                  <>
+                    <div className="flex-1 text-left min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                  </>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-popover z-50">
+              <div className="px-3 py-2">
+                <p className="text-sm font-medium">{user.name}</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => navigate("/auth/login")}
-              className="text-destructive"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => navigate(paths.account.profile.getHref())}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate(paths.account.changePassword.getHref())}
+              >
+                <Lock className="h-4 w-4 mr-2" />
+                Change Password
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-1.5">
+                <p className="text-xs text-muted-foreground mb-2">Tema</p>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setTheme("light")}
+                    className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${
+                      theme === "light"
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    <Sun className="h-3 w-3" />
+                    Terang
+                  </button>
+                  <button
+                    onClick={() => setTheme("dark")}
+                    className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${
+                      theme === "dark"
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    <Moon className="h-3 w-3" />
+                    Gelap
+                  </button>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-destructive"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </SidebarHeader>
 
       <SidebarContent className="pt-4">
@@ -244,7 +246,7 @@ export function DashboardSidebar() {
               ))}
 
               {/* Admin Section Divider */}
-              {!isCollapsed && (
+              {isAdmin && !isCollapsed && (
                 <div className="py-3 px-3">
                   <div className="flex items-center gap-2">
                     <Separator className="flex-1" />
@@ -258,112 +260,119 @@ export function DashboardSidebar() {
               )}
 
               {/* Admin Dashboard */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild size="lg" tooltip="Dashboard Admin">
-                  <NavLink
-                    to="/admin/dashboard"
-                    className={cn(
-                      "flex items-center rounded-lg transition-colors",
-                      isCollapsed
-                        ? "justify-center px-2 py-3"
-                        : "gap-3 px-3 py-3",
-                      isActive("/admin/dashboard")
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted text-foreground"
-                    )}
-                  >
-                    <LayoutDashboard className="h-5 w-5 shrink-0" />
-                    {!isCollapsed && (
-                      <span className="font-medium">Dashboard Admin</span>
-                    )}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Users Management */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild size="lg" tooltip="Users">
-                  <NavLink
-                    to="/admin/users"
-                    className={cn(
-                      "flex items-center rounded-lg transition-colors",
-                      isCollapsed
-                        ? "justify-center px-2 py-3"
-                        : "gap-3 px-3 py-3",
-                      location.pathname.startsWith("/admin/users")
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted text-foreground"
-                    )}
-                  >
-                    <Users className="h-5 w-5 shrink-0" />
-                    {!isCollapsed && <span className="font-medium">Users</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Blog Menu with Dropdown */}
-              <SidebarMenuItem>
-                <Collapsible open={blogOpen} onOpenChange={setBlogOpen}>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton
-                      size="lg"
-                      tooltip="Blog"
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild size="lg" tooltip="Dashboard">
+                    <NavLink
+                      to={paths.admin.dashboard.getHref()}
                       className={cn(
-                        "flex items-center rounded-lg transition-colors w-full",
+                        "flex items-center rounded-lg transition-colors",
                         isCollapsed
                           ? "justify-center px-2 py-3"
                           : "gap-3 px-3 py-3",
-                        isBlogActive
+                        isActive(paths.admin.dashboard.getHref())
                           ? "bg-primary text-primary-foreground"
                           : "hover:bg-muted text-foreground"
                       )}
                     >
-                      <BookOpen className="h-5 w-5 shrink-0" />
+                      <LayoutDashboard className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
-                        <>
-                          <span className="font-medium flex-1 text-left">
-                            Blog
-                          </span>
-                          {blogOpen ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
-                        </>
+                        <span className="font-medium">Dashboard</span>
                       )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {!isCollapsed && (
-                    <CollapsibleContent className="mt-1">
-                      {blogMenuItems.map((item) => (
-                        <NavLink
-                          key={item.url}
-                          to={item.url}
-                          className={cn(
-                            "flex items-center gap-3 py-2 pl-8 pr-3 rounded-lg text-sm transition-colors",
-                            location.pathname === item.url
-                              ? "text-foreground font-medium"
-                              : "hover:bg-muted/50 text-muted-foreground"
-                          )}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                          {item.title}
-                        </NavLink>
-                      ))}
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              </SidebarMenuItem>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
 
-              {/* Template Menu with Dropdown */}
-              <SidebarMenuItem>
-                <Collapsible open={templateOpen} onOpenChange={setTemplateOpen}>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton
-                      size="lg"
-                      tooltip="Template"
+              {/* Users Management */}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild size="lg" tooltip="Users">
+                    <NavLink
+                      to={paths.admin.users.list.getHref()}
                       className={cn(
-                        "flex items-center rounded-lg transition-colors w-full",
+                        "flex items-center rounded-lg transition-colors",
+                        isCollapsed
+                          ? "justify-center px-2 py-3"
+                          : "gap-3 px-3 py-3",
+                        location.pathname.startsWith("/admin/users")
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted text-foreground"
+                      )}
+                    >
+                      <Users className="h-5 w-5 shrink-0" />
+                      {!isCollapsed && (
+                        <span className="font-medium">Users</span>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
+              {/* Blog Menu with Dropdown */}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <Collapsible open={blogOpen} onOpenChange={setBlogOpen}>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton
+                        size="lg"
+                        tooltip="Blog"
+                        className={cn(
+                          "flex items-center rounded-lg transition-colors w-full",
+                          isCollapsed
+                            ? "justify-center px-2 py-3"
+                            : "gap-3 px-3 py-3",
+                          isBlogActive
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-muted text-foreground"
+                        )}
+                      >
+                        <BookOpen className="h-5 w-5 shrink-0" />
+                        {!isCollapsed && (
+                          <>
+                            <span className="font-medium flex-1 text-left">
+                              Blog
+                            </span>
+                            {blogOpen ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </>
+                        )}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    {!isCollapsed && (
+                      <CollapsibleContent className="mt-1">
+                        {blogMenuItems.map((item) => (
+                          <NavLink
+                            key={item.url}
+                            to={item.url}
+                            className={cn(
+                              "flex items-center gap-3 py-2 pl-8 pr-3 rounded-lg text-sm transition-colors",
+                              location.pathname === item.url
+                                ? "text-foreground font-medium"
+                                : "hover:bg-muted/50 text-muted-foreground"
+                            )}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            {item.title}
+                          </NavLink>
+                        ))}
+                      </CollapsibleContent>
+                    )}
+                  </Collapsible>
+                </SidebarMenuItem>
+              )}
+
+              {/* Template Menu - Changed to regular button */}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild size="lg" tooltip="Template">
+                    <NavLink
+                      to={paths.admin.templates.list.getHref()}
+                      className={cn(
+                        "flex items-center rounded-lg transition-colors",
                         isCollapsed
                           ? "justify-center px-2 py-3"
                           : "gap-3 px-3 py-3",
@@ -374,40 +383,12 @@ export function DashboardSidebar() {
                     >
                       <FileStack className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
-                        <>
-                          <span className="font-medium flex-1 text-left">
-                            Template
-                          </span>
-                          {templateOpen ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
-                        </>
+                        <span className="font-medium">Template</span>
                       )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {!isCollapsed && (
-                    <CollapsibleContent className="mt-1">
-                      {templateMenuItems.map((item) => (
-                        <NavLink
-                          key={item.url}
-                          to={item.url}
-                          className={cn(
-                            "flex items-center gap-3 py-2 pl-8 pr-3 rounded-lg text-sm transition-colors",
-                            location.pathname === item.url
-                              ? "text-foreground font-medium"
-                              : "hover:bg-muted/50 text-muted-foreground"
-                          )}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                          {item.title}
-                        </NavLink>
-                      ))}
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              </SidebarMenuItem>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
