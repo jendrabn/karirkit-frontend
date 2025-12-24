@@ -109,10 +109,10 @@ export const paths = {
 
   publicPortfolio: {
     list: {
-      getHref: (username: string) => `/my/${username}`,
+      getHref: (username: string) => `/u/${username}`,
     },
     detail: {
-      getHref: (username: string, id: string) => `/my/${username}/${id}`,
+      getHref: (username: string, id: string) => `/u/${username}/${id}`,
     },
   },
 

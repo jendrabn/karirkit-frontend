@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -34,12 +35,10 @@ const PortfolioCreate = () => {
         showBackButton
         backButtonUrl="/portfolios"
       />
-      <div className="max-w-4xl">
-        <PortfolioForm
-          onSubmit={handleSubmit}
-          isLoading={createMutation.isPending}
-        />
-      </div>
+      <PortfolioForm
+        onSubmit={handleSubmit}
+        isLoading={createMutation.isPending}
+      />
     </DashboardLayout>
   );
 };

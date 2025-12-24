@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -77,13 +78,11 @@ const PortfolioEdit = () => {
         showBackButton
         backButtonUrl="/portfolios"
       />
-      <div className="max-w-4xl">
-        <PortfolioForm
-          initialData={portfolio}
-          onSubmit={handleSubmit}
-          isLoading={updateMutation.isPending}
-        />
-      </div>
+      <PortfolioForm
+        initialData={portfolio}
+        onSubmit={handleSubmit}
+        isLoading={updateMutation.isPending}
+      />
     </DashboardLayout>
   );
 };

@@ -67,6 +67,7 @@ import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import { env } from "@/config/env";
+import { useAuth } from "@/contexts/AuthContext";
 
 type SortField = "created_at" | "updated_at" | "year" | "month" | "title";
 type SortOrder = "asc" | "desc";
@@ -92,6 +93,7 @@ const monthNames = [
 
 export default function Portfolios() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<PortfolioFilterValues>({});
@@ -178,8 +180,8 @@ export default function Portfolios() {
     }
   };
 
-  // Mock username - in real app, get from auth context
-  const username = "johndoe";
+  // Get username from auth context
+  const username = user?.username || "";
   const publicPortfolioUrl =
     env.APP_URL + paths.publicPortfolio.list.getHref(username);
   const [copied, setCopied] = useState(false);
