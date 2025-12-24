@@ -2,7 +2,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { CV, Education, Certificate, Experience, Skill, Award, SocialLink, Organization } from "./get-cvs";
+import type {
+  CV,
+  Education,
+  Certificate,
+  Experience,
+  Skill,
+  Award,
+  SocialLink,
+  Organization,
+} from "./get-cvs";
 
 export type UpdateCVInput = {
   name: string;
@@ -20,6 +29,7 @@ export type UpdateCVInput = {
   awards?: Award[];
   social_links?: SocialLink[];
   organizations?: Organization[];
+  language?: "en" | "id";
 };
 
 export type UpdateCVResponse = CV;

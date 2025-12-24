@@ -74,7 +74,7 @@ export default function CVShow() {
 
   const handleDownload = async (format: "docx" | "pdf") => {
     if (!id) return;
-    
+
     try {
       await downloadCV(id, format);
       toast.success(`CV berhasil diunduh dalam format ${format.toUpperCase()}`);
@@ -86,11 +86,7 @@ export default function CVShow() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <PageHeader
-          title="Detail CV"
-          showBackButton
-          backButtonUrl="/cvs"
-        />
+        <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs" />
         <div className="flex justify-center items-center h-full min-h-[50vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -110,24 +106,20 @@ export default function CVShow() {
   const formatPeriod = (
     startMonth: number,
     startYear: number,
-    endMonth?: number,
-    endYear?: number,
+    endMonth?: number | null,
+    endYear?: number | null,
     isCurrent?: boolean
   ) => {
     const start = `${getLabel(startMonth, MONTH_OPTIONS)} ${startYear}`;
     if (isCurrent) return `${start} - Sekarang`;
-    if (!endMonth || !endYear || endMonth === 0 || endYear === 0) return start;
+    if (!endMonth || !endYear) return start;
     return `${start} - ${getLabel(endMonth, MONTH_OPTIONS)} ${endYear}`;
   };
 
   if (!cv) {
     return (
       <DashboardLayout>
-        <PageHeader
-          title="Detail CV"
-          showBackButton
-          backButtonUrl="/cvs"
-        />
+        <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs" />
         <div className="flex flex-col items-center justify-center py-16">
           <h2 className="text-xl font-semibold mb-2">CV tidak ditemukan</h2>
           <p className="text-muted-foreground mb-4">
@@ -141,12 +133,8 @@ export default function CVShow() {
 
   return (
     <DashboardLayout>
-      <PageHeader
-        title="Detail CV"
-        showBackButton
-        backButtonUrl="/cvs"
-      />
-      
+      <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs" />
+
       <div className="flex items-center justify-between mb-6">
         <div className="flex gap-2">
           <Button
@@ -397,13 +385,18 @@ export default function CVShow() {
                     <p className="text-xs text-muted-foreground mt-1">
                       {getLabel(cert.issue_month, MONTH_OPTIONS)}{" "}
                       {cert.issue_year}
-                      {!cert.no_expiry && cert.expiry_year && cert.expiry_year > 0 && (
-                        <>
-                          {" "}
-                          - {getLabel(cert.expiry_month ?? 0, MONTH_OPTIONS)}{" "}
-                          {cert.expiry_year}
-                        </>
-                      )}
+                      {!cert.no_expiry &&
+                        cert.expiry_year &&
+                        cert.expiry_year > 0 && (
+                          <>
+                            {" "}
+                            - {getLabel(
+                              cert.expiry_month ?? 0,
+                              MONTH_OPTIONS
+                            )}{" "}
+                            {cert.expiry_year}
+                          </>
+                        )}
                     </p>
                     {cert.credential_url && (
                       <a
@@ -476,15 +469,11 @@ export default function CVShow() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Dibuat</span>
-                <span>
-                  {dayjs(cv.created_at).format("DD MMM YYYY HH:mm")}
-                </span>
+                <span>{dayjs(cv.created_at).format("DD MMM YYYY HH:mm")}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Diperbarui</span>
-                <span>
-                  {dayjs(cv.updated_at).format("DD MMM YYYY HH:mm")}
-                </span>
+                <span>{dayjs(cv.updated_at).format("DD MMM YYYY HH:mm")}</span>
               </div>
             </div>
           </Card>

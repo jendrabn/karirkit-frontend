@@ -24,10 +24,10 @@ export interface Education {
   major?: string;
   start_month: number;
   start_year: number;
-  end_month?: number;
-  end_year?: number;
+  end_month?: number | null;
+  end_year?: number | null;
   is_current: boolean;
-  gpa?: number;
+  gpa?: number | null;
   description?: string;
 }
 
@@ -36,8 +36,8 @@ export interface Certificate {
   issuer: string;
   issue_month: number;
   issue_year: number;
-  expiry_month?: number;
-  expiry_year?: number;
+  expiry_month?: number | null;
+  expiry_year?: number | null;
   no_expiry: boolean;
   credential_id?: string;
   credential_url?: string;
@@ -51,8 +51,8 @@ export interface Experience {
   job_type: JobType;
   start_month: number;
   start_year: number;
-  end_month?: number;
-  end_year?: number;
+  end_month?: number | null;
+  end_year?: number | null;
   is_current: boolean;
   description?: string;
 }
@@ -66,7 +66,7 @@ export interface Award {
   title: string;
   issuer: string;
   description?: string;
-  year: number;
+  year?: number | null;
 }
 
 export interface SocialLink {
@@ -81,8 +81,8 @@ export interface Organization {
   location?: string;
   start_month: number;
   start_year: number;
-  end_month?: number;
-  end_year?: number;
+  end_month?: number | null;
+  end_year?: number | null;
   is_current: boolean;
   description?: string;
 }

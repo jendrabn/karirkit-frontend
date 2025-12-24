@@ -32,7 +32,7 @@ export default function CVEdit() {
 
   const handleSubmit = (data: CVFormData) => {
     if (id) {
-      updateMutation.mutate({ id, data } as any);
+      updateMutation.mutate({ id, data });
     }
   };
 
