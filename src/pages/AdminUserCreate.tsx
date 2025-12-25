@@ -5,6 +5,7 @@ import { UserForm } from "@/features/admin/users/components/UserForm";
 import { useCreateUser } from "@/features/admin/users/api/create-user";
 import { toast } from "sonner";
 import type { CreateUserInput } from "@/features/admin/users/api/create-user";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const AdminUserCreate = () => {
   const navigate = useNavigate();
@@ -24,13 +25,21 @@ const AdminUserCreate = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Tambah User | KarirKit"
+        description="Tambahkan pengguna baru ke sistem."
+        noIndex={true}
+      />
       <PageHeader
         title="Tambah User"
         subtitle="Tambahkan pengguna baru ke sistem."
       />
 
       <div className="bg-card border border-border/60 rounded-xl p-6 shadow-sm">
-        <UserForm onSubmit={handleSubmit} isLoading={createUserMutation.isPending} />
+        <UserForm
+          onSubmit={handleSubmit}
+          isLoading={createUserMutation.isPending}
+        />
       </div>
     </DashboardLayout>
   );

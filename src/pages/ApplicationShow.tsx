@@ -27,14 +27,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function ApplicationShow() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  
-  const { data: application, isLoading, error } = useApplication({
+  const {
+    data: application,
+    isLoading,
+    error,
+  } = useApplication({
     id: id!,
   });
 
@@ -48,17 +52,22 @@ export default function ApplicationShow() {
   });
 
   const duplicateApplicationMutation = useDuplicateApplication({
-      mutationConfig: {
-          onSuccess: (data) => {
-              toast.success("Lamaran berhasil diduplikasi");
-              navigate(`/applications/${data.id}`);
-          }
-      }
-  })
+    mutationConfig: {
+      onSuccess: (data) => {
+        toast.success("Lamaran berhasil diduplikasi");
+        navigate(`/applications/${data.id}`);
+      },
+    },
+  });
 
   if (isLoading) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Loading..."
+          description="Memuat detail lamaran..."
+          noIndex={true}
+        />
         <div className="flex justify-center items-center h-full min-h-[50vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -69,12 +78,18 @@ export default function ApplicationShow() {
   if (error || !application) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Lamaran Tidak Ditemukan"
+          description="Data lamaran tidak ditemukan."
+          noIndex={true}
+        />
         <PageHeader title="Lamaran Tidak Ditemukan" />
         <p className="text-muted-foreground">
-          Data lamaran dengan ID tersebut tidak ditemukan atau terjadi kesalahan.
+          Data lamaran dengan ID tersebut tidak ditemukan atau terjadi
+          kesalahan.
         </p>
         <Button onClick={() => navigate("/applications")} className="mt-4">
-            Kembali ke Daftar
+          Kembali ke Daftar
         </Button>
       </DashboardLayout>
     );
@@ -124,6 +139,11 @@ export default function ApplicationShow() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={`${application.position} at ${application.company_name}`}
+        description={`Detail lamaran untuk posisi ${application.position} di ${application.company_name}`}
+        noIndex={true}
+      />
       <PageHeader
         title={application.position}
         subtitle={application.company_name}
@@ -131,15 +151,27 @@ export default function ApplicationShow() {
         backButtonUrl="/applications"
       >
         <div className="flex gap-2">
-           <Button variant="outline" onClick={() => duplicateApplicationMutation.mutate({ id: application.id })} disabled={duplicateApplicationMutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() =>
+              duplicateApplicationMutation.mutate({ id: application.id })
+            }
+            disabled={duplicateApplicationMutation.isPending}
+          >
             <Copy className="h-4 w-4 mr-2" />
             Duplikat
           </Button>
-          <Button variant="outline" onClick={() => navigate(`/applications/${id}/edit`)}>
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/applications/${id}/edit`)}
+          >
             <Pencil className="h-4 w-4 mr-2" />
             Edit
           </Button>
-          <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+          <Button
+            variant="destructive"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
             <Trash2 className="h-4 w-4 mr-2" />
             Hapus
           </Button>
@@ -264,17 +296,21 @@ export default function ApplicationShow() {
             <InfoItem label="ID" value={application.id} />
             <InfoItem
               label="Dibuat"
-              value={dayjs(application.created_at).format("DD MMMM YYYY, HH:mm")}
+              value={dayjs(application.created_at).format(
+                "DD MMMM YYYY, HH:mm"
+              )}
             />
             <InfoItem
               label="Diperbarui"
-              value={dayjs(application.updated_at).format("DD MMMM YYYY, HH:mm")}
+              value={dayjs(application.updated_at).format(
+                "DD MMMM YYYY, HH:mm"
+              )}
             />
           </div>
         </Card>
       </div>
 
-       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Hapus Lamaran?</AlertDialogTitle>
@@ -286,7 +322,9 @@ export default function ApplicationShow() {
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteApplicationMutation.mutate({ id: application.id })}
+              onClick={() =>
+                deleteApplicationMutation.mutate({ id: application.id })
+              }
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleteApplicationMutation.isPending}
             >

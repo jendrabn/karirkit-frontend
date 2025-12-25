@@ -5,6 +5,8 @@ import { ApplicationForm } from "@/features/applications/components/ApplicationF
 import { useCreateApplication } from "@/features/applications/api/create-application";
 import { toast } from "sonner";
 import { type CreateApplicationInput } from "@/features/applications/api/create-application";
+import { MinimalSEO } from "@/components/MinimalSEO";
+import { seoConfig } from "@/config/seo";
 
 export default function ApplicationCreate() {
   const navigate = useNavigate();
@@ -23,6 +25,11 @@ export default function ApplicationCreate() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={seoConfig.applicationCreate.title}
+        description={seoConfig.applicationCreate.description}
+        noIndex={true}
+      />
       <PageHeader
         title="Tambah Lamaran"
         subtitle="Tambahkan lamaran kerja baru ke dalam daftar Anda."

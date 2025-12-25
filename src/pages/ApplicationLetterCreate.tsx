@@ -7,6 +7,7 @@ import { useCreateApplicationLetter } from "@/features/application-letters/api/c
 import { toast } from "sonner";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { useForm } from "react-hook-form";
+import { MinimalSEO } from "@/components/MinimalSEO"; // Import
 
 export default function ApplicationLetterCreate() {
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ export default function ApplicationLetterCreate() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Buat Surat Lamaran"
+        description="Buat surat lamaran kerja baru."
+        noIndex={true}
+      />
       <PageHeader
         title="Buat Surat Lamaran"
         subtitle="Buat surat lamaran kerja baru."

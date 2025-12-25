@@ -33,6 +33,7 @@ import {
 } from "@/types/applicationLetter";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function ApplicationLetterShow() {
   const navigate = useNavigate();
@@ -112,6 +113,11 @@ export default function ApplicationLetterShow() {
   if (isLoading) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Loading..."
+          description="Memuat surat lamaran..."
+          noIndex={true}
+        />
         <PageHeader
           title="Detail Surat Lamaran"
           showBackButton
@@ -127,6 +133,11 @@ export default function ApplicationLetterShow() {
   if (!letter) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Surat Lamaran Tidak Ditemukan"
+          description="Surat lamaran tidak ditemukan."
+          noIndex={true}
+        />
         <PageHeader
           title="Surat Lamaran Tidak Ditemukan"
           showBackButton
@@ -148,6 +159,11 @@ export default function ApplicationLetterShow() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={`${letter.subject} - ${letter.company_name}`}
+        description={`Detail surat lamaran untuk ${letter.company_name}`}
+        noIndex={true}
+      />
       <PageHeader
         title={letter.subject}
         subtitle={letter.company_name}

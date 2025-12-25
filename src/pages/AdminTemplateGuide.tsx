@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/layouts/PageHeader";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 // Import raw markdown content
 import guideContent from "../features/admin/templates/data/template-guide.md?raw";
@@ -11,6 +12,11 @@ import guideContent from "../features/admin/templates/data/template-guide.md?raw
 const TemplateGuide = () => {
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Panduan Template"
+        description="Panduan pembuatan template dinamis."
+        noIndex={true}
+      />
       <PageHeader
         title="Panduan Pembuatan Template"
         subtitle="Pelajari cara membuat template DOCX yang dinamis menggunakan docx-templates."

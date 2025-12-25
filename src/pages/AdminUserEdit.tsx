@@ -7,6 +7,7 @@ import { useUpdateUser } from "@/features/admin/users/api/update-user";
 import { toast } from "sonner";
 import type { UpdateUserInput } from "@/features/admin/users/api/update-user";
 import { Spinner } from "@/components/ui/spinner";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const AdminUserEdit = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ const AdminUserEdit = () => {
 
   const handleSubmit = (data: any) => {
     if (id) {
-       updateUserMutation.mutate({ id, data: data as UpdateUserInput });
+      updateUserMutation.mutate({ id, data: data as UpdateUserInput });
     }
   };
 
@@ -46,26 +47,28 @@ const AdminUserEdit = () => {
 
   if (!user) {
     return (
-        <DashboardLayout>
-            <div className="flex h-screen items-center justify-center">
-                User not found
-            </div>
-        </DashboardLayout>
-    )
+      <DashboardLayout>
+        <div className="flex h-screen items-center justify-center">
+          User not found
+        </div>
+      </DashboardLayout>
+    );
   }
 
   return (
     <DashboardLayout>
-      <PageHeader
-        title="Edit User"
-        subtitle="Edit data pengguna."
+      <MinimalSEO
+        title={`Edit User: ${user.name}`}
+        description={`Edit data pengguna ${user.name}`}
+        noIndex={true}
       />
+      <PageHeader title="Edit User" subtitle="Edit data pengguna." />
 
       <div className="bg-card border border-border/60 rounded-xl p-6 shadow-sm">
-        <UserForm 
-            initialData={user} 
-            onSubmit={handleSubmit} 
-            isLoading={updateUserMutation.isPending} 
+        <UserForm
+          initialData={user}
+          onSubmit={handleSubmit}
+          isLoading={updateUserMutation.isPending}
         />
       </div>
     </DashboardLayout>

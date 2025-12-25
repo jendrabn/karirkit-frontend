@@ -9,6 +9,7 @@ import {
 } from "@/features/admin/templates/api/update-template";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const AdminTemplateEdit = () => {
   const navigate = useNavigate();
@@ -70,6 +71,11 @@ const AdminTemplateEdit = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={`Edit Template: ${template.name}`}
+        description={`Edit template ${template.name}`}
+        noIndex={true}
+      />
       <PageHeader
         title="Edit Template"
         subtitle={`Edit template: ${template.name}`}

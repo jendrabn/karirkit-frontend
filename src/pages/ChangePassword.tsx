@@ -8,10 +8,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ChangePasswordForm from "@/features/account/components/ChangePasswordForm";
+import { MinimalSEO } from "@/components/MinimalSEO";
+import { seoConfig } from "@/config/seo";
 
 export default function ChangePassword() {
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={seoConfig.changePassword.title}
+        description={seoConfig.changePassword.description}
+        noIndex={true}
+      />
       <PageHeader
         title="Ubah Password"
         subtitle="Perbarui password akun Anda untuk keamanan yang lebih baik."

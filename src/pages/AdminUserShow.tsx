@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/features/admin/users/api/get-user";
 import { UserDetail } from "@/features/admin/users/components/UserDetail";
 import { Spinner } from "@/components/ui/spinner";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const AdminUserShow = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const AdminUserShow = () => {
     return (
       <DashboardLayout>
         <div className="flex bg-background h-screen items-center justify-center">
-            <Spinner size="lg" />
+          <Spinner size="lg" />
         </div>
       </DashboardLayout>
     );
@@ -40,6 +41,11 @@ const AdminUserShow = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={user.name}
+        description={`Informasi pengguna ${user.name}`}
+        noIndex={true}
+      />
       <PageHeader
         title="Detail User"
         subtitle="Informasi lengkap tentang pengguna."

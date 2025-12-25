@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import {
   Search,
   Filter,
@@ -195,6 +196,11 @@ export default function Portfolios() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Portfolio"
+        description="Kelola dan tampilkan proyek-proyek terbaik Anda."
+        noIndex={true}
+      />
       <PageHeader
         title="Portfolio"
         subtitle="Kelola dan tampilkan proyek-proyek terbaik Anda."

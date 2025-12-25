@@ -11,6 +11,7 @@ import {
   Tag,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,7 +45,7 @@ const AdminBlogShow = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-    
+
     try {
       await deleteBlogMutation.mutateAsync(id);
       toast.success("Blog berhasil dihapus");
@@ -85,6 +86,11 @@ const AdminBlogShow = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={blog.title}
+        description={blog.excerpt}
+        noIndex={true}
+      />
       <div className="mb-6">
         <Button
           variant="ghost"
@@ -231,7 +237,13 @@ const AdminBlogShow = () => {
                 </h3>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={blog.user.avatar ? buildImageUrl(blog.user.avatar) : undefined} />
+                    <AvatarImage
+                      src={
+                        blog.user.avatar
+                          ? buildImageUrl(blog.user.avatar)
+                          : undefined
+                      }
+                    />
                     <AvatarFallback className="bg-primary/10 text-primary">
                       {blog.user.name.charAt(0)}
                     </AvatarFallback>

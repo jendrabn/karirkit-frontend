@@ -9,6 +9,7 @@ import { usePortfolio } from "@/features/portfolios/api/get-portfolio";
 import { useUpdatePortfolio } from "@/features/portfolios/api/update-portfolio";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { useForm } from "react-hook-form";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const PortfolioEdit = () => {
   const { id } = useParams();
@@ -39,6 +40,11 @@ const PortfolioEdit = () => {
   if (isLoading) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Loading..."
+          description="Memuat data portfolio..."
+          noIndex={true}
+        />
         <PageHeader
           title="Edit Portfolio"
           subtitle="Perbarui informasi portfolio Anda"
@@ -57,6 +63,11 @@ const PortfolioEdit = () => {
   if (!portfolio) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Portfolio Tidak Ditemukan"
+          description="Portfolio tidak ditemukan."
+          noIndex={true}
+        />
         <PageHeader
           title="Edit Portfolio"
           subtitle="Perbarui informasi portfolio Anda"
@@ -72,6 +83,11 @@ const PortfolioEdit = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={`Edit Portfolio: ${portfolio.title}`}
+        description={`Edit portfolio ${portfolio.title}`}
+        noIndex={true}
+      />
       <PageHeader
         title="Edit Portfolio"
         subtitle="Perbarui informasi portfolio Anda"

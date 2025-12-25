@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import {
   BlogForm,
   type BlogFormData,
@@ -152,6 +153,11 @@ const AdminBlogEdit = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={`Edit Blog: ${blogData.title}`}
+        description={`Edit blog ${blogData.title}`}
+        noIndex={true}
+      />
       <PageHeader title="Edit Blog" subtitle={`Mengedit: ${blogData.title}`} />
       <BlogForm
         initialData={mappedBlogData}

@@ -7,6 +7,7 @@ import { useCreateCV } from "@/features/cvs/api/create-cv";
 import { toast } from "sonner";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { useForm } from "react-hook-form";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function CVCreate() {
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ export default function CVCreate() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Buat CV Baru"
+        description="Lengkapi informasi untuk membuat CV baru."
+        noIndex={true}
+      />
       <PageHeader
         title="Buat CV Baru"
         subtitle="Lengkapi informasi di bawah untuk membuat CV."

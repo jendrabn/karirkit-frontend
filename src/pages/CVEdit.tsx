@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { useForm } from "react-hook-form";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function CVEdit() {
   const navigate = useNavigate();
@@ -39,6 +40,11 @@ export default function CVEdit() {
   if (isCVLoading) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Loading..."
+          description="Memuat data CV..."
+          noIndex={true}
+        />
         <PageHeader
           title="Edit CV"
           subtitle="Perbarui informasi CV Anda."
@@ -57,6 +63,11 @@ export default function CVEdit() {
   if (!cv) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="CV Tidak Ditemukan"
+          description="CV tidak ditemukan."
+          noIndex={true}
+        />
         <div className="flex flex-col items-center justify-center py-16">
           <h2 className="text-xl font-semibold mb-2">CV tidak ditemukan</h2>
           <p className="text-muted-foreground mb-4">
@@ -69,8 +80,13 @@ export default function CVEdit() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={`Edit CV: ${cv.name}`}
+        description={`Edit CV ${cv.name}`}
+        noIndex={true}
+      />
       <PageHeader
-        title="Edit CV"
+        title={`Edit CV: ${cv.name}`}
         subtitle="Perbarui informasi CV Anda."
         showBackButton
         backButtonUrl="/cvs"

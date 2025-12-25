@@ -54,6 +54,7 @@ import { TagModal } from "@/features/admin/blogs/components/TagModal";
 import { type BlogTag } from "@/types/blog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import { useBlogTags } from "@/features/admin/blogs/api/get-blog-tags";
 import { useCreateBlogTag } from "@/features/admin/blogs/api/create-blog-tag";
 import { useUpdateBlogTag } from "@/features/admin/blogs/api/update-blog-tag";
@@ -208,6 +209,11 @@ const AdminBlogTags = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Tag Blog"
+        description="Kelola tag blog."
+        noIndex={true}
+      />
       <PageHeader
         title="Tag Blog"
         subtitle="Kelola tag untuk artikel blog Anda."

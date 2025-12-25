@@ -59,6 +59,7 @@ import { useMassDeleteBlogCategories } from "@/features/admin/blogs/api/mass-del
 import type { BlogCategory } from "@/features/admin/blogs/api/get-blog-categories";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 type SortField = "name" | "created_at" | "updated_at";
 type SortOrder = "asc" | "desc";
@@ -210,6 +211,11 @@ const AdminBlogCategories = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Kategori Blog"
+        description="Kelola kategori blog."
+        noIndex={true}
+      />
       <PageHeader
         title="Kategori Blog"
         subtitle="Kelola kategori untuk artikel blog Anda."

@@ -45,6 +45,7 @@ import {
   MONTH_OPTIONS,
 } from "@/types/cv";
 import { toast } from "sonner";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function CVShow() {
   const navigate = useNavigate();
@@ -86,6 +87,11 @@ export default function CVShow() {
   if (isLoading) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Loading..."
+          description="Memuat data CV..."
+          noIndex={true}
+        />
         <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs" />
         <div className="flex justify-center items-center h-full min-h-[50vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -119,6 +125,11 @@ export default function CVShow() {
   if (!cv) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="CV Tidak Ditemukan"
+          description="CV tidak ditemukan."
+          noIndex={true}
+        />
         <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs" />
         <div className="flex flex-col items-center justify-center py-16">
           <h2 className="text-xl font-semibold mb-2">CV tidak ditemukan</h2>
@@ -133,6 +144,11 @@ export default function CVShow() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={`${cv.name} - ${cv.headline}`}
+        description={`Detail CV dari ${cv.name}`}
+        noIndex={true}
+      />
       <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs" />
 
       <div className="flex items-center justify-between mb-6">

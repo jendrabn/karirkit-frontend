@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function ApplicationLetterEdit() {
   const navigate = useNavigate();
@@ -40,6 +41,11 @@ export default function ApplicationLetterEdit() {
   if (isLetterLoading) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Loading..."
+          description="Memuat data surat lamaran..."
+          noIndex={true}
+        />
         <PageHeader
           title="Edit Surat Lamaran"
           showBackButton
@@ -57,6 +63,11 @@ export default function ApplicationLetterEdit() {
   if (!letter) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Surat Lamaran Tidak Ditemukan"
+          description="Surat lamaran tidak ditemukan."
+          noIndex={true}
+        />
         <PageHeader
           title="Surat Lamaran Tidak Ditemukan"
           showBackButton
@@ -71,6 +82,11 @@ export default function ApplicationLetterEdit() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={`Edit: ${letter.company_name}`}
+        description={`Edit surat lamaran untuk ${letter.company_name}`}
+        noIndex={true}
+      />
       <PageHeader
         title="Edit Surat Lamaran"
         subtitle={`Edit surat lamaran untuk ${letter.company_name}`}

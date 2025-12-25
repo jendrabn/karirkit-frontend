@@ -31,6 +31,7 @@ import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
 import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const monthNames = [
   "Januari",
@@ -79,6 +80,11 @@ export default function PortfolioShow() {
   if (isLoading) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Loading..."
+          description="Memuat data portfolio..."
+          noIndex={true}
+        />
         <div className="flex justify-center items-center h-full min-h-[50vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -91,6 +97,11 @@ export default function PortfolioShow() {
   if (!portfolio) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title="Portfolio Tidak Ditemukan"
+          description="Portfolio tidak ditemukan."
+          noIndex={true}
+        />
         <div className="flex flex-col items-center justify-center py-16">
           <p className="text-lg font-medium text-muted-foreground">
             Portfolio tidak ditemukan
@@ -117,6 +128,11 @@ export default function PortfolioShow() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={portfolio.title}
+        description={`Detail proyek: ${portfolio.title}`}
+        noIndex={true}
+      />
       <div className="mb-6">
         <Button
           variant="ghost"

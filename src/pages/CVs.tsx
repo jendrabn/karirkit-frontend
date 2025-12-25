@@ -25,6 +25,7 @@ import {
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -236,6 +237,11 @@ export default function CVs() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Daftar CV"
+        description="Kelola daftar riwayat hidup (CV) Anda."
+        noIndex={true}
+      />
       <PageHeader
         title="CV"
         subtitle="Kelola daftar riwayat hidup (CV) Anda."

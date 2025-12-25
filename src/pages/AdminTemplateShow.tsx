@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { useTemplate } from "@/features/admin/templates/api/get-template";
 import { useDeleteTemplate } from "@/features/admin/templates/api/delete-template";
 import { dayjs } from "@/lib/date";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const AdminTemplateShow = () => {
   const navigate = useNavigate();
@@ -81,6 +82,11 @@ const AdminTemplateShow = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={template.name}
+        description={`Detail template ${template.name}`}
+        noIndex={true}
+      />
       <PageHeader
         title={template.name}
         subtitle={`Detail template ${getTemplateTypeLabel(template.type)}`}

@@ -1,4 +1,5 @@
-import { SEO } from "@/components/SEO";
+import { Helmet } from "react-helmet";
+import { env } from "@/config/env";
 
 interface MinimalSEOProps {
   title: string;
@@ -11,5 +12,17 @@ export const MinimalSEO = ({
   description = "KarirKit - Platform lengkap untuk mengelola karir Anda",
   noIndex = false,
 }: MinimalSEOProps) => {
-  return <SEO title={title} description={description} noIndex={noIndex} />;
+  const appName = env.APP_NAME;
+  const pageTitle = title ? `${title} | ${appName}` : appName;
+
+  return (
+    <Helmet>
+      <title>{pageTitle}</title>
+      <meta name="description" content={description} />
+      <meta
+        name="robots"
+        content={noIndex ? "noindex, nofollow" : "index, follow"}
+      />
+    </Helmet>
+  );
 };

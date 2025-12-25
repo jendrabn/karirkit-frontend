@@ -7,6 +7,7 @@ import { PortfolioForm } from "@/features/portfolios/components/PortfolioForm";
 import { useCreatePortfolio } from "@/features/portfolios/api/create-portfolio";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { useForm } from "react-hook-form";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const PortfolioCreate = () => {
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ const PortfolioCreate = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Buat Portfolio"
+        description="Tambahkan proyek baru ke portfolio Anda."
+        noIndex={true}
+      />
       <PageHeader
         title="Buat Portfolio"
         subtitle="Tambahkan proyek baru ke portfolio Anda"

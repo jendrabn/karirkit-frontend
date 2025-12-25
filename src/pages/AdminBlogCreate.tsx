@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import {
   BlogForm,
   type BlogFormData,
@@ -85,6 +86,11 @@ const AdminBlogCreate = () => {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title="Buat Blog Baru"
+        description="Buat blog baru."
+        noIndex={true}
+      />
       <PageHeader
         title="Buat Blog Baru"
         subtitle="Tulis dan publikasikan artikel blog baru."

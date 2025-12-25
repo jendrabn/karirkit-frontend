@@ -1,8 +1,18 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Card } from "@/components/ui/card";
-import { FileText, Send, Briefcase, FolderOpen, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import {
+  FileText,
+  Send,
+  Briefcase,
+  FolderOpen,
+  CheckCircle,
+  XCircle,
+  Loader2,
+} from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard/api/get-dashboard-stats";
+import { MinimalSEO } from "@/components/MinimalSEO";
+import { seoConfig } from "@/config/seo";
 
 export default function Dashboard() {
   const { data: stats, isLoading, error } = useDashboardStats();
@@ -55,6 +65,11 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title={seoConfig.dashboard.title}
+          description={seoConfig.dashboard.description}
+          noIndex={true}
+        />
         <PageHeader
           title="Dashboard"
           subtitle="Ringkasan aktivitas dan statistik lamaran Anda."
@@ -69,6 +84,11 @@ export default function Dashboard() {
   if (error) {
     return (
       <DashboardLayout>
+        <MinimalSEO
+          title={seoConfig.dashboard.title}
+          description={seoConfig.dashboard.description}
+          noIndex={true}
+        />
         <PageHeader
           title="Dashboard"
           subtitle="Ringkasan aktivitas dan statistik lamaran Anda."
@@ -82,6 +102,11 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
+      <MinimalSEO
+        title={seoConfig.dashboard.title}
+        description={seoConfig.dashboard.description}
+        noIndex={true}
+      />
       <PageHeader
         title="Dashboard"
         subtitle="Ringkasan aktivitas dan statistik lamaran Anda."
@@ -91,12 +116,16 @@ export default function Dashboard() {
         {statCards.map((stat, index) => (
           <Card key={index} className="p-5 rounded-2xl">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
+              <div
+                className={`w-10 h-10 rounded-lg ${stat.bgColor} flex items-center justify-center`}
+              >
                 <stat.icon className={`w-5 h-5 ${stat.textColor}`} />
               </div>
             </div>
             <div className="mt-3">
-              <p className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
+              <p className={`text-2xl font-bold ${stat.textColor}`}>
+                {stat.value}
+              </p>
               <p className="text-xs text-muted-foreground">{stat.label}</p>
             </div>
           </Card>
