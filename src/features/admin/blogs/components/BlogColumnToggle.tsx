@@ -36,7 +36,10 @@ interface BlogColumnToggleProps {
   onVisibilityChange: (visibility: ColumnVisibility) => void;
 }
 
-export function BlogColumnToggle({ visibility, onVisibilityChange }: BlogColumnToggleProps) {
+export function BlogColumnToggle({
+  visibility,
+  onVisibilityChange,
+}: BlogColumnToggleProps) {
   const toggleColumn = (column: keyof ColumnVisibility) => {
     onVisibilityChange({
       ...visibility,
@@ -49,10 +52,13 @@ export function BlogColumnToggle({ visibility, onVisibilityChange }: BlogColumnT
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm">
           <Settings2 className="h-4 w-4 mr-2" />
-          Kolom
+          View
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent
+        align="end"
+        className="w-56 z-50 bg-popover max-h-80 overflow-y-auto"
+      >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem

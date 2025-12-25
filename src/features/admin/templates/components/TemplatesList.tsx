@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { dayjs } from "@/lib/date";
@@ -61,6 +63,7 @@ import { useTemplates } from "../api/get-templates";
 import { useDeleteTemplate } from "../api/delete-template";
 import { useMassDeleteTemplates } from "../api/mass-delete-templates";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { toast } from "sonner";
 import { getTemplateTypeLabel } from "@/types/template";
 import type { GetTemplatesParams } from "../api/get-templates";
@@ -85,14 +88,17 @@ export const TemplatesList = () => {
       "page" | "per_page" | "q" | "sort_by" | "sort_order"
     >
   >({});
-  const [visibleColumns, setVisibleColumns] = useState({
-    preview: true,
-    type: true,
-    name: true,
-    language: true,
-    is_premium: true,
-    created_at: true,
-  });
+  const [visibleColumns, setVisibleColumns] = useLocalStorage(
+    "templates-table-columns",
+    {
+      preview: true,
+      type: true,
+      name: true,
+      language: true,
+      is_premium: true,
+      created_at: true,
+    }
+  );
 
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");

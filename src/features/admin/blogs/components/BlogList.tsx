@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { format } from "date-fns";
@@ -87,6 +89,7 @@ import {
 import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
 import { useMassDeleteBlogs } from "@/features/admin/blogs/api/mass-delete-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type SortField = "updated_at" | "published_at" | "views" | "title";
 type SortOrder = "asc" | "desc";
@@ -96,9 +99,12 @@ export const BlogList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<FilterValues>({});
-  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(
-    defaultColumnVisibility
-  );
+
+  const [columnVisibility, setColumnVisibility] =
+    useLocalStorage<ColumnVisibility>(
+      "blogs-table-columns",
+      defaultColumnVisibility
+    );
   const [sortField, setSortField] = useState<SortField | null>("updated_at");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

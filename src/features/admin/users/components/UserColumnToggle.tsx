@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Columns3 } from "lucide-react";
+import { Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -62,11 +62,14 @@ export function UserColumnToggle({
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm">
-          <Columns3 className="h-4 w-4 mr-2" />
-          Kolom
+          <Settings2 className="h-4 w-4 mr-2" />
+          View
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48 bg-popover z-50">
+      <DropdownMenuContent
+        align="end"
+        className="w-56 z-50 bg-popover max-h-80 overflow-y-auto"
+      >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {Object.keys(visibility).map((column) => (

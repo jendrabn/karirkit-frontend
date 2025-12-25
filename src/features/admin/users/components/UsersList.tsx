@@ -69,6 +69,7 @@ import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
 import { useMassDeleteUsers } from "../api/mass-delete-users";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { toast } from "sonner";
 
 type SortField =
@@ -86,9 +87,12 @@ export const UsersList = () => {
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<FilterValues>({});
-  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(
-    defaultColumnVisibility
-  );
+
+  const [columnVisibility, setColumnVisibility] =
+    useLocalStorage<ColumnVisibility>(
+      "users-table-columns",
+      defaultColumnVisibility
+    );
 
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");

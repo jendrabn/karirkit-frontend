@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal } from "lucide-react";
+import { Settings2, SlidersHorizontal } from "lucide-react";
 
 export type ColumnVisibility = {
   preview: boolean;
@@ -31,12 +31,15 @@ export function TemplatesColumnToggle({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="hidden lg:flex">
-          <SlidersHorizontal className="mr-2 h-4 w-4" />
+          <Settings2 className="h-4 w-4 mr-2" />
           View
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+      <DropdownMenuContent
+        align="end"
+        className="w-56 z-50 bg-popover max-h-80 overflow-y-auto"
+      >
+        <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
           checked={visibleColumns.preview}
