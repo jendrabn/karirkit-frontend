@@ -30,6 +30,7 @@ import {
 } from "../api/create-template";
 import { TEMPLATE_TYPE_OPTIONS } from "@/types/template";
 import { useFormErrors } from "@/hooks/use-form-errors";
+import { buildImageUrl } from "@/lib/utils";
 
 interface TemplateFormProps {
   initialData?: CreateTemplateInput;
@@ -243,7 +244,7 @@ export function TemplateForm({
                     {field.value && (
                       <div className="relative">
                         <img
-                          src={field.value}
+                          src={buildImageUrl(field.value)}
                           alt="Preview"
                           className="w-32 h-40 object-cover rounded-lg border"
                         />
@@ -258,17 +259,19 @@ export function TemplateForm({
                         </Button>
                       </div>
                     )}
-                    <div
-                      className="flex flex-col items-center justify-center w-32 h-40 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => previewInputRef.current?.click()}
-                    >
-                      <Upload className="h-6 w-6 text-muted-foreground mb-2" />
-                      <span className="text-xs text-muted-foreground text-center">
-                        {uploadPreviewValidation.isPending
-                          ? "Uploading..."
-                          : "Upload Preview"}
-                      </span>
-                    </div>
+                    {!field.value && (
+                      <div
+                        className="flex flex-col items-center justify-center w-32 h-40 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => previewInputRef.current?.click()}
+                      >
+                        <Upload className="h-6 w-6 text-muted-foreground mb-2" />
+                        <span className="text-xs text-muted-foreground text-center">
+                          {uploadPreviewValidation.isPending
+                            ? "Uploading..."
+                            : "Upload Preview"}
+                        </span>
+                      </div>
+                    )}
                     <input
                       ref={previewInputRef}
                       type="file"
