@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
   <head>
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-N2CTNNGF");
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,7 +47,7 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://karirkit.com/" />
+    <meta property="og:url" content="https://karirkit.id/" />
     <meta
       property="og:title"
       content="KarirKit - Platform All-in-One untuk Mengelola Karir Anda"
@@ -46,14 +58,14 @@
     />
     <meta
       property="og:image"
-      content="https://karirkit.com/images/og-image.jpg"
+      content="https://karirkit.id/images/og-image.jpg"
     />
     <meta property="og:site_name" content="KarirKit" />
     <meta property="og:locale" content="id_ID" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://karirkit.com/" />
+    <meta property="twitter:url" content="https://karirkit.id/" />
     <meta
       property="twitter:title"
       content="KarirKit - Platform All-in-One untuk Mengelola Karir Anda"
@@ -64,11 +76,11 @@
     />
     <meta
       property="twitter:image"
-      content="https://karirkit.com/images/twitter-image.jpg"
+      content="https://karirkit.id/images/twitter-image.jpg"
     />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://karirkit.com/" />
+    <link rel="canonical" href="https://karirkit.id/" />
 
     <!-- Additional SEO -->
     <meta name="google-site-verification" content="" />
@@ -80,7 +92,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "KarirKit",
-        "url": "https://karirkit.com",
+        "url": "https://karirkit.id",
         "description": "Platform all-in-one untuk mengelola lamaran kerja, membuat CV, surat lamaran, dan portofolio digital",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
@@ -98,6 +110,14 @@
     </script>
   </head>
   <body>
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-N2CTNNGF"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
