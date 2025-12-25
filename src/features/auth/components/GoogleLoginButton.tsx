@@ -9,6 +9,7 @@ import { userQueryKey } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import googleLogo from "@/assets/images/google_g_logo.png";
+import { paths } from "@/config/paths";
 
 type GoogleLoginButtonProps = {
   onSuccess?: () => void;
@@ -36,7 +37,8 @@ const GoogleLoginButton = ({
         toast.success("Login dengan Google berhasil");
         onSuccess?.();
 
-        const from = location.state?.from?.pathname || "/dashboard";
+        const from =
+          location.state?.from?.pathname || paths.dashboard.getHref();
 
         setTimeout(() => {
           navigate(from, { replace: true });
@@ -97,7 +99,6 @@ const GoogleLoginButton = ({
 
   return (
     <>
-      {/* Custom Button dengan styling yang Anda minta */}
       <Button
         variant="outline"
         className="w-full h-12 text-base font-medium gap-3"

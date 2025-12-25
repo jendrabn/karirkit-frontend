@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
+import { paths } from "@/config/paths";
 import { useCheckOtpStatus, useVerifyOtp, useResendOtp } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -57,7 +58,7 @@ const OTPVerificationForm = () => {
   useEffect(() => {
     if (!authState.identifier || !authState.password) {
       toast.error("Sesi login tidak valid. Silakan login kembali.");
-      navigate("/auth/login");
+      navigate(paths.auth.login.getHref());
       return;
     }
 
@@ -71,7 +72,7 @@ const OTPVerificationForm = () => {
             sessionStorage.removeItem("otp_password");
             sessionStorage.removeItem("otp_expires_at");
             sessionStorage.removeItem("otp_resend_available_at");
-            navigate("/auth/login");
+            navigate(paths.auth.login.getHref());
           } else if (data.resendAvailableAt) {
             // Update countdown if server provides different time
             const currentTime = Date.now();
@@ -100,7 +101,7 @@ const OTPVerificationForm = () => {
           sessionStorage.removeItem("otp_password");
           sessionStorage.removeItem("otp_expires_at");
           sessionStorage.removeItem("otp_resend_available_at");
-          navigate("/auth/login");
+          navigate(paths.auth.login.getHref());
         },
       }
     );
@@ -231,7 +232,7 @@ const OTPVerificationForm = () => {
   const handleResendCode = () => {
     if (!authState.identifier) {
       toast.error("Identifier tidak ditemukan. Silakan login kembali.");
-      navigate("/auth/login");
+      navigate(paths.auth.login.getHref());
       return;
     }
 
@@ -247,7 +248,7 @@ const OTPVerificationForm = () => {
 
     if (!authState.identifier || !authState.password) {
       toast.error("Sesi login tidak valid. Silakan login kembali.");
-      navigate("/auth/login");
+      navigate(paths.auth.login.getHref());
       return;
     }
 
@@ -334,7 +335,7 @@ const OTPVerificationForm = () => {
             sessionStorage.removeItem("otp_password");
             sessionStorage.removeItem("otp_expires_at");
             sessionStorage.removeItem("otp_resend_available_at");
-            navigate("/auth/login");
+            navigate(paths.auth.login.getHref());
           }}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           disabled={isVerifying}

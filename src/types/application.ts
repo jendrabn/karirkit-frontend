@@ -1,22 +1,28 @@
-export type JobType = "full_time" | "part_time" | "contract" | "internship" | "freelance";
+export type JobType =
+  | "full_time"
+  | "part_time"
+  | "contract"
+  | "internship"
+  | "freelance";
 
 export type WorkSystem = "onsite" | "remote" | "hybrid";
 
-export type ApplicationStatus = 
-  | "draft" 
-  | "submitted" 
-  | "administration_screening" 
-  | "hr_screening" 
-  | "online_test" 
-  | "psychology_test" 
-  | "technical_test" 
-  | "hr_test" 
-  | "user_interview" 
-  | "final_interview" 
-  | "offering" 
-  | "mcu" 
-  | "onboarding" 
-  | "rejected" 
+export type ApplicationStatus =
+  | "draft"
+  | "submitted"
+  | "administration_screening"
+  | "hr_screening"
+  | "online_test"
+  | "psychology_test"
+  | "technical_test"
+  | "hr_test"
+  | "hr_interview"
+  | "user_interview"
+  | "final_interview"
+  | "offering"
+  | "mcu"
+  | "onboarding"
+  | "rejected"
   | "accepted";
 
 export type ResultStatus = "pending" | "passed" | "failed";
@@ -80,6 +86,7 @@ export const STATUS_OPTIONS: { value: ApplicationStatus; label: string }[] = [
   { value: "psychology_test", label: "Psychology Test" },
   { value: "technical_test", label: "Technical Test" },
   { value: "hr_test", label: "HR Test" },
+  { value: "hr_interview", label: "HR Interview" },
   { value: "user_interview", label: "User Interview" },
   { value: "final_interview", label: "Final Interview" },
   { value: "offering", label: "Offering" },

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel } from "@/components/ui/field";
 import {
   Select,
   SelectContent,
@@ -29,8 +29,9 @@ export function TemplateSelector({
   const selectedTemplate = templates.find((t) => t.id === value) || null;
 
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
+    <Field>
+      <FieldLabel>{label}</FieldLabel>
+
       <div className="flex gap-2">
         <Select value={value} onValueChange={onChange}>
           <SelectTrigger className="flex-1">
@@ -44,6 +45,7 @@ export function TemplateSelector({
             ))}
           </SelectContent>
         </Select>
+
         <Button
           type="button"
           variant="outline"
@@ -61,6 +63,6 @@ export function TemplateSelector({
         onOpenChange={setPreviewOpen}
         template={selectedTemplate}
       />
-    </div>
+    </Field>
   );
 }

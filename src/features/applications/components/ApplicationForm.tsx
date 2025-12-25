@@ -18,9 +18,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Form } from "@/components/ui/form";
 import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import {
   JOB_TYPE_OPTIONS,
@@ -53,7 +52,6 @@ export function ApplicationForm({
     defaultValues: initialData
       ? {
           ...initialData,
-          // Ensure specific optional fields are strings if they are undefined in initialData
           company_url: initialData.company_url || "",
           job_source: initialData.job_source || "",
           salary_min: initialData.salary_min || 0,
@@ -89,15 +87,16 @@ export function ApplicationForm({
         },
   });
 
-  // Handle form validation errors from API
   useFormErrors(form);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FieldSet disabled={isLoading} className="space-y-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Informasi Perusahaan</h3>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldSet disabled={isLoading} className="space-y-6 mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Informasi Perusahaan</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>Nama Perusahaan *</FieldLabel>
@@ -156,10 +155,14 @@ export function ApplicationForm({
                 </FieldError>
               </Field>
             </div>
-          </Card>
+          </CardContent>
+        </Card>
 
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Detail Pekerjaan</h3>
+        <Card>
+          <CardHeader>
+            <CardTitle>Detail Pekerjaan</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
                 control={form.control}
@@ -344,10 +347,14 @@ export function ApplicationForm({
                 )}
               />
             </div>
-          </Card>
+          </CardContent>
+        </Card>
 
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Informasi Kontak</h3>
+        <Card>
+          <CardHeader>
+            <CardTitle>Informasi Kontak</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Field>
                 <FieldLabel>Nama Kontak</FieldLabel>
@@ -373,10 +380,14 @@ export function ApplicationForm({
                 </FieldError>
               </Field>
             </div>
-          </Card>
+          </CardContent>
+        </Card>
 
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Follow Up</h3>
+        <Card>
+          <CardHeader>
+            <CardTitle>Follow Up</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
                 control={form.control}
@@ -431,32 +442,36 @@ export function ApplicationForm({
                 </FieldError>
               </Field>
             </div>
-          </Card>
+          </CardContent>
+        </Card>
 
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Catatan</h3>
+        <Card>
+          <CardHeader>
+            <CardTitle>Catatan</CardTitle>
+          </CardHeader>
+          <CardContent>
             <Field>
               <FieldLabel>Catatan</FieldLabel>
               <Textarea {...form.register("notes")} rows={4} />
               <FieldError>{form.formState.errors.notes?.message}</FieldError>
             </Field>
-          </Card>
-        </FieldSet>
+          </CardContent>
+        </Card>
+      </FieldSet>
 
-        <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Batal
-          </Button>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Menyimpan..." : "Simpan"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <div className="flex justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          Batal
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Menyimpan..." : "Simpan"}
+        </Button>
+      </div>
+    </form>
   );
 }

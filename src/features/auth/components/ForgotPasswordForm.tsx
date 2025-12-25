@@ -14,7 +14,6 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { Form } from "@/components/ui/form";
 import { Mail, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -44,7 +43,7 @@ const ForgotPasswordForm = () => {
       onSuccess: (data: unknown) => {
         setEmail(form.getValues("email"));
         setSubmitted(true);
-        // Type assertion based on API response structure
+
         const response = data as { message?: string };
         toast.success(response.message || "Email reset password telah dikirim");
       },
@@ -57,7 +56,6 @@ const ForgotPasswordForm = () => {
 
   const isSubmitting = forgotPasswordMutation.isPending;
 
-  // Handle form validation errors from API
   useFormErrors(form);
 
   return (
@@ -84,42 +82,42 @@ const ForgotPasswordForm = () => {
           </>
         )}
       </CardHeader>
+
       <CardContent className="space-y-6">
         {!submitted ? (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FieldSet disabled={isSubmitting}>
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="nama@email.com"
-                      className="h-12"
-                      {...form.register("email")}
-                    />
-                    <FieldError>
-                      {form.formState.errors.email?.message}
-                    </FieldError>
-                  </Field>
-                </FieldGroup>
-              </FieldSet>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FieldSet disabled={isSubmitting}>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="nama@email.com"
+                    className="h-12"
+                    {...form.register("email")}
+                  />
+                  <FieldError>
+                    {form.formState.errors.email?.message}
+                  </FieldError>
+                </Field>
+              </FieldGroup>
+            </FieldSet>
 
-              <Button
-                type="submit"
-                className="w-full h-12 text-base font-semibold mt-6"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Mengirim..." : "Kirim Link Reset"}
-              </Button>
-            </form>
-          </Form>
+            <Button
+              type="submit"
+              className="w-full h-12 text-base font-semibold mt-6"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Mengirim..." : "Kirim Link Reset"}
+            </Button>
+          </form>
         ) : (
           <>
             <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground">
               <p>Tidak menerima email? Periksa folder spam Anda atau</p>
               <button
+                type="button"
                 onClick={() => {
                   setSubmitted(false);
                   form.reset();
@@ -131,6 +129,7 @@ const ForgotPasswordForm = () => {
             </div>
 
             <Button
+              type="button"
               variant="outline"
               className="w-full h-12 text-base font-medium"
               onClick={() => {

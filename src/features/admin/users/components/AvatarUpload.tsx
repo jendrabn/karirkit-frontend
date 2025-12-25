@@ -123,11 +123,6 @@ export function AvatarUpload({
           disabled={isLoading}
         />
       </div>
-      <p className="text-xs text-muted-foreground text-center">
-        Klik gambar untuk mengubah avatar
-        <br />
-        <span className="opacity-75">Maksimal 2MB</span>
-      </p>
     </div>
   );
 }

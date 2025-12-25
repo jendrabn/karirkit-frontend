@@ -11,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
+import { Card } from "@/components/ui/card";
 import { CoverUpload } from "./CoverUpload";
 import { MediaUpload } from "./MediaUpload";
 import { type Portfolio, projectTypeLabels } from "@/types/portfolio";
@@ -131,10 +132,10 @@ export function PortfolioForm({
   };
 
   return (
-    <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
-      <fieldset disabled={isLoading} className="space-y-6">
+    <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+      <FieldSet disabled={isLoading} className="space-y-6 mb-6">
         {/* Basic Info */}
-        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <h3 className="text-lg font-semibold">Informasi Dasar</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -263,10 +264,10 @@ export function PortfolioForm({
               <FieldError>{form.formState.errors.year?.message}</FieldError>
             </Field>
           </div>
-        </div>
+        </Card>
 
         {/* Links */}
-        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <h3 className="text-lg font-semibold">Links</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -290,10 +291,10 @@ export function PortfolioForm({
               <FieldError>{form.formState.errors.repo_url?.message}</FieldError>
             </Field>
           </div>
-        </div>
+        </Card>
 
         {/* Tools */}
-        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <h3 className="text-lg font-semibold">Tools & Teknologi</h3>
 
           <div className="flex gap-2">
@@ -329,23 +330,23 @@ export function PortfolioForm({
               ))}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Cover */}
-        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <h3 className="text-lg font-semibold">Cover Image</h3>
           <CoverUpload value={cover} onChange={setCover} />
-        </div>
+        </Card>
 
         {/* Medias */}
-        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <h3 className="text-lg font-semibold">Media Gallery</h3>
           <MediaUpload value={medias} onChange={setMedias} />
-        </div>
-      </fieldset>
+        </Card>
+      </FieldSet>
 
       {/* Actions */}
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end gap-3">
         <Button
           type="button"
           variant="outline"

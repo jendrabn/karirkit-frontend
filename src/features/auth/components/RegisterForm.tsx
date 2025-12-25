@@ -18,7 +18,6 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "./GoogleLoginButton";
@@ -29,6 +28,7 @@ import {
 } from "@/lib/auth";
 import { toast } from "sonner";
 import { useFormErrors } from "@/hooks/use-form-errors";
+import { paths } from "@/config/paths";
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -49,7 +49,7 @@ const RegisterForm = () => {
   const registerMutation = useRegister({
     onSuccess: () => {
       toast.success("Registrasi berhasil! Selamat datang.");
-      navigate("/dashboard");
+      navigate(paths.dashboard.getHref());
     },
   });
 
@@ -59,7 +59,7 @@ const RegisterForm = () => {
 
   const isSubmitting = registerMutation.isPending;
 
-  // Handle form validation errors from API
+  // Handle API validation errors
   useFormErrors(form);
 
   return (
@@ -70,8 +70,8 @@ const RegisterForm = () => {
           Mulai perjalanan karier Anda bersama KarirKit
         </CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-6">
-        {/* Google Signup Button */}
         <GoogleLoginButton
           disabled={isSubmitting}
           text="Daftar dengan Google"
@@ -86,118 +86,112 @@ const RegisterForm = () => {
           </div>
         </div>
 
-        {/* Registration Form */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FieldSet disabled={isSubmitting}>
-              <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="name">Nama Lengkap</FieldLabel>
+        {/* ✅ HTML FORM */}
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FieldSet disabled={isSubmitting}>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="name">Nama Lengkap</FieldLabel>
+                <Input
+                  id="name"
+                  placeholder="Masukkan nama lengkap"
+                  className="h-12"
+                  {...form.register("name")}
+                />
+                <FieldError>{form.formState.errors.name?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="username">Username</FieldLabel>
+                <Input
+                  id="username"
+                  placeholder="Masukkan username"
+                  className="h-12"
+                  {...form.register("username")}
+                />
+                <FieldError>
+                  {form.formState.errors.username?.message}
+                </FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="nama@email.com"
+                  className="h-12"
+                  {...form.register("email")}
+                />
+                <FieldError>{form.formState.errors.email?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <div className="relative">
                   <Input
-                    id="name"
-                    placeholder="Masukkan nama lengkap"
-                    className="h-12"
-                    {...form.register("name")}
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Minimal 8 karakter"
+                    className="h-12 pr-12"
+                    {...form.register("password")}
                   />
-                  <FieldError>{form.formState.errors.name?.message}</FieldError>
-                </Field>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                <FieldError>
+                  {form.formState.errors.password?.message}
+                </FieldError>
+              </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="username">Username</FieldLabel>
+              <Field>
+                <FieldLabel htmlFor="confirm_password">
+                  Konfirmasi Password
+                </FieldLabel>
+                <div className="relative">
                   <Input
-                    id="username"
-                    placeholder="Masukkan username"
-                    className="h-12"
-                    {...form.register("username")}
+                    id="confirm_password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Masukkan ulang password"
+                    className="h-12 pr-12"
+                    {...form.register("confirm_password")}
                   />
-                  <FieldError>
-                    {form.formState.errors.username?.message}
-                  </FieldError>
-                </Field>
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                <FieldError>
+                  {form.formState.errors.confirm_password?.message}
+                </FieldError>
+              </Field>
+            </FieldGroup>
+          </FieldSet>
 
-                <Field>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="nama@email.com"
-                    className="h-12"
-                    {...form.register("email")}
-                  />
-                  <FieldError>
-                    {form.formState.errors.email?.message}
-                  </FieldError>
-                </Field>
-
-                <Field>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Minimal 8 karakter"
-                      className="h-12 pr-12"
-                      {...form.register("password")}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                  <FieldError>
-                    {form.formState.errors.password?.message}
-                  </FieldError>
-                </Field>
-
-                <Field>
-                  <FieldLabel htmlFor="confirm_password">
-                    Konfirmasi Password
-                  </FieldLabel>
-                  <div className="relative">
-                    <Input
-                      id="confirm_password"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Masukkan ulang password"
-                      className="h-12 pr-12"
-                      {...form.register("confirm_password")}
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                  <FieldError>
-                    {form.formState.errors.confirm_password?.message}
-                  </FieldError>
-                </Field>
-              </FieldGroup>
-            </FieldSet>
-
-            <Button
-              type="submit"
-              className="w-full h-12 text-base font-semibold mt-6"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Mendaftar..." : "Daftar"}
-            </Button>
-          </form>
-        </Form>
+          <Button
+            type="submit"
+            className="w-full h-12 text-base font-semibold mt-6"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Mendaftar..." : "Daftar"}
+          </Button>
+        </form>
 
         <p className="text-center text-sm text-muted-foreground">
           Sudah punya akun?{" "}

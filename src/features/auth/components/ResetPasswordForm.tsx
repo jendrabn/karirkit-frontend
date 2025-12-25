@@ -14,7 +14,6 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { Form } from "@/components/ui/form";
 import { CheckCircle2, EyeOff, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -37,13 +36,12 @@ const ResetPasswordForm = () => {
   const form = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordInputSchema),
     defaultValues: {
-      token: token,
+      token,
       password: "",
       confirmPassword: "",
     },
   });
 
-  // Update token value when it changes
   useEffect(() => {
     if (token) {
       form.setValue("token", token);
@@ -54,7 +52,6 @@ const ResetPasswordForm = () => {
     mutationConfig: {
       onSuccess: (data: unknown) => {
         setSuccess(true);
-        // Type assertion based on API response structure
         const response = data as { message?: string };
         toast.success(response.message || "Password berhasil direset");
       },
@@ -67,7 +64,6 @@ const ResetPasswordForm = () => {
 
   const isSubmitting = resetPasswordMutation.isPending;
 
-  // Handle form validation errors from API
   useFormErrors(form);
 
   return (
@@ -93,79 +89,78 @@ const ResetPasswordForm = () => {
           </>
         )}
       </CardHeader>
+
       <CardContent className="space-y-6">
         {!success ? (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FieldSet disabled={isSubmitting}>
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="password">Password Baru</FieldLabel>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Minimal 8 karakter"
-                        className="h-12 pr-12"
-                        {...form.register("password")}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-5 w-5" />
-                        ) : (
-                          <Eye className="h-5 w-5" />
-                        )}
-                      </button>
-                    </div>
-                    <FieldError>
-                      {form.formState.errors.password?.message}
-                    </FieldError>
-                  </Field>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FieldSet disabled={isSubmitting}>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="password">Password Baru</FieldLabel>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Minimal 8 karakter"
+                      className="h-12 pr-12"
+                      {...form.register("password")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  <FieldError>
+                    {form.formState.errors.password?.message}
+                  </FieldError>
+                </Field>
 
-                  <Field>
-                    <FieldLabel htmlFor="confirmPassword">
-                      Konfirmasi Password
-                    </FieldLabel>
-                    <div className="relative">
-                      <Input
-                        id="confirmPassword"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Masukkan kembali password baru"
-                        className="h-12 pr-12"
-                        {...form.register("confirmPassword")}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-5 w-5" />
-                        ) : (
-                          <Eye className="h-5 w-5" />
-                        )}
-                      </button>
-                    </div>
-                    <FieldError>
-                      {form.formState.errors.confirmPassword?.message}
-                    </FieldError>
-                  </Field>
-                </FieldGroup>
-              </FieldSet>
+                <Field>
+                  <FieldLabel htmlFor="confirmPassword">
+                    Konfirmasi Password
+                  </FieldLabel>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Masukkan kembali password baru"
+                      className="h-12 pr-12"
+                      {...form.register("confirmPassword")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  <FieldError>
+                    {form.formState.errors.confirmPassword?.message}
+                  </FieldError>
+                </Field>
+              </FieldGroup>
+            </FieldSet>
 
-              <Button
-                type="submit"
-                className="w-full h-12 text-base font-semibold mt-6"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Menyimpan..." : "Simpan Password Baru"}
-              </Button>
-            </form>
-          </Form>
+            <Button
+              type="submit"
+              className="w-full h-12 text-base font-semibold mt-6"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Menyimpan..." : "Simpan Password Baru"}
+            </Button>
+          </form>
         ) : (
           <Button className="w-full h-12 text-base font-semibold" asChild>
             <Link to="/auth/login">Masuk ke Akun</Link>

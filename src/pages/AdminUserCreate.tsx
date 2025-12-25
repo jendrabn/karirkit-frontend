@@ -35,12 +35,10 @@ const AdminUserCreate = () => {
         subtitle="Tambahkan pengguna baru ke sistem."
       />
 
-      <div className="bg-card border border-border/60 rounded-xl p-6 shadow-sm">
-        <UserForm
-          onSubmit={handleSubmit}
-          isLoading={createUserMutation.isPending}
-        />
-      </div>
+      <UserForm
+        onSubmit={handleSubmit}
+        isLoading={createUserMutation.isPending}
+      />
     </DashboardLayout>
   );
 };

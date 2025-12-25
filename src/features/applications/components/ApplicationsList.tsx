@@ -129,7 +129,11 @@ const getStatusBadgeVariant = (status: ApplicationStatus) => {
     "technical_test",
     "hr_test",
   ];
-  const interviewStatuses = ["user_interview", "final_interview"];
+  const interviewStatuses = [
+    "hr_interview",
+    "user_interview",
+    "final_interview",
+  ];
 
   if (status === "draft") return "draft";
   if (status === "submitted") return "submitted";
