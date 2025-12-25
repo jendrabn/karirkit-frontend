@@ -34,7 +34,10 @@ api.interceptors.response.use(
   },
   (error) => {
     // Handle general errors
-    if (error.response?.data?.errors?.general) {
+    if (
+      error.response?.status !== 401 &&
+      error.response?.data?.errors?.general
+    ) {
       const generalErrors = error.response.data.errors.general;
       if (Array.isArray(generalErrors)) {
         generalErrors.forEach((errorMessage: string) => {
@@ -51,15 +54,6 @@ api.interceptors.response.use(
       // Store form errors in a global variable for forms to access
       setFormErrors(formErrors);
     }
-
-    // if (error.response?.status === 401) {
-    //   if (!window.location.pathname.startsWith("/auth/")) {
-    //     const searchParams = new URLSearchParams();
-    //     const redirectTo =
-    //       searchParams.get("redirectTo") || window.location.pathname;
-    //     window.location.href = paths.auth.login.getHref(redirectTo);
-    //   }
-    // }
 
     return Promise.reject(error);
   }

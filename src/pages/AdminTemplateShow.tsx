@@ -29,6 +29,8 @@ import { useTemplate } from "@/features/admin/templates/api/get-template";
 import { useDeleteTemplate } from "@/features/admin/templates/api/delete-template";
 import { dayjs } from "@/lib/date";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { buildImageUrl } from "@/lib/utils";
+import { paths } from "@/config/paths";
 
 const AdminTemplateShow = () => {
   const navigate = useNavigate();
@@ -90,6 +92,8 @@ const AdminTemplateShow = () => {
       <PageHeader
         title={template.name}
         subtitle={`Detail template ${getTemplateTypeLabel(template.type)}`}
+        backButtonUrl={paths.admin.templates.list.getHref()}
+        showBackButton
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -101,7 +105,7 @@ const AdminTemplateShow = () => {
           <CardContent>
             {template.preview ? (
               <img
-                src={template.preview}
+                src={buildImageUrl(template.preview)}
                 alt={template.name}
                 className="w-full aspect-[3/4] object-cover rounded-lg border"
               />
