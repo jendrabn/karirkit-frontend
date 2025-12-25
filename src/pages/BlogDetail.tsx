@@ -24,6 +24,8 @@ import { useBlog } from "@/features/blogs/api/get-blog";
 import { useBlogs } from "@/features/blogs/api/get-blogs";
 import { buildImageUrl } from "@/lib/utils";
 import { paths } from "@/config/paths";
+import { SEO } from "@/components/SEO";
+import { env } from "@/config/env";
 
 const BlogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -98,8 +100,58 @@ const BlogDetail = () => {
   )}`;
   const shareTitle = encodeURIComponent(blog.title);
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: blog.title,
+    description: blog.excerpt || blog.title,
+    image: blog.featured_image ? buildImageUrl(blog.featured_image) : undefined,
+    datePublished: blog.published_at || blog.created_at,
+    dateModified: blog.updated_at,
+    author: {
+      "@type": "Person",
+      name: blog.user.name,
+      image: blog.user.avatar ? buildImageUrl(blog.user.avatar) : undefined,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: env.APP_NAME,
+      logo: {
+        "@type": "ImageObject",
+        url: `${env.APP_URL}/images/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": shareUrl,
+    },
+    articleSection: blog.category?.name,
+    keywords: blog.tags?.map((tag) => tag.name).join(", "),
+    wordCount: blog.content.split(/\s+/).length,
+    timeRequired: `PT${blog.read_time}M`,
+  };
+
   return (
     <>
+      <SEO
+        title={blog.title}
+        description={blog.excerpt || blog.title}
+        keywords={`${blog.category?.name || ""}, ${
+          blog.tags?.map((tag) => tag.name).join(", ") || ""
+        }, blog karir, artikel karir`}
+        image={
+          blog.featured_image ? buildImageUrl(blog.featured_image) : undefined
+        }
+        url={`/blog/${blog.slug}`}
+        type="article"
+        author={blog.user.name}
+        publishedTime={blog.published_at || blog.created_at}
+        modifiedTime={blog.updated_at}
+        section={blog.category?.name}
+        tags={blog.tags?.map((tag) => tag.name)}
+        structuredData={structuredData}
+      />
+
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
 

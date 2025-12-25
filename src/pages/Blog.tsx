@@ -19,6 +19,8 @@ import {
 import { useBlogs, type GetBlogsParams } from "@/features/blogs/api/get-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { buildImageUrl } from "@/lib/utils";
+import { SEO } from "@/components/SEO";
+import { env } from "@/config/env";
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,8 +76,34 @@ const Blog = () => {
 
   const totalPages = pagination?.total_pages || 0;
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: `Blog ${env.APP_NAME}`,
+    description:
+      "Tips, panduan, dan insight untuk membantu perjalanan karier Anda",
+    url: `${env.APP_URL}/blog`,
+    publisher: {
+      "@type": "Organization",
+      name: env.APP_NAME,
+      logo: {
+        "@type": "ImageObject",
+        url: `${env.APP_URL}/images/logo.png`,
+      },
+    },
+  };
+
   return (
     <>
+      <SEO
+        title="Blog & Artikel Karier"
+        description="Temukan tips, panduan, dan insight terbaik untuk membantu perjalanan karier Anda. Artikel tentang CV, surat lamaran, wawancara kerja, dan pengembangan karir."
+        keywords="blog karir, tips karir, panduan cv, tips wawancara, pengembangan karir, artikel lowongan kerja, tips lamaran kerja, panduan surat lamaran, career advice, job search tips"
+        url="/blog"
+        type="website"
+        structuredData={structuredData}
+      />
+
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
 
