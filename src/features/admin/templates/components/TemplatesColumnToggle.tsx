@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Settings2, SlidersHorizontal } from "lucide-react";
+import { Settings2 } from "lucide-react";
 
 export type ColumnVisibility = {
   preview: boolean;
