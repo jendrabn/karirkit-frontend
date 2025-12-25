@@ -8,7 +8,7 @@ const createEnv = () => {
       .refine((s) => s === "true" || s === "false")
       .transform((s) => s === "true")
       .optional(),
-    APP_URL: z.string().optional().default("http://localhost:3000"),
+    APP_URL: z.string().optional().default("https://karirkit.id"),
     APP_NAME: z.string().optional().default("KarirKit"),
     DEBUG: z
       .string()
