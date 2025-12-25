@@ -13,6 +13,8 @@ import { RouterProvider } from "react-router";
 import { createAppRouter } from "./router";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "./hooks/use-theme";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 
 export const App = () => {
   const [queryClient] = React.useState(
@@ -35,6 +37,8 @@ export const App = () => {
               <React.Suspense fallback={<LoadingFallback />}>
                 <RouterProvider router={router} />
                 <Toaster position="top-center" />
+                <PWAInstallPrompt />
+                <PWAUpdatePrompt />
               </React.Suspense>
             </AuthProvider>
           </GoogleOAuthProvider>
