@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 
 export function HeroSection() {
@@ -19,12 +19,12 @@ export function HeroSection() {
           {/* Left Content */}
           <div className="space-y-8">
             {/* Badge */}
-            {/* <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-full text-sm font-medium">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-full text-sm font-medium">
               <Sparkles className="w-4 h-4" />
               <span>Platform Gratis untuk Karier Anda</span>
-            </div> */}
+            </div>
 
-            <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-shine leading-tight">
+            <h1 className="text-4xl xl:text-5xl font-bold text-shine leading-tight">
               Kelola Semua Lamaran Kerja Anda dengan Lebih Mudah
             </h1>
             <p className="text-lg lg:text-xl text-foreground/90 leading-relaxed">
@@ -70,8 +70,8 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right Content - Hero Illustration */}
-          <div className="relative">
+          {/* Right Content - Hero Illustration - Hidden on mobile */}
+          <div className="relative hidden lg:block">
             <div className="rounded-3xl overflow-hidden">
               <img
                 src="https://images.unsplash.com/photo-1499750310107-5fef28a66643"

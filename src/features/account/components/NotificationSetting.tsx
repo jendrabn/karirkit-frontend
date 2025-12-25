@@ -1,4 +1,4 @@
-import { Bell, MessageCircle, Send, Loader2 } from "lucide-react";
+import { Bell, MessageCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
@@ -34,7 +34,7 @@ interface NotificationSettings {
 }
 
 const NotificationSetting = () => {
-  const [isSavingNotifications, setIsSavingNotifications] = useState(false);
+  // const [isSavingNotifications, setIsSavingNotifications] = useState(false);
 
   // Notification settings state
   const [notifications, setNotifications] = useState<NotificationSettings>({
@@ -82,9 +82,9 @@ const NotificationSetting = () => {
     }));
   };
 
-  const saveNotificationSettings = async () => {
-    setIsSavingNotifications(true);
-  };
+  // const saveNotificationSettings = async () => {
+  //   setIsSavingNotifications(true);
+  // };
 
   return (
     <Card>
@@ -276,7 +276,7 @@ const NotificationSetting = () => {
 
         <Separator />
 
-        <Button
+        {/* <Button
           onClick={saveNotificationSettings}
           disabled={isSavingNotifications}
         >
@@ -288,7 +288,9 @@ const NotificationSetting = () => {
           ) : (
             "Simpan Pengaturan Notifikasi"
           )}
-        </Button>
+        </Button> */}
+
+        <Button disabled>Simpan Pengaturan Notifikasi (Segera Hadir)</Button>
       </CardContent>
     </Card>
   );

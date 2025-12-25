@@ -11,7 +11,7 @@ const features = [
   {
     id: "application",
     image: iconTracker,
-    title: "Pelacak Lamaran",
+    title: "Pelacak Lamaran Kerja",
     subtitle: "Pantau semua proses lamaran kerja dalam satu tempat.",
   },
   {
@@ -23,7 +23,7 @@ const features = [
   {
     id: "cv",
     image: iconCV,
-    title: "Buat CV",
+    title: "CV",
     subtitle: "Susun CV modern yang mudah dibaca recruiter.",
   },
   {
