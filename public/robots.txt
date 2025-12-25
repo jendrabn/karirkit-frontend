@@ -30,4 +30,4 @@ Disallow: /portfolios/*
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://karirkit.com/sitemap.xml
+Sitemap: https://karirkit.id/sitemap.xml

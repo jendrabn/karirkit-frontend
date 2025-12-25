@@ -8,18 +8,18 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://karirkit.com/</loc>
+    <loc>https://karirkit.id/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <lastmod>2024-12-25</lastmod>
+    <lastmod>2025-12-25</lastmod>
   </url>
 
   <!-- Blog List -->
   <url>
-    <loc>https://karirkit.com/blog</loc>
+    <loc>https://karirkit.id/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-    <lastmod>2024-12-25</lastmod>
+    <lastmod>2025-12-25</lastmod>
   </url>
 
   <!-- 
@@ -39,7 +39,7 @@
   <!-- Example Blog Posts (should be generated dynamically) -->
   <!--
   <url>
-    <loc>https://karirkit.com/blog/tips-membuat-cv-profesional</loc>
+    <loc>https://karirkit.id/blog/tips-membuat-cv-profesional</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <lastmod>2024-12-20</lastmod>
@@ -49,7 +49,7 @@
   <!-- Example User Portfolios (should be generated dynamically) -->
   <!--
   <url>
-    <loc>https://karirkit.com/u/johndoe</loc>
+    <loc>https://karirkit.id/u/johndoe</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <lastmod>2024-12-20</lastmod>
