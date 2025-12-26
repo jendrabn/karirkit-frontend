@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router";
 import { dayjs } from "@/lib/date";
-import { Pencil, ExternalLink, Trash2, Loader2, Copy } from "lucide-react";
+import { Pencil, ExternalLink, Trash2, Loader2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,6 @@ import {
 } from "@/types/application";
 import { useApplication } from "@/features/applications/api/get-application";
 import { useDeleteApplication } from "@/features/applications/api/delete-application";
-import { useDuplicateApplication } from "@/features/applications/api/duplicate-application";
 import { toast } from "sonner";
 import { useState } from "react";
 import {
@@ -47,15 +46,6 @@ export default function ApplicationShow() {
       onSuccess: () => {
         toast.success("Lamaran berhasil dihapus");
         navigate("/applications");
-      },
-    },
-  });
-
-  const duplicateApplicationMutation = useDuplicateApplication({
-    mutationConfig: {
-      onSuccess: (data) => {
-        toast.success("Lamaran berhasil diduplikasi");
-        navigate(`/applications/${data.id}`);
       },
     },
   });
@@ -152,27 +142,19 @@ export default function ApplicationShow() {
       >
         <div className="flex gap-2">
           <Button
-            variant="outline"
-            onClick={() =>
-              duplicateApplicationMutation.mutate({ id: application.id })
-            }
-            disabled={duplicateApplicationMutation.isPending}
-          >
-            <Copy className="h-4 w-4 mr-2" />
-            Duplikat
-          </Button>
-          <Button
+            size="sm"
             variant="outline"
             onClick={() => navigate(`/applications/${id}/edit`)}
           >
-            <Pencil className="h-4 w-4 mr-2" />
+            <Pencil className="h-3.5 w-3.5 mr-1.5" />
             Edit
           </Button>
           <Button
+            size="sm"
             variant="destructive"
             onClick={() => setDeleteDialogOpen(true)}
           >
-            <Trash2 className="h-4 w-4 mr-2" />
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
             Hapus
           </Button>
         </div>

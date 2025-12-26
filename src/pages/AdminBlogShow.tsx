@@ -1,15 +1,7 @@
 import { useNavigate, useParams } from "react-router";
 import { format } from "date-fns";
-import {
-  ArrowLeft,
-  Pencil,
-  Trash2,
-  Calendar,
-  Clock,
-  Eye,
-  User,
-  Tag,
-} from "lucide-react";
+import { Pencil, Trash2, Calendar, Clock, Eye, User, Tag } from "lucide-react";
+import { PageHeader } from "@/components/layouts/PageHeader";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { MinimalSEO } from "@/components/MinimalSEO";
 import { Button } from "@/components/ui/button";
@@ -91,40 +83,31 @@ const AdminBlogShow = () => {
         description={blog.excerpt}
         noIndex={true}
       />
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(paths.admin.blogs.list.getHref())}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Kembali
-        </Button>
-
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">{blog.title}</h1>
-            <p className="text-muted-foreground mt-1">{blog.excerpt}</p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => navigate(paths.admin.blogs.edit.getHref(blog.id))}
-            >
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => setDeleteDialogOpen(true)}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Hapus
-            </Button>
-          </div>
+      <PageHeader
+        title={blog.title}
+        subtitle={blog.excerpt}
+        showBackButton
+        backButtonUrl={paths.admin.blogs.list.getHref()}
+      >
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => navigate(paths.admin.blogs.edit.getHref(blog.id))}
+          >
+            <Pencil className="h-3.5 w-3.5 mr-1.5" />
+            Edit
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+            Hapus
+          </Button>
         </div>
-      </div>
+      </PageHeader>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}

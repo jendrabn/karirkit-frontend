@@ -1,20 +1,9 @@
-import { useNavigate } from "react-router";
 import { dayjs } from "@/lib/date";
-import {
-  Pencil,
-  Mail,
-  Phone,
-  Calendar,
-  Shield,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Mail, Phone, Calendar, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import {
-  USER_ROLE_OPTIONS,
-  type UserRole,
-} from "@/types/user";
+import { USER_ROLE_OPTIONS, type UserRole } from "@/types/user";
 import type { User } from "../api/get-users";
 
 const getRoleBadgeVariant = (role: UserRole) => {
@@ -22,8 +11,6 @@ const getRoleBadgeVariant = (role: UserRole) => {
 };
 
 export const UserDetail = ({ user }: { user: User }) => {
-  const navigate = useNavigate();
-
   return (
     <div className="bg-card border border-border/60 rounded-xl shadow-sm overflow-hidden">
       {/* Header */}
@@ -39,10 +26,7 @@ export const UserDetail = ({ user }: { user: User }) => {
             <h2 className="text-2xl font-bold">{user.name}</h2>
             <p className="text-muted-foreground">@{user.username}</p>
             <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
-              <Badge
-                variant={getRoleBadgeVariant(user.role)}
-                className="gap-1"
-              >
+              <Badge variant={getRoleBadgeVariant(user.role)} className="gap-1">
                 <Shield className="h-3 w-3" />
                 {
                   USER_ROLE_OPTIONS.find((opt) => opt.value === user.role)
@@ -51,10 +35,6 @@ export const UserDetail = ({ user }: { user: User }) => {
               </Badge>
             </div>
           </div>
-          <Button onClick={() => navigate(`/admin/users/${user.id}/edit`)}>
-            <Pencil className="h-4 w-4 mr-2" />
-            Edit User
-          </Button>
         </div>
       </div>
 
@@ -97,7 +77,9 @@ export const UserDetail = ({ user }: { user: User }) => {
                 <div>
                   <p className="text-muted-foreground text-xs">Dibuat</p>
                   <p className="font-medium">
-                    {user.created_at ? dayjs(user.created_at).format("DD MMMM YYYY, HH:mm") : "-"}
+                    {user.created_at
+                      ? dayjs(user.created_at).format("DD MMMM YYYY, HH:mm")
+                      : "-"}
                   </p>
                 </div>
               </div>
@@ -110,7 +92,9 @@ export const UserDetail = ({ user }: { user: User }) => {
                     Terakhir Diupdate
                   </p>
                   <p className="font-medium">
-                    {user.updated_at ? dayjs(user.updated_at).format("DD MMMM YYYY, HH:mm") : "-"}
+                    {user.updated_at
+                      ? dayjs(user.updated_at).format("DD MMMM YYYY, HH:mm")
+                      : "-"}
                   </p>
                 </div>
               </div>

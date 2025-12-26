@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router";
 import { dayjs } from "@/lib/date";
 import {
   Pencil,
-  Download,
   Mail,
   Phone,
   MapPin,
@@ -35,7 +34,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useCV } from "@/features/cvs/api/get-cv";
 import { useDeleteCV } from "@/features/cvs/api/delete-cv";
-import { useDownloadCV } from "@/features/cvs/api/download-cv";
 import { buildImageUrl } from "@/lib/utils";
 import {
   DEGREE_OPTIONS,
@@ -65,22 +63,9 @@ export default function CVShow() {
     },
   });
 
-  const { downloadCV } = useDownloadCV();
-
   const handleDelete = () => {
     if (id) {
       deleteMutation.mutate(id);
-    }
-  };
-
-  const handleDownload = async (format: "docx" | "pdf") => {
-    if (!id) return;
-
-    try {
-      await downloadCV(id, format);
-      toast.success(`CV berhasil diunduh dalam format ${format.toUpperCase()}`);
-    } catch (error) {
-      toast.error("Gagal mengunduh CV");
     }
   };
 
@@ -149,42 +134,26 @@ export default function CVShow() {
         description={`Detail CV dari ${cv.name}`}
         noIndex={true}
       />
-      <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs" />
-
-      <div className="flex items-center justify-between mb-6">
+      <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs">
         <div className="flex gap-2">
           <Button
-            variant="outline"
             size="sm"
-            onClick={() => handleDownload("docx")}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download DOCX
-          </Button>
-          <Button
             variant="outline"
-            size="sm"
-            onClick={() => handleDownload("pdf")}
+            onClick={() => navigate(`/cvs/${id}/edit`)}
           >
-            <Download className="h-4 w-4 mr-2" />
-            Download PDF
-          </Button>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setDeleteDialogOpen(true)}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Hapus
-          </Button>
-          <Button size="sm" onClick={() => navigate(`/cvs/${id}/edit`)}>
-            <Pencil className="h-4 w-4 mr-2" />
+            <Pencil className="h-3.5 w-3.5 mr-1.5" />
             Edit
           </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+            Hapus
+          </Button>
         </div>
-      </div>
+      </PageHeader>
 
       {/* Personal Info */}
       <Card className="p-6 mb-6">

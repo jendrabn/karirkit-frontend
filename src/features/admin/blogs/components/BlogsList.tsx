@@ -462,7 +462,7 @@ export const BlogsList = () => {
                               }
                             >
                               <Eye className="h-4 w-4 mr-2" />
-                              Lihat
+                              Lihat Detail
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>

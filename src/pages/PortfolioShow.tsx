@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import {
-  ArrowLeft,
   Calendar,
   Briefcase,
   ExternalLink,
@@ -12,6 +11,7 @@ import {
   Trash2,
   Loader2,
 } from "lucide-react";
+import { PageHeader } from "@/components/layouts/PageHeader";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -133,16 +133,27 @@ export default function PortfolioShow() {
         description={`Detail proyek: ${portfolio.title}`}
         noIndex={true}
       />
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/portfolios")}
-          className="gap-2 -ml-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Kembali
-        </Button>
-      </div>
+      <PageHeader
+        title={portfolio.title}
+        subtitle={portfolio.sort_description}
+        showBackButton
+        backButtonUrl="/portfolios"
+      >
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => navigate(`/portfolios/${portfolio.id}/edit`)}
+          >
+            <Pencil className="h-3.5 w-3.5 mr-1.5" />
+            Edit
+          </Button>
+          <Button size="sm" variant="destructive" onClick={handleDelete}>
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+            Hapus
+          </Button>
+        </div>
+      </PageHeader>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Content - 3/5 */}
@@ -254,12 +265,6 @@ export default function PortfolioShow() {
           <Card>
             <CardContent className="pt-6 space-y-4">
               <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h1 className="text-xl font-bold">{portfolio.title}</h1>
-                  <p className="text-muted-foreground mt-1">
-                    {portfolio.sort_description}
-                  </p>
-                </div>
                 <Badge variant="secondary">
                   {projectTypeLabels[portfolio.project_type]}
                 </Badge>
@@ -326,31 +331,6 @@ export default function PortfolioShow() {
                   </Badge>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Aksi</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => navigate(`/portfolios/${portfolio.id}/edit`)}
-              >
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit Portfolio
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start text-destructive hover:text-destructive"
-                onClick={handleDelete}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Hapus Portfolio
-              </Button>
             </CardContent>
           </Card>
         </div>

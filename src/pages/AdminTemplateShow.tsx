@@ -15,14 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Pencil,
-  Trash2,
-  Download,
-  Crown,
-  FileText,
-  Loader2,
-} from "lucide-react";
+import { Pencil, Trash2, Crown, FileText, Loader2 } from "lucide-react";
 import { getTemplateTypeLabel } from "@/types/template";
 import { toast } from "sonner";
 import { useTemplate } from "@/features/admin/templates/api/get-template";
@@ -94,7 +87,26 @@ const AdminTemplateShow = () => {
         subtitle={`Detail template ${getTemplateTypeLabel(template.type)}`}
         backButtonUrl={paths.admin.templates.list.getHref()}
         showBackButton
-      />
+      >
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => navigate(`/admin/templates/${template.id}/edit`)}
+          >
+            <Pencil className="h-3.5 w-3.5 mr-1.5" />
+            Edit
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+            Hapus
+          </Button>
+        </div>
+      </PageHeader>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Preview Image */}
@@ -178,35 +190,6 @@ const AdminTemplateShow = () => {
                   {dayjs(template.updated_at).format("D MMMM YYYY")}
                 </p>
               </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-wrap gap-3 pt-4 border-t">
-              <Button
-                onClick={() => navigate(`/admin/templates/${template.id}/edit`)}
-              >
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-              {template.path && (
-                <Button variant="outline" asChild>
-                  <a
-                    href={template.path}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download File
-                  </a>
-                </Button>
-              )}
-              <Button
-                variant="destructive"
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Hapus
-              </Button>
             </div>
           </CardContent>
         </Card>

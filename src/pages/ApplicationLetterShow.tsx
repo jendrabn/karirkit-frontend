@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { dayjs } from "@/lib/date";
-import { Pencil, Download, FileText, Loader2, Trash2 } from "lucide-react";
+import { Pencil, Loader2, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +20,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
 import { useDeleteApplicationLetter } from "@/features/application-letters/api/delete-application-letter";
-import { downloadApplicationLetter } from "@/features/application-letters/api/download-application-letter";
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -60,35 +54,6 @@ export default function ApplicationLetterShow() {
     options: { value: string; label: string }[]
   ) => {
     return options.find((opt) => opt.value === value)?.label || value;
-  };
-
-  const handleDownload = async (format: "docx" | "pdf") => {
-    try {
-      const promise = downloadApplicationLetter(id!, format);
-
-      toast.promise(promise, {
-        loading: `Mengunduh surat lamaran (format ${format.toUpperCase()})...`,
-        success: (response) => {
-          // Create blob link to download
-          const url = window.URL.createObjectURL(
-            new Blob([response as unknown as Blob])
-          );
-          const link = document.createElement("a");
-          link.href = url;
-          const fileName = `${
-            letter?.subject || "application-letter"
-          }.${format}`;
-          link.setAttribute("download", fileName);
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          return `Berhasil mengunduh ${format.toUpperCase()}`;
-        },
-        error: "Gagal mengunduh file",
-      });
-    } catch (error) {
-      console.error("Download error:", error);
-    }
   };
 
   const handleDelete = () => {
@@ -171,33 +136,20 @@ export default function ApplicationLetterShow() {
         backButtonUrl="/application-letters"
       >
         <div className="flex gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover">
-              <DropdownMenuItem onClick={() => handleDownload("docx")}>
-                <FileText className="h-4 w-4 mr-2" />
-                Word (.docx)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDownload("pdf")}>
-                <FileText className="h-4 w-4 mr-2" />
-                PDF (.pdf)
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button onClick={() => navigate(`/application-letters/${id}/edit`)}>
-            <Pencil className="h-4 w-4 mr-2" />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => navigate(`/application-letters/${id}/edit`)}
+          >
+            <Pencil className="h-3.5 w-3.5 mr-1.5" />
             Edit
           </Button>
           <Button
+            size="sm"
             variant="destructive"
             onClick={() => setDeleteDialogOpen(true)}
           >
-            <Trash2 className="h-4 w-4 mr-2" />
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
             Hapus
           </Button>
         </div>

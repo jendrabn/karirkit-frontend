@@ -565,7 +565,7 @@ const CVList = () => {
                                 onClick={() => navigate(`/cvs/${cv.id}`)}
                               >
                                 <Eye className="h-4 w-4 mr-2" />
-                                Lihat
+                                Lihat Detail
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => navigate(`/cvs/${cv.id}/edit`)}
