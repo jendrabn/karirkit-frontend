@@ -130,11 +130,11 @@ export function FeatureSelector() {
                   />
                 </div>
 
-                <div className="w-full overflow-hidden">
-                  <h3 className="font-bold text-foreground text-sm sm:text-base whitespace-normal break-words">
+                <div className="w-full overflow-hidden space-y-2">
+                  <h3 className="font-bold text-base sm:text-lg whitespace-normal break-words leading-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent group-data-[state=active]:from-primary group-data-[state=active]:to-primary/80 transition-all duration-300">
                     {feature.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-1.5 hidden sm:block line-clamp-2 whitespace-normal break-words">
+                  <p className="text-xs sm:text-sm text-muted-foreground/80 mt-2 hidden sm:block line-clamp-2 whitespace-normal break-words leading-relaxed group-hover:text-muted-foreground transition-colors duration-300">
                     {feature.subtitle}
                   </p>
                 </div>

@@ -67,32 +67,6 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
     }
   };
 
-  const handleFiturClick = () => {
-    // If we're not on the home page, navigate to home with hash
-    if (window.location.pathname !== "/") {
-      window.location.href = "/#application-tracker";
-    } else {
-      // If we're already on home page, just scroll to the section
-      const element = document.getElementById("application-tracker");
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
-  const handleFAQClick = () => {
-    // If we're not on the home page, navigate to home with hash
-    if (window.location.pathname !== "/") {
-      window.location.href = "/#faq";
-    } else {
-      // If we're already on home page, just scroll to the section
-      const element = document.getElementById("faq");
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
@@ -105,28 +79,6 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => {
-              if (link.label === "Fitur") {
-                return (
-                  <button
-                    key={link.href}
-                    onClick={handleFiturClick}
-                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </button>
-                );
-              }
-              if (link.label === "FAQ") {
-                return (
-                  <button
-                    key={link.href}
-                    onClick={handleFAQClick}
-                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </button>
-                );
-              }
               return (
                 <Link
                   key={link.href}
@@ -380,36 +332,6 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
               {/* Navigation Links */}
               {navLinks.map((link) => {
                 const Icon = link.icon;
-                if (link.label === "Fitur") {
-                  return (
-                    <button
-                      key={link.href}
-                      onClick={() => {
-                        handleFiturClick();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors text-left"
-                    >
-                      <Icon className="h-4 w-4" />
-                      {link.label}
-                    </button>
-                  );
-                }
-                if (link.label === "FAQ") {
-                  return (
-                    <button
-                      key={link.href}
-                      onClick={() => {
-                        handleFAQClick();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors text-left"
-                    >
-                      <Icon className="h-4 w-4" />
-                      {link.label}
-                    </button>
-                  );
-                }
                 return (
                   <Link
                     key={link.href}
