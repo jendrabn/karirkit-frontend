@@ -14,8 +14,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
   MoreVertical,
-  Users as UsersIcon,
   Loader2,
+  FileStack,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -322,10 +322,18 @@ export const UsersList = () => {
                 </TableRow>
               ) : users.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={10} className="h-32 text-center">
-                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <UsersIcon className="h-10 w-10 mb-2 opacity-50" />
-                      <p>Tidak ada user ditemukan.</p>
+                  <TableCell
+                    colSpan={10}
+                    className="text-center py-16 text-muted-foreground"
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <FileStack className="h-10 w-10 text-muted-foreground/50" />
+                      <p className="text-base font-medium">
+                        Tidak ada data user
+                      </p>
+                      <p className="text-sm">
+                        Mulai tambahkan user pertama Anda
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>

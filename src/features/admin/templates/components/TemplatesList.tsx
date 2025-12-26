@@ -336,7 +336,10 @@ export const TemplatesList = () => {
                     <div className="flex flex-col items-center gap-2">
                       <FileStack className="h-10 w-10 text-muted-foreground/50" />
                       <p className="text-base font-medium">
-                        Tidak ada template ditemukan
+                        Tidak ada data template
+                      </p>
+                      <p className="text-sm">
+                        Mulai tambahkan template pertama Anda
                       </p>
                     </div>
                   </TableCell>

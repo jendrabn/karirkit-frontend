@@ -24,6 +24,7 @@ import {
   Link2,
   Check,
   Loader2,
+  FileStack,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -339,20 +340,13 @@ export default function Portfolios() {
       ) : portfolios.length === 0 ? (
         <div className="bg-card border border-border/60 rounded-xl p-16 text-center">
           <div className="flex flex-col items-center gap-2">
-            <Briefcase className="h-12 w-12 text-muted-foreground/50" />
-            <p className="text-lg font-medium text-foreground">
-              Tidak ada portfolio
+            <FileStack className="h-10 w-10 text-muted-foreground/50" />
+            <p className="text-base font-medium text-foreground">
+              Tidak ada data portfolio
             </p>
             <p className="text-sm text-muted-foreground">
               Mulai tambahkan portfolio pertama Anda
             </p>
-            <Button
-              className="mt-4"
-              onClick={() => navigate("/portfolios/create")}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Tambah Portfolio
-            </Button>
           </div>
         </div>
       ) : (

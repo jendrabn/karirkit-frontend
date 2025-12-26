@@ -109,16 +109,15 @@ export function DashboardSidebar() {
   };
 
   const isActive = (path: string) => {
-    if (path === paths.applications.list.getHref()) {
-      return location.pathname.startsWith("/applications");
+    if (path === paths.dashboard.getHref()) {
+      return location.pathname === path;
     }
-    return location.pathname === path;
+    return location.pathname.startsWith(path);
   };
 
   const isBlogActive =
     location.pathname.startsWith("/admin/blogs") ||
     location.pathname.startsWith("/admin/blogs/m");
-  const isTemplateActive = location.pathname.startsWith("/admin/templates");
 
   return (
     <Sidebar collapsible="icon" className="border-r">
@@ -295,7 +294,7 @@ export function DashboardSidebar() {
                         isCollapsed
                           ? "justify-center px-2 py-3"
                           : "gap-3 px-3 py-3",
-                        location.pathname.startsWith("/admin/users")
+                        isActive(paths.admin.users.list.getHref())
                           ? "bg-primary text-primary-foreground"
                           : "hover:bg-muted text-foreground"
                       )}
@@ -376,7 +375,7 @@ export function DashboardSidebar() {
                         isCollapsed
                           ? "justify-center px-2 py-3"
                           : "gap-3 px-3 py-3",
-                        isTemplateActive
+                        isActive(paths.admin.templates.list.getHref())
                           ? "bg-primary text-primary-foreground"
                           : "hover:bg-muted text-foreground"
                       )}
