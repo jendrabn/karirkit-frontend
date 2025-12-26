@@ -94,7 +94,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 type SortField = "updated_at" | "published_at" | "views" | "title";
 type SortOrder = "asc" | "desc";
 
-export const BlogList = () => {
+export const BlogsList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -446,7 +446,7 @@ export const BlogList = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
-                              variant="ghost"
+                              variant="secondary"
                               size="icon"
                               className="h-8 w-8"
                             >

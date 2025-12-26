@@ -407,7 +407,7 @@ export const UsersList = () => {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            variant="ghost"
+                            variant="secondary"
                             size="icon"
                             className="h-8 w-8"
                           >

@@ -62,6 +62,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { ApplicationLetterFilterModal } from "./ApplicationLetterFilterModal";
 import type { FilterValues } from "./ApplicationLetterFilterModal";
 import {
@@ -148,7 +149,6 @@ export function ApplicationLetterList() {
     mutationConfig: {
       onSuccess: (data) => {
         toast.success("Surat lamaran berhasil diduplikasi");
-        navigate(`/application-letters/${data.id}`);
       },
     },
   });
@@ -217,7 +217,7 @@ export function ApplicationLetterList() {
     letter: ApplicationLetter,
     format: "docx" | "pdf"
   ) => {
-    toast.info(`Sedang memproses unduhan ${format.toUpperCase()}...`);
+    // Toast removed, using LoadingOverlay instead
     downloadMutation.mutate({ id: letter.id, format });
   };
 
@@ -687,6 +687,12 @@ export function ApplicationLetterList() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Loading Overlay for Download */}
+      <LoadingOverlay
+        show={downloadMutation.isPending}
+        message="Sedang mengunduh surat lamaran..."
+      />
     </>
   );
 }

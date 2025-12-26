@@ -89,14 +89,14 @@ const NotificationSetting = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      className="pointer-events-none opacity-60 select-none"
+    >
       <FieldSet disabled={isLoading} className="space-y-6 mb-6">
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-primary" />
-              <CardTitle>Pengaturan Notifikasi</CardTitle>
-            </div>
+            <CardTitle>Pengaturan Notifikasi</CardTitle>
             <CardDescription>
               Atur notifikasi untuk deadline lamaran, jadwal tes, interview, dan
               update status melalui WhatsApp atau Telegram.

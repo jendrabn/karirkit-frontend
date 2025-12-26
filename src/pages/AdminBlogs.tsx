@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { BlogList } from "@/features/admin/blogs/components/BlogList";
+import { BlogsList } from "@/features/admin/blogs/components/BlogsList";
 import { MinimalSEO } from "@/components/MinimalSEO";
 
 const AdminBlogs = () => {
@@ -15,7 +15,7 @@ const AdminBlogs = () => {
         title="Blog"
         subtitle="Kelola artikel dan konten blog Anda."
       />
-      <BlogList />
+      <BlogsList />
     </DashboardLayout>
   );
 };

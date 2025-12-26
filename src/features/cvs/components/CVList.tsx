@@ -65,6 +65,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { CVFilterModal } from "@/features/cvs/components/CVFilterModal";
 import type { FilterValues } from "@/features/cvs/components/CVFilterModal";
 import {
@@ -103,6 +104,7 @@ const CVList = () => {
   const [cvToDelete, setCvToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -134,7 +136,6 @@ const CVList = () => {
     mutationConfig: {
       onSuccess: (data) => {
         toast.success("CV berhasil diduplikasi");
-        navigate(`/cvs/${data.id}`);
       },
     },
   });
@@ -199,10 +200,13 @@ const CVList = () => {
 
   const handleDownload = async (id: string, format: "docx" | "pdf") => {
     try {
+      setIsDownloading(true);
       await downloadCV(id, format);
       toast.success(`CV berhasil diunduh dalam format ${format.toUpperCase()}`);
     } catch (error) {
       toast.error("Gagal mengunduh CV");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -744,6 +748,9 @@ const CVList = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Loading Overlay for Download */}
+      <LoadingOverlay show={isDownloading} message="Sedang mengunduh CV..." />
     </>
   );
 };

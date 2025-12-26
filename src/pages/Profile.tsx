@@ -20,11 +20,8 @@ export default function Profile() {
         subtitle="Kelola informasi profil dan akun Anda."
       />
 
-      <div className="max-w-3xl space-y-6">
-        {/* Profile Card */}
+      <div className="grid gap-6 max-w-3xl lg:max-w-full lg:grid-cols-2">
         <ProfileForm />
-
-        {/* Notification Settings Card */}
         <NotificationSetting />
       </div>
     </DashboardLayout>
