@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   useUpdatePassword,
   type UpdatePasswordInput,
@@ -14,6 +13,8 @@ import {
   updatePasswordInputSchema,
 } from "@/features/account/api/update-password";
 import { useFormErrors } from "@/hooks/use-form-errors";
+import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ChangePasswordForm = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -55,109 +56,109 @@ const ChangePasswordForm = () => {
     });
   };
 
+  const isLoading = updatePasswordMutation.isPending;
+
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      {/* Current Password */}
-      <div className="space-y-2">
-        <Label htmlFor="current_password">Password Saat Ini</Label>
-        <div className="relative">
-          <Input
-            id="current_password"
-            type={showCurrentPassword ? "text" : "password"}
-            {...form.register("current_password")}
-            placeholder="Masukkan password saat ini"
-          />
-          <button
-            type="button"
-            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showCurrentPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        {form.formState.errors.current_password && (
-          <p className="text-sm text-destructive">
-            {form.formState.errors.current_password.message}
-          </p>
-        )}
-      </div>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldSet disabled={isLoading} className="space-y-6 mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Ubah Password</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            {/* Current Password */}
+            <Field>
+              <FieldLabel htmlFor="current_password">
+                Password Saat Ini
+              </FieldLabel>
+              <div className="relative">
+                <Input
+                  id="current_password"
+                  type={showCurrentPassword ? "text" : "password"}
+                  {...form.register("current_password")}
+                  placeholder="Masukkan password saat ini"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showCurrentPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              <FieldError>
+                {form.formState.errors.current_password?.message}
+              </FieldError>
+            </Field>
 
-      {/* New Password */}
-      <div className="space-y-2">
-        <Label htmlFor="new_password">Password Baru</Label>
-        <div className="relative">
-          <Input
-            id="new_password"
-            type={showNewPassword ? "text" : "password"}
-            {...form.register("new_password")}
-            placeholder="Masukkan password baru"
-          />
-          <button
-            type="button"
-            onClick={() => setShowNewPassword(!showNewPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showNewPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        {form.formState.errors.new_password && (
-          <p className="text-sm text-destructive">
-            {form.formState.errors.new_password.message}
-          </p>
-        )}
-      </div>
+            {/* New Password */}
+            <Field>
+              <FieldLabel htmlFor="new_password">Password Baru</FieldLabel>
+              <div className="relative">
+                <Input
+                  id="new_password"
+                  type={showNewPassword ? "text" : "password"}
+                  {...form.register("new_password")}
+                  placeholder="Masukkan password baru"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showNewPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              <FieldError>
+                {form.formState.errors.new_password?.message}
+              </FieldError>
+            </Field>
 
-      {/* Confirm Password */}
-      <div className="space-y-2">
-        <Label htmlFor="confirm_password">Konfirmasi Password Baru</Label>
-        <div className="relative">
-          <Input
-            id="confirm_password"
-            type={showConfirmPassword ? "text" : "password"}
-            {...form.register("confirm_password")}
-            placeholder="Ulangi password baru"
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showConfirmPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        {form.formState.errors.confirm_password && (
-          <p className="text-sm text-destructive">
-            {form.formState.errors.confirm_password.message}
-          </p>
-        )}
-      </div>
+            {/* Confirm Password */}
+            <Field>
+              <FieldLabel htmlFor="confirm_password">
+                Konfirmasi Password Baru
+              </FieldLabel>
+              <div className="relative">
+                <Input
+                  id="confirm_password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  {...form.register("confirm_password")}
+                  placeholder="Ulangi password baru"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              <FieldError>
+                {form.formState.errors.confirm_password?.message}
+              </FieldError>
+            </Field>
+          </CardContent>
+        </Card>
+      </FieldSet>
 
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={updatePasswordMutation.isPending}
-      >
-        {updatePasswordMutation.isPending ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Menyimpan...
-          </>
-        ) : (
-          "Ubah Password"
-        )}
-      </Button>
+      <div className="flex justify-end gap-3">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Menyimpan..." : "Simpan Perubahan"}
+        </Button>
+      </div>
     </form>
   );
 };

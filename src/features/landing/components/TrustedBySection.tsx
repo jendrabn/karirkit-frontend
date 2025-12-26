@@ -36,20 +36,21 @@ export function TrustedBySection() {
 
   return (
     <section className="py-16 bg-muted/30">
-      <div className="container mx-auto px-4 lg:px-8">
-        <p className="text-center text-muted-foreground mb-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <p className="mb-8 text-center text-sm text-muted-foreground">
           Dipercaya oleh pencari kerja dan profesional dari berbagai perusahaan
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6 lg:gap-8 items-center">
-          {companies.map((company, index) => (
+
+        <div className="grid grid-cols-2 items-center gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 lg:gap-8">
+          {companies.map((company) => (
             <div
-              key={index}
-              className="flex items-center justify-center h-12 grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300"
+              key={company.name}
+              className="flex h-12 items-center justify-center opacity-60 transition-opacity duration-300 hover:opacity-100"
             >
               <img
                 src={company.logo}
                 alt={`Logo ${company.name}`}
-                className="max-h-8 w-auto object-contain"
+                className="max-h-8 w-auto object-contain grayscale transition-all duration-300 hover:grayscale-0 dark:invert dark:hover:invert-0"
               />
             </div>
           ))}

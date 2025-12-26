@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CoverUpload } from "./CoverUpload";
 import { MediaUpload } from "./MediaUpload";
 import { type Portfolio, projectTypeLabels } from "@/types/portfolio";
@@ -135,218 +135,241 @@ export function PortfolioForm({
     <form onSubmit={form.handleSubmit(handleFormSubmit)}>
       <FieldSet disabled={isLoading} className="space-y-6 mb-6">
         {/* Basic Info */}
-        <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">Informasi Dasar</h3>
+        <Card>
+          <CardHeader>
+            <CardTitle>Informasi Dasar</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>Judul Proyek</FieldLabel>
+                <Input
+                  {...form.register("title")}
+                  onChange={(e) => {
+                    form.register("title").onChange(e);
+                    if (!initialData) {
+                      form.setValue("slug", generateSlug(e.target.value));
+                    }
+                  }}
+                />
+                <FieldError>{form.formState.errors.title?.message}</FieldError>
+              </Field>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>Slug</FieldLabel>
+                <Input {...form.register("slug")} />
+                <FieldError>{form.formState.errors.slug?.message}</FieldError>
+              </Field>
+            </div>
+
             <Field>
-              <FieldLabel>Judul Proyek</FieldLabel>
-              <Input
-                {...form.register("title")}
-                onChange={(e) => {
-                  form.register("title").onChange(e);
-                  if (!initialData) {
-                    form.setValue("slug", generateSlug(e.target.value));
+              <FieldLabel>Deskripsi Singkat</FieldLabel>
+              <Input {...form.register("sort_description")} />
+              <FieldError>
+                {form.formState.errors.sort_description?.message}
+              </FieldError>
+            </Field>
+
+            <Field>
+              <FieldLabel>Deskripsi</FieldLabel>
+              <Textarea {...form.register("description")} rows={5} />
+              <FieldError>
+                {form.formState.errors.description?.message}
+              </FieldError>
+            </Field>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>Role / Posisi</FieldLabel>
+                <Input {...form.register("role_title")} />
+                <FieldError>
+                  {form.formState.errors.role_title?.message}
+                </FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel>Tipe Proyek</FieldLabel>
+                <Select
+                  value={form.watch("project_type")}
+                  onValueChange={(value) =>
+                    form.setValue(
+                      "project_type",
+                      value as PortfolioFormData["project_type"]
+                    )
                   }
-                }}
-              />
-              <FieldError>{form.formState.errors.title?.message}</FieldError>
-            </Field>
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih tipe proyek" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(projectTypeLabels).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError>
+                  {form.formState.errors.project_type?.message}
+                </FieldError>
+              </Field>
+            </div>
 
-            <Field>
-              <FieldLabel>Slug</FieldLabel>
-              <Input {...form.register("slug")} />
-              <FieldError>{form.formState.errors.slug?.message}</FieldError>
-            </Field>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Field>
+                <FieldLabel>Industri</FieldLabel>
+                <Input {...form.register("industry")} />
+                <FieldError>
+                  {form.formState.errors.industry?.message}
+                </FieldError>
+              </Field>
 
-          <Field>
-            <FieldLabel>Deskripsi Singkat</FieldLabel>
-            <Input {...form.register("sort_description")} />
-            <FieldError>
-              {form.formState.errors.sort_description?.message}
-            </FieldError>
-          </Field>
+              <Field>
+                <FieldLabel>Bulan</FieldLabel>
+                <Select
+                  value={String(form.watch("month"))}
+                  onValueChange={(value) =>
+                    form.setValue("month", parseInt(value))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih bulan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={String(month.value)}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError>{form.formState.errors.month?.message}</FieldError>
+              </Field>
 
-          <Field>
-            <FieldLabel>Deskripsi</FieldLabel>
-            <Textarea {...form.register("description")} rows={5} />
-            <FieldError>
-              {form.formState.errors.description?.message}
-            </FieldError>
-          </Field>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field>
-              <FieldLabel>Role / Posisi</FieldLabel>
-              <Input {...form.register("role_title")} />
-              <FieldError>
-                {form.formState.errors.role_title?.message}
-              </FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel>Tipe Proyek</FieldLabel>
-              <Select
-                value={form.watch("project_type")}
-                onValueChange={(value) =>
-                  form.setValue(
-                    "project_type",
-                    value as PortfolioFormData["project_type"]
-                  )
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih tipe proyek" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(projectTypeLabels).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldError>
-                {form.formState.errors.project_type?.message}
-              </FieldError>
-            </Field>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Field>
-              <FieldLabel>Industri</FieldLabel>
-              <Input {...form.register("industry")} />
-              <FieldError>{form.formState.errors.industry?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel>Bulan</FieldLabel>
-              <Select
-                value={String(form.watch("month"))}
-                onValueChange={(value) =>
-                  form.setValue("month", parseInt(value))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih bulan" />
-                </SelectTrigger>
-                <SelectContent>
-                  {months.map((month) => (
-                    <SelectItem key={month.value} value={String(month.value)}>
-                      {month.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldError>{form.formState.errors.month?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel>Tahun</FieldLabel>
-              <Select
-                value={String(form.watch("year"))}
-                onValueChange={(value) =>
-                  form.setValue("year", parseInt(value))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih tahun" />
-                </SelectTrigger>
-                <SelectContent>
-                  {years.map((year) => (
-                    <SelectItem key={year} value={String(year)}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldError>{form.formState.errors.year?.message}</FieldError>
-            </Field>
-          </div>
+              <Field>
+                <FieldLabel>Tahun</FieldLabel>
+                <Select
+                  value={String(form.watch("year"))}
+                  onValueChange={(value) =>
+                    form.setValue("year", parseInt(value))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih tahun" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={String(year)}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError>{form.formState.errors.year?.message}</FieldError>
+              </Field>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Links */}
-        <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">Links</h3>
+        <Card>
+          <CardHeader>
+            <CardTitle>Links</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>Live URL (Opsional)</FieldLabel>
+                <Input
+                  {...form.register("live_url")}
+                  type="url"
+                  placeholder="https://example.com"
+                />
+                <FieldError>
+                  {form.formState.errors.live_url?.message}
+                </FieldError>
+              </Field>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field>
-              <FieldLabel>Live URL (Opsional)</FieldLabel>
-              <Input
-                {...form.register("live_url")}
-                type="url"
-                placeholder="https://example.com"
-              />
-              <FieldError>{form.formState.errors.live_url?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel>Repository URL (Opsional)</FieldLabel>
-              <Input
-                {...form.register("repo_url")}
-                type="url"
-                placeholder="https://github.com/..."
-              />
-              <FieldError>{form.formState.errors.repo_url?.message}</FieldError>
-            </Field>
-          </div>
+              <Field>
+                <FieldLabel>Repository URL (Opsional)</FieldLabel>
+                <Input
+                  {...form.register("repo_url")}
+                  type="url"
+                  placeholder="https://github.com/..."
+                />
+                <FieldError>
+                  {form.formState.errors.repo_url?.message}
+                </FieldError>
+              </Field>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Tools */}
-        <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">Tools & Teknologi</h3>
-
-          <div className="flex gap-2">
-            <Input
-              placeholder="Tambah tool/teknologi..."
-              value={newTool}
-              onChange={(e) => setNewTool(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleAddTool();
-                }
-              }}
-            />
-            <Button type="button" onClick={handleAddTool}>
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {tools.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {tools.map((tool) => (
-                <Badge key={tool} variant="secondary" className="gap-1">
-                  {tool}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTool(tool)}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
+        <Card>
+          <CardHeader>
+            <CardTitle>Tools & Teknologi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Tambah tool/teknologi..."
+                value={newTool}
+                onChange={(e) => setNewTool(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddTool();
+                  }
+                }}
+              />
+              <Button type="button" onClick={handleAddTool}>
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
-          )}
+
+            {tools.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {tools.map((tool) => (
+                  <Badge key={tool} variant="secondary" className="gap-1">
+                    {tool}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTool(tool)}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         {/* Cover */}
-        <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">Cover Image</h3>
-          <CoverUpload value={cover} onChange={setCover} />
+        <Card>
+          <CardHeader>
+            <CardTitle>Cover Image</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <CoverUpload value={cover} onChange={setCover} />
+          </CardContent>
         </Card>
 
         {/* Medias */}
-        <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">Media Gallery</h3>
-          <MediaUpload value={medias} onChange={setMedias} />
+        <Card>
+          <CardHeader>
+            <CardTitle>Media Gallery</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <MediaUpload value={medias} onChange={setMedias} />
+          </CardContent>
         </Card>
       </FieldSet>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
           variant="outline"
@@ -356,7 +379,16 @@ export function PortfolioForm({
           Batal
         </Button>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Menyimpan..." : "Simpan"}
+          {isLoading ? (
+            <>
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              Menyimpan...
+            </>
+          ) : initialData ? (
+            "Simpan Perubahan"
+          ) : (
+            "Simpan"
+          )}
         </Button>
       </div>
     </form>

@@ -64,13 +64,11 @@ const AdminUserEdit = () => {
       />
       <PageHeader title="Edit User" subtitle="Edit data pengguna." />
 
-      <div className="bg-card border border-border/60 rounded-xl p-6 shadow-sm">
-        <UserForm
-          initialData={user}
-          onSubmit={handleSubmit}
-          isLoading={updateUserMutation.isPending}
-        />
-      </div>
+      <UserForm
+        initialData={user}
+        onSubmit={handleSubmit}
+        isLoading={updateUserMutation.isPending}
+      />
     </DashboardLayout>
   );
 };

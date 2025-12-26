@@ -23,13 +23,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn, buildImageUrl } from "@/lib/utils";
 import {
   Field,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSet,
   FieldError,
   FieldDescription,
@@ -176,18 +175,105 @@ export function ApplicationLetterForm({
   return (
     <>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Template Selection */}
-        <Card className="p-6">
-          <FieldSet>
-            <FieldLegend>Template Surat</FieldLegend>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="md:col-span-1">
+        <FieldSet>
+          {/* Template Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Template Surat</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="md:col-span-1">
+                  <Controller
+                    control={form.control}
+                    name="language"
+                    render={({ field }) => (
+                      <Field>
+                        <FieldLabel htmlFor={field.name}>Bahasa *</FieldLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger id={field.name}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-50">
+                            {LANGUAGE_OPTIONS.map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FieldError>
+                          {form.formState.errors.language?.message}
+                        </FieldError>
+                      </Field>
+                    )}
+                  />
+                </div>
+
+                <div className="md:col-span-3">
+                  {isTemplatesLoading ? (
+                    <div className="flex justify-center items-center py-8">
+                      <div className="text-sm text-muted-foreground">
+                        Memuat templates...
+                      </div>
+                    </div>
+                  ) : (
+                    <TemplateSelector
+                      label="Pilih Template"
+                      templates={templates}
+                      value={selectedTemplate}
+                      onChange={(value: string) => {
+                        setSelectedTemplate(value);
+                        form.setValue("template_id", value);
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Applicant Info */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Informasi Pelamar</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel htmlFor="name">Nama Lengkap *</FieldLabel>
+                  <Input id="name" {...form.register("name")} />
+                  <FieldError>{form.formState.errors.name?.message}</FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="birth_place_date">
+                    Tempat, Tanggal Lahir *
+                  </FieldLabel>
+                  <Input
+                    id="birth_place_date"
+                    {...form.register("birth_place_date")}
+                    placeholder="Jakarta, 15 Mei 1995"
+                  />
+                  <FieldError>
+                    {form.formState.errors.birth_place_date?.message}
+                  </FieldError>
+                </Field>
+
                 <Controller
                   control={form.control}
-                  name="language"
+                  name="gender"
                   render={({ field }) => (
                     <Field>
-                      <FieldLabel htmlFor={field.name}>Bahasa *</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>
+                        Jenis Kelamin *
+                      </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -196,7 +282,7 @@ export function ApplicationLetterForm({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="z-50">
-                          {LANGUAGE_OPTIONS.map((option) => (
+                          {GENDER_OPTIONS.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
                               {option.label}
                             </SelectItem>
@@ -204,409 +290,347 @@ export function ApplicationLetterForm({
                         </SelectContent>
                       </Select>
                       <FieldError>
-                        {form.formState.errors.language?.message}
+                        {form.formState.errors.gender?.message}
                       </FieldError>
                     </Field>
                   )}
                 />
-              </div>
 
-              <div className="md:col-span-3">
-                {isTemplatesLoading ? (
-                  <div className="flex justify-center items-center py-8">
-                    <div className="text-sm text-muted-foreground">
-                      Memuat templates...
-                    </div>
-                  </div>
-                ) : (
-                  <TemplateSelector
-                    label="Pilih Template"
-                    templates={templates}
-                    value={selectedTemplate}
-                    onChange={(value: string) => {
-                      setSelectedTemplate(value);
-                      form.setValue("template_id", value);
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-          </FieldSet>
-        </Card>
-
-        <Card className="p-6 mb-6">
-          <FieldSet>
-            <FieldLegend>Informasi Pelamar</FieldLegend>
-            <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel htmlFor="name">Nama Lengkap *</FieldLabel>
-                <Input id="name" {...form.register("name")} />
-                <FieldError>{form.formState.errors.name?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="birth_place_date">
-                  Tempat, Tanggal Lahir *
-                </FieldLabel>
-                <Input
-                  id="birth_place_date"
-                  {...form.register("birth_place_date")}
-                  placeholder="Jakarta, 15 Mei 1995"
+                <Controller
+                  control={form.control}
+                  name="marital_status"
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>
+                        Status Pernikahan *
+                      </FieldLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger id={field.name}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="z-50">
+                          {MARITAL_STATUS_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FieldError>
+                        {form.formState.errors.marital_status?.message}
+                      </FieldError>
+                    </Field>
+                  )}
                 />
-                <FieldError>
-                  {form.formState.errors.birth_place_date?.message}
-                </FieldError>
-              </Field>
 
-              <Controller
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Jenis Kelamin *
-                    </FieldLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger id={field.name}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="z-50">
-                        {GENDER_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FieldError>
-                      {form.formState.errors.gender?.message}
-                    </FieldError>
-                  </Field>
-                )}
-              />
-
-              <Controller
-                control={form.control}
-                name="marital_status"
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Status Pernikahan *
-                    </FieldLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger id={field.name}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="z-50">
-                        {MARITAL_STATUS_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FieldError>
-                      {form.formState.errors.marital_status?.message}
-                    </FieldError>
-                  </Field>
-                )}
-              />
-
-              <Field>
-                <FieldLabel htmlFor="education">
-                  Pendidikan Terakhir *
-                </FieldLabel>
-                <Input
-                  id="education"
-                  {...form.register("education")}
-                  placeholder="S1 Teknik Informatika"
-                />
-                <FieldError>
-                  {form.formState.errors.education?.message}
-                </FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="phone">Nomor Telepon *</FieldLabel>
-                <Input
-                  id="phone"
-                  {...form.register("phone")}
-                  placeholder="081234567890"
-                />
-                <FieldError>{form.formState.errors.phone?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="email">Email *</FieldLabel>
-                <Input type="email" id="email" {...form.register("email")} />
-                <FieldError>{form.formState.errors.email?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="applicant_city">Kota Pelamar *</FieldLabel>
-                <Input
-                  id="applicant_city"
-                  {...form.register("applicant_city")}
-                  placeholder="Jakarta"
-                />
-                <FieldError>
-                  {form.formState.errors.applicant_city?.message}
-                </FieldError>
-              </Field>
-
-              <div className="md:col-span-2">
                 <Field>
-                  <FieldLabel htmlFor="address">Alamat Lengkap *</FieldLabel>
-                  <Textarea
-                    id="address"
-                    {...form.register("address")}
-                    rows={2}
-                  />
-                  <FieldError>
-                    {form.formState.errors.address?.message}
-                  </FieldError>
-                </Field>
-              </div>
-            </FieldGroup>
-          </FieldSet>
-        </Card>
-
-        <Card className="p-6 mb-6">
-          <FieldSet>
-            <FieldLegend>Informasi Perusahaan</FieldLegend>
-            <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel htmlFor="receiver_title">
-                  Jabatan Penerima *
-                </FieldLabel>
-                <Input
-                  id="receiver_title"
-                  {...form.register("receiver_title")}
-                  placeholder="HRD Manager"
-                />
-                <FieldError>
-                  {form.formState.errors.receiver_title?.message}
-                </FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="company_name">
-                  Nama Perusahaan *
-                </FieldLabel>
-                <Input id="company_name" {...form.register("company_name")} />
-                <FieldError>
-                  {form.formState.errors.company_name?.message}
-                </FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="company_city">
-                  Kota Perusahaan *
-                </FieldLabel>
-                <Input
-                  id="company_city"
-                  {...form.register("company_city")}
-                  placeholder="Jakarta"
-                />
-                <FieldError>
-                  {form.formState.errors.company_city?.message}
-                </FieldError>
-              </Field>
-
-              <Controller
-                control={form.control}
-                name="application_date"
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Tanggal Lamaran *
-                    </FieldLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          id={field.name}
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value
-                            ? dayjs(field.value).format("DD/MM/YYYY")
-                            : "Pilih tanggal"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 z-50" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            field.value ? new Date(field.value) : undefined
-                          }
-                          onSelect={(date) =>
-                            field.onChange(
-                              date ? dayjs(date).format("YYYY-MM-DD") : ""
-                            )
-                          }
-                          className="pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FieldError>
-                      {form.formState.errors.application_date?.message}
-                    </FieldError>
-                  </Field>
-                )}
-              />
-
-              <div className="md:col-span-2">
-                <Field>
-                  <FieldLabel htmlFor="company_address">
-                    Alamat Perusahaan *
+                  <FieldLabel htmlFor="education">
+                    Pendidikan Terakhir *
                   </FieldLabel>
-                  <Textarea
-                    id="company_address"
-                    {...form.register("company_address")}
-                    rows={2}
-                  />
-                  <FieldError>
-                    {form.formState.errors.company_address?.message}
-                  </FieldError>
-                </Field>
-              </div>
-            </FieldGroup>
-          </FieldSet>
-        </Card>
-
-        <Card className="p-6 mb-6">
-          <FieldSet>
-            <FieldLegend>Isi Surat</FieldLegend>
-            <FieldGroup className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <Field>
-                  <FieldLabel htmlFor="subject">Subjek Surat *</FieldLabel>
                   <Input
-                    id="subject"
-                    {...form.register("subject")}
-                    placeholder="Lamaran Posisi Software Engineer"
+                    id="education"
+                    {...form.register("education")}
+                    placeholder="S1 Teknik Informatika"
                   />
                   <FieldError>
-                    {form.formState.errors.subject?.message}
+                    {form.formState.errors.education?.message}
                   </FieldError>
                 </Field>
-              </div>
 
-              <Field>
-                <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="opening_paragraph">
-                    Paragraf Pembuka *
+                <Field>
+                  <FieldLabel htmlFor="phone">Nomor Telepon *</FieldLabel>
+                  <Input
+                    id="phone"
+                    {...form.register("phone")}
+                    placeholder="081234567890"
+                  />
+                  <FieldError>
+                    {form.formState.errors.phone?.message}
+                  </FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="email">Email *</FieldLabel>
+                  <Input type="email" id="email" {...form.register("email")} />
+                  <FieldError>
+                    {form.formState.errors.email?.message}
+                  </FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="applicant_city">
+                    Kota Pelamar *
                   </FieldLabel>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleOpenTemplateModal("opening")}
-                  >
-                    <FileText className="h-4 w-4 mr-1" />
-                    Gunakan Template
-                  </Button>
-                </div>
-                <Textarea
-                  id="opening_paragraph"
-                  {...form.register("opening_paragraph")}
-                  rows={3}
-                  placeholder="Dengan hormat, saya yang bertanda tangan di bawah ini..."
-                />
-                <FieldError>
-                  {form.formState.errors.opening_paragraph?.message}
-                </FieldError>
-              </Field>
+                  <Input
+                    id="applicant_city"
+                    {...form.register("applicant_city")}
+                    placeholder="Jakarta"
+                  />
+                  <FieldError>
+                    {form.formState.errors.applicant_city?.message}
+                  </FieldError>
+                </Field>
 
-              <Field>
-                <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="body_paragraph">
-                    Paragraf Isi *
+                <div className="md:col-span-2">
+                  <Field>
+                    <FieldLabel htmlFor="address">Alamat Lengkap *</FieldLabel>
+                    <Textarea
+                      id="address"
+                      {...form.register("address")}
+                      rows={2}
+                    />
+                    <FieldError>
+                      {form.formState.errors.address?.message}
+                    </FieldError>
+                  </Field>
+                </div>
+              </FieldGroup>
+            </CardContent>
+          </Card>
+
+          {/* Company Info */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Informasi Perusahaan</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel htmlFor="receiver_title">
+                    Jabatan Penerima *
                   </FieldLabel>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleOpenTemplateModal("body")}
-                  >
-                    <FileText className="h-4 w-4 mr-1" />
-                    Gunakan Template
-                  </Button>
-                </div>
-                <Textarea
-                  id="body_paragraph"
-                  {...form.register("body_paragraph")}
-                  rows={5}
-                  placeholder="Saya memiliki pengalaman dalam bidang..."
-                />
-                <FieldError>
-                  {form.formState.errors.body_paragraph?.message}
-                </FieldError>
-              </Field>
+                  <Input
+                    id="receiver_title"
+                    {...form.register("receiver_title")}
+                    placeholder="HRD Manager"
+                  />
+                  <FieldError>
+                    {form.formState.errors.receiver_title?.message}
+                  </FieldError>
+                </Field>
 
-              <Field>
-                <FieldLabel htmlFor="attachments">Lampiran</FieldLabel>
-                <Input
-                  id="attachments"
-                  {...form.register("attachments")}
-                  placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
-                />
-                <FieldDescription>
-                  Pisahkan setiap item lampiran dengan tanda koma (,)
-                </FieldDescription>
-                <FieldError>
-                  {form.formState.errors.attachments?.message}
-                </FieldError>
-              </Field>
-
-              <Field>
-                <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="closing_paragraph">
-                    Paragraf Penutup *
+                <Field>
+                  <FieldLabel htmlFor="company_name">
+                    Nama Perusahaan *
                   </FieldLabel>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleOpenTemplateModal("closing")}
-                  >
-                    <FileText className="h-4 w-4 mr-1" />
-                    Gunakan Template
-                  </Button>
+                  <Input id="company_name" {...form.register("company_name")} />
+                  <FieldError>
+                    {form.formState.errors.company_name?.message}
+                  </FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="company_city">
+                    Kota Perusahaan *
+                  </FieldLabel>
+                  <Input
+                    id="company_city"
+                    {...form.register("company_city")}
+                    placeholder="Jakarta"
+                  />
+                  <FieldError>
+                    {form.formState.errors.company_city?.message}
+                  </FieldError>
+                </Field>
+
+                <Controller
+                  control={form.control}
+                  name="application_date"
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>
+                        Tanggal Lamaran *
+                      </FieldLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id={field.name}
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value
+                              ? dayjs(field.value).format("DD/MM/YYYY")
+                              : "Pilih tanggal"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto p-0 z-50"
+                          align="start"
+                        >
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) =>
+                              field.onChange(
+                                date ? dayjs(date).format("YYYY-MM-DD") : ""
+                              )
+                            }
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FieldError>
+                        {form.formState.errors.application_date?.message}
+                      </FieldError>
+                    </Field>
+                  )}
+                />
+
+                <div className="md:col-span-2">
+                  <Field>
+                    <FieldLabel htmlFor="company_address">
+                      Alamat Perusahaan *
+                    </FieldLabel>
+                    <Textarea
+                      id="company_address"
+                      {...form.register("company_address")}
+                      rows={2}
+                    />
+                    <FieldError>
+                      {form.formState.errors.company_address?.message}
+                    </FieldError>
+                  </Field>
                 </div>
-                <Textarea
-                  id="closing_paragraph"
-                  {...form.register("closing_paragraph")}
-                  rows={3}
-                  placeholder="Demikian surat lamaran ini saya buat..."
-                />
-                <FieldError>
-                  {form.formState.errors.closing_paragraph?.message}
-                </FieldError>
-              </Field>
+              </FieldGroup>
+            </CardContent>
+          </Card>
 
-              <div className="space-y-3">
-                <FieldLabel>Tanda Tangan</FieldLabel>
-                <SignatureUpload
-                  value={form.watch("signature") || ""}
-                  onChange={(value) => form.setValue("signature", value)}
-                />
-              </div>
-            </FieldGroup>
-          </FieldSet>
-        </Card>
+          {/* Letter Body */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Isi Surat</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <FieldGroup className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                  <Field>
+                    <FieldLabel htmlFor="subject">Subjek Surat *</FieldLabel>
+                    <Input
+                      id="subject"
+                      {...form.register("subject")}
+                      placeholder="Lamaran Posisi Software Engineer"
+                    />
+                    <FieldError>
+                      {form.formState.errors.subject?.message}
+                    </FieldError>
+                  </Field>
+                </div>
 
-        <div className="flex justify-end gap-3">
+                <Field>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel htmlFor="opening_paragraph">
+                      Paragraf Pembuka *
+                    </FieldLabel>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenTemplateModal("opening")}
+                    >
+                      <FileText className="h-4 w-4 mr-1" />
+                      Gunakan Template
+                    </Button>
+                  </div>
+                  <Textarea
+                    id="opening_paragraph"
+                    {...form.register("opening_paragraph")}
+                    rows={3}
+                    placeholder="Dengan hormat, saya yang bertanda tangan di bawah ini..."
+                  />
+                  <FieldError>
+                    {form.formState.errors.opening_paragraph?.message}
+                  </FieldError>
+                </Field>
+
+                <Field>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel htmlFor="body_paragraph">
+                      Paragraf Isi *
+                    </FieldLabel>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenTemplateModal("body")}
+                    >
+                      <FileText className="h-4 w-4 mr-1" />
+                      Gunakan Template
+                    </Button>
+                  </div>
+                  <Textarea
+                    id="body_paragraph"
+                    {...form.register("body_paragraph")}
+                    rows={5}
+                    placeholder="Saya memiliki pengalaman dalam bidang..."
+                  />
+                  <FieldError>
+                    {form.formState.errors.body_paragraph?.message}
+                  </FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="attachments">Lampiran</FieldLabel>
+                  <Input
+                    id="attachments"
+                    {...form.register("attachments")}
+                    placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
+                  />
+                  <FieldDescription>
+                    Pisahkan setiap item lampiran dengan tanda koma (,)
+                  </FieldDescription>
+                  <FieldError>
+                    {form.formState.errors.attachments?.message}
+                  </FieldError>
+                </Field>
+
+                <Field>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel htmlFor="closing_paragraph">
+                      Paragraf Penutup *
+                    </FieldLabel>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenTemplateModal("closing")}
+                    >
+                      <FileText className="h-4 w-4 mr-1" />
+                      Gunakan Template
+                    </Button>
+                  </div>
+                  <Textarea
+                    id="closing_paragraph"
+                    {...form.register("closing_paragraph")}
+                    rows={3}
+                    placeholder="Demikian surat lamaran ini saya buat..."
+                  />
+                  <FieldError>
+                    {form.formState.errors.closing_paragraph?.message}
+                  </FieldError>
+                </Field>
+
+                <div className="space-y-3">
+                  <FieldLabel>Tanda Tangan</FieldLabel>
+                  <SignatureUpload
+                    value={form.watch("signature") || ""}
+                    onChange={(value) => form.setValue("signature", value)}
+                  />
+                </div>
+              </FieldGroup>
+            </CardContent>
+          </Card>
+        </FieldSet>
+
+        <div className="flex justify-end gap-3 pt-6 border-t mt-8">
           <Button
             type="button"
             variant="outline"
@@ -616,7 +640,16 @@ export function ApplicationLetterForm({
             Batal
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Menyimpan..." : "Simpan"}
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                Menyimpan...
+              </>
+            ) : initialData ? (
+              "Simpan Perubahan"
+            ) : (
+              "Simpan"
+            )}
           </Button>
         </div>
       </form>

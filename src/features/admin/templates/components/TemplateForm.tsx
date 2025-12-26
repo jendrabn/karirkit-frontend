@@ -47,6 +47,8 @@ export function TemplateForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const previewInputRef = useRef<HTMLInputElement>(null);
 
+  const isEdit = !!initialData?.name;
+
   const form = useForm<CreateTemplateInput>({
     resolver: zodResolver(createTemplateInputSchema) as any,
     defaultValues: initialData || {
@@ -123,8 +125,8 @@ export function TemplateForm({
     uploadFileValidation.isPending || uploadPreviewValidation.isPending;
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <FieldSet disabled={isLoading || isUploading} className="space-y-6">
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldSet disabled={isLoading || isUploading} className="space-y-6 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>Informasi Template</CardTitle>
@@ -138,7 +140,7 @@ export function TemplateForm({
               Panduan Pembuatan Template
             </Button>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
                 control={form.control}
@@ -233,7 +235,7 @@ export function TemplateForm({
           <CardHeader>
             <CardTitle>File Template</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             <Controller
               control={form.control}
               name="preview"
@@ -347,20 +349,26 @@ export function TemplateForm({
       </FieldSet>
 
       {/* Form Actions */}
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
           variant="outline"
           onClick={() => navigate("/admin/templates")}
+          disabled={isLoading || isUploading}
         >
           Batal
         </Button>
         <Button type="submit" disabled={isLoading || isUploading}>
-          {isLoading
-            ? "Menyimpan..."
-            : initialData
-            ? "Simpan Perubahan"
-            : "Buat Template"}
+          {isLoading ? (
+            <>
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              Menyimpan...
+            </>
+          ) : isEdit ? (
+            "Simpan Perubahan"
+          ) : (
+            "Simpan"
+          )}
         </Button>
       </div>
     </form>

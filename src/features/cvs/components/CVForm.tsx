@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import { PhotoUpload } from "./PhotoUpload";
@@ -228,149 +228,160 @@ export function CVForm({
     >
       <FieldSet disabled={isLoading} className="space-y-6 mb-6">
         {/* Template Selection */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Template CV</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="md:col-span-1">
-              <Field>
-                <FieldLabel>Bahasa *</FieldLabel>
-                <Select
-                  value={watch("language")}
-                  onValueChange={(v) => setValue("language", v as "id" | "en")}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="z-50">
-                    {LANGUAGE_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FieldError>{errors.language?.message}</FieldError>
-              </Field>
-            </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Template CV</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="md:col-span-1">
+                <Field>
+                  <FieldLabel>Bahasa *</FieldLabel>
+                  <Select
+                    value={watch("language")}
+                    onValueChange={(v) =>
+                      setValue("language", v as "id" | "en")
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-50">
+                      {LANGUAGE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError>{errors.language?.message}</FieldError>
+                </Field>
+              </div>
 
-            <div className="md:col-span-3">
-              {isTemplatesLoading ? (
-                <div className="flex justify-center items-center py-8">
-                  <div className="text-sm text-muted-foreground">
-                    Memuat templates...
+              <div className="md:col-span-3">
+                {isTemplatesLoading ? (
+                  <div className="flex justify-center items-center py-8">
+                    <div className="text-sm text-muted-foreground">
+                      Memuat templates...
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <>
-                  <TemplateSelector
-                    label="Pilih Template"
-                    templates={apiTemplates}
-                    value={selectedTemplate}
-                    onChange={(value) => {
-                      setSelectedTemplate(value);
-                      setValue("template_id", value);
-                    }}
-                  />
-                  {errors.template_id && (
-                    <p className="text-sm font-medium text-destructive mt-2">
-                      {errors.template_id.message}
-                    </p>
-                  )}
-                </>
-              )}
+                ) : (
+                  <>
+                    <TemplateSelector
+                      label="Pilih Template"
+                      templates={apiTemplates}
+                      value={selectedTemplate}
+                      onChange={(value) => {
+                        setSelectedTemplate(value);
+                        setValue("template_id", value);
+                        setSelectedTemplate(value);
+                      }}
+                    />
+                    {errors.template_id && (
+                      <p className="text-sm font-medium text-destructive mt-2">
+                        {errors.template_id.message}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          </CardContent>
         </Card>
 
         {/* Personal Info */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Informasi Pribadi</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <PhotoUpload
-                value={photoValue || ""}
-                onChange={(value) => setValue("photo", value)}
-                quality={75}
-                webp={false}
-                format="jpg,png"
-              />
-              {errors.photo && (
-                <p className="text-sm font-medium text-destructive mt-2">
-                  {errors.photo.message}
-                </p>
-              )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Informasi Pribadi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2">
+                <PhotoUpload
+                  value={photoValue || ""}
+                  onChange={(value) => setValue("photo", value)}
+                  quality={75}
+                  webp={false}
+                  format="jpg,png"
+                />
+                {errors.photo && (
+                  <p className="text-sm font-medium text-destructive mt-2">
+                    {errors.photo.message}
+                  </p>
+                )}
+              </div>
+
+              <Field>
+                <FieldLabel htmlFor="name">Nama Lengkap *</FieldLabel>
+                <Input
+                  id="name"
+                  {...register("name")}
+                  className={cn(errors.name && "border-destructive")}
+                />
+                <FieldError>{errors.name?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="headline">Headline *</FieldLabel>
+                <Input
+                  id="headline"
+                  {...register("headline")}
+                  placeholder="Software Engineer | Full Stack Developer"
+                  className={cn(errors.headline && "border-destructive")}
+                />
+                <FieldError>{errors.headline?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="email">Email *</FieldLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  className={cn(errors.email && "border-destructive")}
+                />
+                <FieldError>{errors.email?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="phone">Nomor Telepon *</FieldLabel>
+                <Input
+                  id="phone"
+                  {...register("phone")}
+                  placeholder="081234567890"
+                  className={cn(errors.phone && "border-destructive")}
+                />
+                <FieldError>{errors.phone?.message}</FieldError>
+              </Field>
+
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="address">Alamat *</FieldLabel>
+                <Input
+                  id="address"
+                  {...register("address")}
+                  className={cn(errors.address && "border-destructive")}
+                />
+                <FieldError>{errors.address?.message}</FieldError>
+              </Field>
+
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="about">Tentang Saya</FieldLabel>
+                <Textarea
+                  id="about"
+                  {...register("about")}
+                  rows={4}
+                  placeholder="Ceritakan tentang diri Anda..."
+                />
+                <FieldError>{errors.about?.message}</FieldError>
+              </Field>
             </div>
-
-            <Field>
-              <FieldLabel htmlFor="name">Nama Lengkap *</FieldLabel>
-              <Input
-                id="name"
-                {...register("name")}
-                className={cn(errors.name && "border-destructive")}
-              />
-              <FieldError>{errors.name?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="headline">Headline *</FieldLabel>
-              <Input
-                id="headline"
-                {...register("headline")}
-                placeholder="Software Engineer | Full Stack Developer"
-                className={cn(errors.headline && "border-destructive")}
-              />
-              <FieldError>{errors.headline?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="email">Email *</FieldLabel>
-              <Input
-                id="email"
-                type="email"
-                {...register("email")}
-                className={cn(errors.email && "border-destructive")}
-              />
-              <FieldError>{errors.email?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="phone">Nomor Telepon *</FieldLabel>
-              <Input
-                id="phone"
-                {...register("phone")}
-                placeholder="081234567890"
-                className={cn(errors.phone && "border-destructive")}
-              />
-              <FieldError>{errors.phone?.message}</FieldError>
-            </Field>
-
-            <Field className="md:col-span-2">
-              <FieldLabel htmlFor="address">Alamat *</FieldLabel>
-              <Input
-                id="address"
-                {...register("address")}
-                className={cn(errors.address && "border-destructive")}
-              />
-              <FieldError>{errors.address?.message}</FieldError>
-            </Field>
-
-            <Field className="md:col-span-2">
-              <FieldLabel htmlFor="about">Tentang Saya</FieldLabel>
-              <Textarea
-                id="about"
-                {...register("about")}
-                rows={4}
-                placeholder="Ceritakan tentang diri Anda..."
-              />
-              <FieldError>{errors.about?.message}</FieldError>
-            </Field>
-          </div>
+          </CardContent>
         </Card>
 
         {/* Education */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Pendidikan</h3>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>Pendidikan</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -393,105 +404,46 @@ export function CVForm({
             >
               <Plus className="h-4 w-4 mr-1" /> Tambah
             </Button>
-          </div>
-
-          {educations.fields.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Belum ada data pendidikan
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {educations.fields.map((field, index) => (
-                <div key={field.id} className="border rounded-lg p-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-sm">
-                      Pendidikan #{index + 1}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => educations.remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Field>
-                      <FieldLabel>Jenjang *</FieldLabel>
-                      <Select
-                        value={watch(`educations.${index}.degree`)}
-                        onValueChange={(v) =>
-                          setValue(
-                            `educations.${index}.degree`,
-                            v as
-                              | "highschool"
-                              | "associate"
-                              | "bachelor"
-                              | "master"
-                              | "doctorate"
-                          )
-                        }
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            {educations.fields.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Belum ada data pendidikan
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {educations.fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border rounded-lg p-4 space-y-4"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">
+                        Pendidikan #{index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => educations.remove(index)}
                       >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="z-50">
-                          {DEGREE_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FieldError>
-                        {errors.educations?.[index]?.degree?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Nama Sekolah/Universitas *</FieldLabel>
-                      <Input
-                        {...register(`educations.${index}.school_name`)}
-                        className={cn(
-                          errors.educations?.[index]?.school_name &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.educations?.[index]?.school_name?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Lokasi *</FieldLabel>
-                      <Input
-                        {...register(`educations.${index}.school_location`)}
-                        className={cn(
-                          errors.educations?.[index]?.school_location &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.educations?.[index]?.school_location?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Jurusan</FieldLabel>
-                      <Input {...register(`educations.${index}.major`)} />
-                      <FieldError>
-                        {errors.educations?.[index]?.major?.message}
-                      </FieldError>
-                    </Field>
-                    <div className="grid grid-cols-2 gap-2">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel>Bulan Mulai</FieldLabel>
+                        <FieldLabel>Jenjang *</FieldLabel>
                         <Select
-                          value={String(
-                            watch(`educations.${index}.start_month`) || 1
-                          )}
+                          value={watch(`educations.${index}.degree`)}
                           onValueChange={(v) =>
                             setValue(
-                              `educations.${index}.start_month`,
-                              parseInt(v)
+                              `educations.${index}.degree`,
+                              v as
+                                | "highschool"
+                                | "associate"
+                                | "bachelor"
+                                | "master"
+                                | "doctorate"
                             )
                           }
                         >
@@ -499,161 +451,230 @@ export function CVForm({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="z-50">
-                            {MONTH_OPTIONS.map((m) => (
-                              <SelectItem key={m.value} value={String(m.value)}>
-                                {m.label}
+                            {DEGREE_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                         <FieldError>
-                          {errors.educations?.[index]?.start_month?.message}
+                          {errors.educations?.[index]?.degree?.message}
                         </FieldError>
                       </Field>
                       <Field>
-                        <FieldLabel>Tahun Mulai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`educations.${index}.start_year`) ||
-                              currentYear
+                        <FieldLabel>Nama Sekolah/Universitas *</FieldLabel>
+                        <Input
+                          {...register(`educations.${index}.school_name`)}
+                          className={cn(
+                            errors.educations?.[index]?.school_name &&
+                              "border-destructive"
                           )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `educations.${index}.start_year`,
-                              parseInt(v)
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 max-h-48">
-                            {yearOptions.map((y) => (
-                              <SelectItem key={y} value={String(y)}>
-                                {y}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        />
                         <FieldError>
-                          {errors.educations?.[index]?.start_year?.message}
+                          {errors.educations?.[index]?.school_name?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Lokasi *</FieldLabel>
+                        <Input
+                          {...register(`educations.${index}.school_location`)}
+                          className={cn(
+                            errors.educations?.[index]?.school_location &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {errors.educations?.[index]?.school_location?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Jurusan</FieldLabel>
+                        <Input {...register(`educations.${index}.major`)} />
+                        <FieldError>
+                          {errors.educations?.[index]?.major?.message}
+                        </FieldError>
+                      </Field>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field>
+                          <FieldLabel>Bulan Mulai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`educations.${index}.start_month`) || 1
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `educations.${index}.start_month`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.educations?.[index]?.start_month?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Mulai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`educations.${index}.start_year`) ||
+                                currentYear
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `educations.${index}.start_year`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.educations?.[index]?.start_year?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field>
+                          <FieldLabel>Bulan Selesai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`educations.${index}.end_month`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `educations.${index}.end_month`,
+                                parseInt(v)
+                              )
+                            }
+                            disabled={watch(`educations.${index}.is_current`)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              <SelectItem value="0">-</SelectItem>
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.educations?.[index]?.end_month?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Selesai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`educations.${index}.end_year`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `educations.${index}.end_year`,
+                                parseInt(v)
+                              )
+                            }
+                            disabled={watch(`educations.${index}.is_current`)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              <SelectItem value="0">-</SelectItem>
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.educations?.[index]?.end_year?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+                      <Field orientation="horizontal">
+                        <Checkbox
+                          id={`edu-current-${index}`}
+                          checked={watch(`educations.${index}.is_current`)}
+                          onCheckedChange={(v) => {
+                            setValue(`educations.${index}.is_current`, !!v);
+                            if (v) {
+                              setValue(`educations.${index}.end_month`, 0);
+                              setValue(`educations.${index}.end_year`, 0);
+                            }
+                          }}
+                        />
+                        <FieldLabel htmlFor={`edu-current-${index}`}>
+                          Masih berlangsung
+                        </FieldLabel>
+                      </Field>
+                      <Field>
+                        <FieldLabel>IPK</FieldLabel>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="4"
+                          {...register(`educations.${index}.gpa`, {
+                            valueAsNumber: true,
+                          })}
+                        />
+                        <FieldError>
+                          {errors.educations?.[index]?.gpa?.message}
+                        </FieldError>
+                      </Field>
+                      <Field className="md:col-span-2">
+                        <FieldLabel>Deskripsi</FieldLabel>
+                        <Textarea
+                          {...register(`educations.${index}.description`)}
+                          rows={2}
+                        />
+                        <FieldError>
+                          {errors.educations?.[index]?.description?.message}
                         </FieldError>
                       </Field>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field>
-                        <FieldLabel>Bulan Selesai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`educations.${index}.end_month`) || 0
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `educations.${index}.end_month`,
-                              parseInt(v)
-                            )
-                          }
-                          disabled={watch(`educations.${index}.is_current`)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            <SelectItem value="0">-</SelectItem>
-                            {MONTH_OPTIONS.map((m) => (
-                              <SelectItem key={m.value} value={String(m.value)}>
-                                {m.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.educations?.[index]?.end_month?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Tahun Selesai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`educations.${index}.end_year`) || 0
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `educations.${index}.end_year`,
-                              parseInt(v)
-                            )
-                          }
-                          disabled={watch(`educations.${index}.is_current`)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 max-h-48">
-                            <SelectItem value="0">-</SelectItem>
-                            {yearOptions.map((y) => (
-                              <SelectItem key={y} value={String(y)}>
-                                {y}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.educations?.[index]?.end_year?.message}
-                        </FieldError>
-                      </Field>
-                    </div>
-                    <Field orientation="horizontal">
-                      <Checkbox
-                        id={`edu-current-${index}`}
-                        checked={watch(`educations.${index}.is_current`)}
-                        onCheckedChange={(v) => {
-                          setValue(`educations.${index}.is_current`, !!v);
-                          if (v) {
-                            setValue(`educations.${index}.end_month`, 0);
-                            setValue(`educations.${index}.end_year`, 0);
-                          }
-                        }}
-                      />
-                      <FieldLabel htmlFor={`edu-current-${index}`}>
-                        Masih berlangsung
-                      </FieldLabel>
-                    </Field>
-                    <Field>
-                      <FieldLabel>IPK</FieldLabel>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="4"
-                        {...register(`educations.${index}.gpa`, {
-                          valueAsNumber: true,
-                        })}
-                      />
-                      <FieldError>
-                        {errors.educations?.[index]?.gpa?.message}
-                      </FieldError>
-                    </Field>
-                    <Field className="md:col-span-2">
-                      <FieldLabel>Deskripsi</FieldLabel>
-                      <Textarea
-                        {...register(`educations.${index}.description`)}
-                        rows={2}
-                      />
-                      <FieldError>
-                        {errors.educations?.[index]?.description?.message}
-                      </FieldError>
-                    </Field>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         {/* Experience */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Pengalaman Kerja</h3>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>Pengalaman Kerja</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -675,111 +696,88 @@ export function CVForm({
             >
               <Plus className="h-4 w-4 mr-1" /> Tambah
             </Button>
-          </div>
-
-          {experiences.fields.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Belum ada data pengalaman
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {experiences.fields.map((field, index) => (
-                <div key={field.id} className="border rounded-lg p-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-sm">
-                      Pengalaman #{index + 1}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => experiences.remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Field>
-                      <FieldLabel>Jabatan *</FieldLabel>
-                      <Input
-                        {...register(`experiences.${index}.job_title`)}
-                        className={cn(
-                          errors.experiences?.[index]?.job_title &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.experiences?.[index]?.job_title?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Nama Perusahaan *</FieldLabel>
-                      <Input
-                        {...register(`experiences.${index}.company_name`)}
-                        className={cn(
-                          errors.experiences?.[index]?.company_name &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.experiences?.[index]?.company_name?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Lokasi *</FieldLabel>
-                      <Input
-                        {...register(`experiences.${index}.company_location`)}
-                        className={cn(
-                          errors.experiences?.[index]?.company_location &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.experiences?.[index]?.company_location?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Tipe Pekerjaan *</FieldLabel>
-                      <Select
-                        value={watch(`experiences.${index}.job_type`)}
-                        onValueChange={(v) =>
-                          setValue(
-                            `experiences.${index}.job_type`,
-                            v as
-                              | "full_time"
-                              | "part_time"
-                              | "contract"
-                              | "internship"
-                              | "freelance"
-                          )
-                        }
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            {experiences.fields.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Belum ada data pengalaman
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {experiences.fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border rounded-lg p-4 space-y-4"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">
+                        Pengalaman #{index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => experiences.remove(index)}
                       >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="z-50">
-                          {JOB_TYPE_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FieldError>
-                        {errors.experiences?.[index]?.job_type?.message}
-                      </FieldError>
-                    </Field>
-                    <div className="grid grid-cols-2 gap-2">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel>Bulan Mulai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`experiences.${index}.start_month`) || 1
+                        <FieldLabel>Jabatan *</FieldLabel>
+                        <Input
+                          {...register(`experiences.${index}.job_title`)}
+                          className={cn(
+                            errors.experiences?.[index]?.job_title &&
+                              "border-destructive"
                           )}
+                        />
+                        <FieldError>
+                          {errors.experiences?.[index]?.job_title?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Nama Perusahaan *</FieldLabel>
+                        <Input
+                          {...register(`experiences.${index}.company_name`)}
+                          className={cn(
+                            errors.experiences?.[index]?.company_name &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {errors.experiences?.[index]?.company_name?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Lokasi *</FieldLabel>
+                        <Input
+                          {...register(`experiences.${index}.company_location`)}
+                          className={cn(
+                            errors.experiences?.[index]?.company_location &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {
+                            errors.experiences?.[index]?.company_location
+                              ?.message
+                          }
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Tipe Pekerjaan *</FieldLabel>
+                        <Select
+                          value={watch(`experiences.${index}.job_type`)}
                           onValueChange={(v) =>
                             setValue(
-                              `experiences.${index}.start_month`,
-                              parseInt(v)
+                              `experiences.${index}.job_type`,
+                              v as
+                                | "full_time"
+                                | "part_time"
+                                | "contract"
+                                | "internship"
+                                | "freelance"
                             )
                           }
                         >
@@ -787,146 +785,182 @@ export function CVForm({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="z-50">
-                            {MONTH_OPTIONS.map((m) => (
-                              <SelectItem key={m.value} value={String(m.value)}>
-                                {m.label}
+                            {JOB_TYPE_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                         <FieldError>
-                          {errors.experiences?.[index]?.start_month?.message}
+                          {errors.experiences?.[index]?.job_type?.message}
                         </FieldError>
                       </Field>
-                      <Field>
-                        <FieldLabel>Tahun Mulai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`experiences.${index}.start_year`) ||
-                              currentYear
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `experiences.${index}.start_year`,
-                              parseInt(v)
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 max-h-48">
-                            {yearOptions.map((y) => (
-                              <SelectItem key={y} value={String(y)}>
-                                {y}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field>
+                          <FieldLabel>Bulan Mulai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`experiences.${index}.start_month`) || 1
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `experiences.${index}.start_month`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.experiences?.[index]?.start_month?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Mulai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`experiences.${index}.start_year`) ||
+                                currentYear
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `experiences.${index}.start_year`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.experiences?.[index]?.start_year?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field>
+                          <FieldLabel>Bulan Selesai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`experiences.${index}.end_month`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `experiences.${index}.end_month`,
+                                parseInt(v)
+                              )
+                            }
+                            disabled={watch(`experiences.${index}.is_current`)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              <SelectItem value="0">-</SelectItem>
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.experiences?.[index]?.end_month?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Selesai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`experiences.${index}.end_year`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `experiences.${index}.end_year`,
+                                parseInt(v)
+                              )
+                            }
+                            disabled={watch(`experiences.${index}.is_current`)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              <SelectItem value="0">-</SelectItem>
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.experiences?.[index]?.end_year?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+                      <Field orientation="horizontal">
+                        <Checkbox
+                          id={`exp-current-${index}`}
+                          checked={watch(`experiences.${index}.is_current`)}
+                          onCheckedChange={(v) => {
+                            setValue(`experiences.${index}.is_current`, !!v);
+                            if (v) {
+                              setValue(`experiences.${index}.end_month`, 0);
+                              setValue(`experiences.${index}.end_year`, 0);
+                            }
+                          }}
+                        />
+                        <FieldLabel htmlFor={`exp-current-${index}`}>
+                          Masih bekerja
+                        </FieldLabel>
+                      </Field>
+                      <Field className="md:col-span-2">
+                        <FieldLabel>Deskripsi</FieldLabel>
+                        <Textarea
+                          {...register(`experiences.${index}.description`)}
+                          rows={3}
+                        />
                         <FieldError>
-                          {errors.experiences?.[index]?.start_year?.message}
+                          {errors.experiences?.[index]?.description?.message}
                         </FieldError>
                       </Field>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field>
-                        <FieldLabel>Bulan Selesai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`experiences.${index}.end_month`) || 0
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `experiences.${index}.end_month`,
-                              parseInt(v)
-                            )
-                          }
-                          disabled={watch(`experiences.${index}.is_current`)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            <SelectItem value="0">-</SelectItem>
-                            {MONTH_OPTIONS.map((m) => (
-                              <SelectItem key={m.value} value={String(m.value)}>
-                                {m.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.experiences?.[index]?.end_month?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Tahun Selesai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`experiences.${index}.end_year`) || 0
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `experiences.${index}.end_year`,
-                              parseInt(v)
-                            )
-                          }
-                          disabled={watch(`experiences.${index}.is_current`)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 max-h-48">
-                            <SelectItem value="0">-</SelectItem>
-                            {yearOptions.map((y) => (
-                              <SelectItem key={y} value={String(y)}>
-                                {y}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.experiences?.[index]?.end_year?.message}
-                        </FieldError>
-                      </Field>
-                    </div>
-                    <Field orientation="horizontal">
-                      <Checkbox
-                        id={`exp-current-${index}`}
-                        checked={watch(`experiences.${index}.is_current`)}
-                        onCheckedChange={(v) => {
-                          setValue(`experiences.${index}.is_current`, !!v);
-                          if (v) {
-                            setValue(`experiences.${index}.end_month`, 0);
-                            setValue(`experiences.${index}.end_year`, 0);
-                          }
-                        }}
-                      />
-                      <FieldLabel htmlFor={`exp-current-${index}`}>
-                        Masih bekerja
-                      </FieldLabel>
-                    </Field>
-                    <Field className="md:col-span-2">
-                      <FieldLabel>Deskripsi</FieldLabel>
-                      <Textarea
-                        {...register(`experiences.${index}.description`)}
-                        rows={3}
-                      />
-                      <FieldError>
-                        {errors.experiences?.[index]?.description?.message}
-                      </FieldError>
-                    </Field>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         {/* Skills */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Keahlian</h3>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>Keahlian</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -935,79 +969,77 @@ export function CVForm({
             >
               <Plus className="h-4 w-4 mr-1" /> Tambah
             </Button>
-          </div>
-
-          {skills.fields.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Belum ada data keahlian
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {skills.fields.map((field, index) => (
-                <div key={field.id} className="flex gap-3 items-start">
-                  <div className="flex-1 space-y-2">
-                    <Input
-                      placeholder="Nama Keahlian"
-                      {...register(`skills.${index}.name`)}
-                      className={cn(
-                        errors.skills?.[index]?.name && "border-destructive"
-                      )}
-                    />
-                    {errors.skills?.[index]?.name && (
-                      <p className="text-sm font-medium text-destructive">
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            {skills.fields.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Belum ada data keahlian
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {skills.fields.map((field, index) => (
+                  <div key={field.id} className="flex gap-3 items-start">
+                    <Field className="flex-1">
+                      <Input
+                        placeholder="Nama Keahlian"
+                        {...register(`skills.${index}.name`)}
+                        className={cn(
+                          errors.skills?.[index]?.name && "border-destructive"
+                        )}
+                      />
+                      <FieldError>
                         {errors.skills?.[index]?.name?.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="w-40 space-y-2">
-                    <Select
-                      value={watch(`skills.${index}.level`)}
-                      onValueChange={(v) =>
-                        setValue(
-                          `skills.${index}.level`,
-                          v as
-                            | "beginner"
-                            | "intermediate"
-                            | "advanced"
-                            | "expert"
-                        )
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="z-50">
-                        {SKILL_LEVEL_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.skills?.[index]?.level && (
-                      <p className="text-sm font-medium text-destructive">
+                      </FieldError>
+                    </Field>
+                    <Field className="w-40">
+                      <Select
+                        value={watch(`skills.${index}.level`)}
+                        onValueChange={(v) =>
+                          setValue(
+                            `skills.${index}.level`,
+                            v as
+                              | "beginner"
+                              | "intermediate"
+                              | "advanced"
+                              | "expert"
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="z-50">
+                          {SKILL_LEVEL_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FieldError>
                         {errors.skills?.[index]?.level?.message}
-                      </p>
-                    )}
+                      </FieldError>
+                    </Field>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="mt-1"
+                      onClick={() => skills.remove(index)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => skills.remove(index)}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         {/* Certificates */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Sertifikasi</h3>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>Sertifikasi</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -1029,244 +1061,263 @@ export function CVForm({
             >
               <Plus className="h-4 w-4 mr-1" /> Tambah
             </Button>
-          </div>
-
-          {certificates.fields.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Belum ada data sertifikasi
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {certificates.fields.map((field, index) => (
-                <div key={field.id} className="border rounded-lg p-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-sm">
-                      Sertifikat #{index + 1}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => certificates.remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Field>
-                      <FieldLabel>Judul *</FieldLabel>
-                      <Input
-                        {...register(`certificates.${index}.title`)}
-                        className={cn(
-                          errors.certificates?.[index]?.title &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.certificates?.[index]?.title?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Penerbit *</FieldLabel>
-                      <Input
-                        {...register(`certificates.${index}.issuer`)}
-                        className={cn(
-                          errors.certificates?.[index]?.issuer &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.certificates?.[index]?.issuer?.message}
-                      </FieldError>
-                    </Field>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field>
-                        <FieldLabel>Bulan Terbit</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`certificates.${index}.issue_month`)
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `certificates.${index}.issue_month`,
-                              parseInt(v)
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            {MONTH_OPTIONS.map((m) => (
-                              <SelectItem key={m.value} value={String(m.value)}>
-                                {m.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.certificates?.[index]?.issue_month?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Tahun Terbit</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`certificates.${index}.issue_year`)
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `certificates.${index}.issue_year`,
-                              parseInt(v)
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 max-h-48">
-                            {yearOptions.map((y) => (
-                              <SelectItem key={y} value={String(y)}>
-                                {y}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.certificates?.[index]?.issue_year?.message}
-                        </FieldError>
-                      </Field>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            {certificates.fields.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Belum ada data sertifikasi
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {certificates.fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border rounded-lg p-4 space-y-4"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">
+                        Sertifikat #{index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => certificates.remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Field>
+                        <FieldLabel>Judul *</FieldLabel>
+                        <Input
+                          {...register(`certificates.${index}.title`)}
+                          className={cn(
+                            errors.certificates?.[index]?.title &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {errors.certificates?.[index]?.title?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Penerbit *</FieldLabel>
+                        <Input
+                          {...register(`certificates.${index}.issuer`)}
+                          className={cn(
+                            errors.certificates?.[index]?.issuer &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {errors.certificates?.[index]?.issuer?.message}
+                        </FieldError>
+                      </Field>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field>
+                          <FieldLabel>Bulan Terbit</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`certificates.${index}.issue_month`) || 1
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `certificates.${index}.issue_month`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.certificates?.[index]?.issue_month?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Terbit</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`certificates.${index}.issue_year`) ||
+                                currentYear
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `certificates.${index}.issue_year`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.certificates?.[index]?.issue_year?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
 
-                    <div className="space-y-2">
-                      {!watch(`certificates.${index}.no_expiry`) && (
-                        <div className="grid grid-cols-2 gap-2">
-                          <Field>
-                            <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
-                            <Select
-                              value={String(
-                                watch(`certificates.${index}.expiry_month`) || 0
-                              )}
-                              onValueChange={(v) =>
+                      <div className="space-y-2">
+                        {!watch(`certificates.${index}.no_expiry`) && (
+                          <div className="grid grid-cols-2 gap-2">
+                            <Field>
+                              <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
+                              <Select
+                                value={String(
+                                  watch(`certificates.${index}.expiry_month`) ||
+                                    0
+                                )}
+                                onValueChange={(v) =>
+                                  setValue(
+                                    `certificates.${index}.expiry_month`,
+                                    parseInt(v)
+                                  )
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="z-50">
+                                  <SelectItem value="0">-</SelectItem>
+                                  {MONTH_OPTIONS.map((m) => (
+                                    <SelectItem
+                                      key={m.value}
+                                      value={String(m.value)}
+                                    >
+                                      {m.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FieldError>
+                                {
+                                  errors.certificates?.[index]?.expiry_month
+                                    ?.message
+                                }
+                              </FieldError>
+                            </Field>
+                            <Field>
+                              <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
+                              <Select
+                                value={String(
+                                  watch(`certificates.${index}.expiry_year`) ||
+                                    0
+                                )}
+                                onValueChange={(v) =>
+                                  setValue(
+                                    `certificates.${index}.expiry_year`,
+                                    parseInt(v)
+                                  )
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="z-50 max-h-48">
+                                  <SelectItem value="0">-</SelectItem>
+                                  {yearOptions.map((y) => (
+                                    <SelectItem key={y} value={String(y)}>
+                                      {y}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FieldError>
+                                {
+                                  errors.certificates?.[index]?.expiry_year
+                                    ?.message
+                                }
+                              </FieldError>
+                            </Field>
+                          </div>
+                        )}
+                        <Field orientation="horizontal">
+                          <Checkbox
+                            id={`cert-no-expiry-${index}`}
+                            checked={watch(`certificates.${index}.no_expiry`)}
+                            onCheckedChange={(v) => {
+                              setValue(`certificates.${index}.no_expiry`, !!v);
+                              if (v) {
                                 setValue(
                                   `certificates.${index}.expiry_month`,
-                                  parseInt(v)
-                                )
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="z-50">
-                                <SelectItem value="0">-</SelectItem>
-                                {MONTH_OPTIONS.map((m) => (
-                                  <SelectItem
-                                    key={m.value}
-                                    value={String(m.value)}
-                                  >
-                                    {m.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FieldError>
-                              {
-                                errors.certificates?.[index]?.expiry_month
-                                  ?.message
-                              }
-                            </FieldError>
-                          </Field>
-                          <Field>
-                            <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
-                            <Select
-                              value={String(
-                                watch(`certificates.${index}.expiry_year`) || 0
-                              )}
-                              onValueChange={(v) =>
+                                  0
+                                );
                                 setValue(
                                   `certificates.${index}.expiry_year`,
-                                  parseInt(v)
-                                )
+                                  0
+                                );
                               }
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="z-50 max-h-48">
-                                <SelectItem value="0">-</SelectItem>
-                                {yearOptions.map((y) => (
-                                  <SelectItem key={y} value={String(y)}>
-                                    {y}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FieldError>
-                              {
-                                errors.certificates?.[index]?.expiry_year
-                                  ?.message
-                              }
-                            </FieldError>
-                          </Field>
-                        </div>
-                      )}
-                      <Field orientation="horizontal">
-                        <Checkbox
-                          id={`cert-no-expiry-${index}`}
-                          checked={watch(`certificates.${index}.no_expiry`)}
-                          onCheckedChange={(v) => {
-                            setValue(`certificates.${index}.no_expiry`, !!v);
-                            if (v) {
-                              setValue(`certificates.${index}.expiry_month`, 0);
-                              setValue(`certificates.${index}.expiry_year`, 0);
-                            }
-                          }}
+                            }}
+                          />
+                          <FieldLabel htmlFor={`cert-no-expiry-${index}`}>
+                            Tidak ada masa berlaku
+                          </FieldLabel>
+                        </Field>
+                      </div>
+
+                      <Field>
+                        <FieldLabel>ID Kredensial</FieldLabel>
+                        <Input
+                          {...register(`certificates.${index}.credential_id`)}
                         />
-                        <FieldLabel htmlFor={`cert-no-expiry-${index}`}>
-                          Tidak ada masa berlaku
-                        </FieldLabel>
+                        <FieldError>
+                          {errors.certificates?.[index]?.credential_id?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>URL Kredensial</FieldLabel>
+                        <Input
+                          {...register(`certificates.${index}.credential_url`)}
+                        />
+                        <FieldError>
+                          {
+                            errors.certificates?.[index]?.credential_url
+                              ?.message
+                          }
+                        </FieldError>
+                      </Field>
+                      <Field className="md:col-span-2">
+                        <FieldLabel>Deskripsi</FieldLabel>
+                        <Textarea
+                          {...register(`certificates.${index}.description`)}
+                          rows={2}
+                        />
+                        <FieldError>
+                          {errors.certificates?.[index]?.description?.message}
+                        </FieldError>
                       </Field>
                     </div>
-
-                    <Field>
-                      <FieldLabel>ID Kredensial</FieldLabel>
-                      <Input
-                        {...register(`certificates.${index}.credential_id`)}
-                      />
-                      <FieldError>
-                        {errors.certificates?.[index]?.credential_id?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>URL Kredensial</FieldLabel>
-                      <Input
-                        {...register(`certificates.${index}.credential_url`)}
-                      />
-                      <FieldError>
-                        {errors.certificates?.[index]?.credential_url?.message}
-                      </FieldError>
-                    </Field>
-                    <Field className="md:col-span-2">
-                      <FieldLabel>Deskripsi</FieldLabel>
-                      <Textarea
-                        {...register(`certificates.${index}.description`)}
-                        rows={2}
-                      />
-                      <FieldError>
-                        {errors.certificates?.[index]?.description?.message}
-                      </FieldError>
-                    </Field>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         {/* Awards */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Penghargaan</h3>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>Penghargaan</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -1282,97 +1333,103 @@ export function CVForm({
             >
               <Plus className="h-4 w-4 mr-1" /> Tambah
             </Button>
-          </div>
-
-          {awards.fields.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Belum ada data penghargaan
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {awards.fields.map((field, index) => (
-                <div key={field.id} className="border rounded-lg p-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-sm">
-                      Penghargaan #{index + 1}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => awards.remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Field>
-                      <FieldLabel>Judul *</FieldLabel>
-                      <Input
-                        {...register(`awards.${index}.title`)}
-                        className={cn(
-                          errors.awards?.[index]?.title && "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.awards?.[index]?.title?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Pemberi *</FieldLabel>
-                      <Input
-                        {...register(`awards.${index}.issuer`)}
-                        className={cn(
-                          errors.awards?.[index]?.issuer && "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.awards?.[index]?.issuer?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Tahun</FieldLabel>
-                      <Select
-                        value={String(
-                          watch(`awards.${index}.year`) || currentYear
-                        )}
-                        onValueChange={(v) =>
-                          setValue(`awards.${index}.year`, parseInt(v))
-                        }
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            {awards.fields.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Belum ada data penghargaan
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {awards.fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border rounded-lg p-4 space-y-4"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">
+                        Penghargaan #{index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => awards.remove(index)}
                       >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="z-50 max-h-48">
-                          {yearOptions.map((y) => (
-                            <SelectItem key={y} value={String(y)}>
-                              {y}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FieldError>
-                        {errors.awards?.[index]?.year?.message}
-                      </FieldError>
-                    </Field>
-                    <Field className="md:col-span-3">
-                      <FieldLabel>Deskripsi</FieldLabel>
-                      <Input {...register(`awards.${index}.description`)} />
-                      <FieldError>
-                        {errors.awards?.[index]?.description?.message}
-                      </FieldError>
-                    </Field>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Field>
+                        <FieldLabel>Judul *</FieldLabel>
+                        <Input
+                          {...register(`awards.${index}.title`)}
+                          className={cn(
+                            errors.awards?.[index]?.title &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {errors.awards?.[index]?.title?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Pemberi *</FieldLabel>
+                        <Input
+                          {...register(`awards.${index}.issuer`)}
+                          className={cn(
+                            errors.awards?.[index]?.issuer &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {errors.awards?.[index]?.issuer?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Tahun</FieldLabel>
+                        <Select
+                          value={String(
+                            watch(`awards.${index}.year`) || currentYear
+                          )}
+                          onValueChange={(v) =>
+                            setValue(`awards.${index}.year`, parseInt(v))
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-50 max-h-48">
+                            {yearOptions.map((y) => (
+                              <SelectItem key={y} value={String(y)}>
+                                {y}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FieldError>
+                          {errors.awards?.[index]?.year?.message}
+                        </FieldError>
+                      </Field>
+                      <Field className="md:col-span-3">
+                        <FieldLabel>Deskripsi</FieldLabel>
+                        <Input {...register(`awards.${index}.description`)} />
+                        <FieldError>
+                          {errors.awards?.[index]?.description?.message}
+                        </FieldError>
+                      </Field>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         {/* Organizations */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Organisasi</h3>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>Organisasi</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -1394,114 +1451,78 @@ export function CVForm({
             >
               <Plus className="h-4 w-4 mr-1" /> Tambah
             </Button>
-          </div>
-
-          {organizations.fields.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Belum ada data organisasi
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {organizations.fields.map((field, index) => (
-                <div key={field.id} className="border rounded-lg p-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-sm">
-                      Organisasi #{index + 1}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => organizations.remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Field>
-                      <FieldLabel>Nama Organisasi *</FieldLabel>
-                      <Input
-                        {...register(
-                          `organizations.${index}.organization_name`
-                        )}
-                        className={cn(
-                          errors.organizations?.[index]?.organization_name &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {
-                          errors.organizations?.[index]?.organization_name
-                            ?.message
-                        }
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Jabatan *</FieldLabel>
-                      <Input
-                        {...register(`organizations.${index}.role_title`)}
-                        className={cn(
-                          errors.organizations?.[index]?.role_title &&
-                            "border-destructive"
-                        )}
-                      />
-                      <FieldError>
-                        {errors.organizations?.[index]?.role_title?.message}
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Tipe Organisasi *</FieldLabel>
-                      <Select
-                        value={watch(
-                          `organizations.${index}.organization_type`
-                        )}
-                        onValueChange={(v) =>
-                          setValue(
-                            `organizations.${index}.organization_type`,
-                            v as
-                              | "student"
-                              | "professional"
-                              | "volunteer"
-                              | "community"
-                          )
-                        }
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            {organizations.fields.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Belum ada data organisasi
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {organizations.fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border rounded-lg p-4 space-y-4"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">
+                        Organisasi #{index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => organizations.remove(index)}
                       >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="z-50">
-                          {ORGANIZATION_TYPE_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FieldError>
-                        {
-                          errors.organizations?.[index]?.organization_type
-                            ?.message
-                        }
-                      </FieldError>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Lokasi</FieldLabel>
-                      <Input {...register(`organizations.${index}.location`)} />
-                      <FieldError>
-                        {errors.organizations?.[index]?.location?.message}
-                      </FieldError>
-                    </Field>
-                    <div className="grid grid-cols-2 gap-2">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel>Bulan Mulai</FieldLabel>
+                        <FieldLabel>Nama Organisasi *</FieldLabel>
+                        <Input
+                          {...register(
+                            `organizations.${index}.organization_name`
+                          )}
+                          className={cn(
+                            errors.organizations?.[index]?.organization_name &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {
+                            errors.organizations?.[index]?.organization_name
+                              ?.message
+                          }
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Jabatan *</FieldLabel>
+                        <Input
+                          {...register(`organizations.${index}.role_title`)}
+                          className={cn(
+                            errors.organizations?.[index]?.role_title &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {errors.organizations?.[index]?.role_title?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Tipe Organisasi *</FieldLabel>
                         <Select
-                          value={String(
-                            watch(`organizations.${index}.start_month`) || 1
+                          value={watch(
+                            `organizations.${index}.organization_type`
                           )}
                           onValueChange={(v) =>
                             setValue(
-                              `organizations.${index}.start_month`,
-                              parseInt(v)
+                              `organizations.${index}.organization_type`,
+                              v as
+                                | "student"
+                                | "professional"
+                                | "volunteer"
+                                | "community"
                             )
                           }
                         >
@@ -1509,146 +1530,201 @@ export function CVForm({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="z-50">
-                            {MONTH_OPTIONS.map((m) => (
-                              <SelectItem key={m.value} value={String(m.value)}>
-                                {m.label}
+                            {ORGANIZATION_TYPE_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                         <FieldError>
-                          {errors.organizations?.[index]?.start_month?.message}
+                          {
+                            errors.organizations?.[index]?.organization_type
+                              ?.message
+                          }
                         </FieldError>
                       </Field>
                       <Field>
-                        <FieldLabel>Tahun Mulai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`organizations.${index}.start_year`) ||
-                              currentYear
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `organizations.${index}.start_year`,
-                              parseInt(v)
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 max-h-48">
-                            {yearOptions.map((y) => (
-                              <SelectItem key={y} value={String(y)}>
-                                {y}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FieldLabel>Lokasi</FieldLabel>
+                        <Input
+                          {...register(`organizations.${index}.location`)}
+                        />
                         <FieldError>
-                          {errors.organizations?.[index]?.start_year?.message}
+                          {errors.organizations?.[index]?.location?.message}
+                        </FieldError>
+                      </Field>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field>
+                          <FieldLabel>Bulan Mulai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`organizations.${index}.start_month`) || 1
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `organizations.${index}.start_month`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {
+                              errors.organizations?.[index]?.start_month
+                                ?.message
+                            }
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Mulai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`organizations.${index}.start_year`) ||
+                                currentYear
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `organizations.${index}.start_year`,
+                                parseInt(v)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.organizations?.[index]?.start_year?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field>
+                          <FieldLabel>Bulan Selesai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`organizations.${index}.end_month`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `organizations.${index}.end_month`,
+                                parseInt(v)
+                              )
+                            }
+                            disabled={watch(
+                              `organizations.${index}.is_current`
+                            )}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              <SelectItem value="0">-</SelectItem>
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.organizations?.[index]?.end_month?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Selesai</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`organizations.${index}.end_year`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `organizations.${index}.end_year`,
+                                parseInt(v)
+                              )
+                            }
+                            disabled={watch(
+                              `organizations.${index}.is_current`
+                            )}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              <SelectItem value="0">-</SelectItem>
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.organizations?.[index]?.end_year?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+                      <Field orientation="horizontal">
+                        <Checkbox
+                          id={`org-current-${index}`}
+                          checked={watch(`organizations.${index}.is_current`)}
+                          onCheckedChange={(v) => {
+                            setValue(`organizations.${index}.is_current`, !!v);
+                            if (v) {
+                              setValue(`organizations.${index}.end_month`, 0);
+                              setValue(`organizations.${index}.end_year`, 0);
+                            }
+                          }}
+                        />
+                        <FieldLabel htmlFor={`org-current-${index}`}>
+                          Masih berlangsung
+                        </FieldLabel>
+                      </Field>
+                      <Field className="md:col-span-2">
+                        <FieldLabel>Deskripsi</FieldLabel>
+                        <Textarea
+                          {...register(`organizations.${index}.description`)}
+                          rows={2}
+                        />
+                        <FieldError>
+                          {errors.organizations?.[index]?.description?.message}
                         </FieldError>
                       </Field>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field>
-                        <FieldLabel>Bulan Selesai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`organizations.${index}.end_month`) || 0
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `organizations.${index}.end_month`,
-                              parseInt(v)
-                            )
-                          }
-                          disabled={watch(`organizations.${index}.is_current`)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            <SelectItem value="0">-</SelectItem>
-                            {MONTH_OPTIONS.map((m) => (
-                              <SelectItem key={m.value} value={String(m.value)}>
-                                {m.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.organizations?.[index]?.end_month?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Tahun Selesai</FieldLabel>
-                        <Select
-                          value={String(
-                            watch(`organizations.${index}.end_year`) || 0
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `organizations.${index}.end_year`,
-                              parseInt(v)
-                            )
-                          }
-                          disabled={watch(`organizations.${index}.is_current`)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 max-h-48">
-                            <SelectItem value="0">-</SelectItem>
-                            {yearOptions.map((y) => (
-                              <SelectItem key={y} value={String(y)}>
-                                {y}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.organizations?.[index]?.end_year?.message}
-                        </FieldError>
-                      </Field>
-                    </div>
-                    <Field orientation="horizontal">
-                      <Checkbox
-                        id={`org-current-${index}`}
-                        checked={watch(`organizations.${index}.is_current`)}
-                        onCheckedChange={(v) => {
-                          setValue(`organizations.${index}.is_current`, !!v);
-                          if (v) {
-                            setValue(`organizations.${index}.end_month`, 0);
-                            setValue(`organizations.${index}.end_year`, 0);
-                          }
-                        }}
-                      />
-                      <FieldLabel htmlFor={`org-current-${index}`}>
-                        Masih aktif
-                      </FieldLabel>
-                    </Field>
-                    <Field className="md:col-span-2">
-                      <FieldLabel>Deskripsi</FieldLabel>
-                      <Textarea
-                        {...register(`organizations.${index}.description`)}
-                        rows={2}
-                      />
-                      <FieldError>
-                        {errors.organizations?.[index]?.description?.message}
-                      </FieldError>
-                    </Field>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         {/* Social Links */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Media Sosial</h3>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>Media Sosial</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -1657,67 +1733,75 @@ export function CVForm({
             >
               <Plus className="h-4 w-4 mr-1" /> Tambah
             </Button>
-          </div>
+          </CardHeader>
 
-          {socialLinks.fields.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Belum ada data media sosial
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {socialLinks.fields.map((field, index) => (
-                <div key={field.id} className="flex gap-3 items-start">
-                  <div className="w-40 space-y-2">
-                    <Input
-                      placeholder="Platform"
-                      {...register(`social_links.${index}.platform`)}
-                      className={cn(
-                        errors.social_links?.[index]?.platform &&
-                          "border-destructive"
-                      )}
-                    />
-                    {errors.social_links?.[index]?.platform && (
-                      <p className="text-sm font-medium text-destructive">
+          <CardContent className="space-y-3 pt-4">
+            {socialLinks.fields.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Belum ada data media sosial
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {socialLinks.fields.map((field, index) => (
+                  <div key={field.id} className="flex gap-3 items-start">
+                    <Field className="w-40">
+                      <Input
+                        placeholder="Platform"
+                        {...register(`social_links.${index}.platform`)}
+                        className={cn(
+                          errors.social_links?.[index]?.platform &&
+                            "border-destructive"
+                        )}
+                      />
+                      <FieldError>
                         {errors.social_links?.[index]?.platform?.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    <Input
-                      placeholder="URL"
-                      {...register(`social_links.${index}.url`)}
-                      className={cn(
-                        errors.social_links?.[index]?.url &&
-                          "border-destructive"
-                      )}
-                    />
-                    {errors.social_links?.[index]?.url && (
-                      <p className="text-sm font-medium text-destructive">
+                      </FieldError>
+                    </Field>
+                    <Field className="flex-1">
+                      <Input
+                        placeholder="URL"
+                        {...register(`social_links.${index}.url`)}
+                        className={cn(
+                          errors.social_links?.[index]?.url &&
+                            "border-destructive"
+                        )}
+                      />
+                      <FieldError>
                         {errors.social_links?.[index]?.url?.message}
-                      </p>
-                    )}
+                      </FieldError>
+                    </Field>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="mt-1"
+                      onClick={() => socialLinks.remove(index)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => socialLinks.remove(index)}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
       </FieldSet>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button type="button" variant="outline" onClick={onCancel}>
           Batal
         </Button>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Menyimpan..." : "Simpan"}
+          {isLoading ? (
+            <>
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              Menyimpan...
+            </>
+          ) : initialData ? (
+            "Simpan Perubahan"
+          ) : (
+            "Simpan"
+          )}
         </Button>
       </div>
     </form>

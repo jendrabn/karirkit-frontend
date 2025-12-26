@@ -132,9 +132,12 @@ const ProfileForm = () => {
       <CardHeader>
         <CardTitle>Informasi Profil</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-4">
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldSet>
+          <FieldSet
+            disabled={updateProfileMutation.isPending}
+            className="space-y-6 mb-6"
+          >
             <FieldLegend>Informasi Profil</FieldLegend>
             <FieldDescription>
               Perbarui informasi profil dan kontak Anda di sini.
@@ -218,39 +221,37 @@ const ProfileForm = () => {
                 <FieldError>{form.formState.errors.phone?.message}</FieldError>
               </Field>
             </FieldGroup>
-          </FieldSet>
 
-          {/* Timestamp */}
-          <div className="pt-4 border-t mt-6">
-            <div className="flex items-center justify-center">
-              <div className="bg-muted/50 rounded-full px-4 py-2">
-                <p className="text-sm text-muted-foreground">
-                  Bergabung sejak{" "}
-                  <span className="font-medium text-foreground">
-                    {dayjs
-                      .utc(user?.created_at)
-                      .local()
-                      .format("DD MMMM YYYY") || "-"}
-                  </span>
-                </p>
+            {/* Timestamp */}
+            <div className="pt-4 border-t">
+              <div className="flex items-center justify-center">
+                <div className="bg-muted/50 rounded-full px-4 py-2">
+                  <p className="text-sm text-muted-foreground">
+                    Bergabung sejak{" "}
+                    <span className="font-medium text-foreground">
+                      {dayjs
+                        .utc(user?.created_at)
+                        .local()
+                        .format("DD MMMM YYYY") || "-"}
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </FieldSet>
 
-          <Button
-            type="submit"
-            className="w-full mt-6"
-            disabled={updateProfileMutation.isPending}
-          >
-            {updateProfileMutation.isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Menyimpan...
-              </>
-            ) : (
-              "Simpan Perubahan"
-            )}
-          </Button>
+          <div className="flex justify-end gap-3 pt-6 border-t mt-8">
+            <Button type="submit" disabled={updateProfileMutation.isPending}>
+              {updateProfileMutation.isPending ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Menyimpan...
+                </>
+              ) : (
+                "Simpan Perubahan"
+              )}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

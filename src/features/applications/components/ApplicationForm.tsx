@@ -96,7 +96,7 @@ export function ApplicationForm({
           <CardHeader>
             <CardTitle>Informasi Perusahaan</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>Nama Perusahaan *</FieldLabel>
@@ -162,7 +162,7 @@ export function ApplicationForm({
           <CardHeader>
             <CardTitle>Detail Pekerjaan</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
                 control={form.control}
@@ -354,7 +354,7 @@ export function ApplicationForm({
           <CardHeader>
             <CardTitle>Informasi Kontak</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Field>
                 <FieldLabel>Nama Kontak</FieldLabel>
@@ -387,7 +387,7 @@ export function ApplicationForm({
           <CardHeader>
             <CardTitle>Follow Up</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
                 control={form.control}
@@ -449,7 +449,7 @@ export function ApplicationForm({
           <CardHeader>
             <CardTitle>Catatan</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <Field>
               <FieldLabel>Catatan</FieldLabel>
               <Textarea {...form.register("notes")} rows={4} />
@@ -459,7 +459,7 @@ export function ApplicationForm({
         </Card>
       </FieldSet>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
           variant="outline"
@@ -469,7 +469,16 @@ export function ApplicationForm({
           Batal
         </Button>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Menyimpan..." : "Simpan"}
+          {isLoading ? (
+            <>
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              Menyimpan...
+            </>
+          ) : initialData ? (
+            "Simpan Perubahan"
+          ) : (
+            "Simpan"
+          )}
         </Button>
       </div>
     </form>

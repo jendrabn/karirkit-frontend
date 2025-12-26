@@ -38,7 +38,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   type Blog,
   type BlogCategory,
@@ -301,13 +301,16 @@ export function BlogForm({
   );
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <Card>
-        <CardContent className="pt-6 space-y-6">
-          <FieldSet
-            disabled={isLoading || isUploadingImage}
-            className="space-y-6"
-          >
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldSet
+        disabled={isLoading || isUploadingImage}
+        className="space-y-6 mb-6"
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>{initialData ? "Edit Blog" : "Tambah Blog"}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-4">
             {/* Title & Slug */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
@@ -331,7 +334,6 @@ export function BlogForm({
               </Field>
             </div>
 
-            {/* Category and Read Time */}
             {/* Category and Read Time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Controller
@@ -443,7 +445,6 @@ export function BlogForm({
               )}
             </Field>
 
-            {/* Status */}
             {/* Status */}
             <Controller
               control={form.control}
@@ -562,11 +563,11 @@ export function BlogForm({
                 </Field>
               )}
             />
-          </FieldSet>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </FieldSet>
 
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
           variant="outline"
@@ -576,7 +577,16 @@ export function BlogForm({
           Batal
         </Button>
         <Button type="submit" disabled={isLoading || isUploadingImage}>
-          {isLoading ? "Menyimpan..." : initialData ? "Perbarui" : "Simpan"}
+          {isLoading ? (
+            <>
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              Menyimpan...
+            </>
+          ) : initialData ? (
+            "Simpan Perubahan"
+          ) : (
+            "Simpan"
+          )}
         </Button>
       </div>
     </form>
