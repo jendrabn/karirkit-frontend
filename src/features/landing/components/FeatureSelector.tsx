@@ -45,8 +45,7 @@ const featureDetails = {
       "Pengingat tindak lanjut agar tidak ada lamaran terlewat",
     ],
     cta: "Lihat cara kerja Pelacak Lamaran",
-    image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
+    image: "/images/placeholder.png",
     imageAlt: "Dashboard Pelacak Lamaran",
     bgColor: "bg-gradient-to-br from-secondary via-secondary/50 to-background",
   },
@@ -60,8 +59,7 @@ const featureDetails = {
       "Ekspor ke Word (.docx) — ekspor PDF segera tersedia",
     ],
     cta: "Pelajari cara membuat Surat Lamaran",
-    image:
-      "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=500&fit=crop",
+    image: "/images/placeholder.png",
     imageAlt: "Editor Surat Lamaran",
     bgColor: "bg-gradient-to-br from-primary/10 via-primary/5 to-background",
   },
@@ -75,8 +73,7 @@ const featureDetails = {
       "Ekspor ke Word (.docx) — ekspor PDF segera tersedia",
     ],
     cta: "Pelajari cara membuat CV",
-    image:
-      "https://images.unsplash.com/photos/1517048676732-d65bc937f952?w=800&h=500&fit=crop",
+    image: "/images/placeholder.png",
     imageAlt: "Tampilan Pembuat CV",
     bgColor: "bg-gradient-to-br from-accent via-accent/50 to-background",
   },
@@ -90,8 +87,7 @@ const featureDetails = {
       "Cocok untuk desainer, developer, dan profesional kreatif",
     ],
     cta: "Pelajari cara membuat Portofolio",
-    image:
-      "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=500&fit=crop",
+    image: "/images/placeholder.png",
     imageAlt: "Galeri Portofolio Digital",
     bgColor: "bg-gradient-to-br from-muted via-muted/50 to-background",
   },

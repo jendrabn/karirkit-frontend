@@ -72,11 +72,11 @@ export function HeroSection() {
 
           {/* Right Content - Hero Illustration - Hidden on mobile */}
           <div className="relative hidden lg:block">
-            <div className="rounded-3xl overflow-hidden">
+            <div className="rounded-3xl overflow-hidden aspect-[4/3]">
               <img
-                src="https://images.unsplash.com/photo-1499750310107-5fef28a66643"
+                src="/images/placeholder.png"
                 alt="KarirKit - Platform manajemen lamaran kerja dengan Application Tracker, CV Builder, Portfolio, dan Surat Lamaran"
-                className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
