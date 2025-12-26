@@ -222,6 +222,16 @@ export const UsersList = () => {
         </div>
 
         <div className="flex gap-2 flex-wrap">
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setBulkDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Hapus ({selectedIds.length})
+            </Button>
+          )}
           {hasActiveFilters && (
             <Button
               variant="ghost"
@@ -248,16 +258,6 @@ export const UsersList = () => {
             <Plus className="h-4 w-4 mr-2" />
             Tambah User
           </Button>
-          {selectedIds.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setBulkDeleteDialogOpen(true)}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Hapus ({selectedIds.length})
-            </Button>
-          )}
         </div>
       </div>
 

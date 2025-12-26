@@ -271,7 +271,7 @@ export default function Portfolios() {
               onClick={() => setMassDeleteDialogOpen(true)}
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Hapus {selectedIds.length} Terpilih
+              Hapus ({selectedIds.length})
             </Button>
           )}
           <div className="flex items-center gap-2">

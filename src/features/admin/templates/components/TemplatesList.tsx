@@ -229,6 +229,16 @@ export const TemplatesList = () => {
         </div>
 
         <div className="flex gap-2 flex-wrap">
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setBulkDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Hapus ({selectedIds.length})
+            </Button>
+          )}
           {hasActiveFilters && (
             <Button
               variant="ghost"
@@ -260,16 +270,6 @@ export const TemplatesList = () => {
             <Plus className="h-4 w-4 mr-2" />
             Buat Template
           </Button>
-          {selectedIds.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setBulkDeleteDialogOpen(true)}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Hapus ({selectedIds.length})
-            </Button>
-          )}
         </div>
       </div>
 

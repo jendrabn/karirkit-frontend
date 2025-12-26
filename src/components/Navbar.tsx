@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -39,7 +39,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
 import { buildImageUrl } from "@/lib/utils";
-import { Link } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 
 const navLinks = [
   { href: paths.home.getHref(), label: "Beranda", icon: Home },
@@ -59,6 +59,8 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
   const [mobileLanguageOpen, setMobileLanguageOpen] = useState(false);
   const [mobileThemeOpen, setMobileThemeOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -66,6 +68,64 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
       onLoginToggle();
     }
   };
+
+  const handleHashNavigation = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    // Check if the href contains a hash
+    if (href.includes("#")) {
+      e.preventDefault();
+      const hash = href.split("#")[1];
+
+      const scrollToElement = () => {
+        const element = document.getElementById(hash);
+        if (element) {
+          // Get navbar height for offset (64px = h-16)
+          const navbarHeight = 64;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition =
+            elementPosition + window.pageYOffset - navbarHeight;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          });
+        }
+      };
+
+      // If we're not on the home page, navigate to home first
+      if (location.pathname !== "/") {
+        navigate("/");
+        // Wait for navigation to complete, then scroll
+        setTimeout(scrollToElement, 150);
+      } else {
+        // If we're already on home page, just scroll
+        scrollToElement();
+      }
+    }
+  };
+
+  // Handle hash navigation on page load or location change
+  useEffect(() => {
+    if (location.hash) {
+      const hash = location.hash.substring(1); // Remove the '#' character
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          const navbarHeight = 64;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition =
+            elementPosition + window.pageYOffset - navbarHeight;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          });
+        }
+      }, 100);
+    }
+  }, [location]);
 
   return (
     <>
@@ -83,6 +143,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                 <Link
                   key={link.href}
                   to={link.href}
+                  onClick={(e) => handleHashNavigation(e, link.href)}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
                   {link.label}
@@ -336,8 +397,11 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                   <Link
                     key={link.href}
                     to={link.href}
+                    onClick={(e) => {
+                      handleHashNavigation(e, link.href);
+                      setMobileMenuOpen(false);
+                    }}
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
                   >
                     <Icon className="h-4 w-4" />
                     {link.label}
