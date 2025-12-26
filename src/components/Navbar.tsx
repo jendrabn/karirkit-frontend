@@ -31,9 +31,9 @@ import {
   Sun,
   Moon,
   LayoutDashboard,
+  HelpCircle,
 } from "lucide-react";
 import logo from "@/assets/images/logo.png";
-import { DonationModal } from "./DonationModal";
 import { ThemeToggle } from "./ThemeToggle";
 import { useTheme } from "@/hooks/use-theme";
 import { paths } from "@/config/paths";
@@ -44,6 +44,7 @@ import { Link } from "react-router";
 const navLinks = [
   { href: paths.home.getHref(), label: "Beranda", icon: Home },
   { href: "/#application-tracker", label: "Fitur", icon: Briefcase },
+  { href: "/#faq", label: "FAQ", icon: HelpCircle },
   { href: paths.blog.list.getHref(), label: "Blog", icon: Globe },
 ];
 
@@ -54,7 +55,6 @@ interface NavbarProps {
 export function Navbar({ onLoginToggle }: NavbarProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [donationModalOpen, setDonationModalOpen] = useState(false);
   const [mobileUserMenuOpen, setMobileUserMenuOpen] = useState(false);
   const [mobileLanguageOpen, setMobileLanguageOpen] = useState(false);
   const [mobileThemeOpen, setMobileThemeOpen] = useState(false);
@@ -80,6 +80,19 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
     }
   };
 
+  const handleFAQClick = () => {
+    // If we're not on the home page, navigate to home with hash
+    if (window.location.pathname !== "/") {
+      window.location.href = "/#faq";
+    } else {
+      // If we're already on home page, just scroll to the section
+      const element = document.getElementById("faq");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
@@ -91,31 +104,39 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) =>
-              link.label === "Fitur" ? (
-                <button
+            {navLinks.map((link) => {
+              if (link.label === "Fitur") {
+                return (
+                  <button
+                    key={link.href}
+                    onClick={handleFiturClick}
+                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </button>
+                );
+              }
+              if (link.label === "FAQ") {
+                return (
+                  <button
+                    key={link.href}
+                    onClick={handleFAQClick}
+                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </button>
+                );
+              }
+              return (
+                <Link
                   key={link.href}
-                  onClick={handleFiturClick}
+                  to={link.href}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
                   {link.label}
-                </button>
-              ) : (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {link.label}
-                </a>
-              )
-            )}
-            <button
-              onClick={() => setDonationModalOpen(true)}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Donasi
-            </button>
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Desktop Auth Buttons / User Menu */}
@@ -140,41 +161,41 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-popover">
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <a href={paths.dashboard.getHref()}>
+                    <Link to={paths.dashboard.getHref()}>
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       Dashboard
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <a href={paths.applications.list.getHref()}>
+                    <Link to={paths.applications.list.getHref()}>
                       <Briefcase className="mr-2 h-4 w-4" />
                       Lamaran Kerja
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <a href={paths.applicationLetters.list.getHref()}>
+                    <Link to={paths.applicationLetters.list.getHref()}>
                       <FileText className="mr-2 h-4 w-4" />
                       Surat Lamaran
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <a href={paths.cvs.list.getHref()}>
+                    <Link to={paths.cvs.list.getHref()}>
                       <FileText className="mr-2 h-4 w-4" />
                       CV
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <a href={paths.portfolios.list.getHref()}>
+                    <Link to={paths.portfolios.list.getHref()}>
                       <FolderOpen className="mr-2 h-4 w-4" />
                       Portofolio
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <a href={paths.account.profile.getHref()}>
+                    <Link to={paths.account.profile.getHref()}>
                       <User className="mr-2 h-4 w-4" />
                       Akun
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
@@ -218,10 +239,10 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
             ) : (
               <>
                 <Button variant="outline" asChild>
-                  <a href={paths.auth.login.getHref()}>Masuk</a>
+                  <Link to={paths.auth.login.getHref()}>Masuk</Link>
                 </Button>
                 <Button variant="default" asChild>
-                  <a href={paths.auth.register.getHref()}>Daftar</a>
+                  <Link to={paths.auth.register.getHref()}>Daftar</Link>
                 </Button>
               </>
             )}
@@ -279,14 +300,14 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                       />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pt-2 space-y-1">
-                      <a
-                        href={paths.account.profile.getHref()}
+                      <Link
+                        to={paths.account.profile.getHref()}
                         className="flex items-center gap-3 px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <User className="h-4 w-4" />
                         Akun
-                      </a>
+                      </Link>
 
                       {/* Language Submenu */}
                       <Collapsible
@@ -359,40 +380,48 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
               {/* Navigation Links */}
               {navLinks.map((link) => {
                 const Icon = link.icon;
-                return link.label === "Fitur" ? (
-                  <button
+                if (link.label === "Fitur") {
+                  return (
+                    <button
+                      key={link.href}
+                      onClick={() => {
+                        handleFiturClick();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors text-left"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {link.label}
+                    </button>
+                  );
+                }
+                if (link.label === "FAQ") {
+                  return (
+                    <button
+                      key={link.href}
+                      onClick={() => {
+                        handleFAQClick();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors text-left"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {link.label}
+                    </button>
+                  );
+                }
+                return (
+                  <Link
                     key={link.href}
-                    onClick={() => {
-                      handleFiturClick();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors text-left"
-                  >
-                    <Icon className="h-4 w-4" />
-                    {link.label}
-                  </button>
-                ) : (
-                  <a
-                    key={link.href}
-                    href={link.href}
+                    to={link.href}
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Icon className="h-4 w-4" />
                     {link.label}
-                  </a>
+                  </Link>
                 );
               })}
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setDonationModalOpen(true);
-                }}
-                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors text-left"
-              >
-                <span className="text-base">❤️</span>
-                Donasi
-              </button>
 
               {/* Auth Section */}
               <div className="flex gap-3 pt-4 mt-2 border-t border-border">
@@ -411,10 +440,10 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                 ) : (
                   <>
                     <Button variant="outline" className="flex-1" asChild>
-                      <a href={paths.auth.login.getHref()}>Masuk</a>
+                      <Link to={paths.auth.login.getHref()}>Masuk</Link>
                     </Button>
                     <Button variant="default" className="flex-1" asChild>
-                      <a href={paths.auth.register.getHref()}>Daftar</a>
+                      <Link to={paths.auth.register.getHref()}>Daftar</Link>
                     </Button>
                   </>
                 )}
@@ -423,11 +452,6 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
           </div>
         )}
       </header>
-
-      <DonationModal
-        open={donationModalOpen}
-        onOpenChange={setDonationModalOpen}
-      />
     </>
   );
 }

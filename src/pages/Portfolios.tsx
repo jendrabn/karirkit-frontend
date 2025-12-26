@@ -338,15 +338,11 @@ export default function Portfolios() {
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : portfolios.length === 0 ? (
-        <div className="bg-card border border-border/60 rounded-xl p-16 text-center">
+        <div className="text-center py-16 text-muted-foreground">
           <div className="flex flex-col items-center gap-2">
             <FileStack className="h-10 w-10 text-muted-foreground/50" />
-            <p className="text-base font-medium text-foreground">
-              Tidak ada data portfolio
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Mulai tambahkan portfolio pertama Anda
-            </p>
+            <p className="text-base font-medium">Tidak ada data portfolio</p>
+            <p className="text-sm">Mulai tambahkan portfolio pertama Anda</p>
           </div>
         </div>
       ) : (
