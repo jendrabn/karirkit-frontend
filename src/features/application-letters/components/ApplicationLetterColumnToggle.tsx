@@ -23,36 +23,42 @@ export interface ColumnVisibility {
   education: boolean;
   marital_status: boolean;
   gender: boolean;
+  updated_at: boolean;
+  created_at: boolean;
 }
 
 export const defaultColumnVisibility: ColumnVisibility = {
-  subject: true,
   company_name: true,
+  subject: true,
   application_date: true,
   language: true,
+  education: true,
   name: false,
   email: false,
   phone: false,
   applicant_city: false,
   company_city: false,
-  education: false,
   marital_status: false,
   gender: false,
+  updated_at: false,
+  created_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
-  subject: "Subjek",
   company_name: "Perusahaan",
+  subject: "Subjek",
   application_date: "Tanggal",
   language: "Bahasa",
+  education: "Pendidikan",
   name: "Nama Pelamar",
   email: "Email",
   phone: "No. Telepon",
   applicant_city: "Kota Pelamar",
   company_city: "Kota Perusahaan",
-  education: "Pendidikan",
   marital_status: "Status Pernikahan",
   gender: "Gender",
+  updated_at: "Terakhir Diperbarui",
+  created_at: "Tanggal Dibuat",
 };
 
 interface ColumnToggleProps {
@@ -73,18 +79,20 @@ export function ApplicationLetterColumnToggle({
 
   // Define the order of columns as specified
   const columnOrder: (keyof ColumnVisibility)[] = [
-    "subject",
     "company_name",
+    "subject",
     "application_date",
     "language",
+    "education",
     "name",
     "email",
     "phone",
     "applicant_city",
     "company_city",
-    "education",
     "marital_status",
     "gender",
+    "updated_at",
+    "created_at",
   ];
 
   return (

@@ -324,11 +324,21 @@ const CVList = () => {
                       Jumlah Skill
                     </TableHead>
                   )}
+                  {columnVisibility.language && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Bahasa
+                    </TableHead>
+                  )}
                   {columnVisibility.updated_at && (
                     <TableHead>
                       <SortableHeader field="updated_at">
                         Terakhir Diperbarui
                       </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.created_at && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Tanggal Dibuat
                     </TableHead>
                   )}
                   {columnVisibility.name && (
@@ -486,9 +496,25 @@ const CVList = () => {
                             </Badge>
                           </TableCell>
                         )}
+                        {columnVisibility.language && (
+                          <TableCell>
+                            <Badge
+                              variant={
+                                cv.language === "id" ? "default" : "secondary"
+                              }
+                            >
+                              {cv.language === "id" ? "ID" : "EN"}
+                            </Badge>
+                          </TableCell>
+                        )}
                         {columnVisibility.updated_at && (
                           <TableCell className="text-muted-foreground">
                             {dayjs(cv.updated_at).format("DD MMM YYYY")}
+                          </TableCell>
+                        )}
+                        {columnVisibility.created_at && (
+                          <TableCell className="text-muted-foreground">
+                            {dayjs(cv.created_at).format("DD MMM YYYY")}
                           </TableCell>
                         )}
                         {columnVisibility.name && (

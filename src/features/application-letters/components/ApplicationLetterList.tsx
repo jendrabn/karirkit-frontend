@@ -373,6 +373,16 @@ export function ApplicationLetterList() {
                       Gender
                     </TableHead>
                   )}
+                  {columnVisibility.updated_at && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Terakhir Diperbarui
+                    </TableHead>
+                  )}
+                  {columnVisibility.created_at && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Tanggal Dibuat
+                    </TableHead>
+                  )}
                   <TableHead className="w-[60px]"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -485,6 +495,16 @@ export function ApplicationLetterList() {
                       {columnVisibility.gender && (
                         <TableCell>
                           {getLabel(letter.gender, GENDER_OPTIONS)}
+                        </TableCell>
+                      )}
+                      {columnVisibility.updated_at && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap">
+                          {dayjs(letter.updated_at).format("DD MMM YYYY")}
+                        </TableCell>
+                      )}
+                      {columnVisibility.created_at && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap">
+                          {dayjs(letter.created_at).format("DD MMM YYYY")}
                         </TableCell>
                       )}
                       <TableCell>

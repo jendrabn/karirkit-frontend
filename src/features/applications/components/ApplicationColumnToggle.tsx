@@ -25,58 +25,66 @@ export interface ColumnVisibility {
   contact_name: boolean;
   contact_email: boolean;
   contact_phone: boolean;
+  updated_at: boolean;
+  created_at: boolean;
 }
 
 export const defaultColumnVisibility: ColumnVisibility = {
-  position: true,
   company_name: true,
+  position: true,
   status: true,
   result_status: true,
   date: true,
-  follow_up_date: true,
-  location: false,
+  job_source: true,
+  location: true,
+  follow_up_date: false,
   job_type: false,
   work_system: false,
-  job_source: false,
   salary_range: false,
   contact_name: false,
   contact_email: false,
   contact_phone: false,
+  updated_at: false,
+  created_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
-  position: "Posisi",
   company_name: "Perusahaan",
+  position: "Posisi",
   status: "Status",
   result_status: "Hasil",
   date: "Tanggal Lamar",
-  follow_up_date: "Follow Up",
+  job_source: "Sumber Lowongan",
   location: "Lokasi",
+  follow_up_date: "Follow Up",
   job_type: "Tipe Kerja",
   work_system: "Sistem Kerja",
-  job_source: "Sumber Lowongan",
   salary_range: "Rentang Gaji",
   contact_name: "Kontak HR",
   contact_email: "Email HR",
   contact_phone: "Telepon HR",
+  updated_at: "Terakhir Diperbarui",
+  created_at: "Tanggal Dibuat",
 };
 
 // Define the order of columns as specified
 const columnOrder: (keyof ColumnVisibility)[] = [
-  "position",
   "company_name",
+  "position",
   "status",
   "result_status",
   "date",
-  "follow_up_date",
+  "job_source",
   "location",
+  "follow_up_date",
   "job_type",
   "work_system",
-  "job_source",
   "salary_range",
   "contact_name",
   "contact_email",
   "contact_phone",
+  "updated_at",
+  "created_at",
 ];
 
 interface ColumnToggleProps {

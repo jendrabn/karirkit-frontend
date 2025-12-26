@@ -525,16 +525,16 @@ export const ApplicationsList = () => {
                     onCheckedChange={(checked) => handleSelectAll(!!checked)}
                   />
                 </TableHead>
-                {columnVisibility.position && (
-                  <TableHead>
-                    <SortableHeader field="position">Posisi</SortableHeader>
-                  </TableHead>
-                )}
                 {columnVisibility.company_name && (
                   <TableHead>
                     <SortableHeader field="company_name">
                       Perusahaan
                     </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.position && (
+                  <TableHead>
+                    <SortableHeader field="position">Posisi</SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.status && (
@@ -552,14 +552,19 @@ export const ApplicationsList = () => {
                     <SortableHeader field="date">Tanggal Lamar</SortableHeader>
                   </TableHead>
                 )}
-                {columnVisibility.follow_up_date && (
+                {columnVisibility.job_source && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Follow Up
+                    Sumber Lowongan
                   </TableHead>
                 )}
                 {columnVisibility.location && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Lokasi
+                  </TableHead>
+                )}
+                {columnVisibility.follow_up_date && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Follow Up
                   </TableHead>
                 )}
                 {columnVisibility.job_type && (
@@ -570,11 +575,6 @@ export const ApplicationsList = () => {
                 {columnVisibility.work_system && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Sistem Kerja
-                  </TableHead>
-                )}
-                {columnVisibility.job_source && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Sumber Lowongan
                   </TableHead>
                 )}
                 {columnVisibility.salary_range && (
@@ -595,6 +595,16 @@ export const ApplicationsList = () => {
                 {columnVisibility.contact_phone && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Telepon HR
+                  </TableHead>
+                )}
+                {columnVisibility.updated_at && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Terakhir Diperbarui
+                  </TableHead>
+                )}
+                {columnVisibility.created_at && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Tanggal Dibuat
                   </TableHead>
                 )}
                 <TableHead className="w-[60px]"></TableHead>
@@ -646,14 +656,14 @@ export const ApplicationsList = () => {
                         }
                       />
                     </TableCell>
-                    {columnVisibility.position && (
+                    {columnVisibility.company_name && (
                       <TableCell className="font-medium">
-                        <EditableCell app={app} field="position" />
+                        <EditableCell app={app} field="company_name" />
                       </TableCell>
                     )}
-                    {columnVisibility.company_name && (
+                    {columnVisibility.position && (
                       <TableCell>
-                        <EditableCell app={app} field="company_name" />
+                        <EditableCell app={app} field="position" />
                       </TableCell>
                     )}
                     {columnVisibility.status && (
@@ -675,16 +685,21 @@ export const ApplicationsList = () => {
                         {dayjs(app.date).format("DD MMM YYYY")}
                       </TableCell>
                     )}
-                    {columnVisibility.follow_up_date && (
-                      <TableCell className="text-muted-foreground whitespace-nowrap">
-                        {app.follow_up_date
-                          ? dayjs(app.follow_up_date).format("DD MMM YYYY")
-                          : "-"}
+                    {columnVisibility.job_source && (
+                      <TableCell>
+                        <EditableCell app={app} field="job_source" />
                       </TableCell>
                     )}
                     {columnVisibility.location && (
                       <TableCell>
                         <EditableCell app={app} field="location" />
+                      </TableCell>
+                    )}
+                    {columnVisibility.follow_up_date && (
+                      <TableCell className="text-muted-foreground whitespace-nowrap">
+                        {app.follow_up_date
+                          ? dayjs(app.follow_up_date).format("DD MMM YYYY")
+                          : "-"}
                       </TableCell>
                     )}
                     {columnVisibility.job_type && (
@@ -703,11 +718,6 @@ export const ApplicationsList = () => {
                           field="work_system"
                           type="select"
                         />
-                      </TableCell>
-                    )}
-                    {columnVisibility.job_source && (
-                      <TableCell>
-                        <EditableCell app={app} field="job_source" />
                       </TableCell>
                     )}
                     {columnVisibility.salary_range && (
@@ -733,6 +743,16 @@ export const ApplicationsList = () => {
                     {columnVisibility.contact_phone && (
                       <TableCell>
                         <EditableCell app={app} field="contact_phone" />
+                      </TableCell>
+                    )}
+                    {columnVisibility.updated_at && (
+                      <TableCell className="text-muted-foreground whitespace-nowrap">
+                        {dayjs(app.updated_at).format("DD MMM YYYY")}
+                      </TableCell>
+                    )}
+                    {columnVisibility.created_at && (
+                      <TableCell className="text-muted-foreground whitespace-nowrap">
+                        {dayjs(app.created_at).format("DD MMM YYYY")}
                       </TableCell>
                     )}
                     <TableCell>
