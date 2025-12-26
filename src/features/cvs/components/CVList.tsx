@@ -134,7 +134,7 @@ const CVList = () => {
 
   const duplicateMutation = useDuplicateCV({
     mutationConfig: {
-      onSuccess: (data) => {
+      onSuccess: () => {
         toast.success("CV berhasil diduplikasi");
       },
     },

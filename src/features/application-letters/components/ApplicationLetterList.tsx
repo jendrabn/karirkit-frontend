@@ -147,7 +147,7 @@ export function ApplicationLetterList() {
 
   const duplicateMutation = useDuplicateApplicationLetter({
     mutationConfig: {
-      onSuccess: (data) => {
+      onSuccess: () => {
         toast.success("Surat lamaran berhasil diduplikasi");
       },
     },
