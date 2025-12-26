@@ -211,7 +211,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
+                    <DropdownMenuSubTrigger className="pointer-events-none opacity-60 select-none">
                       <Globe className="mr-2 h-4 w-4" />
                       Bahasa Indonesia
                     </DropdownMenuSubTrigger>
@@ -325,7 +325,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                       {/* Language Submenu */}
                       <Collapsible
                         open={mobileLanguageOpen}
-                        onOpenChange={setMobileLanguageOpen}
+                        className="pointer-events-none opacity-60 select-none"
                       >
                         <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors">
                           <div className="flex items-center gap-3">

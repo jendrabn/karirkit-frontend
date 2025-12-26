@@ -15,8 +15,6 @@ export interface ColumnVisibility {
   latest_experience: boolean;
   latest_education: boolean;
   skills_count: boolean;
-  updated_at: boolean;
-  created_at: boolean;
   name: boolean;
   email: boolean;
   phone: boolean;
@@ -26,6 +24,8 @@ export interface ColumnVisibility {
   awards_count: boolean;
   organizations_count: boolean;
   language: boolean;
+  updated_at: boolean;
+  created_at: boolean;
 }
 
 export const defaultColumnVisibility: ColumnVisibility = {
@@ -34,8 +34,6 @@ export const defaultColumnVisibility: ColumnVisibility = {
   latest_education: true,
   skills_count: true,
   language: true,
-  updated_at: true,
-  created_at: false,
   about: false,
   name: false,
   email: false,
@@ -45,6 +43,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   certificates_count: false,
   awards_count: false,
   organizations_count: false,
+  updated_at: false,
+  created_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
@@ -56,7 +56,7 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   updated_at: "Terakhir Diperbarui",
   created_at: "Tanggal Dibuat",
   about: "Ringkasan",
-  name: "Nama Pemilik",
+  name: "Nama",
   email: "Email",
   phone: "No. Telepon",
   address: "Alamat",

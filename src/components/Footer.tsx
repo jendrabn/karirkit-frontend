@@ -1,12 +1,13 @@
 import {
-  Linkedin,
+  Heart,
   Instagram,
-  Twitter,
+  Linkedin,
   Mail,
   MapPin,
-  Heart,
+  Twitter,
 } from "lucide-react";
 import logo from "@/assets/images/logo.png";
+import { env } from "@/config/env";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -33,15 +34,13 @@ export function Footer() {
               <MapPin className="w-4 h-4 flex-shrink-0" />
               <span>Jakarta, Indonesia</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-background/70 dark:text-muted-foreground">
+            <a
+              href={`mailto:${env.SUPPORT_EMAIL}`}
+              className="flex items-center gap-2 text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
+            >
               <Mail className="w-4 h-4 flex-shrink-0" />
-              <a
-                href="mailto:support@karirkit.com"
-                className="hover:text-background dark:hover:text-foreground transition-colors"
-              >
-                support@karirkit.com
-              </a>
-            </div>
+              <span>{env.SUPPORT_EMAIL}</span>
+            </a>
           </div>
 
           {/* Quick Links */}

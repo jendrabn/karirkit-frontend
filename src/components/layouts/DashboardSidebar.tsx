@@ -16,6 +16,7 @@ import {
   Users,
   Sun,
   Moon,
+  Briefcase,
 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import {
@@ -60,7 +61,7 @@ const menuItems = [
   {
     title: "Lamaran Kerja",
     url: paths.applications.list.getHref(),
-    icon: FileText,
+    icon: Briefcase,
   },
   {
     title: "Surat Lamaran Kerja",
@@ -397,7 +398,7 @@ export function DashboardSidebar() {
         <Button
           onClick={() => setDonationOpen(true)}
           className={cn(
-            "w-full bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300",
+            "w-full bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer",
             isCollapsed ? "p-2" : "gap-2"
           )}
           size={isCollapsed ? "icon" : "default"}

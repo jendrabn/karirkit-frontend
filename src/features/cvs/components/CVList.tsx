@@ -329,21 +329,9 @@ const CVList = () => {
                       Bahasa
                     </TableHead>
                   )}
-                  {columnVisibility.updated_at && (
-                    <TableHead>
-                      <SortableHeader field="updated_at">
-                        Terakhir Diperbarui
-                      </SortableHeader>
-                    </TableHead>
-                  )}
-                  {columnVisibility.created_at && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Tanggal Dibuat
-                    </TableHead>
-                  )}
                   {columnVisibility.name && (
                     <TableHead>
-                      <SortableHeader field="name">Nama Pemilik</SortableHeader>
+                      <SortableHeader field="name">Nama</SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.email && (
@@ -379,6 +367,18 @@ const CVList = () => {
                   {columnVisibility.organizations_count && (
                     <TableHead className="uppercase text-xs font-medium tracking-wide">
                       Organisasi
+                    </TableHead>
+                  )}
+                  {columnVisibility.updated_at && (
+                    <TableHead>
+                      <SortableHeader field="updated_at">
+                        Terakhir Diperbarui
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.created_at && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Tanggal Dibuat
                     </TableHead>
                   )}
                   <TableHead className="w-[60px]"></TableHead>
@@ -507,16 +507,6 @@ const CVList = () => {
                             </Badge>
                           </TableCell>
                         )}
-                        {columnVisibility.updated_at && (
-                          <TableCell className="text-muted-foreground">
-                            {dayjs(cv.updated_at).format("DD MMM YYYY")}
-                          </TableCell>
-                        )}
-                        {columnVisibility.created_at && (
-                          <TableCell className="text-muted-foreground">
-                            {dayjs(cv.created_at).format("DD MMM YYYY")}
-                          </TableCell>
-                        )}
                         {columnVisibility.name && (
                           <TableCell>
                             <div className="flex items-center gap-2">
@@ -570,6 +560,16 @@ const CVList = () => {
                             <Badge variant="secondary">
                               {cv.organizations?.length || 0}
                             </Badge>
+                          </TableCell>
+                        )}
+                        {columnVisibility.updated_at && (
+                          <TableCell className="text-muted-foreground">
+                            {dayjs(cv.updated_at).format("DD MMM YYYY")}
+                          </TableCell>
+                        )}
+                        {columnVisibility.created_at && (
+                          <TableCell className="text-muted-foreground">
+                            {dayjs(cv.created_at).format("DD MMM YYYY")}
                           </TableCell>
                         )}
                         <TableCell>
