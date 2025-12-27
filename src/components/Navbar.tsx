@@ -56,7 +56,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileUserMenuOpen, setMobileUserMenuOpen] = useState(false);
-  const [mobileLanguageOpen, setMobileLanguageOpen] = useState(false);
+  const [mobileLanguageOpen] = useState(false);
   const [mobileThemeOpen, setMobileThemeOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
