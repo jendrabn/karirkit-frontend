@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { BlogCard } from "@/features/blogs/components/BlogCard";
 import { useBlog } from "@/features/blogs/api/get-blog";
-import { useBlogs } from "@/features/blogs/api/get-blogs";
+import { useRelatedBlogs } from "@/features/blogs/api/get-related-blogs";
 import { buildImageUrl } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import { SEO } from "@/components/SEO";
@@ -41,20 +41,18 @@ const BlogDetail = () => {
     },
   });
 
-  // Fetch related posts (same category, exclude current post)
-  const { data: relatedData } = useBlogs({
+  // Fetch related posts
+  const { data: relatedBlogs } = useRelatedBlogs({
     params: {
-      category_id: blogData?.category?.id,
-      per_page: 3,
-      status: "published",
+      slug: slug!,
+      limit: 3,
     },
     queryConfig: {
-      enabled: !!blogData?.category?.id,
+      enabled: !!slug,
     },
   });
 
-  const relatedPosts =
-    relatedData?.items.filter((post) => post.slug !== slug) || [];
+  const relatedPosts = relatedBlogs || [];
 
   // Loading state
   if (isLoading) {

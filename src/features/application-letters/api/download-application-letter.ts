@@ -21,16 +21,27 @@ export const useDownloadApplicationLetter = (
   options?: UseDownloadApplicationLetterOptions
 ) => {
   return useMutation({
-    mutationFn: ({ id, format }: { id: string; format: "pdf" | "docx" }) =>
-      downloadApplicationLetter(id, format),
+    mutationFn: ({
+      id,
+      format,
+    }: {
+      id: string;
+      format: "pdf" | "docx";
+      name?: string;
+      subject?: string;
+    }) => downloadApplicationLetter(id, format),
     onSuccess: (data, variables) => {
       // Create blob link to download
       const url = window.URL.createObjectURL(new Blob([data as any]));
       const link = document.createElement("a");
       link.href = url;
       const extension = variables.format;
-      const date = new Date().toISOString().split("T")[0];
-      link.setAttribute("download", `application-letter-${date}.${extension}`);
+
+      const safeName = (variables.name || "").replace(/\s+/g, "_");
+      const safeSubject = (variables.subject || "").replace(/\s+/g, "_");
+      const filename = `Surat_Lamaran_${safeName}_${safeSubject}`;
+
+      link.setAttribute("download", `${filename}.${extension}`);
       document.body.appendChild(link);
       link.click();
       link.remove();

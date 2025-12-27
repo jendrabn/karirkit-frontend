@@ -218,7 +218,12 @@ export function ApplicationLetterList() {
     format: "docx" | "pdf"
   ) => {
     // Toast removed, using LoadingOverlay instead
-    downloadMutation.mutate({ id: letter.id, format });
+    downloadMutation.mutate({
+      id: letter.id,
+      format,
+      name: letter.name,
+      subject: letter.subject,
+    });
   };
 
   const getLabel = (

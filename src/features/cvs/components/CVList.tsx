@@ -104,7 +104,6 @@ const CVList = () => {
   const [cvToDelete, setCvToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -140,7 +139,7 @@ const CVList = () => {
     },
   });
 
-  const { downloadCV } = useDownloadCV();
+  const downloadMutation = useDownloadCV();
 
   const massDeleteMutation = useMassDeleteCVs({
     mutationConfig: {
@@ -198,16 +197,13 @@ const CVList = () => {
     duplicateMutation.mutate(id);
   };
 
-  const handleDownload = async (id: string, format: "docx" | "pdf") => {
-    try {
-      setIsDownloading(true);
-      await downloadCV(id, format);
-      toast.success(`CV berhasil diunduh dalam format ${format.toUpperCase()}`);
-    } catch (error) {
-      toast.error("Gagal mengunduh CV");
-    } finally {
-      setIsDownloading(false);
-    }
+  const handleDownload = (cv: CV, format: "docx" | "pdf") => {
+    downloadMutation.mutate({
+      id: cv.id,
+      format,
+      name: cv.name,
+      headline: cv.headline,
+    });
   };
 
   // Helper to get latest experience
@@ -607,7 +603,7 @@ const CVList = () => {
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
-                                onClick={() => handleDownload(cv.id, "docx")}
+                                onClick={() => handleDownload(cv, "docx")}
                               >
                                 <Download className="h-4 w-4 mr-2" />
                                 Download Docx
@@ -776,7 +772,10 @@ const CVList = () => {
       </AlertDialog>
 
       {/* Loading Overlay for Download */}
-      <LoadingOverlay show={isDownloading} message="Sedang mengunduh CV..." />
+      <LoadingOverlay
+        show={downloadMutation.isPending}
+        message="Sedang mengunduh CV..."
+      />
     </>
   );
 };
