@@ -75,6 +75,14 @@ export const createAppRouter = (queryClient: QueryClient) =>
       lazy: () => import("./pages/BlogDetail").then(convert(queryClient)),
     },
     {
+      path: "/jobs",
+      lazy: () => import("./pages/Jobs").then(convert(queryClient)),
+    },
+    {
+      path: "/jobs/:slug",
+      lazy: () => import("./pages/JobDetail").then(convert(queryClient)),
+    },
+    {
       path: "/u/:username",
       lazy: () => import("./pages/PublicPortfolios").then(convert(queryClient)),
     },
@@ -345,6 +353,48 @@ export const createAppRouter = (queryClient: QueryClient) =>
       path: "/admin/templates/:id",
       lazy: () =>
         import("./pages/AdminTemplateShow").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/jobs",
+      lazy: () =>
+        import("./pages/AdminJobs").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/jobs/create",
+      lazy: () =>
+        import("./pages/AdminJobCreate").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/jobs/:id/edit",
+      lazy: () =>
+        import("./pages/AdminJobEdit").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/jobs/:id",
+      lazy: () =>
+        import("./pages/AdminJobShow").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/jobs/m/companies",
+      lazy: () =>
+        import("./pages/AdminCompanies").then(
+          convertWithAdminProtection(queryClient)
+        ),
+    },
+    {
+      path: "/admin/jobs/m/roles",
+      lazy: () =>
+        import("./pages/AdminJobRoles").then(
           convertWithAdminProtection(queryClient)
         ),
     },

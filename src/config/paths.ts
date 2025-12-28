@@ -12,6 +12,15 @@ export const paths = {
     },
   },
 
+  jobs: {
+    list: {
+      getHref: () => "/jobs",
+    },
+    detail: {
+      getHref: (slug: string) => `/jobs/${slug}`,
+    },
+  },
+
   auth: {
     login: {
       getHref: (redirectTo?: string | null) =>
@@ -170,6 +179,26 @@ export const paths = {
       },
       guide: {
         getHref: () => "/admin/templates/guide",
+      },
+    },
+    jobs: {
+      list: {
+        getHref: () => "/admin/jobs",
+      },
+      create: {
+        getHref: () => "/admin/jobs/create",
+      },
+      edit: {
+        getHref: (id: string) => `/admin/jobs/${id}/edit`,
+      },
+      detail: {
+        getHref: (id: string) => `/admin/jobs/${id}`,
+      },
+      companies: {
+        getHref: () => "/admin/jobs/m/companies",
+      },
+      roles: {
+        getHref: () => "/admin/jobs/m/roles",
       },
     },
   },
