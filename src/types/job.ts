@@ -34,14 +34,14 @@ export interface City {
   province_id: string;
   name: string;
   province: Province;
-  job_count: number;
+  job_count?: number;
 }
 
 export interface JobRole {
   id: string;
   name: string;
   slug: string;
-  job_count: number;
+  job_count?: number;
   created_at: string;
   updated_at: string;
 }

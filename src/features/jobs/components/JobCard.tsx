@@ -2,61 +2,22 @@ import { Link } from "react-router";
 import {
   MapPin,
   Briefcase,
-  Clock,
   Building2,
-  GraduationCap,
   Bookmark,
-  Calendar,
+  Banknote,
+  Clock,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  type Job,
-  JOB_TYPE_LABELS,
-  WORK_SYSTEM_LABELS,
-  EDUCATION_LEVEL_LABELS,
-} from "@/types/job";
+import { Badge } from "@/components/ui/badge";
+import { type Job, JOB_TYPE_LABELS, WORK_SYSTEM_LABELS } from "@/types/job";
 import { useBookmarks } from "../hooks/use-bookmarks";
+import { dayjs } from "@/lib/date";
 
 interface JobCardProps {
   job: Job;
 }
-
-const formatSalary = (min: number, max: number): string => {
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(0)} jt`;
-    }
-    return num.toLocaleString("id-ID");
-  };
-
-  if (min === 0 && max === 0) return "Negotiable";
-  if (max === 0) return `Rp ${formatNumber(min)}+`;
-  return `Rp ${formatNumber(min)} - ${formatNumber(max)}`;
-};
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffTime = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) return "Hari ini";
-  if (diffDays === 1) return "Kemarin";
-  if (diffDays < 7) return `${diffDays} hari lalu`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} minggu lalu`;
-  return `${Math.floor(diffDays / 30)} bulan lalu`;
-};
-
-const formatExpirationDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
 
 export function JobCard({ job }: JobCardProps) {
   const { isBookmarked, toggleBookmark } = useBookmarks();
@@ -68,90 +29,131 @@ export function JobCard({ job }: JobCardProps) {
     toggleBookmark(job);
   };
 
+  const experienceLabel =
+    job.min_years_of_experience === 0
+      ? "Fresh Graduate"
+      : `${job.min_years_of_experience} Tahun`;
+
+  const formatSalary = (min: number, max: number) => {
+    const formatter = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    });
+
+    if (min === 0 && max === 0) return "Gaji Dirahasiakan";
+
+    // Format compact for millions to save space if needed, but standard is safer for reading
+    // Let's try to make it slightly compact if it's in millions
+    const formatCompact = (num: number) => {
+      if (num >= 1000000) {
+        return `Rp ${(num / 1000000).toLocaleString("id-ID", {
+          maximumFractionDigits: 1,
+        })}jt`;
+      }
+      return formatter.format(num).replace(",00", "");
+    };
+
+    if (max) {
+      return `${formatCompact(min)} - ${formatCompact(max)}`;
+    }
+    return formatCompact(min);
+  };
+
   return (
-    <Link to={`/jobs/${job.slug}`}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer group">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex gap-4">
-            {/* Company Logo */}
-            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg shrink-0">
+    <Link to={`/jobs/${job.slug}`} className="block h-full">
+      <Card className="group relative h-full overflow-hidden border-border/60 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 hover:bg-card">
+        <CardContent className="p-5 flex gap-4 h-full">
+          {/* Company Logo */}
+          <div className="shrink-0">
+            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl border bg-white/50 ring-1 ring-border/50 group-hover:ring-primary/20 transition-all">
               <AvatarImage
                 src={job.company.logo}
                 alt={job.company.name}
-                className="object-contain"
+                className="object-contain p-1"
               />
-              <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold">
+              <AvatarFallback className="rounded-xl bg-primary/5 text-primary font-bold text-lg">
                 {job.company.name.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
+          </div>
 
-            {/* Job Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-semibold text-base sm:text-lg group-hover:text-primary transition-colors truncate">
-                    {job.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground truncate">
+          {/* Main Content */}
+          <div className="flex-1 min-w-0 flex flex-col gap-2.5">
+            {/* Header: Title & Company */}
+            <div className="flex justify-between items-start gap-3">
+              <div className="space-y-1">
+                <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1">
+                  {job.title}
+                </h3>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Building2 className="w-3.5 h-3.5 text-muted-foreground/70" />
+                  <span className="font-medium hover:underline truncate">
                     {job.company.name}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-xs text-muted-foreground whitespace-nowrap hidden sm:inline">
-                    {formatDate(job.created_at)}
                   </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground"
-                    onClick={handleBookmark}
-                  >
-                    <Bookmark
-                      className={`h-4 w-4 ${
-                        bookmarked ? "fill-primary text-primary" : ""
-                      }`}
-                    />
-                  </Button>
                 </div>
               </div>
 
-              {/* Location & Salary */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5" />
-                  <span>{job.city.name}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span>
-                    Batas: {formatExpirationDate(job.expiration_date)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 font-medium text-foreground">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-10 w-10 hover:bg-primary/10 -mt-2 -mr-2 ${
+                  bookmarked
+                    ? "text-primary bg-primary/5"
+                    : "text-muted-foreground"
+                }`}
+                onClick={handleBookmark}
+              >
+                <Bookmark
+                  className={`h-6 w-6 ${bookmarked ? "fill-current" : ""}`}
+                />
+                <span className="sr-only">Simpan Lowongan</span>
+              </Button>
+            </div>
+
+            {/* Tags Row */}
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge
+                variant="secondary"
+                className="rounded-md px-2 py-0.5 font-normal text-xs bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 hover:bg-blue-500/20 shadow-none border-blue-200/50 dark:border-blue-800/50"
+              >
+                {JOB_TYPE_LABELS[job.job_type]}
+              </Badge>
+              <Badge
+                variant="secondary"
+                className="rounded-md px-2 py-0.5 font-normal text-xs bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400 hover:bg-violet-500/20 shadow-none border-violet-200/50 dark:border-violet-800/50"
+              >
+                {WORK_SYSTEM_LABELS[job.work_system]}
+              </Badge>
+              <Badge
+                variant="outline"
+                className="rounded-md px-2 py-0.5 font-normal text-xs text-muted-foreground shadow-none"
+              >
+                <Briefcase className="w-3 h-3 mr-1" />
+                {experienceLabel}
+              </Badge>
+            </div>
+
+            {/* Footer Row: Details */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground mt-1 pt-2 border-t border-dashed border-border/60">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <MapPin className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{job.city.name}</span>
+              </div>
+
+              <div className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
+                <Banknote className="w-3.5 h-3.5 shrink-0" />
+                <span className="whitespace-nowrap">
                   {formatSalary(job.salary_min, job.salary_max)}
-                </div>
+                </span>
               </div>
 
-              {/* Badges */}
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                <Badge variant="secondary" className="text-xs">
-                  <Briefcase className="h-3 w-3 mr-1" />
-                  {JOB_TYPE_LABELS[job.job_type]}
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  <Building2 className="h-3 w-3 mr-1" />
-                  {WORK_SYSTEM_LABELS[job.work_system]}
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  <Clock className="h-3 w-3 mr-1" />
-                  {job.min_years_of_experience === 0
-                    ? "Fresh Graduate"
-                    : `${job.min_years_of_experience}+ tahun`}
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  <GraduationCap className="h-3 w-3 mr-1" />
-                  {EDUCATION_LEVEL_LABELS[job.education_level]}
-                </Badge>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground/60 ml-auto pl-1">
+                <Clock className="w-3 h-3 shrink-0" />
+                <span className="whitespace-nowrap">
+                  {dayjs(job.created_at).fromNow()}
+                </span>
               </div>
             </div>
           </div>

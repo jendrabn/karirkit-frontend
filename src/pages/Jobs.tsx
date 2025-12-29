@@ -3,8 +3,7 @@ import { Briefcase, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useJobs } from "@/features/jobs/api/get-jobs";
-import { useJobRoles } from "@/features/jobs/api/get-job-roles";
-import { useCities } from "@/features/jobs/api/get-cities";
+import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 import type { JobFilters } from "@/types/job";
 import { JobCard } from "@/features/jobs/components/JobCard";
 import {
@@ -31,6 +30,7 @@ export default function Jobs() {
     work_system: filters.work_systems,
     job_role_id: filters.job_role_ids,
     city_id: filters.city_ids,
+    company_id: filters.company_ids,
     experience_min: filters.experience_min,
   };
 
@@ -38,13 +38,9 @@ export default function Jobs() {
     params: apiParams,
   });
 
-  const { data: jobRolesData } = useJobRoles({
-    params: { per_page: 100 }, // Fetch enough for filter
-  });
-
-  const { data: citiesData } = useCities({
-    params: { per_page: 100 }, // Fetch enough for filter
-  });
+  const { data: companiesData } = useCompaniesList();
+  const { data: jobRolesData } = useJobRolesList();
+  const { data: citiesData } = useCitiesList();
 
   const jobs = jobsData?.items || [];
   const pagination = jobsData?.pagination;
@@ -111,8 +107,9 @@ export default function Jobs() {
                 {/* Mobile Filter */}
                 <div className="lg:hidden mb-4">
                   <JobFilterSidebar
-                    jobRoles={jobRolesData?.items || []}
-                    cities={citiesData?.items || []}
+                    jobRoles={jobRolesData || []}
+                    cities={citiesData || []}
+                    companies={companiesData || []}
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     onClearFilters={handleClearFilters}
@@ -158,8 +155,9 @@ export default function Jobs() {
               <div className="w-full lg:w-80 xl:w-96 order-1 lg:order-2">
                 <div className="hidden lg:block">
                   <JobFilterSidebar
-                    jobRoles={jobRolesData?.items || []}
-                    cities={citiesData?.items || []}
+                    jobRoles={jobRolesData || []}
+                    cities={citiesData || []}
+                    companies={companiesData || []}
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     onClearFilters={handleClearFilters}

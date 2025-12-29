@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["images/favicon.ico", "images/**/*"],
+      includeAssets: ["favicon.ico", "images/**/*"],
       manifest: {
         name: "KarirKit - Platform Manajemen Karir",
         short_name: "KarirKit",
