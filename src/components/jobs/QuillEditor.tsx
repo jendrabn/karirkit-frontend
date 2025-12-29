@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useId } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import "@/styles/quill.css";
@@ -9,15 +9,36 @@ interface QuillEditorProps {
   placeholder?: string;
 }
 
-export function QuillEditor({ value, onChange, placeholder }: QuillEditorProps) {
+export function QuillEditor({
+  value,
+  onChange,
+  placeholder,
+}: QuillEditorProps) {
+  const uniqueId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
-  const quillRef = useRef<Quill | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const quillInstanceRef = useRef<Quill | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current || quillRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const quill = new Quill(containerRef.current, {
+    // Clean up any existing Quill elements first
+    const existingToolbar =
+      container.parentElement?.querySelector(".ql-toolbar");
+    if (existingToolbar) {
+      existingToolbar.remove();
+    }
+    const existingContainer =
+      container.parentElement?.querySelector(".ql-container");
+    if (existingContainer && existingContainer !== container) {
+      existingContainer.remove();
+    }
+
+    // Reset container
+    container.innerHTML = "";
+    container.className = "";
+
+    const quill = new Quill(container, {
       theme: "snow",
       placeholder: placeholder || "Tulis sesuatu...",
       modules: {
@@ -32,31 +53,55 @@ export function QuillEditor({ value, onChange, placeholder }: QuillEditorProps) 
       },
     });
 
-    quillRef.current = quill;
+    quillInstanceRef.current = quill;
 
-    quill.on("text-change", () => {
+    // Set initial value
+    if (value) {
+      quill.root.innerHTML = value;
+    }
+
+    const handleChange = () => {
       const html = quill.root.innerHTML;
       onChange(html === "<p><br></p>" ? "" : html);
-    });
+    };
 
-    setIsInitialized(true);
+    quill.on("text-change", handleChange);
 
     return () => {
-      quillRef.current = null;
+      quill.off("text-change", handleChange);
+      quillInstanceRef.current = null;
+
+      // Aggressive cleanup
+      const wrapper = container.parentElement;
+      if (wrapper) {
+        const toolbar = wrapper.querySelector(".ql-toolbar");
+        if (toolbar) toolbar.remove();
+      }
+      container.innerHTML = "";
+      container.className = "";
     };
-  }, []);
+  }, [uniqueId]);
 
+  // Sync external value changes
   useEffect(() => {
-    if (!quillRef.current || !isInitialized) return;
+    const quill = quillInstanceRef.current;
+    if (!quill) return;
 
-    const currentContent = quillRef.current.root.innerHTML;
-    if (value !== currentContent && value !== (currentContent === "<p><br></p>" ? "" : currentContent)) {
-      quillRef.current.root.innerHTML = value || "";
+    const currentContent = quill.root.innerHTML;
+    const normalizedCurrent =
+      currentContent === "<p><br></p>" ? "" : currentContent;
+
+    if (value !== normalizedCurrent) {
+      const selection = quill.getSelection();
+      quill.root.innerHTML = value || "";
+      if (selection) {
+        quill.setSelection(selection);
+      }
     }
-  }, [value, isInitialized]);
+  }, [value]);
 
   return (
-    <div className="quill-wrapper">
+    <div className="quill-wrapper" data-quill-id={uniqueId}>
       <div ref={containerRef} />
     </div>
   );

@@ -1,60 +1,61 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Briefcase, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { JobSearchBar } from "@/components/jobs/JobSearchBar";
-import { JobCard } from "@/components/jobs/JobCard";
+import { useJobs } from "@/features/jobs/api/get-jobs";
+import { useJobRoles } from "@/features/jobs/api/get-job-roles";
+import { useCities } from "@/features/jobs/api/get-cities";
+import type { JobFilters } from "@/types/job";
+import { JobCard } from "@/features/jobs/components/JobCard";
 import {
+  type JobFilterState,
   JobFilterSidebar,
-  type JobFilters,
-} from "@/components/jobs/JobFilterSidebar";
-import { JobPagination } from "@/components/jobs/JobPagination";
-import { getMockJobsResponse, mockJobRoles, mockCities } from "@/data/mockJobs";
-import type { Job } from "@/types/job";
+} from "@/features/jobs/components/JobFilterSidebar";
+import { JobPagination } from "@/features/jobs/components/JobPagination";
+import { JobSearchBar } from "@/features/jobs/components/JobSearchBar";
 
 export default function Jobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
-  const [filters, setFilters] = useState<JobFilters>({});
+  const [filters, setFilters] = useState<JobFilterState>({});
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
 
   const perPage = 10;
 
-  useEffect(() => {
-    fetchJobs();
-  }, [appliedSearch, filters, currentPage]);
-
-  const fetchJobs = () => {
-    setIsLoading(true);
-
-    // Simulate API call delay
-    setTimeout(() => {
-      const response = getMockJobsResponse({
-        page: currentPage,
-        per_page: perPage,
-        q: appliedSearch || undefined,
-        job_type: filters.job_types?.[0],
-        work_system: filters.work_systems?.[0],
-        job_role_id: filters.job_role_ids?.[0],
-        city_id: filters.city_ids?.[0],
-        experience_min: filters.experience_min,
-      });
-
-      setJobs(response.data.items);
-      setTotalPages(response.data.pagination.total_pages);
-      setIsLoading(false);
-    }, 500);
+  // Prepare API params from UI state
+  const apiParams: JobFilters = {
+    page: currentPage,
+    per_page: perPage,
+    q: appliedSearch || undefined,
+    job_type: filters.job_types,
+    work_system: filters.work_systems,
+    job_role_id: filters.job_role_ids,
+    city_id: filters.city_ids,
+    experience_min: filters.experience_min,
   };
+
+  const { data: jobsData, isLoading: isLoadingJobs } = useJobs({
+    params: apiParams,
+  });
+
+  const { data: jobRolesData } = useJobRoles({
+    params: { per_page: 100 }, // Fetch enough for filter
+  });
+
+  const { data: citiesData } = useCities({
+    params: { per_page: 100 }, // Fetch enough for filter
+  });
+
+  const jobs = jobsData?.items || [];
+  const pagination = jobsData?.pagination;
+  const totalPages = pagination?.total_pages || 0;
 
   const handleSearch = () => {
     setAppliedSearch(searchQuery);
     setCurrentPage(1);
   };
 
-  const handleFilterChange = (newFilters: JobFilters) => {
+  const handleFilterChange = (newFilters: JobFilterState) => {
     setFilters(newFilters);
     setCurrentPage(1);
   };
@@ -110,8 +111,8 @@ export default function Jobs() {
                 {/* Mobile Filter */}
                 <div className="lg:hidden mb-4">
                   <JobFilterSidebar
-                    jobRoles={mockJobRoles}
-                    cities={mockCities}
+                    jobRoles={jobRolesData?.items || []}
+                    cities={citiesData?.items || []}
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     onClearFilters={handleClearFilters}
@@ -119,7 +120,7 @@ export default function Jobs() {
                 </div>
 
                 {/* Job Cards */}
-                {isLoading ? (
+                {isLoadingJobs ? (
                   <div className="flex items-center justify-center py-20">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
@@ -142,7 +143,7 @@ export default function Jobs() {
                 )}
 
                 {/* Pagination */}
-                {!isLoading && jobs.length > 0 && totalPages > 1 && (
+                {!isLoadingJobs && jobs.length > 0 && totalPages > 1 && (
                   <div className="mt-8">
                     <JobPagination
                       currentPage={currentPage}
@@ -157,8 +158,8 @@ export default function Jobs() {
               <div className="w-full lg:w-80 xl:w-96 order-1 lg:order-2">
                 <div className="hidden lg:block">
                   <JobFilterSidebar
-                    jobRoles={mockJobRoles}
-                    cities={mockCities}
+                    jobRoles={jobRolesData?.items || []}
+                    cities={citiesData?.items || []}
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     onClearFilters={handleClearFilters}

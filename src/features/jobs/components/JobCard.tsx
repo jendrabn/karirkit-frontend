@@ -1,12 +1,24 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { MapPin, Briefcase, Clock, Building2, GraduationCap, Bookmark } from "lucide-react";
+import { Link } from "react-router";
+import {
+  MapPin,
+  Briefcase,
+  Clock,
+  Building2,
+  GraduationCap,
+  Bookmark,
+  Calendar,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Job, JOB_TYPE_LABELS, WORK_SYSTEM_LABELS, EDUCATION_LEVEL_LABELS } from "@/types/job";
-import { toast } from "sonner";
+import {
+  type Job,
+  JOB_TYPE_LABELS,
+  WORK_SYSTEM_LABELS,
+  EDUCATION_LEVEL_LABELS,
+} from "@/types/job";
+import { useBookmarks } from "../hooks/use-bookmarks";
 
 interface JobCardProps {
   job: Job;
@@ -38,14 +50,22 @@ const formatDate = (dateString: string): string => {
   return `${Math.floor(diffDays / 30)} bulan lalu`;
 };
 
+const formatExpirationDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 export function JobCard({ job }: JobCardProps) {
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const bookmarked = isBookmarked(job.id);
 
   const handleBookmark = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsBookmarked(!isBookmarked);
-    toast.success(isBookmarked ? "Bookmark dihapus" : "Lowongan disimpan");
+    toggleBookmark(job);
   };
 
   return (
@@ -55,7 +75,11 @@ export function JobCard({ job }: JobCardProps) {
           <div className="flex gap-4">
             {/* Company Logo */}
             <Avatar className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg shrink-0">
-              <AvatarImage src={job.company.logo} alt={job.company.name} className="object-contain" />
+              <AvatarImage
+                src={job.company.logo}
+                alt={job.company.name}
+                className="object-contain"
+              />
               <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold">
                 {job.company.name.substring(0, 2).toUpperCase()}
               </AvatarFallback>
@@ -68,7 +92,9 @@ export function JobCard({ job }: JobCardProps) {
                   <h3 className="font-semibold text-base sm:text-lg group-hover:text-primary transition-colors truncate">
                     {job.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground truncate">{job.company.name}</p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {job.company.name}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <span className="text-xs text-muted-foreground whitespace-nowrap hidden sm:inline">
@@ -77,11 +103,13 @@ export function JobCard({ job }: JobCardProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 text-muted-foreground"
                     onClick={handleBookmark}
                   >
                     <Bookmark
-                      className={`h-4 w-4 ${isBookmarked ? "fill-primary text-primary" : ""}`}
+                      className={`h-4 w-4 ${
+                        bookmarked ? "fill-primary text-primary" : ""
+                      }`}
                     />
                   </Button>
                 </div>
@@ -92,6 +120,12 @@ export function JobCard({ job }: JobCardProps) {
                 <div className="flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5" />
                   <span>{job.city.name}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>
+                    Batas: {formatExpirationDate(job.expiration_date)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1 font-medium text-foreground">
                   {formatSalary(job.salary_min, job.salary_max)}
@@ -110,8 +144,8 @@ export function JobCard({ job }: JobCardProps) {
                 </Badge>
                 <Badge variant="outline" className="text-xs">
                   <Clock className="h-3 w-3 mr-1" />
-                  {job.min_years_of_experience === 0 
-                    ? "Fresh Graduate" 
+                  {job.min_years_of_experience === 0
+                    ? "Fresh Graduate"
                     : `${job.min_years_of_experience}+ tahun`}
                 </Badge>
                 <Badge variant="outline" className="text-xs">

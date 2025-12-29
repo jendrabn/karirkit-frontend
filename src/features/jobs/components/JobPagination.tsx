@@ -14,7 +14,11 @@ interface JobPaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function JobPagination({ currentPage, totalPages, onPageChange }: JobPaginationProps) {
+export function JobPagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: JobPaginationProps) {
   if (totalPages <= 1) return null;
 
   const getVisiblePages = () => {
@@ -62,7 +66,11 @@ export function JobPagination({ currentPage, totalPages, onPageChange }: JobPagi
         <PaginationItem>
           <PaginationPrevious
             onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+            className={
+              currentPage === 1
+                ? "pointer-events-none opacity-50"
+                : "cursor-pointer"
+            }
           />
         </PaginationItem>
 
@@ -86,8 +94,14 @@ export function JobPagination({ currentPage, totalPages, onPageChange }: JobPagi
 
         <PaginationItem>
           <PaginationNext
-            onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
-            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+            onClick={() =>
+              currentPage < totalPages && onPageChange(currentPage + 1)
+            }
+            className={
+              currentPage === totalPages
+                ? "pointer-events-none opacity-50"
+                : "cursor-pointer"
+            }
           />
         </PaginationItem>
       </PaginationContent>

@@ -19,6 +19,9 @@ export const paths = {
     detail: {
       getHref: (slug: string) => `/jobs/${slug}`,
     },
+    bookmarks: {
+      getHref: () => "/bookmarks",
+    },
   },
 
   auth: {

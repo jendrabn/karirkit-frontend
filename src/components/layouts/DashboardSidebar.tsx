@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
   Briefcase,
+  Bookmark,
 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import {
@@ -78,12 +79,23 @@ const menuItems = [
     url: paths.portfolios.list.getHref(),
     icon: FolderOpen,
   },
+  {
+    title: "Pekerjaan Tersimpan",
+    url: paths.jobs.bookmarks.getHref(),
+    icon: Bookmark,
+  },
 ];
 
 const blogMenuItems = [
   { title: "Blog", url: paths.admin.blogs.list.getHref() },
   { title: "Kategori", url: paths.admin.blogs.categories.getHref() },
   { title: "Tag", url: paths.admin.blogs.tags.getHref() },
+];
+
+const jobMenuItems = [
+  { title: "Lowongan Kerja", url: paths.admin.jobs.list.getHref() },
+  { title: "Perusahaan", url: paths.admin.jobs.companies.getHref() },
+  { title: "Role Pekerjaan", url: paths.admin.jobs.roles.getHref() },
 ];
 
 export function DashboardSidebar() {
@@ -96,6 +108,9 @@ export function DashboardSidebar() {
   const [blogOpen, setBlogOpen] = useState(
     location.pathname.startsWith("/admin/blogs") ||
       location.pathname.startsWith("/admin/blogs/m")
+  );
+  const [jobOpen, setJobOpen] = useState(
+    location.pathname.startsWith("/admin/jobs")
   );
   const [donationOpen, setDonationOpen] = useState(false);
 
@@ -119,6 +134,8 @@ export function DashboardSidebar() {
   const isBlogActive =
     location.pathname.startsWith("/admin/blogs") ||
     location.pathname.startsWith("/admin/blogs/m");
+
+  const isJobActive = location.pathname.startsWith("/admin/jobs");
 
   return (
     <Sidebar collapsible="icon" className="border-r">
@@ -306,6 +323,62 @@ export function DashboardSidebar() {
                       )}
                     </NavLink>
                   </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
+              {/* Jobs Menu with Dropdown */}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <Collapsible open={jobOpen} onOpenChange={setJobOpen}>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton
+                        size="lg"
+                        tooltip="Lowongan Kerja"
+                        className={cn(
+                          "flex items-center rounded-lg transition-colors w-full",
+                          isCollapsed
+                            ? "justify-center px-2 py-3"
+                            : "gap-3 px-3 py-3",
+                          isJobActive
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-muted text-foreground"
+                        )}
+                      >
+                        <Briefcase className="h-5 w-5 shrink-0" />
+                        {!isCollapsed && (
+                          <>
+                            <span className="font-medium flex-1 text-left">
+                              Lowongan Kerja
+                            </span>
+                            {jobOpen ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </>
+                        )}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    {!isCollapsed && (
+                      <CollapsibleContent className="mt-1">
+                        {jobMenuItems.map((item) => (
+                          <NavLink
+                            key={item.url}
+                            to={item.url}
+                            className={cn(
+                              "flex items-center gap-3 py-2 pl-8 pr-3 rounded-lg text-sm transition-colors",
+                              location.pathname === item.url
+                                ? "text-foreground font-medium"
+                                : "hover:bg-muted/50 text-muted-foreground"
+                            )}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            {item.title}
+                          </NavLink>
+                        ))}
+                      </CollapsibleContent>
+                    )}
+                  </Collapsible>
                 </SidebarMenuItem>
               )}
 

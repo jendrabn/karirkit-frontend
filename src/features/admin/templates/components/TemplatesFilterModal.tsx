@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -21,8 +22,16 @@ import type { GetTemplatesParams } from "../api/get-templates";
 interface TemplatesFilterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  filters: Omit<GetTemplatesParams, "page" | "per_page" | "q" | "sort_by" | "sort_order">;
-  onApply: (filters: Omit<GetTemplatesParams, "page" | "per_page" | "q" | "sort_by" | "sort_order">) => void;
+  filters: Omit<
+    GetTemplatesParams,
+    "page" | "per_page" | "q" | "sort_by" | "sort_order"
+  >;
+  onApply: (
+    filters: Omit<
+      GetTemplatesParams,
+      "page" | "per_page" | "q" | "sort_by" | "sort_order"
+    >
+  ) => void;
 }
 
 export function TemplatesFilterModal({
@@ -31,11 +40,11 @@ export function TemplatesFilterModal({
   filters,
   onApply,
 }: TemplatesFilterModalProps) {
-    const [localFilters, setLocalFilters] = useState(filters);
+  const [localFilters, setLocalFilters] = useState(filters);
 
-    useEffect(() => {
-        setLocalFilters(filters);
-    }, [filters, open]);
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters, open]);
 
   const handleApply = () => {
     onApply(localFilters);
@@ -50,16 +59,21 @@ export function TemplatesFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="p-0 overflow-hidden">
+        <DialogHeader className="px-6 pt-6">
           <DialogTitle>Filter Template</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-4 px-6 py-4">
           <div className="space-y-2">
             <Label>Tipe Template</Label>
-            <Select 
-                value={localFilters.type || "all"} 
-                onValueChange={(val) => setLocalFilters({...localFilters, type: val === "all" ? undefined : val as TemplateType})}
+            <Select
+              value={localFilters.type || "all"}
+              onValueChange={(val) =>
+                setLocalFilters({
+                  ...localFilters,
+                  type: val === "all" ? undefined : (val as TemplateType),
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Semua tipe" />
@@ -77,9 +91,14 @@ export function TemplatesFilterModal({
 
           <div className="space-y-2">
             <Label>Bahasa</Label>
-            <Select 
-                value={localFilters.language || "all"}
-                onValueChange={(val) => setLocalFilters({...localFilters, language: val === "all" ? undefined : val as "en" | "id"})}
+            <Select
+              value={localFilters.language || "all"}
+              onValueChange={(val) =>
+                setLocalFilters({
+                  ...localFilters,
+                  language: val === "all" ? undefined : (val as "en" | "id"),
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Semua bahasa" />
@@ -94,9 +113,20 @@ export function TemplatesFilterModal({
 
           <div className="space-y-2">
             <Label>Status Premium</Label>
-            <Select 
-                value={localFilters.is_premium === undefined ? "all" : localFilters.is_premium ? "true" : "false"}
-                onValueChange={(val) => setLocalFilters({...localFilters, is_premium: val === "all" ? undefined : val === "true"})}
+            <Select
+              value={
+                localFilters.is_premium === undefined
+                  ? "all"
+                  : localFilters.is_premium
+                  ? "true"
+                  : "false"
+              }
+              onValueChange={(val) =>
+                setLocalFilters({
+                  ...localFilters,
+                  is_premium: val === "all" ? undefined : val === "true",
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Semua" />
@@ -108,14 +138,16 @@ export function TemplatesFilterModal({
               </SelectContent>
             </Select>
           </div>
+        </div>
 
-          <DialogFooter className="gap-2">
+        <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogClose asChild>
             <Button type="button" variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button onClick={handleApply}>Terapkan</Button>
-          </DialogFooter>
-        </div>
+          </DialogClose>
+          <Button onClick={handleApply}>Terapkan</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

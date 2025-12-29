@@ -1,21 +1,26 @@
-export type JobType = "full_time" | "part_time" | "contract" | "internship" | "freelance";
+export type JobType =
+  | "full_time"
+  | "part_time"
+  | "contract"
+  | "internship"
+  | "freelance";
 export type WorkSystem = "onsite" | "hybrid" | "remote";
-export type EducationLevel = 
-  | "middle_school" 
-  | "high_school" 
-  | "associate_d1" 
-  | "associate_d2" 
-  | "associate_d3" 
-  | "bachelor" 
-  | "master" 
-  | "doctorate" 
+export type EducationLevel =
+  | "middle_school"
+  | "high_school"
+  | "associate_d1"
+  | "associate_d2"
+  | "associate_d3"
+  | "bachelor"
+  | "master"
+  | "doctorate"
   | "any";
-export type EmployeeSize = 
-  | "one_to_ten" 
-  | "eleven_to_fifty" 
-  | "fifty_one_to_two_hundred" 
-  | "two_hundred_one_to_five_hundred" 
-  | "five_hundred_one_to_thousand" 
+export type EmployeeSize =
+  | "one_to_ten"
+  | "eleven_to_fifty"
+  | "fifty_one_to_two_hundred"
+  | "two_hundred_one_to_five_hundred"
+  | "five_hundred_one_to_thousand"
   | "more_than_thousand";
 export type JobStatus = "draft" | "published" | "closed" | "expired";
 
@@ -36,6 +41,7 @@ export interface JobRole {
   id: string;
   name: string;
   slug: string;
+  job_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -100,13 +106,13 @@ export interface JobsResponse {
 
 export interface JobFilters {
   q?: string;
-  company_id?: string;
-  job_role_id?: string;
-  city_id?: string;
-  province_id?: string;
-  job_type?: JobType;
-  work_system?: WorkSystem;
-  education_level?: EducationLevel;
+  company_id?: string | string[];
+  job_role_id?: string | string[];
+  city_id?: string | string[];
+  province_id?: string | string[];
+  job_type?: JobType | JobType[];
+  work_system?: WorkSystem | WorkSystem[];
+  education_level?: EducationLevel | EducationLevel[];
   experience_min?: number;
   salary_min?: number;
   page?: number;

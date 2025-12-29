@@ -10,6 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import type { BlogCategory } from "@/features/admin/blogs/api/get-blog-categories";
@@ -89,51 +90,51 @@ export function CategoryModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>
-            {category ? "Edit Kategori" : "Tambah Kategori"}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden">
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle>
+              {category ? "Edit Kategori" : "Tambah Kategori"}
+            </DialogTitle>
+          </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <Field>
-            <FieldLabel>Nama Kategori *</FieldLabel>
-            <Input
-              {...form.register("name", {
-                onChange: handleNameChange,
-              })}
-              placeholder="Masukkan nama kategori"
-            />
-            <FieldError>{form.formState.errors.name?.message}</FieldError>
-          </Field>
+          <div className="px-6 py-4 space-y-4">
+            <Field>
+              <FieldLabel>Nama Kategori *</FieldLabel>
+              <Input
+                {...form.register("name", {
+                  onChange: handleNameChange,
+                })}
+                placeholder="Masukkan nama kategori"
+              />
+              <FieldError>{form.formState.errors.name?.message}</FieldError>
+            </Field>
 
-          <Field>
-            <FieldLabel>Slug *</FieldLabel>
-            <Input {...form.register("slug")} placeholder="nama-kategori" />
-            <FieldError>{form.formState.errors.slug?.message}</FieldError>
-          </Field>
+            <Field>
+              <FieldLabel>Slug *</FieldLabel>
+              <Input {...form.register("slug")} placeholder="nama-kategori" />
+              <FieldError>{form.formState.errors.slug?.message}</FieldError>
+            </Field>
 
-          <Field>
-            <FieldLabel>Deskripsi *</FieldLabel>
-            <Textarea
-              {...form.register("description")}
-              placeholder="Masukkan deskripsi kategori"
-              rows={3}
-            />
-            <FieldError>
-              {form.formState.errors.description?.message}
-            </FieldError>
-          </Field>
+            <Field>
+              <FieldLabel>Deskripsi *</FieldLabel>
+              <Textarea
+                {...form.register("description")}
+                placeholder="Masukkan deskripsi kategori"
+                rows={3}
+              />
+              <FieldError>
+                {form.formState.errors.description?.message}
+              </FieldError>
+            </Field>
+          </div>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Batal
-            </Button>
+          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Batal
+              </Button>
+            </DialogClose>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? "Menyimpan..." : category ? "Perbarui" : "Simpan"}
             </Button>

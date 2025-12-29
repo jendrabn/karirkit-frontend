@@ -1,0 +1,318 @@
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import {
+  MoreVertical,
+  Pencil,
+  Trash2,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Eye,
+} from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { type Company, EMPLOYEE_SIZE_LABELS } from "@/types/company";
+import { cn, buildImageUrl } from "@/lib/utils";
+import { type ColumnVisibility } from "./CompanyColumnToggle";
+
+interface CompaniesListProps {
+  companies: Company[];
+  isLoading: boolean;
+  selectedIds: string[];
+  onSelectAll: () => void;
+  onSelectOne: (id: string) => void;
+  onEdit: (company: Company) => void;
+  onView: (company: Company) => void;
+  onDelete: (id: string) => void;
+  currentPage: number;
+  perPage: number;
+  totalPages: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  onPerPageChange: (perPage: number) => void;
+  columnVisibility: ColumnVisibility;
+}
+
+export function CompaniesList({
+  companies,
+  isLoading,
+  selectedIds,
+  onSelectAll,
+  onSelectOne,
+  onEdit,
+  onView,
+  onDelete,
+  currentPage,
+  perPage,
+  totalPages,
+  totalItems,
+  onPageChange,
+  onPerPageChange,
+  columnVisibility,
+}: CompaniesListProps) {
+  return (
+    <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="w-[40px]">
+                <Checkbox
+                  checked={
+                    companies.length > 0 &&
+                    selectedIds.length === companies.length
+                  }
+                  onCheckedChange={onSelectAll}
+                />
+              </TableHead>
+              {columnVisibility.name && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Nama Perusahaan
+                </TableHead>
+              )}
+              {columnVisibility.slug && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Slug
+                </TableHead>
+              )}
+              {columnVisibility.sector && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Sektor Bisnis
+                </TableHead>
+              )}
+              {columnVisibility.size && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Ukuran
+                </TableHead>
+              )}
+              {columnVisibility.jobCount && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Lowongan
+                </TableHead>
+              )}
+              {columnVisibility.createdAt && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Dibuat
+                </TableHead>
+              )}
+              {columnVisibility.updatedAt && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Diupdate
+                </TableHead>
+              )}
+              <TableHead className="text-right uppercase text-xs font-medium tracking-wide">
+                Aksi
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell colSpan={10} className="h-16">
+                    <div className="flex items-center gap-3 animate-pulse">
+                      <div className="h-8 w-8 bg-muted rounded-full" />
+                      <div className="h-4 w-32 bg-muted rounded" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : companies.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={10} className="h-32 text-center">
+                  <div className="flex flex-col items-center justify-center text-muted-foreground">
+                    <Building2 className="h-10 w-10 mb-2 opacity-50" />
+                    <p>Tidak ada perusahaan ditemukan.</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              companies.map((company, index) => (
+                <TableRow
+                  key={company.id}
+                  className={cn(
+                    index % 2 === 0 ? "bg-background" : "bg-muted/20"
+                  )}
+                >
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(company.id)}
+                      onCheckedChange={() => onSelectOne(company.id)}
+                    />
+                  </TableCell>
+                  {columnVisibility.name && (
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={buildImageUrl(company.logo)} />
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                            {company.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">{company.name}</span>
+                      </div>
+                    </TableCell>
+                  )}
+                  {columnVisibility.slug && (
+                    <TableCell className="text-sm text-muted-foreground font-mono">
+                      {company.slug}
+                    </TableCell>
+                  )}
+                  {columnVisibility.sector && (
+                    <TableCell>
+                      <Badge variant="outline">{company.business_sector}</Badge>
+                    </TableCell>
+                  )}
+                  {columnVisibility.size && (
+                    <TableCell className="text-sm text-muted-foreground">
+                      {EMPLOYEE_SIZE_LABELS[company.employee_size]}
+                    </TableCell>
+                  )}
+                  {columnVisibility.jobCount && (
+                    <TableCell className="text-sm">
+                      <Badge variant="secondary">{company.job_count}</Badge>
+                    </TableCell>
+                  )}
+                  {columnVisibility.createdAt && (
+                    <TableCell className="text-muted-foreground text-sm">
+                      {format(new Date(company.created_at), "dd MMM yyyy", {
+                        locale: id,
+                      })}
+                    </TableCell>
+                  )}
+                  {columnVisibility.updatedAt && (
+                    <TableCell className="text-muted-foreground text-sm">
+                      {format(new Date(company.updated_at), "dd MMM yyyy", {
+                        locale: id,
+                      })}
+                    </TableCell>
+                  )}
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-48 bg-popover z-50"
+                      >
+                        <DropdownMenuItem onClick={() => onView(company)}>
+                          <Eye className="h-4 w-4 mr-2" />
+                          Lihat Detail
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onEdit(company)}>
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => onDelete(company.id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Hapus
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      {!isLoading && companies.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>Menampilkan</span>
+            <Select
+              value={String(perPage)}
+              onValueChange={(val) => onPerPageChange(Number(val))}
+            >
+              <SelectTrigger className="w-[70px] h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                {[5, 10, 20, 50].map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span>dari {totalItems} data</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onPageChange(1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="px-3 text-sm">
+              Halaman {currentPage} dari {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onPageChange(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

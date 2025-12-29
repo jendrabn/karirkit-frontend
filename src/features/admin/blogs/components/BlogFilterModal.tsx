@@ -11,6 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Popover,
@@ -66,12 +67,12 @@ export function BlogFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden">
+        <DialogHeader className="px-6 pt-6">
           <DialogTitle>Filter Blog</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 px-6 py-4">
           <div className="space-y-2">
             <Label>Judul</Label>
             <Input
@@ -141,17 +142,19 @@ export function BlogFilterModal({
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal px-3",
                       !localFilters.dateFrom && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateFrom
-                      ? format(localFilters.dateFrom, "dd/MM/yyyy")
-                      : "Pilih tanggal"}
+                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                    <span className="truncate">
+                      {localFilters.dateFrom
+                        ? format(localFilters.dateFrom, "dd/MM/yyyy")
+                        : "Pilih tanggal"}
+                    </span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={localFilters.dateFrom}
@@ -171,17 +174,19 @@ export function BlogFilterModal({
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal px-3",
                       !localFilters.dateTo && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localFilters.dateTo
-                      ? format(localFilters.dateTo, "dd/MM/yyyy")
-                      : "Pilih tanggal"}
+                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                    <span className="truncate">
+                      {localFilters.dateTo
+                        ? format(localFilters.dateTo, "dd/MM/yyyy")
+                        : "Pilih tanggal"}
+                    </span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="end">
                   <Calendar
                     mode="single"
                     selected={localFilters.dateTo}
@@ -196,10 +201,12 @@ export function BlogFilterModal({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={handleReset}>
-            Reset
-          </Button>
+        <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogClose asChild>
+            <Button variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
+          </DialogClose>
           <Button onClick={handleApply}>Terapkan</Button>
         </DialogFooter>
       </DialogContent>

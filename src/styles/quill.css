@@ -1,0 +1,89 @@
+/* React Quill Editor Styles */
+.ql-container {
+  font-family: inherit;
+  font-size: 1rem;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.ql-toolbar {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background-color: hsl(var(--muted));
+}
+
+.ql-toolbar.ql-snow {
+  border-color: hsl(var(--border));
+}
+
+.ql-container.ql-snow {
+  border-color: hsl(var(--border));
+}
+
+.ql-editor {
+  min-height: 300px;
+  background-color: hsl(var(--background));
+}
+
+.ql-editor.ql-blank::before {
+  color: hsl(var(--muted-foreground));
+  font-style: normal;
+}
+
+.ql-snow .ql-stroke {
+  stroke: hsl(var(--foreground));
+}
+
+.ql-snow .ql-fill {
+  fill: hsl(var(--foreground));
+}
+
+.ql-snow .ql-picker {
+  color: hsl(var(--foreground));
+}
+
+.ql-snow .ql-picker-options {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
+}
+
+.ql-snow .ql-picker-item:hover {
+  color: hsl(var(--primary));
+}
+
+.ql-snow .ql-active,
+.ql-snow .ql-picker-label:hover,
+.ql-snow button:hover {
+  color: hsl(var(--primary)) !important;
+}
+
+.ql-snow button:hover .ql-stroke,
+.ql-snow .ql-active .ql-stroke {
+  stroke: hsl(var(--primary)) !important;
+}
+
+.ql-snow button:hover .ql-fill,
+.ql-snow .ql-active .ql-fill {
+  fill: hsl(var(--primary)) !important;
+}
+
+/* Dark mode support */
+.dark .ql-toolbar {
+  background-color: hsl(var(--muted));
+}
+
+.dark .ql-editor {
+  background-color: hsl(var(--background));
+}
+
+.dark .ql-snow .ql-stroke {
+  stroke: hsl(var(--foreground));
+}
+
+.dark .ql-snow .ql-fill {
+  fill: hsl(var(--foreground));
+}
+
+.dark .ql-snow .ql-picker {
+  color: hsl(var(--foreground));
+}

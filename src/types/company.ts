@@ -1,8 +1,8 @@
-export type EmployeeSize = 
-  | "one_to_ten" 
-  | "eleven_to_fifty" 
-  | "fifty_one_to_two_hundred" 
-  | "two_hundred_one_to_five_hundred" 
+export type EmployeeSize =
+  | "one_to_ten"
+  | "eleven_to_fifty"
+  | "fifty_one_to_two_hundred"
+  | "two_hundred_one_to_five_hundred"
   | "five_hundred_plus";
 
 export interface Company {
@@ -14,6 +14,7 @@ export interface Company {
   employee_size: EmployeeSize;
   business_sector: string;
   website_url: string;
+  job_count: number;
   created_at: string;
   updated_at: string;
 }

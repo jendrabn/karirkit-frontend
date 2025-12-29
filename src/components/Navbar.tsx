@@ -31,7 +31,7 @@ import {
   Sun,
   Moon,
   LayoutDashboard,
-  HelpCircle,
+  Bookmark,
 } from "lucide-react";
 import logo from "@/assets/images/logo.png";
 import { ThemeToggle } from "./ThemeToggle";
@@ -44,7 +44,7 @@ import { Link, useNavigate, useLocation } from "react-router";
 const navLinks = [
   { href: paths.home.getHref(), label: "Beranda", icon: Home },
   { href: "/#application-tracker", label: "Fitur", icon: Briefcase },
-  { href: "/#faq", label: "FAQ", icon: HelpCircle },
+  { href: paths.jobs.list.getHref(), label: "Info Loker", icon: Briefcase },
   { href: paths.blog.list.getHref(), label: "Blog", icon: Globe },
 ];
 
@@ -203,6 +203,12 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                       Portofolio
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link to={paths.jobs.bookmarks.getHref()}>
+                      <Bookmark className="mr-2 h-4 w-4" />
+                      Pekerjaan Tersimpan
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.account.profile.getHref()}>
@@ -320,6 +326,22 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                       >
                         <User className="h-4 w-4" />
                         Akun
+                      </Link>
+                      <Link
+                        to={paths.portfolios.list.getHref()}
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <FolderOpen className="h-4 w-4" />
+                        Portofolio
+                      </Link>
+                      <Link
+                        to={paths.jobs.bookmarks.getHref()}
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Bookmark className="h-4 w-4" />
+                        Pekerjaan Tersimpan
                       </Link>
 
                       {/* Language Submenu */}

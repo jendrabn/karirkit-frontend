@@ -1,173 +1,151 @@
-import { useState, useMemo } from "react";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
-import {
-  Search,
-  Plus,
-  Trash2,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  MoreVertical,
-  Eye,
-  Pencil,
-  Tag,
-} from "lucide-react";
+import { useState } from "react";
+import { Search, Plus, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { mockJobRoles } from "@/data/mockJobRoles";
-import { JobRole } from "@/types/jobRole";
-import { cn } from "@/lib/utils";
+import { type JobRole } from "@/types/job";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useJobRoles } from "@/features/admin/job-roles/api/get-job-roles";
+import { useCreateJobRole } from "@/features/admin/job-roles/api/create-job-role";
+import { useUpdateJobRole } from "@/features/admin/job-roles/api/update-job-role";
+import { useDeleteJobRole } from "@/features/admin/job-roles/api/delete-job-role";
+import { useMassDeleteJobRoles } from "@/features/admin/job-roles/api/mass-delete-job-roles";
+import { JobRolesList } from "@/features/admin/job-roles/components/JobRolesList";
+import { JobRoleFormModal } from "@/features/admin/job-roles/components/JobRoleFormModal";
+import { JobRoleDeleteDialog } from "@/features/admin/job-roles/components/JobRoleDeleteDialog";
+import { JobRoleBulkDeleteDialog } from "@/features/admin/job-roles/components/JobRoleBulkDeleteDialog";
+import {
+  JobRoleColumnToggle,
+  type ColumnVisibility,
+  defaultColumnVisibility,
+} from "@/features/admin/job-roles/components/JobRoleColumnToggle";
 
 export default function AdminJobRoles() {
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
-  const [jobRoles, setJobRoles] = useState<JobRole[]>(mockJobRoles);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [roleToDelete, setRoleToDelete] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
-    "create"
-  );
-  const [selectedRole, setSelectedRole] = useState<JobRole | null>(null);
-  const [formData, setFormData] = useState({ name: "", slug: "" });
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const filteredRoles = useMemo(() => {
-    if (!searchQuery) return jobRoles;
-    const query = searchQuery.toLowerCase();
-    return jobRoles.filter((r) => r.name.toLowerCase().includes(query));
-  }, [jobRoles, searchQuery]);
-
-  const totalPages = Math.ceil(filteredRoles.length / perPage);
-  const paginatedRoles = filteredRoles.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
-  const openModal = (mode: "create" | "edit" | "view", role?: JobRole) => {
-    setModalMode(mode);
-    setSelectedRole(role || null);
-    setFormData(
-      role ? { name: role.name, slug: role.slug } : { name: "", slug: "" }
+  const [columnVisibility, setColumnVisibility] =
+    useLocalStorage<ColumnVisibility>(
+      "job-roles-table-columns",
+      defaultColumnVisibility
     );
-    setModalOpen(true);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<string | null>(null);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState<JobRole | null>(null);
+
+  const { data: rolesData, isLoading } = useJobRoles({
+    params: {
+      page: currentPage,
+      per_page: perPage,
+      q: searchQuery,
+    },
+  });
+
+  const createRoleMutation = useCreateJobRole();
+  const updateRoleMutation = useUpdateJobRole();
+  const deleteRoleMutation = useDeleteJobRole();
+  const massDeleteMutation = useMassDeleteJobRoles();
+
+  const handleCreate = (data: any) => {
+    createRoleMutation.mutate(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["job-roles"] });
+        setModalOpen(false);
+        toast.success("Role pekerjaan berhasil ditambahkan");
+      },
+    });
   };
 
-  const handleSave = () => {
-    if (modalMode === "create") {
-      const newRole: JobRole = {
-        id: Date.now().toString(),
-        ...formData,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      setJobRoles((prev) => [...prev, newRole]);
-      toast.success("Kategori pekerjaan berhasil ditambahkan");
-    } else if (modalMode === "edit" && selectedRole) {
-      setJobRoles((prev) =>
-        prev.map((r) =>
-          r.id === selectedRole.id
-            ? { ...r, ...formData, updated_at: new Date().toISOString() }
-            : r
-        )
-      );
-      toast.success("Kategori pekerjaan berhasil diperbarui");
-    }
-    setModalOpen(false);
+  const handleUpdate = (data: any) => {
+    if (!editingRole) return;
+    updateRoleMutation.mutate(
+      { id: editingRole.id, data },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["job-roles"] });
+          setModalOpen(false);
+          setEditingRole(null);
+          toast.success("Role pekerjaan berhasil diperbarui");
+        },
+      }
+    );
   };
 
   const handleDelete = (id: string) => {
     setRoleToDelete(id);
     setDeleteDialogOpen(true);
   };
+
   const confirmDelete = () => {
     if (roleToDelete) {
-      setJobRoles((prev) => prev.filter((r) => r.id !== roleToDelete));
-      setDeleteDialogOpen(false);
-      setRoleToDelete(null);
-      toast.success("Kategori pekerjaan berhasil dihapus");
+      deleteRoleMutation.mutate(roleToDelete, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["job-roles"] });
+          setDeleteDialogOpen(false);
+          setRoleToDelete(null);
+          toast.success("Role pekerjaan berhasil dihapus");
+        },
+      });
     }
   };
+
+  const confirmBulkDelete = () => {
+    massDeleteMutation.mutate(selectedIds, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["job-roles"] });
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+        toast.success("Role pekerjaan berhasil dihapus");
+      },
+    });
+  };
+
   const handleSelectAll = () => {
+    if (!rolesData) return;
     setSelectedIds(
-      selectedIds.length === paginatedRoles.length
+      selectedIds.length === rolesData.items.length
         ? []
-        : paginatedRoles.map((r) => r.id)
+        : rolesData.items.map((r) => r.id)
     );
   };
+
   const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
-  const confirmBulkDelete = () => {
-    setJobRoles((prev) => prev.filter((r) => !selectedIds.includes(r.id)));
-    setSelectedIds([]);
-    setBulkDeleteDialogOpen(false);
-    toast.success("Kategori pekerjaan berhasil dihapus");
-  };
+
+  const roles = rolesData?.items || [];
+  const pagination = rolesData?.pagination;
+  const totalPages = pagination?.total_pages || 1;
 
   return (
     <DashboardLayout>
       <PageHeader
-        title="Kategori Pekerjaan"
-        subtitle="Kelola kategori/role pekerjaan."
+        title="Manajemen Role Pekerjaan"
+        subtitle="Kelola semua kategori role pekerjaan."
       />
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari kategori..."
+            placeholder="Cari role..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             className="pl-9"
           />
         </div>
@@ -177,268 +155,75 @@ export default function AdminJobRoles() {
               variant="destructive"
               size="sm"
               onClick={() => setBulkDeleteDialogOpen(true)}
+              disabled={massDeleteMutation.isPending}
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Hapus ({selectedIds.length})
             </Button>
           )}
-          <Button size="sm" onClick={() => openModal("create")}>
+          <JobRoleColumnToggle
+            visibility={columnVisibility}
+            onVisibilityChange={setColumnVisibility}
+          />
+          <Button
+            size="sm"
+            onClick={() => {
+              setEditingRole(null);
+              setModalOpen(true);
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" />
-            Tambah Kategori
+            Tambah Role
           </Button>
         </div>
       </div>
-      <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[40px]">
-                  <Checkbox
-                    checked={
-                      paginatedRoles.length > 0 &&
-                      selectedIds.length === paginatedRoles.length
-                    }
-                    onCheckedChange={handleSelectAll}
-                  />
-                </TableHead>
-                <TableHead>Nama</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Dibuat</TableHead>
-                <TableHead className="text-right">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedRoles.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center">
-                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <Tag className="h-10 w-10 mb-2 opacity-50" />
-                      <p>Tidak ada kategori ditemukan.</p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedRoles.map((role, index) => (
-                  <TableRow
-                    key={role.id}
-                    className={cn(index % 2 === 1 && "bg-muted/30")}
-                  >
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedIds.includes(role.id)}
-                        onCheckedChange={() => handleSelectOne(role.id)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{role.name}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {role.slug}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
-                      {format(new Date(role.created_at), "dd MMM yyyy", {
-                        locale: id,
-                      })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="w-48 bg-popover z-50"
-                        >
-                          <DropdownMenuItem
-                            onClick={() => openModal("view", role)}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Lihat Detail
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => openModal("edit", role)}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(role.id)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Hapus
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        {filteredRoles.length > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Menampilkan</span>
-              <Select
-                value={String(perPage)}
-                onValueChange={(val) => {
-                  setPerPage(Number(val));
-                  setCurrentPage(1);
-                }}
-              >
-                <SelectTrigger className="w-[70px] h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover z-50">
-                  {[5, 10, 20, 50].map((n) => (
-                    <SelectItem key={n} value={String(n)}>
-                      {n}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span>dari {filteredRoles.length} data</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setCurrentPage((p) => p - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="px-3 text-sm">
-                Halaman {currentPage} dari {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setCurrentPage((p) => p + 1)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {modalMode === "create"
-                ? "Tambah Kategori"
-                : modalMode === "edit"
-                ? "Edit Kategori"
-                : "Detail Kategori"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                disabled={modalMode === "view"}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Slug</Label>
-              <Input
-                value={formData.slug}
-                onChange={(e) =>
-                  setFormData({ ...formData, slug: e.target.value })
-                }
-                disabled={modalMode === "view"}
-              />
-            </div>
-          </div>
-          {modalMode !== "view" && (
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setModalOpen(false)}>
-                Batal
-              </Button>
-              <Button onClick={handleSave}>
-                {modalMode === "create" ? "Tambah" : "Simpan"}
-              </Button>
-            </DialogFooter>
-          )}
-        </DialogContent>
-      </Dialog>
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Hapus Kategori</AlertDialogTitle>
-            <AlertDialogDescription>
-              Apakah Anda yakin ingin menghapus kategori ini?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              Hapus
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog
-        open={bulkDeleteDialogOpen}
+
+      <JobRolesList
+        roles={roles}
+        isLoading={isLoading}
+        selectedIds={selectedIds}
+        onSelectAll={handleSelectAll}
+        onSelectOne={handleSelectOne}
+        onEdit={(role) => {
+          setEditingRole(role);
+          setModalOpen(true);
+        }}
+        onDelete={handleDelete}
+        currentPage={currentPage}
+        perPage={perPage}
+        totalPages={totalPages}
+        totalItems={pagination?.total_items || 0}
+        onPageChange={setCurrentPage}
+        onPerPageChange={setPerPage}
+        columnVisibility={columnVisibility}
+      />
+
+      <JobRoleFormModal
+        isOpen={modalOpen}
+        onOpenChange={setModalOpen}
+        editingRole={editingRole}
+        onSubmit={editingRole ? handleUpdate : handleCreate}
+        onCancel={() => {
+          setModalOpen(false);
+          setEditingRole(null);
+        }}
+        isLoading={createRoleMutation.isPending || updateRoleMutation.isPending}
+      />
+
+      <JobRoleDeleteDialog
+        isOpen={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        isLoading={deleteRoleMutation.isPending}
+      />
+
+      <JobRoleBulkDeleteDialog
+        isOpen={bulkDeleteDialogOpen}
         onOpenChange={setBulkDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Hapus {selectedIds.length} Kategori
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Apakah Anda yakin ingin menghapus kategori yang dipilih?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmBulkDelete}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              Hapus Semua
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onConfirm={confirmBulkDelete}
+        isLoading={massDeleteMutation.isPending}
+        count={selectedIds.length}
+      />
     </DashboardLayout>
   );
 }

@@ -9,6 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -55,16 +56,18 @@ export function UserFilterModal({
 
   const handleReset = () => {
     setLocalFilters({});
+    onApply({});
+    onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+        <DialogHeader className="px-6 pt-6">
           <DialogTitle>Filter Users</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 px-6 py-4">
           <div className="space-y-2">
             <Label>Role</Label>
             <Select
@@ -97,14 +100,16 @@ export function UserFilterModal({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal px-3",
                     !localFilters.created_from && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {localFilters.created_from
-                    ? dayjs(localFilters.created_from).format("DD MMM YYYY")
-                    : "Pilih tanggal"}
+                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">
+                    {localFilters.created_from
+                      ? dayjs(localFilters.created_from).format("DD MMM YYYY")
+                      : "Pilih tanggal"}
+                  </span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent
@@ -130,14 +135,16 @@ export function UserFilterModal({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal px-3",
                     !localFilters.created_to && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {localFilters.created_to
-                    ? dayjs(localFilters.created_to).format("DD MMM YYYY")
-                    : "Pilih tanggal"}
+                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">
+                    {localFilters.created_to
+                      ? dayjs(localFilters.created_to).format("DD MMM YYYY")
+                      : "Pilih tanggal"}
+                  </span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent
@@ -157,10 +164,12 @@ export function UserFilterModal({
           </div>
         </div>
 
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={handleReset}>
-            Reset
-          </Button>
+        <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogClose asChild>
+            <Button variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
+          </DialogClose>
           <Button onClick={handleApply}>Terapkan</Button>
         </DialogFooter>
       </DialogContent>

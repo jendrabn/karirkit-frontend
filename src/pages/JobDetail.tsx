@@ -13,6 +13,7 @@ import {
   Users,
   Bookmark,
   List,
+  Loader2,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -22,7 +23,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ShareMenu } from "@/components/jobs/ShareMenu";
-import { getMockJobBySlug } from "@/data/mockJobs";
 import {
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
@@ -30,6 +30,7 @@ import {
   EMPLOYEE_SIZE_LABELS,
 } from "@/types/job";
 import { toast } from "sonner";
+import { useJob } from "@/features/jobs/api/get-job";
 
 const formatSalary = (min: number, max: number): string => {
   const formatNumber = (num: number) => num.toLocaleString("id-ID");
@@ -48,7 +49,8 @@ const formatDate = (dateString: string): string => {
 
 export default function JobDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const job = getMockJobBySlug(slug || "");
+  // Use useJob hook to fetch data
+  const { data: job, isLoading, error } = useJob({ slug: slug || "" });
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const handleBookmark = () => {
@@ -56,7 +58,19 @@ export default function JobDetail() {
     toast.success(isBookmarked ? "Bookmark dihapus" : "Lowongan disimpan");
   };
 
-  if (!job) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !job) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />

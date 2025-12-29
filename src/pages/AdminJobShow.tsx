@@ -15,15 +15,14 @@ import {
   Mail,
   Phone,
   Building2,
+  Loader2,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { mockJobs } from "@/data/mockJobs";
 import {
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
@@ -31,16 +30,30 @@ import {
   EMPLOYEE_SIZE_LABELS,
   type JobStatus,
 } from "@/types/job";
+import { useJob } from "@/features/admin/jobs/api/get-job";
+import { useDeleteJob } from "@/features/admin/jobs/api/delete-job";
+import { toast } from "sonner";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const getStatusBadgeVariant = (status: JobStatus) => {
   const variants: Record<
     JobStatus,
-    "default" | "secondary" | "destructive" | "outline-solid"
+    "default" | "secondary" | "destructive" | "outline"
   > = {
     published: "default",
     draft: "secondary",
     closed: "destructive",
-    expired: "outline-solid",
+    expired: "outline",
   };
   return variants[status];
 };
@@ -54,9 +67,11 @@ const STATUS_LABELS: Record<JobStatus, string> = {
 
 export default function AdminJobShow() {
   const navigate = useNavigate();
-  const { id: jobId } = useParams();
+  const { id: jobId } = useParams<{ id: string }>();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const job = mockJobs.find((j) => j.id === jobId);
+  const { data: job, isLoading, error } = useJob({ id: jobId || "" });
+  const deleteJobMutation = useDeleteJob();
 
   const formatSalary = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -66,11 +81,35 @@ export default function AdminJobShow() {
     }).format(amount);
   };
 
-  if (!job) {
+  const handleDelete = () => {
+    if (!jobId) return;
+    deleteJobMutation.mutate(jobId, {
+      onSuccess: () => {
+        toast.success("Lowongan berhasil dihapus");
+        navigate("/admin/jobs");
+      },
+    });
+  };
+
+  if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Memuat data lowongan...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error || !job) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
           <p className="text-muted-foreground">Lowongan tidak ditemukan</p>
+          <Button onClick={() => navigate("/admin/jobs")}>
+            Kembali ke Daftar
+          </Button>
         </div>
       </DashboardLayout>
     );
@@ -96,7 +135,11 @@ export default function AdminJobShow() {
             <Pencil className="h-4 w-4 mr-2" />
             Edit
           </Button>
-          <Button variant="destructive" size="sm">
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
             <Trash2 className="h-4 w-4 mr-2" />
             Hapus
           </Button>
@@ -111,7 +154,7 @@ export default function AdminJobShow() {
                 <div>
                   <CardTitle className="text-2xl">{job.title}</CardTitle>
                   <p className="text-muted-foreground mt-1">
-                    {job.job_role.name}
+                    {job.job_role?.name}
                   </p>
                 </div>
                 <Badge variant={getStatusBadgeVariant(job.status)}>
@@ -127,7 +170,7 @@ export default function AdminJobShow() {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
-                  <span>{job.city.name}</span>
+                  <span>{job.city?.name}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <GraduationCap className="h-4 w-4" />
@@ -143,17 +186,21 @@ export default function AdminJobShow() {
 
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold mb-2">Deskripsi Pekerjaan</h3>
-                  <p className="text-muted-foreground whitespace-pre-line">
-                    {job.description}
-                  </p>
+                  <h3 className="font-semibold mb-2 text-lg">
+                    Deskripsi Pekerjaan
+                  </h3>
+                  <div
+                    className="text-muted-foreground prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0"
+                    dangerouslySetInnerHTML={{ __html: job.description }}
+                  />
                 </div>
 
                 <div>
-                  <h3 className="font-semibold mb-2">Persyaratan</h3>
-                  <p className="text-muted-foreground whitespace-pre-line">
-                    {job.requirements}
-                  </p>
+                  <h3 className="font-semibold mb-2 text-lg">Persyaratan</h3>
+                  <div
+                    className="text-muted-foreground prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0"
+                    dangerouslySetInnerHTML={{ __html: job.requirements }}
+                  />
                 </div>
               </div>
             </CardContent>
@@ -183,7 +230,7 @@ export default function AdminJobShow() {
                     href={job.job_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline"
+                    className="text-primary hover:underline truncate"
                   >
                     {job.job_url}
                   </a>
@@ -219,30 +266,34 @@ export default function AdminJobShow() {
             <CardContent>
               <div className="flex items-center gap-3 mb-4">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={job.company.logo} />
+                  <AvatarImage src={job.company?.logo} />
                   <AvatarFallback className="bg-primary/10 text-primary">
-                    {job.company.name.charAt(0)}
+                    {job.company?.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <p className="font-semibold">{job.company.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {job.company.business_sector}
+                <div className="min-w-0">
+                  <p className="font-semibold truncate">{job.company?.name}</p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {job.company?.business_sector}
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
-                {job.company.description}
+              <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
+                {job.company?.description}
               </p>
               <div className="text-sm space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Ukuran</span>
-                  <span>{EMPLOYEE_SIZE_LABELS[job.company.employee_size]}</span>
+                  <span>
+                    {job.company?.employee_size
+                      ? EMPLOYEE_SIZE_LABELS[job.company.employee_size]
+                      : "-"}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Website</span>
                   <a
-                    href={job.company.website_url}
+                    href={job.company?.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline"
@@ -269,14 +320,16 @@ export default function AdminJobShow() {
                 <span className="text-muted-foreground">Kuota Talenta</span>
                 <span>{job.talent_quota} orang</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Kadaluarsa</span>
-                <span>
-                  {format(new Date(job.expiration_date), "dd MMM yyyy", {
-                    locale: id,
-                  })}
-                </span>
-              </div>
+              {job.expiration_date && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Kadaluarsa</span>
+                  <span>
+                    {format(new Date(job.expiration_date), "dd MMM yyyy", {
+                      locale: id,
+                    })}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Dibuat</span>
                 <span>
@@ -289,6 +342,28 @@ export default function AdminJobShow() {
           </Card>
         </div>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Lowongan</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus lowongan ini? Tindakan ini tidak
+              dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive hover:bg-destructive/90"
+              disabled={deleteJobMutation.isPending}
+            >
+              {deleteJobMutation.isPending ? "Menghapus..." : "Hapus"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

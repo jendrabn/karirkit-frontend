@@ -144,6 +144,11 @@ export const createAppRouter = (queryClient: QueryClient) =>
         ),
     },
     {
+      path: "/bookmarks",
+      lazy: () =>
+        import("./pages/SavedJobs").then(convertWithProtection(queryClient)),
+    },
+    {
       path: "/applications",
       lazy: () =>
         import("./pages/Applications").then(convertWithProtection(queryClient)),

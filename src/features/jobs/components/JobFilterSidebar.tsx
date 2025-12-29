@@ -6,11 +6,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { JobRole, City, JOB_TYPE_LABELS, WORK_SYSTEM_LABELS, JobType, WorkSystem } from "@/types/job";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  type JobRole,
+  type City,
+  JOB_TYPE_LABELS,
+  WORK_SYSTEM_LABELS,
+  type JobType,
+  type WorkSystem,
+} from "@/types/job";
 
-interface JobFilters {
+interface JobFilterState {
   job_types?: JobType[];
   work_systems?: WorkSystem[];
   job_role_ids?: string[];
@@ -21,8 +38,8 @@ interface JobFilters {
 interface JobFilterSidebarProps {
   jobRoles: JobRole[];
   cities: City[];
-  filters: JobFilters;
-  onFilterChange: (filters: JobFilters) => void;
+  filters: JobFilterState;
+  onFilterChange: (filters: JobFilterState) => void;
   onClearFilters: () => void;
 }
 
@@ -70,7 +87,7 @@ function FilterContent({
   const [showAllRoles, setShowAllRoles] = useState(false);
   const [showAllCities, setShowAllCities] = useState(false);
 
-  const hasActiveFilters = 
+  const hasActiveFilters =
     (filters.job_types?.length || 0) > 0 ||
     (filters.work_systems?.length || 0) > 0 ||
     (filters.job_role_ids?.length || 0) > 0 ||
@@ -82,7 +99,10 @@ function FilterContent({
     const updated = checked
       ? [...current, value]
       : current.filter((v) => v !== value);
-    onFilterChange({ ...filters, job_types: updated.length > 0 ? updated : undefined });
+    onFilterChange({
+      ...filters,
+      job_types: updated.length > 0 ? updated : undefined,
+    });
   };
 
   const handleWorkSystemChange = (value: WorkSystem, checked: boolean) => {
@@ -90,7 +110,10 @@ function FilterContent({
     const updated = checked
       ? [...current, value]
       : current.filter((v) => v !== value);
-    onFilterChange({ ...filters, work_systems: updated.length > 0 ? updated : undefined });
+    onFilterChange({
+      ...filters,
+      work_systems: updated.length > 0 ? updated : undefined,
+    });
   };
 
   const handleJobRoleChange = (value: string, checked: boolean) => {
@@ -98,7 +121,10 @@ function FilterContent({
     const updated = checked
       ? [...current, value]
       : current.filter((v) => v !== value);
-    onFilterChange({ ...filters, job_role_ids: updated.length > 0 ? updated : undefined });
+    onFilterChange({
+      ...filters,
+      job_role_ids: updated.length > 0 ? updated : undefined,
+    });
   };
 
   const handleCityChange = (value: string, checked: boolean) => {
@@ -106,7 +132,10 @@ function FilterContent({
     const updated = checked
       ? [...current, value]
       : current.filter((v) => v !== value);
-    onFilterChange({ ...filters, city_ids: updated.length > 0 ? updated : undefined });
+    onFilterChange({
+      ...filters,
+      city_ids: updated.length > 0 ? updated : undefined,
+    });
   };
 
   const handleExperienceChange = (value: number, checked: boolean) => {
@@ -145,7 +174,10 @@ function FilterContent({
                   handleJobRoleChange(role.id, checked as boolean)
                 }
               />
-              <Label htmlFor={`role-${role.id}`} className="text-sm cursor-pointer font-normal">
+              <Label
+                htmlFor={`role-${role.id}`}
+                className="text-sm cursor-pointer font-normal"
+              >
                 {role.name}
               </Label>
             </div>
@@ -176,7 +208,10 @@ function FilterContent({
                   handleJobTypeChange(value as JobType, checked as boolean)
                 }
               />
-              <Label htmlFor={`job-type-${value}`} className="text-sm cursor-pointer font-normal">
+              <Label
+                htmlFor={`job-type-${value}`}
+                className="text-sm cursor-pointer font-normal"
+              >
                 {label}
               </Label>
             </div>
@@ -193,12 +228,20 @@ function FilterContent({
             <div key={value} className="flex items-center space-x-2">
               <Checkbox
                 id={`work-system-${value}`}
-                checked={filters.work_systems?.includes(value as WorkSystem) || false}
+                checked={
+                  filters.work_systems?.includes(value as WorkSystem) || false
+                }
                 onCheckedChange={(checked) =>
-                  handleWorkSystemChange(value as WorkSystem, checked as boolean)
+                  handleWorkSystemChange(
+                    value as WorkSystem,
+                    checked as boolean
+                  )
                 }
               />
-              <Label htmlFor={`work-system-${value}`} className="text-sm cursor-pointer font-normal">
+              <Label
+                htmlFor={`work-system-${value}`}
+                className="text-sm cursor-pointer font-normal"
+              >
                 {label}
               </Label>
             </div>
@@ -220,7 +263,10 @@ function FilterContent({
                   handleExperienceChange(option.value, checked as boolean)
                 }
               />
-              <Label htmlFor={`exp-${option.value}`} className="text-sm cursor-pointer font-normal">
+              <Label
+                htmlFor={`exp-${option.value}`}
+                className="text-sm cursor-pointer font-normal"
+              >
                 {option.label}
               </Label>
             </div>
@@ -243,11 +289,16 @@ function FilterContent({
                     handleCityChange(city.id, checked as boolean)
                   }
                 />
-                <Label htmlFor={`city-${city.id}`} className="text-sm cursor-pointer font-normal">
+                <Label
+                  htmlFor={`city-${city.id}`}
+                  className="text-sm cursor-pointer font-normal"
+                >
                   {city.name}
                 </Label>
               </div>
-              <span className="text-xs text-muted-foreground">({city.job_count})</span>
+              <span className="text-xs text-muted-foreground">
+                ({city.job_count})
+              </span>
             </div>
           ))}
           {cities.length > 5 && (
@@ -266,7 +317,7 @@ function FilterContent({
 }
 
 export function JobFilterSidebar(props: JobFilterSidebarProps) {
-  const filterCount = 
+  const filterCount =
     (props.filters.job_types?.length || 0) +
     (props.filters.work_systems?.length || 0) +
     (props.filters.job_role_ids?.length || 0) +
@@ -321,4 +372,4 @@ export function JobFilterSidebar(props: JobFilterSidebarProps) {
   );
 }
 
-export type { JobFilters };
+export type { JobFilterState };

@@ -27,9 +27,7 @@ export function JobSearchBar({ value, onChange, onSearch }: JobSearchBarProps) {
           className="pl-10"
         />
       </div>
-      <Button onClick={onSearch}>
-        Cari
-      </Button>
+      <Button onClick={onSearch}>Cari</Button>
     </div>
   );
 }
