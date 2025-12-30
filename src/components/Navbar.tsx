@@ -204,7 +204,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={paths.jobs.bookmarks.getHref()}>
+                    <Link to={paths.jobs.savedJobs.getHref()}>
                       <Bookmark className="mr-2 h-4 w-4" />
                       Pekerjaan Tersimpan
                     </Link>
@@ -336,7 +336,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                         Portofolio
                       </Link>
                       <Link
-                        to={paths.jobs.bookmarks.getHref()}
+                        to={paths.jobs.savedJobs.getHref()}
                         className="flex items-center gap-3 px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >

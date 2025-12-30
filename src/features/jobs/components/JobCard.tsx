@@ -98,7 +98,7 @@ export function JobCard({ job }: JobCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-10 w-10 hover:bg-primary/10 -mt-2 -mr-2 ${
+                className={`hover:bg-primary/10 -mt-2 -mr-2 ${
                   bookmarked
                     ? "text-primary bg-primary/5"
                     : "text-muted-foreground"
@@ -106,7 +106,7 @@ export function JobCard({ job }: JobCardProps) {
                 onClick={handleBookmark}
               >
                 <Bookmark
-                  className={`h-6 w-6 ${bookmarked ? "fill-current" : ""}`}
+                  className={`h-8 w-8 ${bookmarked ? "fill-current" : ""}`}
                 />
                 <span className="sr-only">Simpan Lowongan</span>
               </Button>

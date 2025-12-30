@@ -35,7 +35,8 @@ export function JobSearchBar({ value, onChange, onSearch }: JobSearchBarProps) {
           size="lg"
           className="rounded-full px-6 sm:px-8 h-10 sm:h-12 text-base font-medium shadow-none hover:shadow-md transition-all ml-2"
         >
-          Cari Lowongan
+          <span className="lg:hidden">Cari</span>
+          <span className="hidden lg:inline">Cari Lowongan</span>
         </Button>
       </div>
     </div>

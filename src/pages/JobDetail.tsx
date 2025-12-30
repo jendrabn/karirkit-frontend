@@ -14,6 +14,7 @@ import {
   Bookmark,
   List,
   Loader2,
+  Link2,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -23,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ShareMenu } from "@/components/jobs/ShareMenu";
+import { buildImageUrl } from "@/lib/utils";
 import {
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
@@ -117,7 +119,7 @@ export default function JobDetail() {
                   <div className="flex gap-4">
                     <Avatar className="h-16 w-16 rounded-lg shrink-0">
                       <AvatarImage
-                        src={job.company.logo}
+                        src={buildImageUrl(job.company.logo)}
                         alt={job.company.name}
                         className="object-contain"
                       />
@@ -172,10 +174,7 @@ export default function JobDetail() {
 
               {/* Job Details */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Detail Pekerjaan</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pt-6">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -235,6 +234,22 @@ export default function JobDetail() {
                 </CardContent>
               </Card>
 
+              {/* Job Poster */}
+              {job.poster && (
+                <Card className="overflow-hidden border-none shadow-lg">
+                  <div className="aspect-[21/9] w-full relative">
+                    <img
+                      src={buildImageUrl(job.poster)}
+                      alt="Job Poster"
+                      className="object-cover w-full h-full"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                </Card>
+              )}
+
               {/* Description */}
               <Card>
                 <CardHeader>
@@ -275,6 +290,12 @@ export default function JobDetail() {
                   </div>
                   <Separator className="my-4" />
                   <div className="space-y-3 text-sm">
+                    {job.contact_name && (
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span>{job.contact_name}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground" />
                       <span>{job.contact_email}</span>
@@ -283,22 +304,30 @@ export default function JobDetail() {
                       <Phone className="h-4 w-4 text-muted-foreground" />
                       <span>{job.contact_phone}</span>
                     </div>
+                    {job.job_url && (
+                      <div className="flex items-center gap-2">
+                        <Link2 className="h-4 w-4 text-muted-foreground" />
+                        <a
+                          href={job.job_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline truncate"
+                        >
+                          {job.job_url}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
 
               {/* Company Card */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    Tentang Perusahaan
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <div className="flex items-center gap-3 mb-4">
                     <Avatar className="h-12 w-12 rounded-lg">
                       <AvatarImage
-                        src={job.company.logo}
+                        src={buildImageUrl(job.company.logo)}
                         alt={job.company.name}
                         className="object-contain"
                       />

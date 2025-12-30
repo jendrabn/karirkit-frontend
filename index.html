@@ -92,7 +92,49 @@
     <meta name="google-site-verification" content="" />
     <meta name="msvalidate.01" content="" />
 
-    <!-- Structured Data - Organization -->
+    <!-- Structured Data - Organization (untuk logo dan nama organisasi) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "KarirKit",
+        "url": "https://karirkit.id",
+        "logo": "https://karirkit.id/images/logo.png",
+        "description": "Platform all-in-one untuk mengelola lamaran kerja, membuat CV profesional, surat lamaran, dan portofolio digital",
+        "foundingDate": "2024",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "availableLanguage": "Indonesian"
+        },
+        "sameAs": [
+          "https://instagram.com/karirkitid",
+          "https://x.com/karirkitid",
+          "https://linkedin.com/company/karirkit.id"
+        ]
+      }
+    </script>
+
+    <!-- Structured Data - WebSite (untuk nama website dan search box) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "KarirKit",
+        "alternateName": "KarirKit Indonesia",
+        "url": "https://karirkit.id",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://karirkit.id/jobs?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <!-- Structured Data - WebApplication (untuk app info) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -112,6 +154,44 @@
           "ratingValue": "4.8",
           "ratingCount": "1250"
         }
+      }
+    </script>
+
+    <!-- Structured Data - SiteNavigationElement (untuk sitelinks) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": [
+          {
+            "@type": "SiteNavigationElement",
+            "position": 1,
+            "name": "Lowongan Kerja",
+            "description": "Temukan lowongan kerja terbaru dari berbagai perusahaan",
+            "url": "https://karirkit.id/jobs"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 2,
+            "name": "Blog",
+            "description": "Tips karir, panduan CV, dan artikel seputar dunia kerja",
+            "url": "https://karirkit.id/blog"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 3,
+            "name": "Login",
+            "description": "Masuk ke akun KarirKit Anda",
+            "url": "https://karirkit.id/auth/login"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 4,
+            "name": "Daftar",
+            "description": "Buat akun KarirKit gratis",
+            "url": "https://karirkit.id/auth/register"
+          }
+        ]
       }
     </script>
   </head>

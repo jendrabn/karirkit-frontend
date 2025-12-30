@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "react-router";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import {
-  ArrowLeft,
   Pencil,
   Trash2,
   MapPin,
@@ -18,6 +17,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -117,15 +117,12 @@ export default function AdminJobShow() {
 
   return (
     <DashboardLayout>
-      <div className="flex items-center justify-between mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate("/admin/jobs")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Kembali
-        </Button>
+      <PageHeader
+        title={job.title}
+        subtitle={job.job_role?.name}
+        showBackButton
+        backButtonUrl="/admin/jobs"
+      >
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -144,25 +141,19 @@ export default function AdminJobShow() {
             Hapus
           </Button>
         </div>
-      </div>
+      </PageHeader>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-2xl">{job.title}</CardTitle>
-                  <p className="text-muted-foreground mt-1">
-                    {job.job_role?.name}
-                  </p>
+            <CardContent className="pt-6">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant={getStatusBadgeVariant(job.status)}>
+                    {STATUS_LABELS[job.status]}
+                  </Badge>
                 </div>
-                <Badge variant={getStatusBadgeVariant(job.status)}>
-                  {STATUS_LABELS[job.status]}
-                </Badge>
               </div>
-            </CardHeader>
-            <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Briefcase className="h-4 w-4" />

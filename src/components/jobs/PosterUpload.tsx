@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Upload, X, ImageIcon } from "lucide-react";
+import { X, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

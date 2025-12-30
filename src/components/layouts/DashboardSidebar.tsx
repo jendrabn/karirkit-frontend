@@ -79,11 +79,6 @@ const menuItems = [
     url: paths.portfolios.list.getHref(),
     icon: FolderOpen,
   },
-  {
-    title: "Pekerjaan Tersimpan",
-    url: paths.jobs.bookmarks.getHref(),
-    icon: Bookmark,
-  },
 ];
 
 const blogMenuItems = [
@@ -192,6 +187,12 @@ export function DashboardSidebar() {
               >
                 <Lock className="h-4 w-4 mr-2" />
                 Ubah Password
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate(paths.jobs.savedJobs.getHref())}
+              >
+                <Bookmark className="h-4 w-4 mr-2" />
+                Pekerjaan Tersimpan
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <div className="px-2 py-1.5">

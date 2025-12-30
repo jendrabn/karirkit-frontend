@@ -83,7 +83,7 @@ export default function SavedJobs() {
               </Button>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid md:grid-cols-2 gap-6">
               {bookmarks.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}

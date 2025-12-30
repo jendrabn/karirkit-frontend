@@ -4,27 +4,29 @@ import {
   SlidersHorizontal,
   ChevronDown,
   ChevronUp,
-  Building2,
+  Search,
   Briefcase,
-  MapPin,
   Clock,
-  Laptop,
+  MapPin,
+  TrendingUp,
+  Banknote,
   GraduationCap,
+  Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Collapsible,
   CollapsibleContent,
@@ -35,9 +37,10 @@ import {
   type City,
   type Company,
   JOB_TYPE_LABELS,
-  WORK_SYSTEM_LABELS,
   type JobType,
   type WorkSystem,
+  EDUCATION_LEVEL_LABELS,
+  type EducationLevel,
 } from "@/types/job";
 
 interface JobFilterState {
@@ -47,6 +50,8 @@ interface JobFilterState {
   city_ids?: string[];
   company_ids?: string[];
   experience_min?: number;
+  salary_min?: number;
+  education_level?: EducationLevel[];
 }
 
 interface JobFilterSidebarProps {
@@ -59,11 +64,19 @@ interface JobFilterSidebarProps {
 }
 
 const experienceOptions = [
-  { value: 0, label: "Fresh Graduate" },
-  { value: 1, label: "1+ tahun" },
-  { value: 2, label: "2+ tahun" },
-  { value: 3, label: "3+ tahun" },
-  { value: 5, label: "5+ tahun" },
+  { value: 0, label: "Kurang dari 1 tahun" },
+  { value: 1, label: "1-3 tahun" },
+  { value: 4, label: "4-5 tahun" },
+  { value: 6, label: "6-10 tahun" },
+  { value: 10, label: "Lebih dari 10 tahun" },
+];
+
+const salaryOptions = [
+  { value: 3000000, label: "Min. Rp 3.000.000" },
+  { value: 5000000, label: "Min. Rp 5.000.000" },
+  { value: 8000000, label: "Min. Rp 8.000.000" },
+  { value: 10000000, label: "Min. Rp 10.000.000" },
+  { value: 20000000, label: "Min. Rp 20.000.000" },
 ];
 
 function FilterSection({
@@ -80,42 +93,60 @@ function FilterSection({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-2 hover:bg-muted/50 rounded-md px-2 -mx-2 transition-colors group">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
+      <CollapsibleTrigger className="flex items-center justify-between w-full group py-1 px-0">
         <div className="flex items-center gap-2">
-          {Icon && (
-            <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-          )}
-          <h4 className="font-semibold text-sm group-hover:text-primary transition-colors">
-            {title}
-          </h4>
+          {Icon && <Icon className="h-5 w-5 text-foreground" />}
+          <h4 className="font-bold text-base text-foreground">{title}</h4>
         </div>
         {isOpen ? (
-          <ChevronUp className="h-4 w-4 text-muted-foreground/50 group-hover:text-primary" />
+          <ChevronUp className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-muted-foreground/50 group-hover:text-primary" />
+          <ChevronDown className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
         )}
       </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-4 pt-1 pb-2">
+      <CollapsibleContent className="space-y-4 overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
         {children}
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
+function ShowMoreToggle({
+  isShowingMore,
+  onToggle,
+}: {
+  isShowingMore: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="flex justify-center w-full">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors mt-2"
+      >
+        {isShowingMore ? "Lihat lebih sedikit" : "Lihat lebih banyak"}
+      </button>
+    </div>
+  );
+}
+
 function FilterContent({
   jobRoles,
   cities,
-  companies,
+  companies, // Keeping for completeness, though not explicitly in "the image" request, usually standard
   filters,
   onFilterChange,
   onClearFilters,
 }: JobFilterSidebarProps) {
   const [showAllRoles, setShowAllRoles] = useState(false);
   const [showAllCities, setShowAllCities] = useState(false);
+  const [showAllJobTypes, setShowAllJobTypes] = useState(false);
   const [showAllCompanies, setShowAllCompanies] = useState(false);
-
-  // Helper to count selected items in a category for badges (optional enhancement, not implemented here but good to have)
+  const [showAllEducation, setShowAllEducation] = useState(false);
+  const [citySearch, setCitySearch] = useState("");
+  const [companySearch, setCompanySearch] = useState("");
 
   const hasActiveFilters =
     (filters.job_types?.length || 0) > 0 ||
@@ -123,6 +154,8 @@ function FilterContent({
     (filters.job_role_ids?.length || 0) > 0 ||
     (filters.city_ids?.length || 0) > 0 ||
     (filters.company_ids?.length || 0) > 0 ||
+    (filters.education_level?.length || 0) > 0 ||
+    filters.salary_min !== undefined ||
     filters.experience_min !== undefined;
 
   const handleJobTypeChange = (value: JobType, checked: boolean) => {
@@ -133,17 +166,6 @@ function FilterContent({
     onFilterChange({
       ...filters,
       job_types: updated.length > 0 ? updated : undefined,
-    });
-  };
-
-  const handleWorkSystemChange = (value: WorkSystem, checked: boolean) => {
-    const current = filters.work_systems || [];
-    const updated = checked
-      ? [...current, value]
-      : current.filter((v) => v !== value);
-    onFilterChange({
-      ...filters,
-      work_systems: updated.length > 0 ? updated : undefined,
     });
   };
 
@@ -158,17 +180,6 @@ function FilterContent({
     });
   };
 
-  const handleCompanyChange = (value: string, checked: boolean) => {
-    const current = filters.company_ids || [];
-    const updated = checked
-      ? [...current, value]
-      : current.filter((v) => v !== value);
-    onFilterChange({
-      ...filters,
-      company_ids: updated.length > 0 ? updated : undefined,
-    });
-  };
-
   const handleCityChange = (value: string, checked: boolean) => {
     const current = filters.city_ids || [];
     const updated = checked
@@ -180,74 +191,90 @@ function FilterContent({
     });
   };
 
+  const handleCompanyChange = (value: string, checked: boolean) => {
+    const current = filters.company_ids || [];
+    const updated = checked
+      ? [...current, value]
+      : current.filter((v) => v !== value);
+    onFilterChange({
+      ...filters,
+      company_ids: updated.length > 0 ? updated : undefined,
+    });
+  };
+
+  const handleSalaryChange = (value: number, checked: boolean) => {
+    onFilterChange({
+      ...filters,
+      salary_min: checked ? value : undefined,
+    });
+  };
+
+  const handleEducationChange = (value: EducationLevel, checked: boolean) => {
+    const current = filters.education_level || [];
+    const updated = checked
+      ? [...current, value]
+      : current.filter((v) => v !== value);
+    onFilterChange({
+      ...filters,
+      education_level: updated.length > 0 ? updated : undefined,
+    });
+  };
+
   const handleExperienceChange = (value: number, checked: boolean) => {
+    // If checking an already selected one, uncheck it (undefined).
+    // Or if different logic needed (single select vs multi select).
+    // Usually experience ranges are single select intervals or min.
+    // The previous code was `filters.experience_min === value`.
+    // Let's stick to single select behavior for simplicity unless multi.
     onFilterChange({
       ...filters,
       experience_min: checked ? value : undefined,
     });
   };
 
+  // Filter cities by search
+  const filteredCities = cities.filter((city) =>
+    city.name.toLowerCase().includes(citySearch.toLowerCase())
+  );
+
+  // Filter companies by search
+  const filteredCompanies = companies.filter((company) =>
+    company.name.toLowerCase().includes(companySearch.toLowerCase())
+  );
+
   const displayedRoles = showAllRoles ? jobRoles : jobRoles.slice(0, 5);
-  const displayedCities = showAllCities ? cities : cities.slice(0, 5);
+  const displayedCities = showAllCities
+    ? filteredCities
+    : filteredCities.slice(0, 5);
   const displayedCompanies = showAllCompanies
-    ? companies
-    : companies.slice(0, 5);
+    ? filteredCompanies
+    : filteredCompanies.slice(0, 5);
+
+  // Job Types
+  const jobTypes = Object.entries(JOB_TYPE_LABELS);
+  const displayedJobTypes = showAllJobTypes ? jobTypes : jobTypes.slice(0, 5);
+
+  // Education Levels
+  const educationLevels = Object.entries(EDUCATION_LEVEL_LABELS);
+  const displayedEducation = showAllEducation
+    ? educationLevels
+    : educationLevels.slice(0, 5);
 
   return (
     <div className="space-y-6">
       {hasActiveFilters && (
-        <div className="bg-destructive/5 rounded-lg p-2">
+        <div className="bg-destructive/5 rounded-lg p-2 mb-4">
           <Button
             variant="ghost"
             size="sm"
             onClick={onClearFilters}
-            className="w-full justify-center text-destructive hover:text-destructive hover:bg-destructive/10 h-8"
+            className="w-full justify-center text-destructive hover:text-destructive hover:bg-destructive/10 h-8 font-medium"
           >
-            <X className="h-3.5 w-3.5 mr-2" />
+            <X className="h-4 w-4 mr-2" />
             Hapus Semua Filter
           </Button>
         </div>
       )}
-
-      {/* Company Filter */}
-      <FilterSection title="Perusahaan" icon={Building2}>
-        <div className="space-y-3">
-          {displayedCompanies.map((company) => (
-            <div
-              key={company.id}
-              className="flex items-center space-x-3 group/item"
-            >
-              <Checkbox
-                id={`company-${company.id}`}
-                checked={filters.company_ids?.includes(company.id) || false}
-                onCheckedChange={(checked) =>
-                  handleCompanyChange(company.id, checked as boolean)
-                }
-                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-              />
-              <Label
-                htmlFor={`company-${company.id}`}
-                className="text-sm cursor-pointer font-normal group-hover/item:text-primary transition-colors flex-1"
-              >
-                {company.name}
-              </Label>
-            </div>
-          ))}
-          {companies.length > 5 && (
-            <button
-              type="button"
-              onClick={() => setShowAllCompanies(!showAllCompanies)}
-              className="text-xs font-medium text-primary hover:text-primary/80 hover:underline flex items-center mt-2"
-            >
-              {showAllCompanies
-                ? "Sembunyikan"
-                : `Lihat ${companies.length - 5} lainnya`}
-            </button>
-          )}
-        </div>
-      </FilterSection>
-
-      <Separator className="bg-border/60" />
 
       {/* Job Role Filter */}
       <FilterSection title="Role Pekerjaan" icon={Briefcase}>
@@ -263,36 +290,31 @@ function FilterContent({
                 onCheckedChange={(checked) =>
                   handleJobRoleChange(role.id, checked as boolean)
                 }
-                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
               />
               <Label
                 htmlFor={`role-${role.id}`}
-                className="text-sm cursor-pointer font-normal group-hover/item:text-primary transition-colors flex-1"
+                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
                 {role.name}
               </Label>
             </div>
           ))}
           {jobRoles.length > 5 && (
-            <button
-              type="button"
-              onClick={() => setShowAllRoles(!showAllRoles)}
-              className="text-xs font-medium text-primary hover:text-primary/80 hover:underline flex items-center mt-2"
-            >
-              {showAllRoles
-                ? "Sembunyikan"
-                : `Lihat ${jobRoles.length - 5} lainnya`}
-            </button>
+            <ShowMoreToggle
+              isShowingMore={showAllRoles}
+              onToggle={() => setShowAllRoles(!showAllRoles)}
+            />
           )}
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/60" />
+      <Separator className="bg-border/40" />
 
       {/* Job Type Filter */}
       <FilterSection title="Tipe Pekerjaan" icon={Clock}>
         <div className="space-y-3">
-          {Object.entries(JOB_TYPE_LABELS).map(([value, label]) => (
+          {displayedJobTypes.map(([value, label]) => (
             <div key={value} className="flex items-center space-x-3 group/item">
               <Checkbox
                 id={`job-type-${value}`}
@@ -300,54 +322,75 @@ function FilterContent({
                 onCheckedChange={(checked) =>
                   handleJobTypeChange(value as JobType, checked as boolean)
                 }
-                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
               />
               <Label
                 htmlFor={`job-type-${value}`}
-                className="text-sm cursor-pointer font-normal group-hover/item:text-primary transition-colors flex-1"
+                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
                 {label}
               </Label>
             </div>
           ))}
+          {jobTypes.length > 5 && (
+            <ShowMoreToggle
+              isShowingMore={showAllJobTypes}
+              onToggle={() => setShowAllJobTypes(!showAllJobTypes)}
+            />
+          )}
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/60" />
+      <Separator className="bg-border/40" />
 
-      {/* Work System Filter */}
-      <FilterSection title="Sistem Kerja" icon={Laptop}>
-        <div className="space-y-3">
-          {Object.entries(WORK_SYSTEM_LABELS).map(([value, label]) => (
-            <div key={value} className="flex items-center space-x-3 group/item">
-              <Checkbox
-                id={`work-system-${value}`}
-                checked={
-                  filters.work_systems?.includes(value as WorkSystem) || false
-                }
-                onCheckedChange={(checked) =>
-                  handleWorkSystemChange(
-                    value as WorkSystem,
-                    checked as boolean
-                  )
-                }
-                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+      {/* City Filter */}
+      <FilterSection title="Kota" icon={MapPin}>
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Tulis kota"
+              value={citySearch}
+              onChange={(e) => setCitySearch(e.target.value)}
+              className="pl-9 bg-background"
+            />
+          </div>
+          <div className="space-y-3">
+            {displayedCities.map((city) => (
+              <div
+                key={city.id}
+                className="flex items-center space-x-3 group/item"
+              >
+                <Checkbox
+                  id={`city-${city.id}`}
+                  checked={filters.city_ids?.includes(city.id) || false}
+                  onCheckedChange={(checked) =>
+                    handleCityChange(city.id, checked as boolean)
+                  }
+                  className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                />
+                <Label
+                  htmlFor={`city-${city.id}`}
+                  className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                >
+                  {city.name}
+                </Label>
+              </div>
+            ))}
+            {filteredCities.length > 5 && (
+              <ShowMoreToggle
+                isShowingMore={showAllCities}
+                onToggle={() => setShowAllCities(!showAllCities)}
               />
-              <Label
-                htmlFor={`work-system-${value}`}
-                className="text-sm cursor-pointer font-normal group-hover/item:text-primary transition-colors flex-1"
-              >
-                {label}
-              </Label>
-            </div>
-          ))}
+            )}
+          </div>
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/60" />
+      <Separator className="bg-border/40" />
 
       {/* Experience Filter */}
-      <FilterSection title="Pengalaman Minimal" icon={GraduationCap}>
+      <FilterSection title="Pengalaman Bekerja" icon={TrendingUp}>
         <div className="space-y-3">
           {experienceOptions.map((option) => (
             <div
@@ -360,11 +403,11 @@ function FilterContent({
                 onCheckedChange={(checked) =>
                   handleExperienceChange(option.value, checked as boolean)
                 }
-                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
               />
               <Label
                 htmlFor={`exp-${option.value}`}
-                className="text-sm cursor-pointer font-normal group-hover/item:text-primary transition-colors flex-1"
+                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
                 {option.label}
               </Label>
@@ -373,51 +416,116 @@ function FilterContent({
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/60" />
+      <Separator className="bg-border/40" />
 
-      {/* City Filter */}
-      <FilterSection title="Kota" icon={MapPin}>
+      {/* Salary Filter (Treated as Single Select for simplicity like Experience) */}
+      <FilterSection title="Gaji Minimum" icon={Banknote}>
         <div className="space-y-3">
-          {displayedCities.map((city) => (
+          {salaryOptions.map((option) => (
             <div
-              key={city.id}
-              className="flex items-center justify-between group/item"
+              key={option.value}
+              className="flex items-center space-x-3 group/item"
             >
-              <div className="flex items-center space-x-3">
-                <Checkbox
-                  id={`city-${city.id}`}
-                  checked={filters.city_ids?.includes(city.id) || false}
-                  onCheckedChange={(checked) =>
-                    handleCityChange(city.id, checked as boolean)
-                  }
-                  className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                />
-                <Label
-                  htmlFor={`city-${city.id}`}
-                  className="text-sm cursor-pointer font-normal group-hover/item:text-primary transition-colors"
-                >
-                  {city.name}
-                </Label>
-              </div>
-              <Badge
-                variant="secondary"
-                className="text-[10px] px-1.5 h-5 min-w-[1.5rem] justify-center text-muted-foreground bg-muted group-hover/item:bg-primary/10 group-hover/item:text-primary transition-colors"
+              <Checkbox
+                id={`salary-${option.value}`}
+                checked={filters.salary_min === option.value}
+                onCheckedChange={(checked) =>
+                  handleSalaryChange(option.value, checked as boolean)
+                }
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+              />
+              <Label
+                htmlFor={`salary-${option.value}`}
+                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
-                {city.job_count}
-              </Badge>
+                {option.label}
+              </Label>
             </div>
           ))}
-          {cities.length > 5 && (
-            <button
-              type="button"
-              onClick={() => setShowAllCities(!showAllCities)}
-              className="text-xs font-medium text-primary hover:text-primary/80 hover:underline flex items-center mt-2"
-            >
-              {showAllCities
-                ? "Sembunyikan"
-                : `Lihat ${cities.length - 5} lainnya`}
-            </button>
+        </div>
+      </FilterSection>
+
+      <Separator className="bg-border/40" />
+
+      {/* Education Filter */}
+      <FilterSection title="Level Pendidikan" icon={GraduationCap}>
+        <div className="space-y-3">
+          {displayedEducation.map(([value, label]) => (
+            <div key={value} className="flex items-center space-x-3 group/item">
+              <Checkbox
+                id={`edu-${value}`}
+                checked={
+                  filters.education_level?.includes(value as EducationLevel) ||
+                  false
+                }
+                onCheckedChange={(checked) =>
+                  handleEducationChange(
+                    value as EducationLevel,
+                    checked as boolean
+                  )
+                }
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+              />
+              <Label
+                htmlFor={`edu-${value}`}
+                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+              >
+                {label}
+              </Label>
+            </div>
+          ))}
+          {educationLevels.length > 5 && (
+            <ShowMoreToggle
+              isShowingMore={showAllEducation}
+              onToggle={() => setShowAllEducation(!showAllEducation)}
+            />
           )}
+        </div>
+      </FilterSection>
+
+      <Separator className="bg-border/40" />
+
+      {/* Company Filter */}
+      <FilterSection title="Perusahaan" icon={Building2}>
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Cari perusahaan"
+              value={companySearch}
+              onChange={(e) => setCompanySearch(e.target.value)}
+              className="pl-9 bg-background"
+            />
+          </div>
+          <div className="space-y-3">
+            {displayedCompanies.map((company) => (
+              <div
+                key={company.id}
+                className="flex items-center space-x-3 group/item"
+              >
+                <Checkbox
+                  id={`company-${company.id}`}
+                  checked={filters.company_ids?.includes(company.id) || false}
+                  onCheckedChange={(checked) =>
+                    handleCompanyChange(company.id, checked as boolean)
+                  }
+                  className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                />
+                <Label
+                  htmlFor={`company-${company.id}`}
+                  className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                >
+                  {company.name}
+                </Label>
+              </div>
+            ))}
+            {filteredCompanies.length > 5 && (
+              <ShowMoreToggle
+                isShowingMore={showAllCompanies}
+                onToggle={() => setShowAllCompanies(!showAllCompanies)}
+              />
+            )}
+          </div>
         </div>
       </FilterSection>
     </div>
@@ -431,36 +539,25 @@ export function JobFilterSidebar(props: JobFilterSidebarProps) {
     (props.filters.job_role_ids?.length || 0) +
     (props.filters.city_ids?.length || 0) +
     (props.filters.company_ids?.length || 0) +
+    (props.filters.education_level?.length || 0) +
+    (props.filters.salary_min !== undefined ? 1 : 0) +
     (props.filters.experience_min !== undefined ? 1 : 0);
+
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <Card className="hidden lg:block sticky top-24 border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
-        <CardHeader className="pb-3 border-b border-border/60">
-          <CardTitle className="text-base font-bold flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4 text-primary" />
-            Filter Lowongan
-            {filterCount > 0 && (
-              <span className="ml-auto bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-medium">
-                {filterCount}
-              </span>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <ScrollArea className="h-[calc(100vh-200px)] pr-4 -mr-4">
-            <div className="pr-4 pb-4">
-              <FilterContent {...props} />
-            </div>
-          </ScrollArea>
+      <Card className="hidden lg:block sticky top-24 border border-border/60 shadow-none bg-card">
+        <CardContent className="pt-6">
+          <FilterContent {...props} />
         </CardContent>
       </Card>
 
-      {/* Mobile Sheet */}
+      {/* Mobile Modal */}
       <div className="lg:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
             <Button
               variant="outline"
               className="w-full bg-background/60 backdrop-blur-sm border-dashed"
@@ -476,35 +573,24 @@ export function JobFilterSidebar(props: JobFilterSidebarProps) {
                 </Badge>
               )}
             </Button>
-          </SheetTrigger>
-          <SheetContent
-            side="right"
-            className="w-full sm:w-96 flex flex-col p-6"
-          >
-            <SheetHeader className="text-left space-y-1 p-0">
-              <SheetTitle className="flex items-center gap-2 text-xl">
+          </DialogTrigger>
+          <DialogContent className="max-w-lg max-h-[90vh] flex flex-col p-6 overflow-hidden">
+            <DialogHeader className="pb-4 border-b">
+              <DialogTitle className="flex items-center gap-2 text-xl">
                 <SlidersHorizontal className="h-5 w-5 text-primary" />
                 Filter Lowongan
-              </SheetTitle>
-              <p className="text-sm text-muted-foreground">
-                Sesuaikan pencarian karir impianmu
-              </p>
-            </SheetHeader>
-            <div className="flex-1 overflow-hidden -mx-6 px-6 mt-6">
-              <ScrollArea className="h-full pr-4">
-                <FilterContent {...props} />
-              </ScrollArea>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex-1 overflow-y-auto pr-2 -mr-2 py-4">
+              <FilterContent {...props} />
             </div>
-            <div className="pt-4 mt-auto border-t">
-              <Button
-                className="w-full"
-                onClick={() => document.getElementById("close-sheet")?.click()}
-              >
+            <div className="pt-4 border-t mt-auto">
+              <Button className="w-full" onClick={() => setIsOpen(false)}>
                 Terapkan Filter ({filterCount})
               </Button>
             </div>
-          </SheetContent>
-        </Sheet>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );

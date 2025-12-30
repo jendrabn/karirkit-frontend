@@ -1,8 +1,6 @@
 import { useNavigate } from "react-router";
-import { ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useCreateJob } from "@/features/admin/jobs/api/create-job";
 import { JobForm } from "@/features/admin/jobs/components/JobForm";
@@ -22,19 +20,11 @@ export default function AdminJobCreate() {
 
   return (
     <DashboardLayout>
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate("/admin/jobs")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Kembali
-        </Button>
-      </div>
       <PageHeader
         title="Tambah Lowongan Baru"
         subtitle="Buat lowongan pekerjaan baru."
+        showBackButton
+        backButtonUrl="/admin/jobs"
       />
       <div className="pb-10">
         <JobForm

@@ -6,10 +6,10 @@ import { z } from "zod";
 import { dayjs } from "@/lib/date";
 import { CalendarIcon, FileText } from "lucide-react";
 import { ParagraphTemplateModal } from "./ParagraphTemplateModal";
-import type { ParagraphType } from "@/data/paragraphTemplates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { type ParagraphType } from "@/types/template";
 import {
   Select,
   SelectContent,

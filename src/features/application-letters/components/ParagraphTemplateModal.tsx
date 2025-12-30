@@ -22,9 +22,22 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   type ParagraphType,
   type ParagraphTemplate,
-  paragraphTemplates,
-  paragraphTypeLabels,
-} from "@/data/paragraphTemplates";
+  type ParagraphTemplates,
+  type ParagraphTypeLabels,
+} from "@/types/template";
+
+// Placeholder data since src/data was missing
+const paragraphTemplates: ParagraphTemplates = {
+  opening: [],
+  body: [],
+  closing: [],
+};
+
+const paragraphTypeLabels: ParagraphTypeLabels = {
+  opening: "Paragraf Pembuka",
+  body: "Paragraf Isi",
+  closing: "Paragraf Penutup",
+};
 
 interface ParagraphTemplateModalProps {
   open: boolean;
