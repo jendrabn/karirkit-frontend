@@ -100,15 +100,17 @@ export function JobForm({
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <FieldSet disabled={isLoading} className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* ================= Informasi Dasar ================= */}
           <Card>
             <CardHeader>
               <CardTitle>Informasi Dasar</CardTitle>
             </CardHeader>
+
             <CardContent className="space-y-4">
               <Field>
                 <FieldLabel>Judul Lowongan *</FieldLabel>
                 <Input
-                  placeholder="Senior Frontend Developer"
+                  placeholder="Contoh: Senior Frontend Developer"
                   {...form.register("title")}
                 />
                 <FieldError>{form.formState.errors.title?.message}</FieldError>
@@ -129,9 +131,9 @@ export function JobForm({
                       }
                       value={field.value}
                       onValueChange={field.onChange}
-                      placeholder="Pilih perusahaan"
-                      searchPlaceholder="Cari perusahaan..."
-                      emptyText="Tidak ada perusahaan ditemukan."
+                      placeholder="Pilih perusahaan tempat lowongan ini dibuka"
+                      searchPlaceholder="Ketik nama perusahaan..."
+                      emptyText="Perusahaan tidak ditemukan"
                     />
                     <FieldError>
                       {form.formState.errors.company_id?.message}
@@ -155,9 +157,9 @@ export function JobForm({
                       }
                       value={field.value}
                       onValueChange={field.onChange}
-                      placeholder="Pilih role"
-                      searchPlaceholder="Cari role..."
-                      emptyText="Tidak ada role ditemukan."
+                      placeholder="Pilih role atau posisi pekerjaan"
+                      searchPlaceholder="Cari role pekerjaan..."
+                      emptyText="Role tidak ditemukan"
                     />
                     <FieldError>
                       {form.formState.errors.job_role_id?.message}
@@ -181,9 +183,9 @@ export function JobForm({
                       }
                       value={field.value}
                       onValueChange={field.onChange}
-                      placeholder="Pilih kota"
-                      searchPlaceholder="Cari kota..."
-                      emptyText="Tidak ada kota ditemukan."
+                      placeholder="Pilih lokasi penempatan kerja"
+                      searchPlaceholder="Cari nama kota..."
+                      emptyText="Kota tidak ditemukan"
                     />
                     <FieldError>
                       {form.formState.errors.city_id?.message}
@@ -204,7 +206,7 @@ export function JobForm({
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Pilih tipe" />
+                          <SelectValue placeholder="Full-time / Internship / Freelance" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover z-50">
                           {Object.entries(JOB_TYPE_LABELS).map(([v, l]) => (
@@ -220,6 +222,7 @@ export function JobForm({
                     </Field>
                   )}
                 />
+
                 <Controller
                   control={form.control}
                   name="work_system"
@@ -231,7 +234,7 @@ export function JobForm({
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Pilih sistem" />
+                          <SelectValue placeholder="Onsite / Hybrid / Remote" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover z-50">
                           {Object.entries(WORK_SYSTEM_LABELS).map(([v, l]) => (
@@ -257,7 +260,7 @@ export function JobForm({
                     <FieldLabel>Pendidikan Minimal *</FieldLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih pendidikan" />
+                        <SelectValue placeholder="Pilih pendidikan minimal" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
                         {Object.entries(EDUCATION_LEVEL_LABELS).map(
@@ -278,10 +281,11 @@ export function JobForm({
 
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Pengalaman Min *</FieldLabel>
+                  <FieldLabel>Pengalaman Minimal (Tahun) *</FieldLabel>
                   <Input
                     type="number"
                     min={0}
+                    placeholder="Contoh: 2"
                     {...form.register("min_years_of_experience", {
                       valueAsNumber: true,
                     })}
@@ -290,11 +294,13 @@ export function JobForm({
                     {form.formState.errors.min_years_of_experience?.message}
                   </FieldError>
                 </Field>
+
                 <Field>
-                  <FieldLabel>Pengalaman Max</FieldLabel>
+                  <FieldLabel>Pengalaman Maksimal (Tahun)</FieldLabel>
                   <Input
                     type="number"
                     min={0}
+                    placeholder="Contoh: 5"
                     {...form.register("max_years_of_experience", {
                       valueAsNumber: true,
                     })}
@@ -307,21 +313,23 @@ export function JobForm({
             </CardContent>
           </Card>
 
+          {/* ================= Gaji, Kontak & Poster ================= */}
           <Card>
             <CardHeader>
               <CardTitle>Gaji, Kontak & Poster</CardTitle>
             </CardHeader>
+
             <CardContent className="space-y-4">
               <Controller
                 control={form.control}
                 name="poster"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Poster</FieldLabel>
+                    <FieldLabel>Poster Lowongan</FieldLabel>
                     <ImageUpload
                       value={field.value || ""}
                       onChange={field.onChange}
-                      label="Poster"
+                      label="Poster lowongan pekerjaan"
                     />
                     <FieldError>
                       {form.formState.errors.poster?.message}
@@ -336,17 +344,20 @@ export function JobForm({
                   <Input
                     type="number"
                     min={0}
+                    placeholder="Contoh: 8000000"
                     {...form.register("salary_min", { valueAsNumber: true })}
                   />
                   <FieldError>
                     {form.formState.errors.salary_min?.message}
                   </FieldError>
                 </Field>
+
                 <Field>
-                  <FieldLabel>Gaji Maximum *</FieldLabel>
+                  <FieldLabel>Gaji Maksimum *</FieldLabel>
                   <Input
                     type="number"
                     min={0}
+                    placeholder="Contoh: 12000000"
                     {...form.register("salary_max", { valueAsNumber: true })}
                   />
                   <FieldError>
@@ -360,6 +371,7 @@ export function JobForm({
                 <Input
                   type="number"
                   min={1}
+                  placeholder="Contoh: 3"
                   {...form.register("talent_quota", { valueAsNumber: true })}
                 />
                 <FieldError>
@@ -370,7 +382,7 @@ export function JobForm({
               <Field>
                 <FieldLabel>URL Lowongan</FieldLabel>
                 <Input
-                  placeholder="https://..."
+                  placeholder="https://career.company.com/frontend-developer"
                   {...form.register("job_url")}
                 />
                 <FieldError>
@@ -381,7 +393,7 @@ export function JobForm({
               <Field>
                 <FieldLabel>Nama Kontak *</FieldLabel>
                 <Input
-                  placeholder="Nama person in charge"
+                  placeholder="Nama HR atau Recruiter"
                   {...form.register("contact_name")}
                 />
                 <FieldError>
@@ -393,7 +405,7 @@ export function JobForm({
                 <FieldLabel>Email Kontak *</FieldLabel>
                 <Input
                   type="email"
-                  placeholder="example@company.com"
+                  placeholder="hr@company.com"
                   {...form.register("contact_email")}
                 />
                 <FieldError>
@@ -404,7 +416,7 @@ export function JobForm({
               <Field>
                 <FieldLabel>Telepon Kontak *</FieldLabel>
                 <Input
-                  placeholder="0812..."
+                  placeholder="+62 812 3456 7890"
                   {...form.register("contact_phone")}
                 />
                 <FieldError>
@@ -417,10 +429,10 @@ export function JobForm({
                 name="status"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Status *</FieldLabel>
+                    <FieldLabel>Status Lowongan *</FieldLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih status" />
+                        <SelectValue placeholder="Pilih status publikasi" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
                         <SelectItem value="draft">Draft</SelectItem>
@@ -439,10 +451,12 @@ export function JobForm({
           </Card>
         </div>
 
+        {/* ================= Deskripsi & Persyaratan ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Deskripsi & Persyaratan</CardTitle>
           </CardHeader>
+
           <CardContent className="space-y-4">
             <Controller
               control={form.control}
@@ -454,7 +468,7 @@ export function JobForm({
                     key="description-editor"
                     value={field.value || ""}
                     onChange={field.onChange}
-                    placeholder="Tulis deskripsi pekerjaan..."
+                    placeholder="Jelaskan tanggung jawab pekerjaan, lingkup kerja, dan ekspektasi kandidat"
                   />
                   <FieldError>
                     {form.formState.errors.description?.message}
@@ -462,6 +476,7 @@ export function JobForm({
                 </Field>
               )}
             />
+
             <Controller
               control={form.control}
               name="requirements"
@@ -472,7 +487,7 @@ export function JobForm({
                     key="requirements-editor"
                     value={field.value || ""}
                     onChange={field.onChange}
-                    placeholder="Tulis persyaratan pekerjaan..."
+                    placeholder="Tuliskan kualifikasi, skill, dan pengalaman yang dibutuhkan"
                   />
                   <FieldError>
                     {form.formState.errors.requirements?.message}
@@ -484,6 +499,7 @@ export function JobForm({
         </Card>
       </FieldSet>
 
+      {/* ================= Actions ================= */}
       <div className="flex justify-end gap-4">
         <Button
           type="button"

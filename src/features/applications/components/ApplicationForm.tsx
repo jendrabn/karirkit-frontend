@@ -91,26 +91,30 @@ export function ApplicationForm({
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldSet disabled={isLoading} className="space-y-6 mb-6">
+      <FieldSet disabled={isLoading} className="space-y-8 mb-6">
+        {/* ================= Informasi Perusahaan ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Informasi Perusahaan</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
                 <FieldLabel>Nama Perusahaan *</FieldLabel>
-                <Input {...form.register("company_name")} />
+                <Input
+                  {...form.register("company_name")}
+                  placeholder="Contoh: PT Teknologi Nusantara"
+                />
                 <FieldError>
                   {form.formState.errors.company_name?.message}
                 </FieldError>
               </Field>
 
               <Field>
-                <FieldLabel>URL Perusahaan</FieldLabel>
+                <FieldLabel>Website Perusahaan</FieldLabel>
                 <Input
                   {...form.register("company_url")}
-                  placeholder="https://..."
+                  placeholder="https://www.perusahaan.com"
                 />
                 <FieldError>
                   {form.formState.errors.company_url?.message}
@@ -118,8 +122,11 @@ export function ApplicationForm({
               </Field>
 
               <Field>
-                <FieldLabel>Posisi *</FieldLabel>
-                <Input {...form.register("position")} />
+                <FieldLabel>Posisi Dilamar *</FieldLabel>
+                <Input
+                  {...form.register("position")}
+                  placeholder="Contoh: Frontend Developer"
+                />
                 <FieldError>
                   {form.formState.errors.position?.message}
                 </FieldError>
@@ -129,7 +136,7 @@ export function ApplicationForm({
                 <FieldLabel>Sumber Lowongan</FieldLabel>
                 <Input
                   {...form.register("job_source")}
-                  placeholder="LinkedIn, Jobstreet, dll"
+                  placeholder="LinkedIn, Jobstreet, Website Perusahaan"
                 />
                 <FieldError>
                   {form.formState.errors.job_source?.message}
@@ -140,7 +147,7 @@ export function ApplicationForm({
                 <FieldLabel>URL Lowongan</FieldLabel>
                 <Input
                   {...form.register("job_url")}
-                  placeholder="https://..."
+                  placeholder="https://jobs.company.com/frontend-developer"
                 />
                 <FieldError>
                   {form.formState.errors.job_url?.message}
@@ -149,7 +156,10 @@ export function ApplicationForm({
 
               <Field>
                 <FieldLabel>Lokasi</FieldLabel>
-                <Input {...form.register("location")} />
+                <Input
+                  {...form.register("location")}
+                  placeholder="Jakarta / Remote / Hybrid"
+                />
                 <FieldError>
                   {form.formState.errors.location?.message}
                 </FieldError>
@@ -158,12 +168,13 @@ export function ApplicationForm({
           </CardContent>
         </Card>
 
+        {/* ================= Detail Pekerjaan ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Detail Pekerjaan</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Controller
                 control={form.control}
                 name="job_type"
@@ -175,7 +186,7 @@ export function ApplicationForm({
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Pilih tipe pekerjaan" />
                       </SelectTrigger>
                       <SelectContent className="z-50">
                         {JOB_TYPE_OPTIONS.map((option) => (
@@ -203,7 +214,7 @@ export function ApplicationForm({
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Onsite / Hybrid / Remote" />
                       </SelectTrigger>
                       <SelectContent className="z-50">
                         {WORK_SYSTEM_OPTIONS.map((option) => (
@@ -224,6 +235,7 @@ export function ApplicationForm({
                 <FieldLabel>Gaji Minimal</FieldLabel>
                 <Input
                   type="number"
+                  placeholder="Contoh: 8000000"
                   {...form.register("salary_min", {
                     setValueAs: (v) => (v === "" ? undefined : Number(v)),
                   })}
@@ -237,6 +249,7 @@ export function ApplicationForm({
                 <FieldLabel>Gaji Maksimal</FieldLabel>
                 <Input
                   type="number"
+                  placeholder="Contoh: 12000000"
                   {...form.register("salary_max", {
                     setValueAs: (v) => (v === "" ? undefined : Number(v)),
                   })}
@@ -261,10 +274,10 @@ export function ApplicationForm({
                             !field.value && "text-muted-foreground"
                           )}
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          <CalendarIcon className="mr-2 size-4" />
                           {field.value
                             ? dayjs(field.value).format("DD/MM/YYYY")
-                            : "Pilih tanggal"}
+                            : "Pilih tanggal lamaran"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 z-50" align="start">
@@ -280,7 +293,6 @@ export function ApplicationForm({
                               date ? dayjs(date).format("YYYY-MM-DD") : ""
                             )
                           }
-                          className="pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
@@ -296,13 +308,13 @@ export function ApplicationForm({
                 name="status"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Status</FieldLabel>
+                    <FieldLabel>Status Lamaran</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Pilih status lamaran" />
                       </SelectTrigger>
                       <SelectContent className="z-50 max-h-60">
                         {STATUS_OPTIONS.map((option) => (
@@ -324,13 +336,13 @@ export function ApplicationForm({
                 name="result_status"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Hasil</FieldLabel>
+                    <FieldLabel>Hasil Akhir</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Belum ada hasil" />
                       </SelectTrigger>
                       <SelectContent className="z-50">
                         {RESULT_STATUS_OPTIONS.map((option) => (
@@ -350,15 +362,19 @@ export function ApplicationForm({
           </CardContent>
         </Card>
 
+        {/* ================= Informasi Kontak ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Informasi Kontak</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Field>
                 <FieldLabel>Nama Kontak</FieldLabel>
-                <Input {...form.register("contact_name")} />
+                <Input
+                  placeholder="Nama HR / Recruiter"
+                  {...form.register("contact_name")}
+                />
                 <FieldError>
                   {form.formState.errors.contact_name?.message}
                 </FieldError>
@@ -366,7 +382,11 @@ export function ApplicationForm({
 
               <Field>
                 <FieldLabel>Email Kontak</FieldLabel>
-                <Input type="email" {...form.register("contact_email")} />
+                <Input
+                  type="email"
+                  placeholder="hr@perusahaan.com"
+                  {...form.register("contact_email")}
+                />
                 <FieldError>
                   {form.formState.errors.contact_email?.message}
                 </FieldError>
@@ -374,7 +394,10 @@ export function ApplicationForm({
 
               <Field>
                 <FieldLabel>Telepon Kontak</FieldLabel>
-                <Input {...form.register("contact_phone")} />
+                <Input
+                  placeholder="+62 812 3456 7890"
+                  {...form.register("contact_phone")}
+                />
                 <FieldError>
                   {form.formState.errors.contact_phone?.message}
                 </FieldError>
@@ -383,12 +406,13 @@ export function ApplicationForm({
           </CardContent>
         </Card>
 
+        {/* ================= Follow Up ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Follow Up</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Controller
                 control={form.control}
                 name="follow_up_date"
@@ -404,10 +428,10 @@ export function ApplicationForm({
                             !field.value && "text-muted-foreground"
                           )}
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          <CalendarIcon className="mr-2 size-4" />
                           {field.value
                             ? dayjs(field.value).format("DD/MM/YYYY")
-                            : "Pilih tanggal"}
+                            : "Pilih tanggal follow up"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 z-50" align="start">
@@ -423,7 +447,6 @@ export function ApplicationForm({
                               date ? dayjs(date).format("YYYY-MM-DD") : null
                             )
                           }
-                          className="pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
@@ -436,7 +459,11 @@ export function ApplicationForm({
 
               <Field className="md:col-span-2">
                 <FieldLabel>Catatan Follow Up</FieldLabel>
-                <Textarea {...form.register("follow_up_note")} rows={3} />
+                <Textarea
+                  rows={3}
+                  placeholder="Contoh: Follow up via email, menunggu balasan HR"
+                  {...form.register("follow_up_note")}
+                />
                 <FieldError>
                   {form.formState.errors.follow_up_note?.message}
                 </FieldError>
@@ -445,20 +472,26 @@ export function ApplicationForm({
           </CardContent>
         </Card>
 
+        {/* ================= Catatan ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Catatan</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
             <Field>
-              <FieldLabel>Catatan</FieldLabel>
-              <Textarea {...form.register("notes")} rows={4} />
+              <FieldLabel>Catatan Tambahan</FieldLabel>
+              <Textarea
+                rows={4}
+                placeholder="Catatan pribadi terkait lamaran ini"
+                {...form.register("notes")}
+              />
               <FieldError>{form.formState.errors.notes?.message}</FieldError>
             </Field>
           </CardContent>
         </Card>
       </FieldSet>
 
+      {/* ================= Actions ================= */}
       <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
@@ -471,7 +504,7 @@ export function ApplicationForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading ? (
             <>
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
               Menyimpan...
             </>
           ) : initialData ? (

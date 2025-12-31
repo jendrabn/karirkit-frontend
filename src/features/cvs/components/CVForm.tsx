@@ -2,7 +2,17 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  GraduationCap,
+  Briefcase,
+  Wrench,
+  Award,
+  Trophy,
+  Users,
+  Share2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -223,7 +233,7 @@ export function CVForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit, (errors) => {
-        console.log("KV Validation Errors:", errors);
+        console.log("CV Validation Errors:", errors);
       })}
     >
       <FieldSet disabled={isLoading} className="space-y-6 mb-6">
@@ -316,6 +326,7 @@ export function CVForm({
                 <Input
                   id="name"
                   {...register("name")}
+                  placeholder="John Doe"
                   className={cn(errors.name && "border-destructive")}
                 />
                 <FieldError>{errors.name?.message}</FieldError>
@@ -338,6 +349,7 @@ export function CVForm({
                   id="email"
                   type="email"
                   {...register("email")}
+                  placeholder="john.doe@example.com"
                   className={cn(errors.email && "border-destructive")}
                 />
                 <FieldError>{errors.email?.message}</FieldError>
@@ -359,6 +371,7 @@ export function CVForm({
                 <Input
                   id="address"
                   {...register("address")}
+                  placeholder="Jl. Jend. Sudirman No. 1, Jakarta"
                   className={cn(errors.address && "border-destructive")}
                 />
                 <FieldError>{errors.address?.message}</FieldError>
@@ -407,9 +420,15 @@ export function CVForm({
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             {educations.fields.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Belum ada data pendidikan
-              </p>
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <GraduationCap className="h-6 w-6" />
+                </div>
+                <p className="font-medium">Belum ada data pendidikan</p>
+                <p className="text-sm">
+                  Tambahkan riwayat pendidikan terakhir Anda
+                </p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {educations.fields.map((field, index) => (
@@ -430,72 +449,83 @@ export function CVForm({
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Field>
-                        <FieldLabel>Jenjang *</FieldLabel>
-                        <Select
-                          value={watch(`educations.${index}.degree`)}
-                          onValueChange={(v) =>
-                            setValue(
-                              `educations.${index}.degree`,
-                              v as
-                                | "highschool"
-                                | "associate"
-                                | "bachelor"
-                                | "master"
-                                | "doctorate"
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            {DEGREE_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.educations?.[index]?.degree?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Nama Sekolah/Universitas *</FieldLabel>
-                        <Input
-                          {...register(`educations.${index}.school_name`)}
-                          className={cn(
-                            errors.educations?.[index]?.school_name &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {errors.educations?.[index]?.school_name?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Lokasi *</FieldLabel>
-                        <Input
-                          {...register(`educations.${index}.school_location`)}
-                          className={cn(
-                            errors.educations?.[index]?.school_location &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {errors.educations?.[index]?.school_location?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Jurusan</FieldLabel>
-                        <Input {...register(`educations.${index}.major`)} />
-                        <FieldError>
-                          {errors.educations?.[index]?.major?.message}
-                        </FieldError>
-                      </Field>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>Jenjang *</FieldLabel>
+                          <Select
+                            value={watch(`educations.${index}.degree`)}
+                            onValueChange={(v) =>
+                              setValue(
+                                `educations.${index}.degree`,
+                                v as
+                                  | "highschool"
+                                  | "associate"
+                                  | "bachelor"
+                                  | "master"
+                                  | "doctorate"
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              {DEGREE_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.educations?.[index]?.degree?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Nama Sekolah/Universitas *</FieldLabel>
+                          <Input
+                            {...register(`educations.${index}.school_name`)}
+                            placeholder="Universitas Indonesia"
+                            className={cn(
+                              errors.educations?.[index]?.school_name &&
+                                "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {errors.educations?.[index]?.school_name?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Lokasi *</FieldLabel>
+                          <Input
+                            {...register(`educations.${index}.school_location`)}
+                            placeholder="Depok, Jawa Barat"
+                            className={cn(
+                              errors.educations?.[index]?.school_location &&
+                                "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {
+                              errors.educations?.[index]?.school_location
+                                ?.message
+                            }
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Jurusan</FieldLabel>
+                          <Input
+                            {...register(`educations.${index}.major`)}
+                            placeholder="Teknik Informatika"
+                          />
+                          <FieldError>
+                            {errors.educations?.[index]?.major?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Field>
                           <FieldLabel>Bulan Mulai</FieldLabel>
                           <Select
@@ -556,8 +586,6 @@ export function CVForm({
                             {errors.educations?.[index]?.start_year?.message}
                           </FieldError>
                         </Field>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
                         <Field>
                           <FieldLabel>Bulan Selesai</FieldLabel>
                           <Select
@@ -622,9 +650,14 @@ export function CVForm({
                           </FieldError>
                         </Field>
                       </div>
-                      <Field orientation="horizontal">
+
+                      <Field
+                        orientation="horizontal"
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox
                           id={`edu-current-${index}`}
+                          className="rounded-full data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                           checked={watch(`educations.${index}.is_current`)}
                           onCheckedChange={(v) => {
                             setValue(`educations.${index}.is_current`, !!v);
@@ -634,17 +667,22 @@ export function CVForm({
                             }
                           }}
                         />
-                        <FieldLabel htmlFor={`edu-current-${index}`}>
+                        <FieldLabel
+                          htmlFor={`edu-current-${index}`}
+                          className="font-normal"
+                        >
                           Masih berlangsung
                         </FieldLabel>
                       </Field>
-                      <Field>
+
+                      <Field className="w-full md:w-1/2">
                         <FieldLabel>IPK</FieldLabel>
                         <Input
                           type="number"
                           step="0.01"
                           min="0"
                           max="4"
+                          placeholder="3.85"
                           {...register(`educations.${index}.gpa`, {
                             valueAsNumber: true,
                           })}
@@ -653,11 +691,13 @@ export function CVForm({
                           {errors.educations?.[index]?.gpa?.message}
                         </FieldError>
                       </Field>
-                      <Field className="md:col-span-2">
+
+                      <Field>
                         <FieldLabel>Deskripsi</FieldLabel>
                         <Textarea
                           {...register(`educations.${index}.description`)}
                           rows={2}
+                          placeholder="Fokus pada pengembangan perangkat lunak..."
                         />
                         <FieldError>
                           {errors.educations?.[index]?.description?.message}
@@ -699,9 +739,15 @@ export function CVForm({
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             {experiences.fields.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Belum ada data pengalaman
-              </p>
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <Briefcase className="h-6 w-6" />
+                </div>
+                <p className="font-medium">Belum ada data pengalaman</p>
+                <p className="text-sm">
+                  Tambahkan pengalaman kerja yang relevan
+                </p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {experiences.fields.map((field, index) => (
@@ -722,81 +768,89 @@ export function CVForm({
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Field>
-                        <FieldLabel>Jabatan *</FieldLabel>
-                        <Input
-                          {...register(`experiences.${index}.job_title`)}
-                          className={cn(
-                            errors.experiences?.[index]?.job_title &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {errors.experiences?.[index]?.job_title?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Nama Perusahaan *</FieldLabel>
-                        <Input
-                          {...register(`experiences.${index}.company_name`)}
-                          className={cn(
-                            errors.experiences?.[index]?.company_name &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {errors.experiences?.[index]?.company_name?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Lokasi *</FieldLabel>
-                        <Input
-                          {...register(`experiences.${index}.company_location`)}
-                          className={cn(
-                            errors.experiences?.[index]?.company_location &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {
-                            errors.experiences?.[index]?.company_location
-                              ?.message
-                          }
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Tipe Pekerjaan *</FieldLabel>
-                        <Select
-                          value={watch(`experiences.${index}.job_type`)}
-                          onValueChange={(v) =>
-                            setValue(
-                              `experiences.${index}.job_type`,
-                              v as
-                                | "full_time"
-                                | "part_time"
-                                | "contract"
-                                | "internship"
-                                | "freelance"
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            {JOB_TYPE_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.experiences?.[index]?.job_type?.message}
-                        </FieldError>
-                      </Field>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>Jabatan *</FieldLabel>
+                          <Input
+                            {...register(`experiences.${index}.job_title`)}
+                            placeholder="Senior Software Engineer"
+                            className={cn(
+                              errors.experiences?.[index]?.job_title &&
+                                "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {errors.experiences?.[index]?.job_title?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Nama Perusahaan *</FieldLabel>
+                          <Input
+                            {...register(`experiences.${index}.company_name`)}
+                            placeholder="PT Teknologi Maju"
+                            className={cn(
+                              errors.experiences?.[index]?.company_name &&
+                                "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {errors.experiences?.[index]?.company_name?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Lokasi *</FieldLabel>
+                          <Input
+                            {...register(
+                              `experiences.${index}.company_location`
+                            )}
+                            placeholder="Jakarta Selatan"
+                            className={cn(
+                              errors.experiences?.[index]?.company_location &&
+                                "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {
+                              errors.experiences?.[index]?.company_location
+                                ?.message
+                            }
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tipe Pekerjaan *</FieldLabel>
+                          <Select
+                            value={watch(`experiences.${index}.job_type`)}
+                            onValueChange={(v) =>
+                              setValue(
+                                `experiences.${index}.job_type`,
+                                v as
+                                  | "full_time"
+                                  | "part_time"
+                                  | "contract"
+                                  | "internship"
+                                  | "freelance"
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              {JOB_TYPE_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.experiences?.[index]?.job_type?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Field>
                           <FieldLabel>Bulan Mulai</FieldLabel>
                           <Select
@@ -857,8 +911,7 @@ export function CVForm({
                             {errors.experiences?.[index]?.start_year?.message}
                           </FieldError>
                         </Field>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
+
                         <Field>
                           <FieldLabel>Bulan Selesai</FieldLabel>
                           <Select
@@ -923,9 +976,14 @@ export function CVForm({
                           </FieldError>
                         </Field>
                       </div>
-                      <Field orientation="horizontal">
+
+                      <Field
+                        orientation="horizontal"
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox
                           id={`exp-current-${index}`}
+                          className="rounded-full data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                           checked={watch(`experiences.${index}.is_current`)}
                           onCheckedChange={(v) => {
                             setValue(`experiences.${index}.is_current`, !!v);
@@ -935,15 +993,20 @@ export function CVForm({
                             }
                           }}
                         />
-                        <FieldLabel htmlFor={`exp-current-${index}`}>
+                        <FieldLabel
+                          htmlFor={`exp-current-${index}`}
+                          className="font-normal"
+                        >
                           Masih bekerja
                         </FieldLabel>
                       </Field>
-                      <Field className="md:col-span-2">
+
+                      <Field>
                         <FieldLabel>Deskripsi</FieldLabel>
                         <Textarea
                           {...register(`experiences.${index}.description`)}
                           rows={3}
+                          placeholder="Bertanggung jawab untuk mengembangkan fitur..."
                         />
                         <FieldError>
                           {errors.experiences?.[index]?.description?.message}
@@ -972,16 +1035,22 @@ export function CVForm({
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             {skills.fields.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Belum ada data keahlian
-              </p>
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <Wrench className="h-6 w-6" />
+                </div>
+                <p className="font-medium">Belum ada data keahlian</p>
+                <p className="text-sm">
+                  Tambahkan keahlian teknis atau non-teknis
+                </p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {skills.fields.map((field, index) => (
                   <div key={field.id} className="flex gap-3 items-start">
                     <Field className="flex-1">
                       <Input
-                        placeholder="Nama Keahlian"
+                        placeholder="Contoh: React.js, Python, Manajemen Proyek"
                         {...register(`skills.${index}.name`)}
                         className={cn(
                           errors.skills?.[index]?.name && "border-destructive"
@@ -1064,9 +1133,15 @@ export function CVForm({
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             {certificates.fields.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Belum ada data sertifikasi
-              </p>
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <Award className="h-6 w-6" />
+                </div>
+                <p className="font-medium">Belum ada data sertifikasi</p>
+                <p className="text-sm">
+                  Tambahkan sertifikasi profesional yang dimiliki
+                </p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {certificates.fields.map((field, index) => (
@@ -1087,34 +1162,39 @@ export function CVForm({
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Field>
-                        <FieldLabel>Judul *</FieldLabel>
-                        <Input
-                          {...register(`certificates.${index}.title`)}
-                          className={cn(
-                            errors.certificates?.[index]?.title &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {errors.certificates?.[index]?.title?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Penerbit *</FieldLabel>
-                        <Input
-                          {...register(`certificates.${index}.issuer`)}
-                          className={cn(
-                            errors.certificates?.[index]?.issuer &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {errors.certificates?.[index]?.issuer?.message}
-                        </FieldError>
-                      </Field>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>Judul *</FieldLabel>
+                          <Input
+                            {...register(`certificates.${index}.title`)}
+                            placeholder="AWS Certified Solutions Architect"
+                            className={cn(
+                              errors.certificates?.[index]?.title &&
+                                "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {errors.certificates?.[index]?.title?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Penerbit *</FieldLabel>
+                          <Input
+                            {...register(`certificates.${index}.issuer`)}
+                            placeholder="Amazon Web Services"
+                            className={cn(
+                              errors.certificates?.[index]?.issuer &&
+                                "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {errors.certificates?.[index]?.issuer?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Field>
                           <FieldLabel>Bulan Terbit</FieldLabel>
                           <Select
@@ -1175,132 +1255,136 @@ export function CVForm({
                             {errors.certificates?.[index]?.issue_year?.message}
                           </FieldError>
                         </Field>
+
+                        <Field>
+                          <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`certificates.${index}.expiry_month`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `certificates.${index}.expiry_month`,
+                                parseInt(v)
+                              )
+                            }
+                            disabled={watch(`certificates.${index}.no_expiry`)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              <SelectItem value="0">-</SelectItem>
+                              {MONTH_OPTIONS.map((m) => (
+                                <SelectItem
+                                  key={m.value}
+                                  value={String(m.value)}
+                                >
+                                  {m.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {
+                              errors.certificates?.[index]?.expiry_month
+                                ?.message
+                            }
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`certificates.${index}.expiry_year`) || 0
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `certificates.${index}.expiry_year`,
+                                parseInt(v)
+                              )
+                            }
+                            disabled={watch(`certificates.${index}.no_expiry`)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              <SelectItem value="0">-</SelectItem>
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.certificates?.[index]?.expiry_year?.message}
+                          </FieldError>
+                        </Field>
                       </div>
 
-                      <div className="space-y-2">
-                        {!watch(`certificates.${index}.no_expiry`) && (
-                          <div className="grid grid-cols-2 gap-2">
-                            <Field>
-                              <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
-                              <Select
-                                value={String(
-                                  watch(`certificates.${index}.expiry_month`) ||
-                                    0
-                                )}
-                                onValueChange={(v) =>
-                                  setValue(
-                                    `certificates.${index}.expiry_month`,
-                                    parseInt(v)
-                                  )
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="z-50">
-                                  <SelectItem value="0">-</SelectItem>
-                                  {MONTH_OPTIONS.map((m) => (
-                                    <SelectItem
-                                      key={m.value}
-                                      value={String(m.value)}
-                                    >
-                                      {m.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FieldError>
-                                {
-                                  errors.certificates?.[index]?.expiry_month
-                                    ?.message
-                                }
-                              </FieldError>
-                            </Field>
-                            <Field>
-                              <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
-                              <Select
-                                value={String(
-                                  watch(`certificates.${index}.expiry_year`) ||
-                                    0
-                                )}
-                                onValueChange={(v) =>
-                                  setValue(
-                                    `certificates.${index}.expiry_year`,
-                                    parseInt(v)
-                                  )
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="z-50 max-h-48">
-                                  <SelectItem value="0">-</SelectItem>
-                                  {yearOptions.map((y) => (
-                                    <SelectItem key={y} value={String(y)}>
-                                      {y}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FieldError>
-                                {
-                                  errors.certificates?.[index]?.expiry_year
-                                    ?.message
-                                }
-                              </FieldError>
-                            </Field>
-                          </div>
-                        )}
-                        <Field orientation="horizontal">
-                          <Checkbox
-                            id={`cert-no-expiry-${index}`}
-                            checked={watch(`certificates.${index}.no_expiry`)}
-                            onCheckedChange={(v) => {
-                              setValue(`certificates.${index}.no_expiry`, !!v);
-                              if (v) {
-                                setValue(
-                                  `certificates.${index}.expiry_month`,
-                                  0
-                                );
-                                setValue(
-                                  `certificates.${index}.expiry_year`,
-                                  0
-                                );
-                              }
-                            }}
+                      <Field
+                        orientation="horizontal"
+                        className="flex items-center space-x-2"
+                      >
+                        <Checkbox
+                          id={`cert-no-expiry-${index}`}
+                          className="rounded-full data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                          checked={watch(`certificates.${index}.no_expiry`)}
+                          onCheckedChange={(v) => {
+                            setValue(`certificates.${index}.no_expiry`, !!v);
+                            if (v) {
+                              setValue(`certificates.${index}.expiry_month`, 0);
+                              setValue(`certificates.${index}.expiry_year`, 0);
+                            }
+                          }}
+                        />
+                        <FieldLabel
+                          htmlFor={`cert-no-expiry-${index}`}
+                          className="font-normal"
+                        >
+                          Tidak ada masa berlaku
+                        </FieldLabel>
+                      </Field>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>ID Kredensial</FieldLabel>
+                          <Input
+                            {...register(`certificates.${index}.credential_id`)}
+                            placeholder="AWS-12345678"
                           />
-                          <FieldLabel htmlFor={`cert-no-expiry-${index}`}>
-                            Tidak ada masa berlaku
-                          </FieldLabel>
+                          <FieldError>
+                            {
+                              errors.certificates?.[index]?.credential_id
+                                ?.message
+                            }
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>URL Kredensial</FieldLabel>
+                          <Input
+                            {...register(
+                              `certificates.${index}.credential_url`
+                            )}
+                            placeholder="https://aws.amazon.com/verify..."
+                          />
+                          <FieldError>
+                            {
+                              errors.certificates?.[index]?.credential_url
+                                ?.message
+                            }
+                          </FieldError>
                         </Field>
                       </div>
 
                       <Field>
-                        <FieldLabel>ID Kredensial</FieldLabel>
-                        <Input
-                          {...register(`certificates.${index}.credential_id`)}
-                        />
-                        <FieldError>
-                          {errors.certificates?.[index]?.credential_id?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>URL Kredensial</FieldLabel>
-                        <Input
-                          {...register(`certificates.${index}.credential_url`)}
-                        />
-                        <FieldError>
-                          {
-                            errors.certificates?.[index]?.credential_url
-                              ?.message
-                          }
-                        </FieldError>
-                      </Field>
-                      <Field className="md:col-span-2">
                         <FieldLabel>Deskripsi</FieldLabel>
                         <Textarea
                           {...register(`certificates.${index}.description`)}
                           rows={2}
+                          placeholder="Sertifikasi untuk arsitektur cloud..."
                         />
                         <FieldError>
                           {errors.certificates?.[index]?.description?.message}
@@ -1336,9 +1420,15 @@ export function CVForm({
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             {awards.fields.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Belum ada data penghargaan
-              </p>
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <Trophy className="h-6 w-6" />
+                </div>
+                <p className="font-medium">Belum ada data penghargaan</p>
+                <p className="text-sm">
+                  Tambahkan penghargaan atau prestasi yang diraih
+                </p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {awards.fields.map((field, index) => (
@@ -1364,6 +1454,7 @@ export function CVForm({
                         <FieldLabel>Judul *</FieldLabel>
                         <Input
                           {...register(`awards.${index}.title`)}
+                          placeholder="Employee of the Year"
                           className={cn(
                             errors.awards?.[index]?.title &&
                               "border-destructive"
@@ -1377,6 +1468,7 @@ export function CVForm({
                         <FieldLabel>Pemberi *</FieldLabel>
                         <Input
                           {...register(`awards.${index}.issuer`)}
+                          placeholder="PT Teknologi Maju"
                           className={cn(
                             errors.awards?.[index]?.issuer &&
                               "border-destructive"
@@ -1413,7 +1505,10 @@ export function CVForm({
                       </Field>
                       <Field className="md:col-span-3">
                         <FieldLabel>Deskripsi</FieldLabel>
-                        <Input {...register(`awards.${index}.description`)} />
+                        <Input
+                          {...register(`awards.${index}.description`)}
+                          placeholder="Penghargaan atas kinerja luar biasa..."
+                        />
                         <FieldError>
                           {errors.awards?.[index]?.description?.message}
                         </FieldError>
@@ -1454,9 +1549,15 @@ export function CVForm({
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             {organizations.fields.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Belum ada data organisasi
-              </p>
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <Users className="h-6 w-6" />
+                </div>
+                <p className="font-medium">Belum ada data organisasi</p>
+                <p className="text-sm">
+                  Tambahkan pengalaman organisasi atau sukarelawan
+                </p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {organizations.fields.map((field, index) => (
@@ -1477,83 +1578,89 @@ export function CVForm({
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Field>
-                        <FieldLabel>Nama Organisasi *</FieldLabel>
-                        <Input
-                          {...register(
-                            `organizations.${index}.organization_name`
-                          )}
-                          className={cn(
-                            errors.organizations?.[index]?.organization_name &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {
-                            errors.organizations?.[index]?.organization_name
-                              ?.message
-                          }
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Jabatan *</FieldLabel>
-                        <Input
-                          {...register(`organizations.${index}.role_title`)}
-                          className={cn(
-                            errors.organizations?.[index]?.role_title &&
-                              "border-destructive"
-                          )}
-                        />
-                        <FieldError>
-                          {errors.organizations?.[index]?.role_title?.message}
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Tipe Organisasi *</FieldLabel>
-                        <Select
-                          value={watch(
-                            `organizations.${index}.organization_type`
-                          )}
-                          onValueChange={(v) =>
-                            setValue(
-                              `organizations.${index}.organization_type`,
-                              v as
-                                | "student"
-                                | "professional"
-                                | "volunteer"
-                                | "community"
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            {ORGANIZATION_TYPE_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {
-                            errors.organizations?.[index]?.organization_type
-                              ?.message
-                          }
-                        </FieldError>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Lokasi</FieldLabel>
-                        <Input
-                          {...register(`organizations.${index}.location`)}
-                        />
-                        <FieldError>
-                          {errors.organizations?.[index]?.location?.message}
-                        </FieldError>
-                      </Field>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>Nama Organisasi *</FieldLabel>
+                          <Input
+                            {...register(
+                              `organizations.${index}.organization_name`
+                            )}
+                            placeholder="Himpunan Mahasiswa Informatika"
+                            className={cn(
+                              errors.organizations?.[index]
+                                ?.organization_name && "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {
+                              errors.organizations?.[index]?.organization_name
+                                ?.message
+                            }
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Jabatan *</FieldLabel>
+                          <Input
+                            {...register(`organizations.${index}.role_title`)}
+                            placeholder="Ketua Umum"
+                            className={cn(
+                              errors.organizations?.[index]?.role_title &&
+                                "border-destructive"
+                            )}
+                          />
+                          <FieldError>
+                            {errors.organizations?.[index]?.role_title?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tipe Organisasi *</FieldLabel>
+                          <Select
+                            value={watch(
+                              `organizations.${index}.organization_type`
+                            )}
+                            onValueChange={(v) =>
+                              setValue(
+                                `organizations.${index}.organization_type`,
+                                v as
+                                  | "student"
+                                  | "professional"
+                                  | "volunteer"
+                                  | "community"
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              {ORGANIZATION_TYPE_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {
+                              errors.organizations?.[index]?.organization_type
+                                ?.message
+                            }
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Lokasi</FieldLabel>
+                          <Input
+                            {...register(`organizations.${index}.location`)}
+                            placeholder="Bandung"
+                          />
+                          <FieldError>
+                            {errors.organizations?.[index]?.location?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Field>
                           <FieldLabel>Bulan Mulai</FieldLabel>
                           <Select
@@ -1617,8 +1724,6 @@ export function CVForm({
                             {errors.organizations?.[index]?.start_year?.message}
                           </FieldError>
                         </Field>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
                         <Field>
                           <FieldLabel>Bulan Selesai</FieldLabel>
                           <Select
@@ -1687,9 +1792,14 @@ export function CVForm({
                           </FieldError>
                         </Field>
                       </div>
-                      <Field orientation="horizontal">
+
+                      <Field
+                        orientation="horizontal"
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox
                           id={`org-current-${index}`}
+                          className="rounded-full data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                           checked={watch(`organizations.${index}.is_current`)}
                           onCheckedChange={(v) => {
                             setValue(`organizations.${index}.is_current`, !!v);
@@ -1699,15 +1809,20 @@ export function CVForm({
                             }
                           }}
                         />
-                        <FieldLabel htmlFor={`org-current-${index}`}>
+                        <FieldLabel
+                          htmlFor={`org-current-${index}`}
+                          className="font-normal"
+                        >
                           Masih berlangsung
                         </FieldLabel>
                       </Field>
-                      <Field className="md:col-span-2">
+
+                      <Field>
                         <FieldLabel>Deskripsi</FieldLabel>
                         <Textarea
                           {...register(`organizations.${index}.description`)}
                           rows={2}
+                          placeholder="Memimpin organisasi dengan 100 anggota..."
                         />
                         <FieldError>
                           {errors.organizations?.[index]?.description?.message}
@@ -1737,16 +1852,22 @@ export function CVForm({
 
           <CardContent className="space-y-3 pt-4">
             {socialLinks.fields.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Belum ada data media sosial
-              </p>
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <Share2 className="h-6 w-6" />
+                </div>
+                <p className="font-medium">Belum ada data media sosial</p>
+                <p className="text-sm">
+                  Tambahkan tautan profil profesional Anda
+                </p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {socialLinks.fields.map((field, index) => (
                   <div key={field.id} className="flex gap-3 items-start">
                     <Field className="w-40">
                       <Input
-                        placeholder="Platform"
+                        placeholder="LinkedIn"
                         {...register(`social_links.${index}.platform`)}
                         className={cn(
                           errors.social_links?.[index]?.platform &&
@@ -1759,7 +1880,7 @@ export function CVForm({
                     </Field>
                     <Field className="flex-1">
                       <Input
-                        placeholder="URL"
+                        placeholder="https://linkedin.com/in/johndoe"
                         {...register(`social_links.${index}.url`)}
                         className={cn(
                           errors.social_links?.[index]?.url &&
@@ -1774,7 +1895,6 @@ export function CVForm({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="mt-1"
                       onClick={() => socialLinks.remove(index)}
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />

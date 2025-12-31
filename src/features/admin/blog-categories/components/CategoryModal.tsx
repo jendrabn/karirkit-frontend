@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import type { BlogCategory } from "../api/get-blog-categories";
 import { useEffect } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
@@ -74,37 +74,42 @@ export function CategoryModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden">
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <DialogHeader className="px-6 pt-6">
+      <DialogContent className="sm:max-w-[425px] p-0 gap-0">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="flex flex-col max-h-[85vh]"
+        >
+          <DialogHeader className="px-6 pt-6 pb-4">
             <DialogTitle>
               {category ? "Edit Kategori" : "Tambah Kategori"}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="px-6 py-4 space-y-4">
-            <Field>
-              <FieldLabel>Nama Kategori *</FieldLabel>
-              <Input
-                {...form.register("name", {
-                  onChange: handleNameChange,
-                })}
-                placeholder="Masukkan nama kategori"
-              />
-              <FieldError>{form.formState.errors.name?.message}</FieldError>
-            </Field>
+          <div className="overflow-y-auto px-6 py-2">
+            <FieldSet className="space-y-4">
+              <Field>
+                <FieldLabel>Nama Kategori *</FieldLabel>
+                <Input
+                  {...form.register("name", {
+                    onChange: handleNameChange,
+                  })}
+                  placeholder="Masukkan nama kategori"
+                />
+                <FieldError>{form.formState.errors.name?.message}</FieldError>
+              </Field>
 
-            <Field>
-              <FieldLabel>Deskripsi *</FieldLabel>
-              <Textarea
-                {...form.register("description")}
-                placeholder="Masukkan deskripsi kategori"
-                rows={3}
-              />
-              <FieldError>
-                {form.formState.errors.description?.message}
-              </FieldError>
-            </Field>
+              <Field>
+                <FieldLabel>Deskripsi *</FieldLabel>
+                <Textarea
+                  {...form.register("description")}
+                  placeholder="Masukkan deskripsi kategori"
+                  rows={3}
+                />
+                <FieldError>
+                  {form.formState.errors.description?.message}
+                </FieldError>
+              </Field>
+            </FieldSet>
           </div>
 
           <DialogFooter className="px-6 py-4 bg-muted/30 border-t">

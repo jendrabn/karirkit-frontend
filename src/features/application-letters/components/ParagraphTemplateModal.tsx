@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import {
   type ParagraphType,
   type ParagraphTemplate,
@@ -97,32 +97,34 @@ export function ParagraphTemplateModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle>Pilih Template {typeLabel}</DialogTitle>
-            <DialogDescription>
-              Bagian teks yang berada di dalam tanda [ ] dapat Anda sesuaikan.
-            </DialogDescription>
-          </DialogHeader>
-          <ScrollArea className="max-h-[60vh] pr-4">
-            <div className="space-y-3">
-              {templates.map((template) => (
-                <Card
-                  key={template.id}
-                  className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => handleSelectTemplate(template)}
-                >
-                  <h4 className="font-medium mb-2">{template.title}</h4>
-                  <p className="text-sm text-muted-foreground whitespace-pre-line line-clamp-4">
-                    {template.content}
-                  </p>
-                  <Button variant="link" className="px-0 mt-2 h-auto">
-                    Gunakan template ini
-                  </Button>
-                </Card>
-              ))}
+        <DialogContent className="max-w-2xl p-0 gap-0">
+          <div className="flex flex-col max-h-[80vh]">
+            <DialogHeader className="px-6 pt-6 pb-4">
+              <DialogTitle>Pilih Template {typeLabel}</DialogTitle>
+              <DialogDescription>
+                Bagian teks yang berada di dalam tanda [ ] dapat Anda sesuaikan.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="overflow-y-auto px-6 py-2 pb-6">
+              <div className="space-y-3">
+                {templates.map((template) => (
+                  <Card
+                    key={template.id}
+                    className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleSelectTemplate(template)}
+                  >
+                    <h4 className="font-medium mb-2">{template.title}</h4>
+                    <p className="text-sm text-muted-foreground whitespace-pre-line line-clamp-4">
+                      {template.content}
+                    </p>
+                    <Button variant="link" className="px-0 mt-2 h-auto">
+                      Gunakan template ini
+                    </Button>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </ScrollArea>
+          </div>
         </DialogContent>
       </Dialog>
 

@@ -290,28 +290,28 @@ export function BlogForm({
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldSet
         disabled={isLoading || isUploadingImage}
-        className="space-y-6 mb-6"
+        className="space-y-8 mb-6"
       >
+        {/* ================= Informasi Dasar Blog ================= */}
         <Card>
           <CardHeader>
             <CardTitle>{initialData ? "Edit Blog" : "Tambah Blog"}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6 pt-4">
-            {/* Title */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Field>
-                <FieldLabel>Judul *</FieldLabel>
-                <Input
-                  {...form.register("title", {
-                    onChange: handleTitleChange,
-                  })}
-                  placeholder="Masukkan judul blog"
-                />
-                <FieldError>{form.formState.errors.title?.message}</FieldError>
-              </Field>
-            </div>
 
-            {/* Category and Read Time */}
+          <CardContent className="space-y-6 pt-4">
+            {/* Judul */}
+            <Field>
+              <FieldLabel>Judul *</FieldLabel>
+              <Input
+                {...form.register("title", {
+                  onChange: handleTitleChange,
+                })}
+                placeholder="Contoh: 7 Tips Lolos Interview Frontend Developer"
+              />
+              <FieldError>{form.formState.errors.title?.message}</FieldError>
+            </Field>
+
+            {/* Kategori & Status */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Controller
                 control={form.control}
@@ -326,7 +326,7 @@ export function BlogForm({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih kategori" />
+                        <SelectValue placeholder="Pilih kategori blog" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">Tidak ada</SelectItem>
@@ -343,11 +343,48 @@ export function BlogForm({
                   </Field>
                 )}
               />
-            </div>
 
+              <Controller
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>Status *</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih status blog" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BLOG_STATUS_OPTIONS.filter(
+                          (opt) => opt.value !== "scheduled"
+                        ).map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FieldError>
+                      {form.formState.errors.status?.message}
+                    </FieldError>
+                  </Field>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ================= Tags & Metadata ================= */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Tag & Metadata</CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-6 pt-4">
             {/* Tags */}
             <Field className="space-y-2">
               <FieldLabel>Tags</FieldLabel>
+
               <Popover open={tagPopoverOpen} onOpenChange={setTagPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -357,10 +394,11 @@ export function BlogForm({
                   >
                     {selectedTags.length > 0
                       ? `${selectedTags.length} tag dipilih`
-                      : "Pilih tags..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      : "Pilih tag yang relevan dengan artikel"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                   </Button>
                 </PopoverTrigger>
+
                 <PopoverContent className="w-full p-0" align="start">
                   <Command>
                     <CommandInput placeholder="Cari tag..." />
@@ -391,7 +429,7 @@ export function BlogForm({
               </Popover>
 
               {selectedTagObjects.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="flex flex-wrap gap-2 pt-2">
                   {selectedTagObjects.map((tag) => (
                     <Badge key={tag.id} variant="secondary" className="gap-1">
                       {tag.name}
@@ -408,38 +446,31 @@ export function BlogForm({
               )}
             </Field>
 
-            {/* Status */}
-            <Controller
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <Field>
-                  <FieldLabel>Status *</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BLOG_STATUS_OPTIONS.filter(
-                        (opt) => opt.value !== "scheduled"
-                      ).map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FieldError>
-                    {form.formState.errors.status?.message}
-                  </FieldError>
-                </Field>
-              )}
-            />
+            {/* Excerpt */}
+            <Field>
+              <FieldLabel>Excerpt / Ringkasan</FieldLabel>
+              <Textarea
+                {...form.register("excerpt")}
+                placeholder="Ringkasan singkat yang muncul di halaman listing blog"
+                rows={3}
+              />
+              <FieldError>{form.formState.errors.excerpt?.message}</FieldError>
+            </Field>
+          </CardContent>
+        </Card>
 
+        {/* ================= Media ================= */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Media</CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-6 pt-4">
             {/* Image Upload */}
             <Field className="space-y-2">
               <FieldLabel>Gambar Cover</FieldLabel>
-              <div className="border-2 border-dashed border-border rounded-lg p-6">
+
+              <div className="border-2 border-dashed rounded-lg p-6">
                 {imagePreview ? (
                   <div className="relative">
                     <img
@@ -460,7 +491,7 @@ export function BlogForm({
                   </div>
                 ) : (
                   <div
-                    className="flex flex-col items-center justify-center cursor-pointer py-8"
+                    className="flex flex-col items-center justify-center cursor-pointer py-10"
                     onClick={() =>
                       !isUploadingImage && fileInputRef.current?.click()
                     }
@@ -468,14 +499,15 @@ export function BlogForm({
                     <ImageIcon className="h-12 w-12 text-muted-foreground mb-2" />
                     <p className="text-sm text-muted-foreground">
                       {isUploadingImage
-                        ? "Mengupload..."
+                        ? "Mengupload gambar..."
                         : "Klik untuk upload gambar cover"}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      PNG, JPG, JPEG (max 5MB)
+                      PNG, JPG, JPEG (maks. 5MB)
                     </p>
                   </div>
                 )}
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -487,27 +519,27 @@ export function BlogForm({
               </div>
             </Field>
 
+            {/* Image Caption */}
             <Field>
               <FieldLabel>Caption Gambar</FieldLabel>
               <Input
                 {...form.register("image_caption")}
-                placeholder="Deskripsi gambar"
+                placeholder="Contoh: Ilustrasi workflow Frontend Developer"
               />
               <FieldError>
                 {form.formState.errors.image_caption?.message}
               </FieldError>
             </Field>
+          </CardContent>
+        </Card>
 
-            <Field>
-              <FieldLabel>Excerpt / Ringkasan</FieldLabel>
-              <Textarea
-                {...form.register("excerpt")}
-                placeholder="Ringkasan singkat yang akan ditampilkan di listing"
-                rows={3}
-              />
-              <FieldError>{form.formState.errors.excerpt?.message}</FieldError>
-            </Field>
+        {/* ================= Konten ================= */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Konten Blog</CardTitle>
+          </CardHeader>
 
+          <CardContent className="pt-4">
             <Controller
               control={form.control}
               name="content"
@@ -518,7 +550,7 @@ export function BlogForm({
                     ref={quillRef}
                     defaultValue={field.value}
                     onTextChange={field.onChange}
-                    placeholder="Tulis konten blog Anda di sini..."
+                    placeholder="Tulis konten blog secara lengkap di sini..."
                   />
                   <FieldError>
                     {form.formState.errors.content?.message}
@@ -530,6 +562,7 @@ export function BlogForm({
         </Card>
       </FieldSet>
 
+      {/* ================= Action ================= */}
       <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
@@ -539,6 +572,7 @@ export function BlogForm({
         >
           Batal
         </Button>
+
         <Button type="submit" disabled={isLoading || isUploadingImage}>
           {isLoading ? (
             <>

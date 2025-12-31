@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import type { UserRole } from "@/types/user";
 import { USER_ROLE_OPTIONS } from "@/types/user";
 import { cn } from "@/lib/utils";
@@ -62,116 +62,122 @@ export function UserFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
-        <DialogHeader className="px-6 pt-6">
-          <DialogTitle>Filter Users</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-md p-0 gap-0">
+        <div className="flex flex-col max-h-[85vh]">
+          <DialogHeader className="px-6 pt-6 pb-4">
+            <DialogTitle>Filter Users</DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-4 px-6 py-4">
-          <div className="space-y-2">
-            <Label>Role</Label>
-            <Select
-              value={localFilters.role || "all"}
-              onValueChange={(val) =>
-                setLocalFilters({
-                  ...localFilters,
-                  role: val === "all" ? undefined : (val as UserRole),
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih role" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                <SelectItem value="all">Semua</SelectItem>
-                {USER_ROLE_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Tanggal Dibuat Dari</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal px-3",
-                    !localFilters.created_from && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                  <span className="truncate">
-                    {localFilters.created_from
-                      ? dayjs(localFilters.created_from).format("DD MMM YYYY")
-                      : "Pilih tanggal"}
-                  </span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-auto p-0 bg-popover z-50"
-                align="start"
-              >
-                <Calendar
-                  mode="single"
-                  selected={localFilters.created_from}
-                  onSelect={(date) =>
-                    setLocalFilters({ ...localFilters, created_from: date })
+          <div className="overflow-y-auto px-6 py-2">
+            <FieldSet className="space-y-4">
+              <Field>
+                <FieldLabel>Role</FieldLabel>
+                <Select
+                  value={localFilters.role || "all"}
+                  onValueChange={(val) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      role: val === "all" ? undefined : (val as UserRole),
+                    })
                   }
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih role" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    <SelectItem value="all">Semua</SelectItem>
+                    {USER_ROLE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel>Tanggal Dibuat Dari</FieldLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal px-3",
+                        !localFilters.created_from && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                      <span className="truncate">
+                        {localFilters.created_from
+                          ? dayjs(localFilters.created_from).format(
+                              "DD MMM YYYY"
+                            )
+                          : "Pilih tanggal"}
+                      </span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto p-0 bg-popover z-50"
+                    align="start"
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={localFilters.created_from}
+                      onSelect={(date) =>
+                        setLocalFilters({ ...localFilters, created_from: date })
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </Field>
+
+              <Field>
+                <FieldLabel>Tanggal Dibuat Sampai</FieldLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal px-3",
+                        !localFilters.created_to && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                      <span className="truncate">
+                        {localFilters.created_to
+                          ? dayjs(localFilters.created_to).format("DD MMM YYYY")
+                          : "Pilih tanggal"}
+                      </span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto p-0 bg-popover z-50"
+                    align="start"
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={localFilters.created_to}
+                      onSelect={(date) =>
+                        setLocalFilters({ ...localFilters, created_to: date })
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </Field>
+            </FieldSet>
           </div>
 
-          <div className="space-y-2">
-            <Label>Tanggal Dibuat Sampai</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal px-3",
-                    !localFilters.created_to && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                  <span className="truncate">
-                    {localFilters.created_to
-                      ? dayjs(localFilters.created_to).format("DD MMM YYYY")
-                      : "Pilih tanggal"}
-                  </span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-auto p-0 bg-popover z-50"
-                align="start"
-              >
-                <Calendar
-                  mode="single"
-                  selected={localFilters.created_to}
-                  onSelect={(date) =>
-                    setLocalFilters({ ...localFilters, created_to: date })
-                  }
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+            <DialogClose asChild>
+              <Button variant="outline" onClick={handleReset}>
+                Reset
+              </Button>
+            </DialogClose>
+            <Button onClick={handleApply}>Terapkan</Button>
+          </DialogFooter>
         </div>
-
-        <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
-          <DialogClose asChild>
-            <Button variant="outline" onClick={handleReset}>
-              Reset
-            </Button>
-          </DialogClose>
-          <Button onClick={handleApply}>Terapkan</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

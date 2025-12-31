@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Settings2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -6,10 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Settings2 } from "lucide-react";
 
-export type ColumnVisibility = {
+export interface ColumnVisibility {
   preview: boolean;
   type: boolean;
   name: boolean;
@@ -17,21 +18,50 @@ export type ColumnVisibility = {
   is_premium: boolean;
   created_at: boolean;
   updated_at: boolean;
+}
+
+export const defaultColumnVisibility: ColumnVisibility = {
+  preview: true,
+  type: true,
+  name: true,
+  language: true,
+  is_premium: true,
+  created_at: true,
+  updated_at: false,
 };
 
-interface TemplatesColumnToggleProps {
-  visibleColumns: ColumnVisibility;
-  onToggle: (column: keyof ColumnVisibility) => void;
+const columnLabels: Record<keyof ColumnVisibility, string> = {
+  preview: "Preview",
+  type: "Tipe",
+  name: "Nama",
+  language: "Bahasa",
+  is_premium: "Premium",
+  created_at: "Dibuat",
+  updated_at: "Diperbarui",
+};
+
+interface ColumnToggleProps {
+  visibility: ColumnVisibility;
+  onVisibilityChange: (visibility: ColumnVisibility) => void;
 }
 
 export function TemplatesColumnToggle({
-  visibleColumns,
-  onToggle,
-}: TemplatesColumnToggleProps) {
+  visibility,
+  onVisibilityChange,
+}: ColumnToggleProps) {
+  const [open, setOpen] = useState(false);
+
+  const toggleColumn = (column: keyof ColumnVisibility) => {
+    onVisibilityChange({
+      ...visibility,
+      [column]: !visibility[column],
+    });
+  };
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="hidden lg:flex">
+        <Button variant="outline" size="sm">
           <Settings2 className="h-4 w-4 mr-2" />
           View
         </Button>
@@ -42,48 +72,17 @@ export function TemplatesColumnToggle({
       >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuCheckboxItem
-          checked={visibleColumns.preview}
-          onCheckedChange={() => onToggle("preview")}
-        >
-          Preview
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibleColumns.name}
-          onCheckedChange={() => onToggle("name")}
-        >
-          Nama
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibleColumns.type}
-          onCheckedChange={() => onToggle("type")}
-        >
-          Tipe
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibleColumns.language}
-          onCheckedChange={() => onToggle("language")}
-        >
-          Bahasa
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibleColumns.is_premium}
-          onCheckedChange={() => onToggle("is_premium")}
-        >
-          Premium
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibleColumns.created_at}
-          onCheckedChange={() => onToggle("created_at")}
-        >
-          Dibuat
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibleColumns.updated_at}
-          onCheckedChange={() => onToggle("updated_at")}
-        >
-          Diperbarui
-        </DropdownMenuCheckboxItem>
+        {Object.keys(visibility).map((column) => (
+          <DropdownMenuCheckboxItem
+            key={column}
+            checked={visibility[column as keyof ColumnVisibility]}
+            onCheckedChange={() =>
+              toggleColumn(column as keyof ColumnVisibility)
+            }
+          >
+            {columnLabels[column as keyof ColumnVisibility]}
+          </DropdownMenuCheckboxItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

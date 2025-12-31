@@ -8,7 +8,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import {
   Select,
   SelectContent,
@@ -59,95 +59,100 @@ export function TemplatesFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 overflow-hidden">
-        <DialogHeader className="px-6 pt-6">
-          <DialogTitle>Filter Template</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 px-6 py-4">
-          <div className="space-y-2">
-            <Label>Tipe Template</Label>
-            <Select
-              value={localFilters.type || "all"}
-              onValueChange={(val) =>
-                setLocalFilters({
-                  ...localFilters,
-                  type: val === "all" ? undefined : (val as TemplateType),
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Semua tipe" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua tipe</SelectItem>
-                {TEMPLATE_TYPE_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <DialogContent className="sm:max-w-md p-0 gap-0">
+        <div className="flex flex-col max-h-[85vh]">
+          <DialogHeader className="px-6 pt-6 pb-4">
+            <DialogTitle>Filter Template</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-y-auto px-6 py-2">
+            <FieldSet className="space-y-4">
+              <Field>
+                <FieldLabel>Tipe Template</FieldLabel>
+                <Select
+                  value={localFilters.type || "all"}
+                  onValueChange={(val) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      type: val === "all" ? undefined : (val as TemplateType),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Semua tipe" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua tipe</SelectItem>
+                    {TEMPLATE_TYPE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel>Bahasa</FieldLabel>
+                <Select
+                  value={localFilters.language || "all"}
+                  onValueChange={(val) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      language:
+                        val === "all" ? undefined : (val as "en" | "id"),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Semua bahasa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua bahasa</SelectItem>
+                    <SelectItem value="id">Indonesia</SelectItem>
+                    <SelectItem value="en">Inggris</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel>Status Premium</FieldLabel>
+                <Select
+                  value={
+                    localFilters.is_premium === undefined
+                      ? "all"
+                      : localFilters.is_premium
+                      ? "true"
+                      : "false"
+                  }
+                  onValueChange={(val) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      is_premium: val === "all" ? undefined : val === "true",
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Semua" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua</SelectItem>
+                    <SelectItem value="true">Premium</SelectItem>
+                    <SelectItem value="false">Gratis</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+            </FieldSet>
           </div>
 
-          <div className="space-y-2">
-            <Label>Bahasa</Label>
-            <Select
-              value={localFilters.language || "all"}
-              onValueChange={(val) =>
-                setLocalFilters({
-                  ...localFilters,
-                  language: val === "all" ? undefined : (val as "en" | "id"),
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Semua bahasa" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua bahasa</SelectItem>
-                <SelectItem value="id">Indonesia</SelectItem>
-                <SelectItem value="en">Inggris</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Status Premium</Label>
-            <Select
-              value={
-                localFilters.is_premium === undefined
-                  ? "all"
-                  : localFilters.is_premium
-                  ? "true"
-                  : "false"
-              }
-              onValueChange={(val) =>
-                setLocalFilters({
-                  ...localFilters,
-                  is_premium: val === "all" ? undefined : val === "true",
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Semua" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua</SelectItem>
-                <SelectItem value="true">Premium</SelectItem>
-                <SelectItem value="false">Gratis</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+            <DialogClose asChild>
+              <Button type="button" variant="outline" onClick={handleReset}>
+                Reset
+              </Button>
+            </DialogClose>
+            <Button onClick={handleApply}>Terapkan</Button>
+          </DialogFooter>
         </div>
-
-        <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
-          <DialogClose asChild>
-            <Button type="button" variant="outline" onClick={handleReset}>
-              Reset
-            </Button>
-          </DialogClose>
-          <Button onClick={handleApply}>Terapkan</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

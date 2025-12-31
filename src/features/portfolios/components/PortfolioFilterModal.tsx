@@ -7,7 +7,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -56,7 +56,8 @@ export function PortfolioFilterModal({
   filters,
   onApplyFilters,
 }: PortfolioFilterModalProps) {
-  const [localFilters, setLocalFilters] = useState<PortfolioFilterValues>(filters);
+  const [localFilters, setLocalFilters] =
+    useState<PortfolioFilterValues>(filters);
 
   const handleApply = () => {
     onApplyFilters(localFilters);
@@ -69,108 +70,116 @@ export function PortfolioFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Filter Portfolio</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>Tipe Proyek</Label>
-            <Select
-              value={localFilters.project_type || "all"}
-              onValueChange={(value) =>
-                setLocalFilters({
-                  ...localFilters,
-                  project_type: value === "all" ? undefined : (value as ProjectType),
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Semua tipe" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Tipe</SelectItem>
-                {Object.entries(projectTypeLabels).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      <DialogContent className="sm:max-w-md p-0 gap-0">
+        <div className="flex flex-col max-h-[85vh]">
+          <DialogHeader className="px-6 pt-6 pb-4">
+            <DialogTitle>Filter Portfolio</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-y-auto px-6 py-2">
+            <FieldSet className="space-y-4">
+              <Field>
+                <FieldLabel>Tipe Proyek</FieldLabel>
+                <Select
+                  value={localFilters.project_type || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      project_type:
+                        value === "all" ? undefined : (value as ProjectType),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Semua tipe" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Tipe</SelectItem>
+                    {Object.entries(projectTypeLabels).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
 
-          <div className="space-y-2">
-            <Label>Industri</Label>
-            <Input
-              placeholder="Cari industri..."
-              value={localFilters.industry || ""}
-              onChange={(e) =>
-                setLocalFilters({
-                  ...localFilters,
-                  industry: e.target.value || undefined,
-                })
-              }
-            />
-          </div>
+              <Field>
+                <FieldLabel>Industri</FieldLabel>
+                <Input
+                  placeholder="Cari industri..."
+                  value={localFilters.industry || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      industry: e.target.value || undefined,
+                    })
+                  }
+                />
+              </Field>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Tahun</Label>
-              <Select
-                value={localFilters.year?.toString() || "all"}
-                onValueChange={(value) =>
-                  setLocalFilters({
-                    ...localFilters,
-                    year: value === "all" ? undefined : parseInt(value),
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Semua tahun" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Tahun</SelectItem>
-                  {years.map((year) => (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel>Tahun</FieldLabel>
+                  <Select
+                    value={localFilters.year?.toString() || "all"}
+                    onValueChange={(value) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        year: value === "all" ? undefined : parseInt(value),
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Semua tahun" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Tahun</SelectItem>
+                      {years.map((year) => (
+                        <SelectItem key={year} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
 
-            <div className="space-y-2">
-              <Label>Bulan</Label>
-              <Select
-                value={localFilters.month?.toString() || "all"}
-                onValueChange={(value) =>
-                  setLocalFilters({
-                    ...localFilters,
-                    month: value === "all" ? undefined : parseInt(value),
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Semua bulan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Bulan</SelectItem>
-                  {months.map((month) => (
-                    <SelectItem key={month.value} value={month.value.toString()}>
-                      {month.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <Field>
+                  <FieldLabel>Bulan</FieldLabel>
+                  <Select
+                    value={localFilters.month?.toString() || "all"}
+                    onValueChange={(value) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        month: value === "all" ? undefined : parseInt(value),
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Semua bulan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Bulan</SelectItem>
+                      {months.map((month) => (
+                        <SelectItem
+                          key={month.value}
+                          value={month.value.toString()}
+                        >
+                          {month.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              </div>
+            </FieldSet>
           </div>
+          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+            <Button variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
+            <Button onClick={handleApply}>Terapkan Filter</Button>
+          </DialogFooter>
         </div>
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={handleReset}>
-            Reset
-          </Button>
-          <Button onClick={handleApply}>Terapkan Filter</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

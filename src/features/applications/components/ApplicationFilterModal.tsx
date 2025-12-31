@@ -7,9 +7,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import {
   Select,
   SelectContent,
@@ -83,173 +84,179 @@ export function ApplicationFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Filter Lamaran</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-md p-0 gap-0">
+        <div className="flex flex-col max-h-[85vh]">
+          <DialogHeader className="px-6 pt-6 pb-4">
+            <DialogTitle>Filter Lamaran</DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          {/* Date Range */}
-          <div className="space-y-2">
-            <Label>Tanggal Lamaran</Label>
-            <div className="flex gap-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "flex-1 justify-start text-left font-normal",
-                      !dateFrom && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateFrom ? dayjs(dateFrom).format("DD/MM/YYYY") : "Dari"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-50" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dateFrom}
-                    onSelect={setDateFrom}
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "flex-1 justify-start text-left font-normal",
-                      !dateTo && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateTo ? dayjs(dateTo).format("DD/MM/YYYY") : "Sampai"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-50" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dateTo}
-                    onSelect={setDateTo}
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+          <div className="overflow-y-auto px-6 py-2">
+            <FieldSet className="space-y-4">
+              {/* Date Range */}
+              <Field>
+                <FieldLabel>Tanggal Lamaran</FieldLabel>
+                <div className="flex gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "flex-1 justify-start text-left font-normal",
+                          !dateFrom && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateFrom
+                          ? dayjs(dateFrom).format("DD/MM/YYYY")
+                          : "Dari"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 z-50" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateFrom}
+                        onSelect={setDateFrom}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "flex-1 justify-start text-left font-normal",
+                          !dateTo && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateTo ? dayjs(dateTo).format("DD/MM/YYYY") : "Sampai"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 z-50" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateTo}
+                        onSelect={setDateTo}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </Field>
+
+              {/* Job Type */}
+              <Field>
+                <FieldLabel>Tipe Pekerjaan</FieldLabel>
+                <Select
+                  value={localFilters.job_type || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      job_type: value === "all" ? undefined : value,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih tipe pekerjaan" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">Semua Tipe</SelectItem>
+                    {JOB_TYPE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* Work System */}
+              <Field>
+                <FieldLabel>Sistem Kerja</FieldLabel>
+                <Select
+                  value={localFilters.work_system || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      work_system: value === "all" ? undefined : value,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih sistem kerja" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">Semua Sistem</SelectItem>
+                    {WORK_SYSTEM_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* Status */}
+              <Field>
+                <FieldLabel>Status</FieldLabel>
+                <Select
+                  value={localFilters.status || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      status: value === "all" ? undefined : value,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih status" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50 max-h-60">
+                    <SelectItem value="all">Semua Status</SelectItem>
+                    {STATUS_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* Result Status */}
+              <Field>
+                <FieldLabel>Hasil</FieldLabel>
+                <Select
+                  value={localFilters.result_status || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      result_status: value === "all" ? undefined : value,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih hasil" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">Semua Hasil</SelectItem>
+                    {RESULT_STATUS_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </FieldSet>
           </div>
 
-          {/* Job Type */}
-          <div className="space-y-2">
-            <Label>Tipe Pekerjaan</Label>
-            <Select
-              value={localFilters.job_type || "all"}
-              onValueChange={(value) =>
-                setLocalFilters({
-                  ...localFilters,
-                  job_type: value === "all" ? undefined : value,
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih tipe pekerjaan" />
-              </SelectTrigger>
-              <SelectContent className="z-50">
-                <SelectItem value="all">Semua Tipe</SelectItem>
-                {JOB_TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Work System */}
-          <div className="space-y-2">
-            <Label>Sistem Kerja</Label>
-            <Select
-              value={localFilters.work_system || "all"}
-              onValueChange={(value) =>
-                setLocalFilters({
-                  ...localFilters,
-                  work_system: value === "all" ? undefined : value,
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih sistem kerja" />
-              </SelectTrigger>
-              <SelectContent className="z-50">
-                <SelectItem value="all">Semua Sistem</SelectItem>
-                {WORK_SYSTEM_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Status */}
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <Select
-              value={localFilters.status || "all"}
-              onValueChange={(value) =>
-                setLocalFilters({
-                  ...localFilters,
-                  status: value === "all" ? undefined : value,
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih status" />
-              </SelectTrigger>
-              <SelectContent className="z-50 max-h-60">
-                <SelectItem value="all">Semua Status</SelectItem>
-                {STATUS_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Result Status */}
-          <div className="space-y-2">
-            <Label>Hasil</Label>
-            <Select
-              value={localFilters.result_status || "all"}
-              onValueChange={(value) =>
-                setLocalFilters({
-                  ...localFilters,
-                  result_status: value === "all" ? undefined : value,
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih hasil" />
-              </SelectTrigger>
-              <SelectContent className="z-50">
-                <SelectItem value="all">Semua Hasil</SelectItem>
-                {RESULT_STATUS_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="flex gap-2 justify-end">
-          <Button variant="outline" onClick={handleReset}>
-            Reset
-          </Button>
-          <Button onClick={handleApply}>Terapkan Filter</Button>
+          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+            <Button variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
+            <Button onClick={handleApply}>Terapkan Filter</Button>
+          </DialogFooter>
         </div>
       </DialogContent>
     </Dialog>

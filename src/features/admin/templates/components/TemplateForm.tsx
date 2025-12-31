@@ -126,7 +126,8 @@ export function TemplateForm({
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldSet disabled={isLoading || isUploading} className="space-y-6 mb-6">
+      <FieldSet disabled={isLoading || isUploading} className="space-y-8 mb-6">
+        {/* ================= Informasi Template ================= */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>Informasi Template</CardTitle>
@@ -136,12 +137,13 @@ export function TemplateForm({
               size="sm"
               onClick={() => window.open("/admin/templates/guide", "_blank")}
             >
-              <CircleHelp className="w-4 h-4 mr-2" />
+              <CircleHelp className="size-4 mr-2" />
               Panduan Pembuatan Template
             </Button>
           </CardHeader>
-          <CardContent className="space-y-4 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <CardContent className="pt-4 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Controller
                 control={form.control}
                 name="type"
@@ -153,7 +155,7 @@ export function TemplateForm({
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih tipe" />
+                        <SelectValue placeholder="Pilih jenis template (CV / Surat Lamaran)" />
                       </SelectTrigger>
                       <SelectContent>
                         {TEMPLATE_TYPE_OPTIONS.map((opt) => (
@@ -181,11 +183,11 @@ export function TemplateForm({
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih bahasa" />
+                        <SelectValue placeholder="Pilih bahasa template" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="id">Indonesia</SelectItem>
-                        <SelectItem value="en">Inggris</SelectItem>
+                        <SelectItem value="id">Bahasa Indonesia</SelectItem>
+                        <SelectItem value="en">Bahasa Inggris</SelectItem>
                       </SelectContent>
                     </Select>
                     <FieldError>
@@ -196,7 +198,7 @@ export function TemplateForm({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
                 <FieldLabel>Nama Template *</FieldLabel>
                 <Input
@@ -216,9 +218,12 @@ export function TemplateForm({
                   className="flex flex-row items-center justify-between rounded-lg border p-4"
                 >
                   <div className="space-y-0.5">
-                    <FieldLabel className="text-base">Premium</FieldLabel>
+                    <FieldLabel className="text-base">
+                      Template Premium
+                    </FieldLabel>
                     <FieldDescription>
-                      Template ini hanya untuk pengguna premium
+                      Aktifkan jika template ini hanya tersedia untuk pengguna
+                      premium
                     </FieldDescription>
                   </div>
                   <Switch
@@ -231,49 +236,55 @@ export function TemplateForm({
           </CardContent>
         </Card>
 
+        {/* ================= File Template ================= */}
         <Card>
           <CardHeader>
             <CardTitle>File Template</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 pt-4">
+
+          <CardContent className="pt-4 space-y-6">
+            {/* Preview Image */}
             <Controller
               control={form.control}
               name="preview"
               render={({ field }) => (
                 <Field>
                   <FieldLabel>Preview Image *</FieldLabel>
+
                   <div className="flex items-start gap-4">
                     {field.value && (
                       <div className="relative">
                         <img
                           src={buildImageUrl(field.value)}
-                          alt="Preview"
+                          alt="Preview Template"
                           className="w-32 h-40 object-cover rounded-lg border"
                         />
                         <Button
                           type="button"
                           variant="destructive"
                           size="icon"
-                          className="absolute -top-2 -right-2 h-6 w-6"
+                          className="absolute -top-2 -right-2 size-6"
                           onClick={() => field.onChange("")}
                         >
-                          <X className="h-3 w-3" />
+                          <X className="size-3" />
                         </Button>
                       </div>
                     )}
+
                     {!field.value && (
                       <div
                         className="flex flex-col items-center justify-center w-32 h-40 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
                         onClick={() => previewInputRef.current?.click()}
                       >
-                        <Upload className="h-6 w-6 text-muted-foreground mb-2" />
+                        <Upload className="size-6 text-muted-foreground mb-2" />
                         <span className="text-xs text-muted-foreground text-center">
                           {uploadPreviewValidation.isPending
-                            ? "Uploading..."
-                            : "Upload Preview"}
+                            ? "Mengunggah preview..."
+                            : "Upload gambar preview"}
                         </span>
                       </div>
                     )}
+
                     <input
                       ref={previewInputRef}
                       type="file"
@@ -282,9 +293,11 @@ export function TemplateForm({
                       onChange={handlePreviewChange}
                     />
                   </div>
+
                   <FieldDescription>
-                    Format: JPG, PNG. Maks 5MB.
+                    Gunakan gambar pratinjau template (JPG / PNG, maksimal 5MB).
                   </FieldDescription>
+
                   <FieldError>
                     {form.formState.errors.preview?.message}
                   </FieldError>
@@ -292,22 +305,24 @@ export function TemplateForm({
               )}
             />
 
+            {/* File DOCX */}
             <Controller
               control={form.control}
               name="path"
               render={({ field }) => (
                 <Field>
                   <FieldLabel>File Template (.docx) *</FieldLabel>
+
                   <div className="flex items-center gap-4">
                     {field.value && (
                       <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/30">
-                        <FileText className="h-8 w-8 text-blue-600" />
+                        <FileText className="size-8 text-blue-600" />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">
                             {field.value.split("/").pop()}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Uploaded
+                            File berhasil diunggah
                           </p>
                         </div>
                         <Button
@@ -316,21 +331,23 @@ export function TemplateForm({
                           size="icon"
                           onClick={() => field.onChange("")}
                         >
-                          <X className="h-4 w-4" />
+                          <X className="size-4" />
                         </Button>
                       </div>
                     )}
+
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploadFileValidation.isPending}
                     >
-                      <Upload className="h-4 w-4 mr-2" />
+                      <Upload className="size-4 mr-2" />
                       {uploadFileValidation.isPending
-                        ? "Uploading..."
-                        : "Upload File"}
+                        ? "Mengunggah file..."
+                        : "Upload file template"}
                     </Button>
+
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -339,7 +356,11 @@ export function TemplateForm({
                       onChange={handleFileChange}
                     />
                   </div>
-                  <FieldDescription>Format: DOCX. Maks 10MB.</FieldDescription>
+
+                  <FieldDescription>
+                    Unggah file template dalam format DOCX (maksimal 10MB).
+                  </FieldDescription>
+
                   <FieldError>{form.formState.errors.path?.message}</FieldError>
                 </Field>
               )}
@@ -348,7 +369,7 @@ export function TemplateForm({
         </Card>
       </FieldSet>
 
-      {/* Form Actions */}
+      {/* ================= Actions ================= */}
       <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
@@ -358,10 +379,11 @@ export function TemplateForm({
         >
           Batal
         </Button>
+
         <Button type="submit" disabled={isLoading || isUploading}>
           {isLoading ? (
             <>
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
               Menyimpan...
             </>
           ) : isEdit ? (

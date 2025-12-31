@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { Upload, Pen, X, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel } from "@/components/ui/field";
 import {
   Dialog,
   DialogContent,
@@ -151,8 +151,8 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
   };
 
   return (
-    <div className="space-y-2">
-      <Label>Tanda Tangan (Opsional)</Label>
+    <Field className="space-y-2">
+      <FieldLabel>Tanda Tangan (Opsional)</FieldLabel>
 
       {value ? (
         <div className="relative inline-block">
@@ -186,97 +186,105 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
       )}
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Tanda Tangan</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-md p-0 gap-0">
+          <div className="flex flex-col max-h-[85vh]">
+            <DialogHeader className="px-6 pt-6 pb-4">
+              <DialogTitle>Tanda Tangan</DialogTitle>
+            </DialogHeader>
 
-          <Tabs defaultValue="draw" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="draw">
-                <Pen className="h-4 w-4 mr-2" />
-                Tulis
-              </TabsTrigger>
-              <TabsTrigger value="upload">
-                <Upload className="h-4 w-4 mr-2" />
-                Upload
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-y-auto px-6 py-2 pb-6">
+              <Tabs defaultValue="draw" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="draw">
+                    <Pen className="h-4 w-4 mr-2" />
+                    Tulis
+                  </TabsTrigger>
+                  <TabsTrigger value="upload">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="draw" className="space-y-4">
-              <div className="border rounded-md p-2 bg-background">
-                <canvas
-                  ref={canvasRef}
-                  width={400}
-                  height={150}
-                  className="w-full cursor-crosshair touch-none"
-                  onMouseDown={startDrawing}
-                  onMouseMove={draw}
-                  onMouseUp={stopDrawing}
-                  onMouseLeave={stopDrawing}
-                  onTouchStart={startDrawing}
-                  onTouchMove={draw}
-                  onTouchEnd={stopDrawing}
-                />
-              </div>
-              <div className="flex gap-2 justify-end">
-                <Button type="button" variant="outline" onClick={clearCanvas}>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Hapus
-                </Button>
-                <Button
-                  type="button"
-                  onClick={saveSignature}
-                  disabled={uploadMutation.isPending}
-                >
-                  {uploadMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Mengupload...
-                    </>
-                  ) : (
-                    "Simpan"
-                  )}
-                </Button>
-              </div>
-            </TabsContent>
+                <TabsContent value="draw" className="space-y-4">
+                  <div className="border rounded-md p-2 bg-background">
+                    <canvas
+                      ref={canvasRef}
+                      width={400}
+                      height={150}
+                      className="w-full cursor-crosshair touch-none"
+                      onMouseDown={startDrawing}
+                      onMouseMove={draw}
+                      onMouseUp={stopDrawing}
+                      onMouseLeave={stopDrawing}
+                      onTouchStart={startDrawing}
+                      onTouchMove={draw}
+                      onTouchEnd={stopDrawing}
+                    />
+                  </div>
+                  <div className="flex gap-2 justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={clearCanvas}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Hapus
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={saveSignature}
+                      disabled={uploadMutation.isPending}
+                    >
+                      {uploadMutation.isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Mengupload...
+                        </>
+                      ) : (
+                        "Simpan"
+                      )}
+                    </Button>
+                  </div>
+                </TabsContent>
 
-            <TabsContent value="upload" className="space-y-4">
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/*"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full h-32 border-dashed"
-                disabled={uploadMutation.isPending}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  {uploadMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-8 w-8 animate-spin" />
-                      <span>Mengupload...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-8 w-8" />
-                      <span>Klik untuk upload gambar tanda tangan</span>
-                      <span className="text-xs text-muted-foreground">
-                        PNG, JPG (max 2MB)
-                      </span>
-                    </>
-                  )}
-                </div>
-              </Button>
-            </TabsContent>
-          </Tabs>
+                <TabsContent value="upload" className="space-y-4">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-32 border-dashed"
+                    disabled={uploadMutation.isPending}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      {uploadMutation.isPending ? (
+                        <>
+                          <Loader2 className="h-8 w-8 animate-spin" />
+                          <span>Mengupload...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-8 w-8" />
+                          <span>Klik untuk upload gambar tanda tangan</span>
+                          <span className="text-xs text-muted-foreground">
+                            PNG, JPG (max 2MB)
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </Button>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </Field>
   );
 }

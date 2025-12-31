@@ -62,15 +62,18 @@ export function JobRoleFormModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 overflow-hidden">
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <DialogHeader className="px-6 pt-6">
+      <DialogContent className="max-w-md p-0 gap-0">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="flex flex-col max-h-[85vh]"
+        >
+          <DialogHeader className="px-6 pt-6 pb-4">
             <DialogTitle>
               {editingRole ? "Edit Role Pekerjaan" : "Tambah Role Pekerjaan"}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="px-6 py-4">
+          <div className="overflow-y-auto px-6 py-2">
             <FieldSet disabled={isLoading} className="space-y-4">
               <Field>
                 <FieldLabel>Nama Role *</FieldLabel>

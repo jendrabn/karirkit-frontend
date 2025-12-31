@@ -123,46 +123,71 @@ export function PortfolioForm({
 
   return (
     <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-      <FieldSet disabled={isLoading} className="space-y-6 mb-6">
-        {/* Basic Info */}
+      <FieldSet disabled={isLoading} className="space-y-8 mb-6">
+        {/* ================= Informasi Dasar ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Informasi Dasar</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel>Judul Proyek</FieldLabel>
-                <Input {...form.register("title")} />
-                <FieldError>{form.formState.errors.title?.message}</FieldError>
-              </Field>
-            </div>
 
-            <Field>
-              <FieldLabel>Deskripsi Singkat</FieldLabel>
-              <Input {...form.register("sort_description")} />
-              <FieldError>
-                {form.formState.errors.sort_description?.message}
-              </FieldError>
-            </Field>
+          <CardContent className="pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Judul Proyek */}
+              <div className="md:col-span-2">
+                <Field>
+                  <FieldLabel>Judul Proyek</FieldLabel>
+                  <Input
+                    {...form.register("title")}
+                    placeholder="Contoh: Sistem Manajemen Inventori Berbasis Web"
+                  />
+                  <FieldError>
+                    {form.formState.errors.title?.message}
+                  </FieldError>
+                </Field>
+              </div>
 
-            <Field>
-              <FieldLabel>Deskripsi</FieldLabel>
-              <Textarea {...form.register("description")} rows={5} />
-              <FieldError>
-                {form.formState.errors.description?.message}
-              </FieldError>
-            </Field>
+              {/* Deskripsi Singkat */}
+              <div className="md:col-span-2">
+                <Field>
+                  <FieldLabel>Deskripsi Singkat</FieldLabel>
+                  <Input
+                    {...form.register("sort_description")}
+                    placeholder="Ringkasan singkat proyek (1 kalimat)"
+                  />
+                  <FieldError>
+                    {form.formState.errors.sort_description?.message}
+                  </FieldError>
+                </Field>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Deskripsi */}
+              <div className="md:col-span-2">
+                <Field>
+                  <FieldLabel>Deskripsi</FieldLabel>
+                  <Textarea
+                    {...form.register("description")}
+                    rows={5}
+                    placeholder="Jelaskan tujuan proyek, peran Anda, teknologi yang digunakan, dan hasil yang dicapai"
+                  />
+                  <FieldError>
+                    {form.formState.errors.description?.message}
+                  </FieldError>
+                </Field>
+              </div>
+
+              {/* Role */}
               <Field>
                 <FieldLabel>Role / Posisi</FieldLabel>
-                <Input {...form.register("role_title")} />
+                <Input
+                  {...form.register("role_title")}
+                  placeholder="Contoh: Frontend Developer"
+                />
                 <FieldError>
                   {form.formState.errors.role_title?.message}
                 </FieldError>
               </Field>
 
+              {/* Tipe Proyek */}
               <Field>
                 <FieldLabel>Tipe Proyek</FieldLabel>
                 <Select
@@ -189,17 +214,20 @@ export function PortfolioForm({
                   {form.formState.errors.project_type?.message}
                 </FieldError>
               </Field>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Industri */}
               <Field>
                 <FieldLabel>Industri</FieldLabel>
-                <Input {...form.register("industry")} />
+                <Input
+                  {...form.register("industry")}
+                  placeholder="Contoh: Teknologi Informasi, Fintech, E-commerce"
+                />
                 <FieldError>
                   {form.formState.errors.industry?.message}
                 </FieldError>
               </Field>
 
+              {/* Bulan */}
               <Field>
                 <FieldLabel>Bulan</FieldLabel>
                 <Select
@@ -222,6 +250,7 @@ export function PortfolioForm({
                 <FieldError>{form.formState.errors.month?.message}</FieldError>
               </Field>
 
+              {/* Tahun */}
               <Field>
                 <FieldLabel>Tahun</FieldLabel>
                 <Select
@@ -247,19 +276,20 @@ export function PortfolioForm({
           </CardContent>
         </Card>
 
-        {/* Links */}
+        {/* ================= Links ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Links</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <CardContent className="pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
                 <FieldLabel>Live URL (Opsional)</FieldLabel>
                 <Input
                   {...form.register("live_url")}
                   type="url"
-                  placeholder="https://example.com"
+                  placeholder="https://aplikasi-anda.com"
                 />
                 <FieldError>
                   {form.formState.errors.live_url?.message}
@@ -271,7 +301,7 @@ export function PortfolioForm({
                 <Input
                   {...form.register("repo_url")}
                   type="url"
-                  placeholder="https://github.com/..."
+                  placeholder="https://github.com/username/nama-project"
                 />
                 <FieldError>
                   {form.formState.errors.repo_url?.message}
@@ -281,15 +311,16 @@ export function PortfolioForm({
           </CardContent>
         </Card>
 
-        {/* Tools */}
+        {/* ================= Tools ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Tools & Teknologi</CardTitle>
           </CardHeader>
+
           <CardContent className="space-y-4 pt-4">
             <div className="flex gap-2">
               <Input
-                placeholder="Tambah tool/teknologi..."
+                placeholder="Contoh: React, Laravel, MySQL"
                 value={newTool}
                 onChange={(e) => setNewTool(e.target.value)}
                 onKeyDown={(e) => {
@@ -299,8 +330,8 @@ export function PortfolioForm({
                   }
                 }}
               />
-              <Button type="button" onClick={handleAddTool}>
-                <Plus className="h-4 w-4" />
+              <Button type="button" onClick={handleAddTool} size="icon">
+                <Plus className="size-4" />
               </Button>
             </div>
 
@@ -314,7 +345,7 @@ export function PortfolioForm({
                       onClick={() => handleRemoveTool(tool)}
                       className="ml-1 hover:text-destructive"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="size-3" />
                     </button>
                   </Badge>
                 ))}
@@ -323,7 +354,7 @@ export function PortfolioForm({
           </CardContent>
         </Card>
 
-        {/* Cover */}
+        {/* ================= Cover ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Cover Image</CardTitle>
@@ -333,7 +364,7 @@ export function PortfolioForm({
           </CardContent>
         </Card>
 
-        {/* Medias */}
+        {/* ================= Media ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Media Gallery</CardTitle>
@@ -344,7 +375,7 @@ export function PortfolioForm({
         </Card>
       </FieldSet>
 
-      {/* Actions */}
+      {/* ================= Actions ================= */}
       <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
@@ -354,10 +385,11 @@ export function PortfolioForm({
         >
           Batal
         </Button>
+
         <Button type="submit" disabled={isLoading}>
           {isLoading ? (
             <>
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
               Menyimpan...
             </>
           ) : initialData ? (

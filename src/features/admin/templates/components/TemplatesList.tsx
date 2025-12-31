@@ -57,7 +57,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { TemplatesFilterModal } from "./TemplatesFilterModal";
-import { TemplatesColumnToggle } from "./TemplatesColumnToggle";
+import {
+  TemplatesColumnToggle,
+  defaultColumnVisibility,
+  type ColumnVisibility,
+} from "./TemplatesColumnToggle";
 import { cn, buildImageUrl } from "@/lib/utils";
 import { useTemplates } from "../api/get-templates";
 import { useDeleteTemplate } from "../api/delete-template";
@@ -88,17 +92,9 @@ export const TemplatesList = () => {
       "page" | "per_page" | "q" | "sort_by" | "sort_order"
     >
   >({});
-  const [visibleColumns, setVisibleColumns] = useLocalStorage(
+  const [visibility, setVisibility] = useLocalStorage<ColumnVisibility>(
     "templates-table-columns",
-    {
-      preview: true,
-      type: true,
-      name: true,
-      language: true,
-      is_premium: true,
-      created_at: true,
-      updated_at: false,
-    }
+    defaultColumnVisibility
   );
 
   const [sortField, setSortField] = useState<SortField>("created_at");
@@ -259,13 +255,8 @@ export const TemplatesList = () => {
             Filter
           </Button>
           <TemplatesColumnToggle
-            visibleColumns={visibleColumns}
-            onToggle={(column) =>
-              setVisibleColumns((prev) => ({
-                ...prev,
-                [column]: !prev[column],
-              }))
-            }
+            visibility={visibility}
+            onVisibilityChange={setVisibility}
           />
           <Button size="sm" onClick={() => navigate("/admin/templates/create")}>
             <Plus className="h-4 w-4 mr-2" />
@@ -288,37 +279,37 @@ export const TemplatesList = () => {
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
-                {visibleColumns.preview && (
+                {visibility.preview && (
                   <TableHead className="uppercase text-xs font-medium tracking-wider">
                     Preview
                   </TableHead>
                 )}
-                {visibleColumns.name && (
+                {visibility.name && (
                   <TableHead>
                     <SortableHeader field="name">Nama</SortableHeader>
                   </TableHead>
                 )}
-                {visibleColumns.type && (
+                {visibility.type && (
                   <TableHead>
                     <SortableHeader field="type">Tipe</SortableHeader>
                   </TableHead>
                 )}
-                {visibleColumns.language && (
+                {visibility.language && (
                   <TableHead>
                     <SortableHeader field="language">Bahasa</SortableHeader>
                   </TableHead>
                 )}
-                {visibleColumns.is_premium && (
+                {visibility.is_premium && (
                   <TableHead className="uppercase text-xs font-medium tracking-wider">
                     <SortableHeader field="is_premium">Premium</SortableHeader>
                   </TableHead>
                 )}
-                {visibleColumns.created_at && (
+                {visibility.created_at && (
                   <TableHead>
                     <SortableHeader field="created_at">Dibuat</SortableHeader>
                   </TableHead>
                 )}
-                {visibleColumns.updated_at && (
+                {visibility.updated_at && (
                   <TableHead>
                     <SortableHeader field="updated_at">
                       Diperbarui
@@ -367,7 +358,7 @@ export const TemplatesList = () => {
                         onCheckedChange={() => handleSelectOne(template.id)}
                       />
                     </TableCell>
-                    {visibleColumns.preview && (
+                    {visibility.preview && (
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {template.preview ? (
@@ -384,24 +375,24 @@ export const TemplatesList = () => {
                         </div>
                       </TableCell>
                     )}
-                    {visibleColumns.name && (
+                    {visibility.name && (
                       <TableCell className="font-medium whitespace-nowrap">
                         {template.name}
                       </TableCell>
                     )}
-                    {visibleColumns.type && (
+                    {visibility.type && (
                       <TableCell className="whitespace-nowrap">
                         <Badge variant="outline">
                           {getTemplateTypeLabel(template.type)}
                         </Badge>
                       </TableCell>
                     )}
-                    {visibleColumns.language && (
+                    {visibility.language && (
                       <TableCell className="whitespace-nowrap uppercase">
                         <Badge variant="secondary">{template.language}</Badge>
                       </TableCell>
                     )}
-                    {visibleColumns.is_premium && (
+                    {visibility.is_premium && (
                       <TableCell>
                         {template.is_premium ? (
                           <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
@@ -413,14 +404,14 @@ export const TemplatesList = () => {
                         )}
                       </TableCell>
                     )}
-                    {visibleColumns.created_at && (
+                    {visibility.created_at && (
                       <TableCell className="whitespace-nowrap text-muted-foreground">
                         {dayjs(template.created_at).format(
                           "DD MMM YYYY, HH:mm"
                         )}
                       </TableCell>
                     )}
-                    {visibleColumns.updated_at && (
+                    {visibility.updated_at && (
                       <TableCell className="whitespace-nowrap text-muted-foreground">
                         {dayjs(template.updated_at).format(
                           "DD MMM YYYY, HH:mm"
