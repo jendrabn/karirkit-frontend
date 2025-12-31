@@ -1,9 +1,13 @@
 export type DegreeType =
-  | "highschool"
-  | "associate"
+  | "middle_school"
+  | "high_school"
+  | "associate_d1"
+  | "associate_d2"
+  | "associate_d3"
   | "bachelor"
   | "master"
-  | "doctorate";
+  | "doctorate"
+  | "any";
 export type JobType =
   | "full_time"
   | "part_time"
@@ -116,11 +120,15 @@ export const LANGUAGE_OPTIONS = [
 ];
 
 export const DEGREE_OPTIONS = [
-  { value: "highschool", label: "SMA/SMK" },
-  { value: "associate", label: "Diploma" },
+  { value: "middle_school", label: "SMP/MTs" },
+  { value: "high_school", label: "SMA/SMK/MA" },
+  { value: "associate_d1", label: "Diploma (D1)" },
+  { value: "associate_d2", label: "Diploma (D2)" },
+  { value: "associate_d3", label: "Diploma (D3)" },
   { value: "bachelor", label: "Sarjana (S1)" },
   { value: "master", label: "Magister (S2)" },
   { value: "doctorate", label: "Doktor (S3)" },
+  { value: "any", label: "Tidak ditentukan" },
 ];
 
 export const JOB_TYPE_OPTIONS = [

@@ -12,6 +12,12 @@ export const createUserInputSchema = z.object({
   phone: z.string().optional(),
   role: z.enum(["user", "admin"]),
   avatar: z.string().optional(),
+  daily_download_limit: z.coerce
+    .number()
+    .min(0)
+    .max(1000)
+    .optional()
+    .default(10),
 });
 
 export type CreateUserInput = z.infer<typeof createUserInputSchema>;
@@ -24,7 +30,9 @@ type UseCreateUserOptions = {
   mutationConfig?: MutationConfig<typeof createUser>;
 };
 
-export const useCreateUser = ({ mutationConfig }: UseCreateUserOptions = {}) => {
+export const useCreateUser = ({
+  mutationConfig,
+}: UseCreateUserOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};

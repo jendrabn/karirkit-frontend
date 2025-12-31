@@ -11,6 +11,7 @@ export const updateUserInputSchema = z.object({
   phone: z.string().optional(),
   role: z.enum(["user", "admin"]),
   avatar: z.string().optional(),
+  daily_download_limit: z.coerce.number().min(0).max(1000).optional(),
 });
 
 export type UpdateUserInput = z.infer<typeof updateUserInputSchema>;
@@ -29,7 +30,9 @@ type UseUpdateUserOptions = {
   mutationConfig?: MutationConfig<typeof updateUser>;
 };
 
-export const useUpdateUser = ({ mutationConfig }: UseUpdateUserOptions = {}) => {
+export const useUpdateUser = ({
+  mutationConfig,
+}: UseUpdateUserOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};

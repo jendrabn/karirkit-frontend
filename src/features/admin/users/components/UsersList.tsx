@@ -63,11 +63,12 @@ import {
   type ColumnVisibility,
   defaultColumnVisibility,
 } from "@/features/admin/users/components/UserColumnToggle";
-import { USER_ROLE_OPTIONS } from "@/types/user";
+import { USER_ROLE_OPTIONS, type User } from "@/types/user";
 import { cn, buildImageUrl } from "@/lib/utils";
 import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
 import { useMassDeleteUsers } from "../api/mass-delete-users";
+import { useUpdateUserDownloadLimit } from "../api/update-user-download-limit";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { toast } from "sonner";
@@ -100,6 +101,65 @@ export const UsersList = () => {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  const updateLimitMutation = useUpdateUserDownloadLimit();
+
+  const EditableCell = ({
+    user,
+    field,
+    type = "text",
+  }: {
+    user: User;
+    field: keyof User;
+    type?: "text" | "number";
+  }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [value, setValue] = useState(user[field] ?? "");
+
+    const handleBlur = () => {
+      setIsEditing(false);
+      const newValue = type === "number" ? Number(value) : value;
+      if (newValue !== user[field]) {
+        if (field === "daily_download_limit") {
+          const limit = Number(newValue);
+          if (isNaN(limit) || limit < 0) {
+            toast.error("Batas unduhan tidak valid");
+            setValue(user[field] || 0);
+            return;
+          }
+          updateLimitMutation.mutate({
+            id: user.id,
+            daily_download_limit: limit,
+          });
+        }
+      }
+    };
+
+    if (isEditing) {
+      return (
+        <Input
+          type={type}
+          value={value as string}
+          onChange={(e) =>
+            setValue(type === "number" ? e.target.value : e.target.value)
+          }
+          onBlur={handleBlur}
+          onKeyDown={(e) => e.key === "Enter" && handleBlur()}
+          autoFocus
+          className="h-8 w-20 px-2"
+        />
+      );
+    }
+
+    return (
+      <span
+        className="cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors whitespace-nowrap block min-h-[1.5rem]"
+        onClick={() => setIsEditing(true)}
+      >
+        {user[field] || (type === "number" ? "0" : "-")}
+      </span>
+    );
+  };
 
   const { data: usersData, isLoading } = useUsers({
     params: {
@@ -300,6 +360,11 @@ export const UsersList = () => {
                     <SortableHeader field="role">Role</SortableHeader>
                   </TableHead>
                 )}
+                {columnVisibility.daily_download_limit && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Batas Unduhan
+                  </TableHead>
+                )}
                 {columnVisibility.created_at && (
                   <TableHead>
                     <SortableHeader field="created_at">Dibuat</SortableHeader>
@@ -393,6 +458,15 @@ export const UsersList = () => {
                             )?.label
                           }
                         </Badge>
+                      </TableCell>
+                    )}
+                    {columnVisibility.daily_download_limit && (
+                      <TableCell>
+                        <EditableCell
+                          user={user}
+                          field="daily_download_limit"
+                          type="number"
+                        />
                       </TableCell>
                     )}
                     {columnVisibility.created_at && (

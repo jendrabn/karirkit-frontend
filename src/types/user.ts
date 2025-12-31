@@ -9,6 +9,7 @@ export interface User {
   role: UserRole;
 
   avatar: string;
+  daily_download_limit: number;
   created_at: string;
   updated_at: string;
 }

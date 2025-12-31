@@ -51,6 +51,7 @@ export function UserForm({
       phone: initialData?.phone || "",
       role: initialData?.role || "user",
       avatar: initialData?.avatar || "",
+      daily_download_limit: initialData?.daily_download_limit || 10,
       ...(isEdit ? {} : { password: "" }),
     },
   });
@@ -169,6 +170,20 @@ export function UserForm({
                   </Field>
                 )}
               />
+
+              <Field>
+                <FieldLabel>Batas Unduhan Harian</FieldLabel>
+                <Input
+                  type="number"
+                  min={0}
+                  max={1000}
+                  placeholder="10"
+                  {...form.register("daily_download_limit")}
+                />
+                <FieldError>
+                  {form.formState.errors.daily_download_limit?.message}
+                </FieldError>
+              </Field>
             </div>
           </CardContent>
         </Card>

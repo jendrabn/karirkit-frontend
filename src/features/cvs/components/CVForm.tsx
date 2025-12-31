@@ -44,11 +44,15 @@ import {
 
 const educationSchema = z.object({
   degree: z.enum([
-    "highschool",
-    "associate",
+    "middle_school",
+    "high_school",
+    "associate_d1",
+    "associate_d2",
+    "associate_d3",
     "bachelor",
     "master",
     "doctorate",
+    "any",
   ]),
   school_name: z.string().min(1, "Nama sekolah/universitas wajib diisi"),
   school_location: z.string().min(1, "Lokasi wajib diisi"),
@@ -453,17 +457,26 @@ export function CVForm({
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Field>
                           <FieldLabel>Jenjang *</FieldLabel>
+                          <input
+                            type="hidden"
+                            {...register(`educations.${index}.degree`)}
+                          />
                           <Select
                             value={watch(`educations.${index}.degree`)}
                             onValueChange={(v) =>
                               setValue(
                                 `educations.${index}.degree`,
                                 v as
-                                  | "highschool"
-                                  | "associate"
+                                  | "middle_school"
+                                  | "high_school"
+                                  | "associate_d1"
+                                  | "associate_d2"
+                                  | "associate_d3"
                                   | "bachelor"
                                   | "master"
                                   | "doctorate"
+                                  | "any",
+                                { shouldDirty: true, shouldValidate: true }
                               )
                             }
                           >

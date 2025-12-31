@@ -16,6 +16,7 @@ export interface ColumnVisibility {
   email: boolean;
   phone: boolean;
   role: boolean;
+  daily_download_limit: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
@@ -26,6 +27,7 @@ export const defaultColumnVisibility: ColumnVisibility = {
   email: true,
   phone: true,
   role: true,
+  daily_download_limit: true,
   created_at: true,
   updated_at: false,
 };
@@ -36,6 +38,7 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   email: "Email",
   phone: "Telepon",
   role: "Role",
+  daily_download_limit: "Batas Unduhan",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };

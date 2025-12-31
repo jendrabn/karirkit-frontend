@@ -53,8 +53,12 @@ export const useDownloadCV = (options?: UseDownloadCVOptions) => {
       );
       options?.onSuccess?.();
     },
-    onError: () => {
-      toast.error("Gagal mengunduh CV");
+    onError: (error: any) => {
+      if (error.response?.status === 429) {
+        toast.error("Batas unduhan harian tercapai. Silakan coba lagi besok.");
+      } else {
+        toast.error("Gagal mengunduh CV");
+      }
       options?.onError?.();
     },
   });

@@ -52,8 +52,12 @@ export const useDownloadApplicationLetter = (
       );
       options?.onSuccess?.();
     },
-    onError: () => {
-      toast.error("Gagal mengunduh surat lamaran");
+    onError: (error: any) => {
+      if (error.response?.status === 429) {
+        toast.error("Batas unduhan harian tercapai. Silakan coba lagi besok.");
+      } else {
+        toast.error("Gagal mengunduh surat lamaran");
+      }
       options?.onError?.();
     },
   });

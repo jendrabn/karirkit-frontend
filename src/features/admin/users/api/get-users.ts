@@ -2,17 +2,8 @@ import { api } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
 
-export interface User {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  phone: string;
-  role: "user" | "admin";
-  avatar: string;
-  created_at: string;
-  updated_at: string;
-}
+import type { User } from "@/types/user";
+export type { User };
 
 export interface Meta {
   page: number;
@@ -31,13 +22,21 @@ export interface GetUsersParams {
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "created_at" | "updated_at" | "name" | "username" | "email" | "role";
+  sort_by?:
+    | "created_at"
+    | "updated_at"
+    | "name"
+    | "username"
+    | "email"
+    | "role";
   role?: "user" | "admin";
   created_from?: string;
   created_to?: string;
 }
 
-export const getUsers = (params?: GetUsersParams): Promise<UsersListResponse> => {
+export const getUsers = (
+  params?: GetUsersParams
+): Promise<UsersListResponse> => {
   return api.get("/admin/users", {
     params,
   });
