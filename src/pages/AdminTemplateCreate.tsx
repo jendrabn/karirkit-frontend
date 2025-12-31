@@ -8,6 +8,7 @@ import {
 } from "@/features/admin/templates/api/create-template";
 import { toast } from "sonner";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { paths } from "@/config/paths";
 
 const AdminTemplateCreate = () => {
   const navigate = useNavigate();
@@ -30,7 +31,13 @@ const AdminTemplateCreate = () => {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Template", href: paths.admin.templates.list.getHref() },
+        { label: "Buat Template" },
+      ]}
+    >
       <MinimalSEO
         title="Buat Template"
         description="Buat template baru."

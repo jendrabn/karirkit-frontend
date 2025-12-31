@@ -13,7 +13,12 @@ import { seoConfig } from "@/config/seo";
 
 export default function ChangePassword() {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Ubah Password" },
+      ]}
+    >
       <MinimalSEO
         title={seoConfig.changePassword.title}
         description={seoConfig.changePassword.description}

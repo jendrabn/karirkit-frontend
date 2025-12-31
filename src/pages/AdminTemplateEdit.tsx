@@ -10,6 +10,7 @@ import {
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { paths } from "@/config/paths";
 
 const AdminTemplateEdit = () => {
   const navigate = useNavigate();
@@ -36,7 +37,13 @@ const AdminTemplateEdit = () => {
 
   if (isTemplateLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Template", href: paths.admin.templates.list.getHref() },
+          { label: "Edit Template" },
+        ]}
+      >
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -46,7 +53,13 @@ const AdminTemplateEdit = () => {
 
   if (!template) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Template", href: paths.admin.templates.list.getHref() },
+          { label: "Template Tidak Ditemukan" },
+        ]}
+      >
         <div className="flex items-center justify-center h-64">
           <p className="text-muted-foreground">Template tidak ditemukan</p>
         </div>
@@ -70,7 +83,13 @@ const AdminTemplateEdit = () => {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Template", href: paths.admin.templates.list.getHref() },
+        { label: "Edit Template" },
+      ]}
+    >
       <MinimalSEO
         title={`Edit Template: ${template.name}`}
         description={`Edit template ${template.name}`}

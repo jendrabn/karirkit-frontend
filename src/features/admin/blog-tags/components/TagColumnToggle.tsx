@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,42 +9,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export interface ColumnVisibility {
+export interface TagColumnVisibility {
   name: boolean;
   slug: boolean;
-  jobCount: boolean;
+  blog_count: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
 
-export const defaultColumnVisibility: ColumnVisibility = {
+export const defaultTagColumnVisibility: TagColumnVisibility = {
   name: true,
   slug: true,
-  jobCount: true,
+  blog_count: true,
   created_at: true,
   updated_at: false,
 };
 
-const columnLabels: Record<keyof ColumnVisibility, string> = {
-  name: "Nama Role",
+const columnLabels: Record<keyof TagColumnVisibility, string> = {
+  name: "Nama Tag",
   slug: "Slug",
-  jobCount: "Jumlah Lowongan",
+  blog_count: "Jumlah Blog",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };
 
-interface ColumnToggleProps {
-  visibility: ColumnVisibility;
-  onVisibilityChange: (visibility: ColumnVisibility) => void;
+interface TagColumnToggleProps {
+  visibility: TagColumnVisibility;
+  onVisibilityChange: (visibility: TagColumnVisibility) => void;
 }
 
-export function JobRoleColumnToggle({
+export function TagColumnToggle({
   visibility,
   onVisibilityChange,
-}: ColumnToggleProps) {
-  const [open, setOpen] = useState(false);
-
-  const toggleColumn = (column: keyof ColumnVisibility) => {
+}: TagColumnToggleProps) {
+  const toggleColumn = (column: keyof TagColumnVisibility) => {
     onVisibilityChange({
       ...visibility,
       [column]: !visibility[column],
@@ -53,7 +50,7 @@ export function JobRoleColumnToggle({
   };
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm">
           <Settings2 className="h-4 w-4 mr-2" />
@@ -66,17 +63,17 @@ export function JobRoleColumnToggle({
       >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {Object.keys(visibility).map((column) => (
-          <DropdownMenuCheckboxItem
-            key={column}
-            checked={visibility[column as keyof ColumnVisibility]}
-            onCheckedChange={() =>
-              toggleColumn(column as keyof ColumnVisibility)
-            }
-          >
-            {columnLabels[column as keyof ColumnVisibility]}
-          </DropdownMenuCheckboxItem>
-        ))}
+        {(Object.keys(visibility) as (keyof TagColumnVisibility)[]).map(
+          (column) => (
+            <DropdownMenuCheckboxItem
+              key={column}
+              checked={visibility[column]}
+              onCheckedChange={() => toggleColumn(column)}
+            >
+              {columnLabels[column]}
+            </DropdownMenuCheckboxItem>
+          )
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

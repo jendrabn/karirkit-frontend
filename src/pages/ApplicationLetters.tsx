@@ -5,7 +5,12 @@ import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function ApplicationLetters() {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Surat Lamaran" },
+      ]}
+    >
       <MinimalSEO
         title="Surat Lamaran"
         description="Kelola surat lamaran kerja Anda."

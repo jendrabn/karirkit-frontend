@@ -12,13 +12,12 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import type { BlogTag } from "@/types/blog";
+import type { BlogTag } from "../api/get-blog-tags";
 import { useEffect } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
 
 const tagSchema = z.object({
   name: z.string().min(1, "Nama tag wajib diisi"),
-  slug: z.string().min(1, "Slug wajib diisi"),
 });
 
 type TagFormData = z.infer<typeof tagSchema>;
@@ -42,7 +41,6 @@ export function TagModal({
     resolver: zodResolver(tagSchema),
     defaultValues: {
       name: "",
-      slug: "",
     },
   });
 
@@ -52,31 +50,17 @@ export function TagModal({
     if (tag) {
       form.reset({
         name: tag.name,
-        slug: tag.slug,
       });
     } else {
       form.reset({
         name: "",
-        slug: "",
       });
     }
   }, [tag, form, open]);
 
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
-  };
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     form.setValue("name", name);
-    if (!tag) {
-      form.setValue("slug", generateSlug(name));
-    }
   };
 
   const handleSubmit = (data: TagFormData) => {
@@ -101,12 +85,6 @@ export function TagModal({
                 placeholder="Masukkan nama tag"
               />
               <FieldError>{form.formState.errors.name?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel>Slug *</FieldLabel>
-              <Input {...form.register("slug")} placeholder="nama-tag" />
-              <FieldError>{form.formState.errors.slug?.message}</FieldError>
             </Field>
           </div>
 

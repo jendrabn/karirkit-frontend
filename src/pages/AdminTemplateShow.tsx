@@ -51,7 +51,13 @@ const AdminTemplateShow = () => {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Template", href: paths.admin.templates.list.getHref() },
+          { label: "Detail Template" },
+        ]}
+      >
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -61,7 +67,13 @@ const AdminTemplateShow = () => {
 
   if (!template) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Template", href: paths.admin.templates.list.getHref() },
+          { label: "Template Tidak Ditemukan" },
+        ]}
+      >
         <div className="flex items-center justify-center h-64">
           <p className="text-muted-foreground">Template tidak ditemukan</p>
         </div>
@@ -76,7 +88,13 @@ const AdminTemplateShow = () => {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Template", href: paths.admin.templates.list.getHref() },
+        { label: "Detail Template" },
+      ]}
+    >
       <MinimalSEO
         title={template.name}
         description={`Detail template ${template.name}`}

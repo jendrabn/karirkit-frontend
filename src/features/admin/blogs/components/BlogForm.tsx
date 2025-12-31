@@ -53,12 +53,10 @@ import { useFormErrors } from "@/hooks/use-form-errors";
 
 const blogSchema = z.object({
   title: z.string().min(1, "Judul wajib diisi"),
-  slug: z.string().min(1, "Slug wajib diisi"),
   featured_image: z.string().nullable().optional(),
   image_caption: z.string().nullable().optional(),
   content: z.string().min(1, "Konten wajib diisi"),
   excerpt: z.string().nullable().optional(),
-  read_time: z.number().min(1, "Waktu baca minimal 1 menit"),
   status: z.enum(["draft", "published", "archived"]),
   category_id: z.string().nullable().optional(),
   tag_ids: z.array(z.string()).optional(),
@@ -218,12 +216,10 @@ export function BlogForm({
     resolver: zodResolver(blogSchema),
     defaultValues: {
       title: initialData?.title || "",
-      slug: initialData?.slug || "",
       featured_image: initialData?.image || null,
       image_caption: initialData?.image_caption || "",
       content: initialData?.content || "",
       excerpt: initialData?.teaser || "",
-      read_time: initialData?.min_read || 5,
       status:
         (initialData?.status as "draft" | "published" | "archived") || "draft",
       category_id: initialData?.category?.id?.toString() || null,
@@ -234,19 +230,9 @@ export function BlogForm({
   // Handle form validation errors from API
   useFormErrors(form);
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
-  };
-
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
     form.setValue("title", title);
-    if (!initialData) form.setValue("slug", generateSlug(title));
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -311,7 +297,7 @@ export function BlogForm({
             <CardTitle>{initialData ? "Edit Blog" : "Tambah Blog"}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 pt-4">
-            {/* Title & Slug */}
+            {/* Title */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
                 <FieldLabel>Judul *</FieldLabel>
@@ -322,15 +308,6 @@ export function BlogForm({
                   placeholder="Masukkan judul blog"
                 />
                 <FieldError>{form.formState.errors.title?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel>Slug *</FieldLabel>
-                <Input
-                  {...form.register("slug")}
-                  placeholder="judul-blog-anda"
-                />
-                <FieldError>{form.formState.errors.slug?.message}</FieldError>
               </Field>
             </div>
 
@@ -366,20 +343,6 @@ export function BlogForm({
                   </Field>
                 )}
               />
-
-              <Field>
-                <FieldLabel>Waktu Baca (menit) *</FieldLabel>
-                <Input
-                  type="number"
-                  {...form.register("read_time", {
-                    valueAsNumber: true,
-                  })}
-                  min={1}
-                />
-                <FieldError>
-                  {form.formState.errors.read_time?.message}
-                </FieldError>
-              </Field>
             </div>
 
             {/* Tags */}

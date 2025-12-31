@@ -365,16 +365,16 @@ const CVList = () => {
                       Organisasi
                     </TableHead>
                   )}
+                  {columnVisibility.created_at && (
+                    <TableHead>
+                      <SortableHeader field="created_at">Dibuat</SortableHeader>
+                    </TableHead>
+                  )}
                   {columnVisibility.updated_at && (
                     <TableHead>
                       <SortableHeader field="updated_at">
-                        Terakhir Diperbarui
+                        Diperbarui
                       </SortableHeader>
-                    </TableHead>
-                  )}
-                  {columnVisibility.created_at && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Tanggal Dibuat
                     </TableHead>
                   )}
                   <TableHead className="w-[60px]"></TableHead>
@@ -558,14 +558,14 @@ const CVList = () => {
                             </Badge>
                           </TableCell>
                         )}
-                        {columnVisibility.updated_at && (
-                          <TableCell className="text-muted-foreground">
-                            {dayjs(cv.updated_at).format("DD MMM YYYY")}
+                        {columnVisibility.created_at && (
+                          <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                            {dayjs(cv.created_at).format("DD MMM YYYY, HH:mm")}
                           </TableCell>
                         )}
-                        {columnVisibility.created_at && (
-                          <TableCell className="text-muted-foreground">
-                            {dayjs(cv.created_at).format("DD MMM YYYY")}
+                        {columnVisibility.updated_at && (
+                          <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                            {dayjs(cv.updated_at).format("DD MMM YYYY, HH:mm")}
                           </TableCell>
                         )}
                         <TableCell>

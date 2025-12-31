@@ -45,12 +45,10 @@ const AdminBlogEdit = () => {
         id,
         data: {
           title: data.title,
-          slug: data.slug,
           excerpt: data.excerpt || "",
           content: data.content,
           featured_image: data.featured_image || "",
           status: data.status,
-          read_time: data.read_time,
           category_id: data.category_id || "",
           author_id: user.id, // Use logged-in user's ID
           tag_ids: data.tag_ids || [],
@@ -66,7 +64,13 @@ const AdminBlogEdit = () => {
 
   if (error) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Blog", href: paths.admin.blogs.list.getHref() },
+          { label: "Edit Blog" },
+        ]}
+      >
         <div className="flex flex-col items-center justify-center py-16">
           <p className="text-lg font-medium">Blog tidak ditemukan</p>
           <Button
@@ -83,7 +87,13 @@ const AdminBlogEdit = () => {
 
   if (isLoadingBlog || isLoadingCategories || isLoadingTags || !blogData) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Blog", href: paths.admin.blogs.list.getHref() },
+          { label: "Edit Blog" },
+        ]}
+      >
         <PageHeader title="Edit Blog" subtitle="Memuat data..." />
         <div className="flex items-center justify-center py-8">
           <p className="text-muted-foreground">Memuat...</p>
@@ -107,6 +117,7 @@ const AdminBlogEdit = () => {
       id: tag.id,
       name: tag.name,
       slug: tag.slug,
+      blog_count: 0,
       created_at: tag.created_at,
       updated_at: tag.updated_at,
     })) || [];
@@ -137,6 +148,7 @@ const AdminBlogEdit = () => {
       id: tag.id,
       name: tag.name,
       slug: tag.slug,
+      blog_count: tag.blog_count || 0,
       created_at: tag.created_at,
       updated_at: tag.updated_at,
     })),
@@ -152,7 +164,13 @@ const AdminBlogEdit = () => {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Blog", href: paths.admin.blogs.list.getHref() },
+        { label: "Edit Blog" },
+      ]}
+    >
       <MinimalSEO
         title={`Edit Blog: ${blogData.title}`}
         description={`Edit blog ${blogData.title}`}

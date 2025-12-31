@@ -9,7 +9,12 @@ import { seoConfig } from "@/config/seo";
 
 export default function Profile() {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Profil Saya" },
+      ]}
+    >
       <MinimalSEO
         title={seoConfig.profile.title}
         description={seoConfig.profile.description}

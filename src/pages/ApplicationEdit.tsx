@@ -36,7 +36,13 @@ export default function ApplicationEdit() {
 
   if (isApplicationLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Lamaran Kerja", href: "/applications" },
+          { label: "Edit Lamaran" },
+        ]}
+      >
         <MinimalSEO
           title="Loading..."
           description="Memuat data lamaran..."
@@ -51,7 +57,13 @@ export default function ApplicationEdit() {
 
   if (!application) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Lamaran Kerja", href: "/applications" },
+          { label: "Lamaran Tidak Ditemukan" },
+        ]}
+      >
         <MinimalSEO
           title="Lamaran Tidak Ditemukan"
           description="Data lamaran tidak ditemukan."
@@ -68,7 +80,13 @@ export default function ApplicationEdit() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lamaran Kerja", href: "/applications" },
+        { label: "Edit Lamaran" },
+      ]}
+    >
       <MinimalSEO
         title={`Edit: ${application.company_name} - ${application.position}`}
         description={`Edit lamaran untuk posisi ${application.position} di ${application.company_name}`}

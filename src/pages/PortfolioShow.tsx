@@ -79,7 +79,13 @@ export default function PortfolioShow() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Portfolio", href: "/portfolios" },
+          { label: "Detail Portfolio" },
+        ]}
+      >
         <MinimalSEO
           title="Loading..."
           description="Memuat data portfolio..."
@@ -96,7 +102,13 @@ export default function PortfolioShow() {
 
   if (!portfolio) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Portfolio", href: "/portfolios" },
+          { label: "Portfolio Tidak Ditemukan" },
+        ]}
+      >
         <MinimalSEO
           title="Portfolio Tidak Ditemukan"
           description="Portfolio tidak ditemukan."
@@ -127,7 +139,13 @@ export default function PortfolioShow() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Portfolio", href: "/portfolios" },
+        { label: "Detail Portfolio" },
+      ]}
+    >
       <MinimalSEO
         title={portfolio.title}
         description={`Detail proyek: ${portfolio.title}`}

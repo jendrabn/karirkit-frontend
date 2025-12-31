@@ -29,7 +29,13 @@ export default function CVCreate() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "CV Saya", href: "/cvs" },
+        { label: "Buat CV" },
+      ]}
+    >
       <MinimalSEO
         title="Buat CV Baru"
         description="Lengkapi informasi untuk membuat CV baru."

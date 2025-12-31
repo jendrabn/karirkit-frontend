@@ -1,5 +1,4 @@
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
+import { dayjs } from "@/lib/date";
 import { useNavigate } from "react-router";
 import {
   MoreVertical,
@@ -199,19 +198,17 @@ export function JobsList({
                   Status
                 </TableHead>
               )}
-              {columnVisibility.createdAt && (
+              {columnVisibility.created_at && (
                 <TableHead>
                   <SortableHeader field="created_at">Dibuat</SortableHeader>
                 </TableHead>
               )}
-              {columnVisibility.updatedAt && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Diupdate
+              {columnVisibility.updated_at && (
+                <TableHead>
+                  <SortableHeader field="updated_at">Diperbarui</SortableHeader>
                 </TableHead>
               )}
-              <TableHead className="text-right uppercase text-xs font-medium tracking-wide">
-                Aksi
-              </TableHead>
+              <TableHead className="w-[60px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -303,24 +300,24 @@ export function JobsList({
                       </Badge>
                     </TableCell>
                   )}
-                  {columnVisibility.createdAt && (
+                  {columnVisibility.created_at && (
                     <TableCell className="text-muted-foreground text-sm">
-                      {format(new Date(job.created_at), "dd MMM yyyy", {
-                        locale: id,
-                      })}
+                      {dayjs(job.created_at).format("DD MMM YYYY, HH:mm")}
                     </TableCell>
                   )}
-                  {columnVisibility.updatedAt && (
+                  {columnVisibility.updated_at && (
                     <TableCell className="text-muted-foreground text-sm">
-                      {format(new Date(job.updated_at), "dd MMM yyyy", {
-                        locale: id,
-                      })}
+                      {dayjs(job.updated_at).format("DD MMM YYYY, HH:mm")}
                     </TableCell>
                   )}
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="h-8 w-8"
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>

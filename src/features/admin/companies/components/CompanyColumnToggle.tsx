@@ -16,8 +16,8 @@ export interface ColumnVisibility {
   sector: boolean;
   size: boolean;
   jobCount: boolean;
-  createdAt: boolean;
-  updatedAt: boolean;
+  created_at: boolean;
+  updated_at: boolean;
 }
 
 export const defaultColumnVisibility: ColumnVisibility = {
@@ -26,8 +26,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   sector: true,
   size: true,
   jobCount: true,
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
@@ -36,8 +36,8 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   sector: "Sektor Bisnis",
   size: "Ukuran Perusahaan",
   jobCount: "Jumlah Lowongan",
-  createdAt: "Dibuat",
-  updatedAt: "Diupdate",
+  created_at: "Dibuat",
+  updated_at: "Diperbarui",
 };
 
 interface ColumnToggleProps {

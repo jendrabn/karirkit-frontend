@@ -52,7 +52,13 @@ export default function ApplicationShow() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Lamaran Kerja", href: "/applications" },
+          { label: "Detail Lamaran" },
+        ]}
+      >
         <MinimalSEO
           title="Loading..."
           description="Memuat detail lamaran..."
@@ -67,7 +73,13 @@ export default function ApplicationShow() {
 
   if (error || !application) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Lamaran Kerja", href: "/applications" },
+          { label: "Lamaran Tidak Ditemukan" },
+        ]}
+      >
         <MinimalSEO
           title="Lamaran Tidak Ditemukan"
           description="Data lamaran tidak ditemukan."
@@ -128,7 +140,13 @@ export default function ApplicationShow() {
   );
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lamaran Kerja", href: "/applications" },
+        { label: "Detail Lamaran" },
+      ]}
+    >
       <MinimalSEO
         title={`${application.position} at ${application.company_name}`}
         description={`Detail lamaran untuk posisi ${application.position} di ${application.company_name}`}

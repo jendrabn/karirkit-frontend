@@ -597,14 +597,14 @@ export const ApplicationsList = () => {
                     Telepon HR
                   </TableHead>
                 )}
-                {columnVisibility.updated_at && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Terakhir Diperbarui
-                  </TableHead>
-                )}
                 {columnVisibility.created_at && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Tanggal Dibuat
+                    Dibuat
+                  </TableHead>
+                )}
+                {columnVisibility.updated_at && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Diperbarui
                   </TableHead>
                 )}
                 <TableHead className="w-[60px]"></TableHead>
@@ -745,14 +745,14 @@ export const ApplicationsList = () => {
                         <EditableCell app={app} field="contact_phone" />
                       </TableCell>
                     )}
-                    {columnVisibility.updated_at && (
-                      <TableCell className="text-muted-foreground whitespace-nowrap">
-                        {dayjs(app.updated_at).format("DD MMM YYYY")}
+                    {columnVisibility.created_at && (
+                      <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                        {dayjs(app.created_at).format("DD MMM YYYY, HH:mm")}
                       </TableCell>
                     )}
-                    {columnVisibility.created_at && (
-                      <TableCell className="text-muted-foreground whitespace-nowrap">
-                        {dayjs(app.created_at).format("DD MMM YYYY")}
+                    {columnVisibility.updated_at && (
+                      <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                        {dayjs(app.updated_at).format("DD MMM YYYY, HH:mm")}
                       </TableCell>
                     )}
                     <TableCell>

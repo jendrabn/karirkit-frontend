@@ -5,7 +5,12 @@ import CVList from "@/features/cvs/components/CVList";
 
 export default function CVs() {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "CV Saya" },
+      ]}
+    >
       <MinimalSEO
         title="Daftar CV"
         description="Kelola daftar riwayat hidup (CV) Anda."

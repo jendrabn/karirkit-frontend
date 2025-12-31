@@ -49,7 +49,13 @@ const AdminBlogShow = () => {
 
   if (error) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Blog", href: paths.admin.blogs.list.getHref() },
+          { label: "Blog Tidak Ditemukan" },
+        ]}
+      >
         <div className="flex flex-col items-center justify-center py-16">
           <p className="text-lg font-medium">Blog tidak ditemukan</p>
           <Button
@@ -66,7 +72,13 @@ const AdminBlogShow = () => {
 
   if (isLoading || !blogData) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Blog", href: paths.admin.blogs.list.getHref() },
+          { label: "Memuat Blog..." },
+        ]}
+      >
         <div className="flex items-center justify-center py-16">
           <p className="text-muted-foreground">Memuat...</p>
         </div>
@@ -77,7 +89,13 @@ const AdminBlogShow = () => {
   const blog = blogData;
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Blog", href: paths.admin.blogs.list.getHref() },
+        { label: "Detail Blog" },
+      ]}
+    >
       <MinimalSEO
         title={blog.title}
         description={blog.excerpt}

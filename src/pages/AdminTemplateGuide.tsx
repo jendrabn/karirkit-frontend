@@ -11,7 +11,13 @@ import guideContent from "../features/admin/templates/data/template-guide.md?raw
 
 const TemplateGuide = () => {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Template", href: "/admin/templates" },
+        { label: "Panduan Template" },
+      ]}
+    >
       <MinimalSEO
         title="Panduan Template"
         description="Panduan pembuatan template dinamis."

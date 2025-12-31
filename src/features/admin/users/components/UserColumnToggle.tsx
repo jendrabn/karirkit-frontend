@@ -37,7 +37,7 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   phone: "Telepon",
   role: "Role",
   created_at: "Dibuat",
-  updated_at: "Diupdate",
+  updated_at: "Diperbarui",
 };
 
 interface ColumnToggleProps {

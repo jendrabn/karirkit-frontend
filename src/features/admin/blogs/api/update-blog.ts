@@ -6,12 +6,10 @@ import type { Blog } from "./get-blogs";
 
 export type UpdateBlogInput = {
   title: string;
-  slug: string;
   excerpt: string;
   content: string;
   featured_image: string;
   status: "draft" | "published" | "archived";
-  read_time: number;
   category_id: string;
   author_id: string;
   tag_ids: string[];

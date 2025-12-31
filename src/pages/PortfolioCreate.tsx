@@ -29,7 +29,13 @@ const PortfolioCreate = () => {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Portfolio", href: "/portfolios" },
+        { label: "Buat Portfolio" },
+      ]}
+    >
       <MinimalSEO
         title="Buat Portfolio"
         description="Tambahkan proyek baru ke portfolio Anda."

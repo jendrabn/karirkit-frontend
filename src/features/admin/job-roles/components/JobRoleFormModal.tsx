@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -11,22 +12,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
-import {
-  createJobRoleInputSchema,
-  type CreateJobRoleInput,
-} from "../api/create-job-role";
-import {
-  updateJobRoleInputSchema,
-  type UpdateJobRoleInput,
-} from "../api/update-job-role";
 import { type JobRole } from "@/types/job";
 import { useEffect } from "react";
+
+const roleSchema = z.object({
+  name: z.string().min(1, "Nama role wajib diisi"),
+});
+
+type RoleInput = z.infer<typeof roleSchema>;
 
 interface JobRoleFormModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   editingRole: JobRole | null;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: RoleInput) => void;
   onCancel: () => void;
   isLoading: boolean;
 }
@@ -41,13 +40,10 @@ export function JobRoleFormModal({
 }: JobRoleFormModalProps) {
   const isEdit = !!editingRole;
 
-  const form = useForm<CreateJobRoleInput | UpdateJobRoleInput>({
-    resolver: zodResolver(
-      isEdit ? updateJobRoleInputSchema : createJobRoleInputSchema
-    ),
+  const form = useForm<RoleInput>({
+    resolver: zodResolver(roleSchema),
     defaultValues: {
       name: editingRole?.name || "",
-      slug: editingRole?.slug || "",
     },
   });
 
@@ -56,24 +52,11 @@ export function JobRoleFormModal({
     if (isOpen) {
       form.reset({
         name: editingRole?.name || "",
-        slug: editingRole?.slug || "",
       });
     }
   }, [editingRole, isOpen, form]);
 
-  const name = form.watch("name");
-
-  useEffect(() => {
-    if (!editingRole && name) {
-      const slug = name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-      form.setValue("slug", slug);
-    }
-  }, [name, editingRole, form]);
-
-  const handleSubmit = (data: CreateJobRoleInput | UpdateJobRoleInput) => {
+  const handleSubmit = (data: RoleInput) => {
     onSubmit(data);
   };
 
@@ -97,15 +80,7 @@ export function JobRoleFormModal({
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>
-
-              <Field>
-                <FieldLabel>Slug *</FieldLabel>
-                <Input
-                  placeholder="frontend-developer"
-                  {...form.register("slug")}
-                />
-                <FieldError>{form.formState.errors.slug?.message}</FieldError>
-              </Field>
+              {/* Removed the slug field */}
             </FieldSet>
           </div>
 

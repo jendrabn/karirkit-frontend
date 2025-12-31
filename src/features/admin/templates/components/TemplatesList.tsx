@@ -97,6 +97,7 @@ export const TemplatesList = () => {
       language: true,
       is_premium: true,
       created_at: true,
+      updated_at: false,
     }
   );
 
@@ -317,13 +318,20 @@ export const TemplatesList = () => {
                     <SortableHeader field="created_at">Dibuat</SortableHeader>
                   </TableHead>
                 )}
+                {visibleColumns.updated_at && (
+                  <TableHead>
+                    <SortableHeader field="updated_at">
+                      Diperbarui
+                    </SortableHeader>
+                  </TableHead>
+                )}
                 <TableHead className="w-[60px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={10} className="h-24 text-center">
+                  <TableCell colSpan={11} className="h-24 text-center">
                     Memuat data...
                   </TableCell>
                 </TableRow>
@@ -407,7 +415,16 @@ export const TemplatesList = () => {
                     )}
                     {visibleColumns.created_at && (
                       <TableCell className="whitespace-nowrap text-muted-foreground">
-                        {dayjs(template.created_at).format("DD MMM YYYY")}
+                        {dayjs(template.created_at).format(
+                          "DD MMM YYYY, HH:mm"
+                        )}
+                      </TableCell>
+                    )}
+                    {visibleColumns.updated_at && (
+                      <TableCell className="whitespace-nowrap text-muted-foreground">
+                        {dayjs(template.updated_at).format(
+                          "DD MMM YYYY, HH:mm"
+                        )}
                       </TableCell>
                     )}
                     <TableCell>

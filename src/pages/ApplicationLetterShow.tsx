@@ -77,7 +77,13 @@ export default function ApplicationLetterShow() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Surat Lamaran", href: "/application-letters" },
+          { label: "Detail Surat Lamaran" },
+        ]}
+      >
         <MinimalSEO
           title="Loading..."
           description="Memuat surat lamaran..."
@@ -97,7 +103,13 @@ export default function ApplicationLetterShow() {
 
   if (!letter) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Surat Lamaran", href: "/application-letters" },
+          { label: "Surat Lamaran Tidak Ditemukan" },
+        ]}
+      >
         <MinimalSEO
           title="Surat Lamaran Tidak Ditemukan"
           description="Surat lamaran tidak ditemukan."
@@ -123,7 +135,13 @@ export default function ApplicationLetterShow() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Surat Lamaran", href: "/application-letters" },
+        { label: "Detail Surat Lamaran" },
+      ]}
+    >
       <MinimalSEO
         title={`${letter.subject} - ${letter.company_name}`}
         description={`Detail surat lamaran untuk ${letter.company_name}`}

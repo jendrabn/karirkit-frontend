@@ -6,7 +6,6 @@ import type { Portfolio } from "./get-portfolios";
 
 export type CreatePortfolioInput = {
   title: string;
-  slug: string;
   sort_description: string;
   description: string;
   role_title: string;

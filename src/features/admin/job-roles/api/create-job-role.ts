@@ -7,7 +7,6 @@ import { getJobRolesQueryOptions } from "./get-job-roles";
 
 export const createJobRoleInputSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
-  slug: z.string().min(1, "Slug wajib diisi"),
 });
 
 export type CreateJobRoleInput = z.infer<typeof createJobRoleInputSchema>;

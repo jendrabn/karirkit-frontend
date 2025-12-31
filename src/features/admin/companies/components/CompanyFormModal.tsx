@@ -57,7 +57,6 @@ export function CompanyFormModal({
     ),
     defaultValues: {
       name: editingCompany?.name || "",
-      slug: editingCompany?.slug || "",
       description: editingCompany?.description || "",
       logo: editingCompany?.logo || "",
       employee_size: editingCompany?.employee_size || "one_to_ten",
@@ -71,7 +70,6 @@ export function CompanyFormModal({
     if (isOpen) {
       form.reset({
         name: editingCompany?.name || "",
-        slug: editingCompany?.slug || "",
         description: editingCompany?.description || "",
         logo: editingCompany?.logo || "",
         employee_size: editingCompany?.employee_size || "one_to_ten",
@@ -80,18 +78,6 @@ export function CompanyFormModal({
       });
     }
   }, [editingCompany, isOpen, form]);
-
-  const name = form.watch("name");
-
-  useEffect(() => {
-    if (!editingCompany && name) {
-      const slug = name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-      form.setValue("slug", slug);
-    }
-  }, [name, editingCompany, form]);
 
   const handleSubmit = (data: CreateCompanyInput | UpdateCompanyInput) => {
     onSubmit(data);
@@ -116,15 +102,6 @@ export function CompanyFormModal({
                   {...form.register("name")}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel>Slug *</FieldLabel>
-                <Input
-                  placeholder="slug-perusahaan"
-                  {...form.register("slug")}
-                />
-                <FieldError>{form.formState.errors.slug?.message}</FieldError>
               </Field>
 
               <Field>

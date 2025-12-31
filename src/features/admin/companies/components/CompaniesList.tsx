@@ -1,5 +1,4 @@
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
+import { dayjs } from "@/lib/date";
 import {
   MoreVertical,
   Pencil,
@@ -116,19 +115,17 @@ export function CompaniesList({
                   Lowongan
                 </TableHead>
               )}
-              {columnVisibility.createdAt && (
+              {columnVisibility.created_at && (
                 <TableHead className="uppercase text-xs font-medium tracking-wide">
                   Dibuat
                 </TableHead>
               )}
-              {columnVisibility.updatedAt && (
+              {columnVisibility.updated_at && (
                 <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Diupdate
+                  Diperbarui
                 </TableHead>
               )}
-              <TableHead className="text-right uppercase text-xs font-medium tracking-wide">
-                Aksi
-              </TableHead>
+              <TableHead className="w-[60px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -199,24 +196,24 @@ export function CompaniesList({
                       <Badge variant="secondary">{company.job_count}</Badge>
                     </TableCell>
                   )}
-                  {columnVisibility.createdAt && (
+                  {columnVisibility.created_at && (
                     <TableCell className="text-muted-foreground text-sm">
-                      {format(new Date(company.created_at), "dd MMM yyyy", {
-                        locale: id,
-                      })}
+                      {dayjs(company.created_at).format("DD MMM YYYY, HH:mm")}
                     </TableCell>
                   )}
-                  {columnVisibility.updatedAt && (
+                  {columnVisibility.updated_at && (
                     <TableCell className="text-muted-foreground text-sm">
-                      {format(new Date(company.updated_at), "dd MMM yyyy", {
-                        locale: id,
-                      })}
+                      {dayjs(company.updated_at).format("DD MMM YYYY, HH:mm")}
                     </TableCell>
                   )}
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="h-8 w-8"
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>

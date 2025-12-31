@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useJob } from "@/features/admin/jobs/api/get-job";
 import { useUpdateJob } from "@/features/admin/jobs/api/update-job";
 import { JobForm } from "@/features/admin/jobs/components/JobForm";
+import { paths } from "@/config/paths";
 
 export default function AdminJobEdit() {
   const navigate = useNavigate();
@@ -29,7 +30,13 @@ export default function AdminJobEdit() {
 
   if (isLoadingJob) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+          { label: "Edit Lowongan" },
+        ]}
+      >
         <div className="flex flex-col items-center justify-center h-64 gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Memuat data lowongan...</p>
@@ -40,7 +47,13 @@ export default function AdminJobEdit() {
 
   if (!job) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+          { label: "Lowongan Tidak Ditemukan" },
+        ]}
+      >
         <div className="flex items-center justify-center h-64 text-muted-foreground">
           Lowongan tidak ditemukan
         </div>
@@ -49,7 +62,13 @@ export default function AdminJobEdit() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+        { label: "Edit Lowongan" },
+      ]}
+    >
       <PageHeader
         title="Edit Lowongan"
         subtitle={`Memperbarui: ${job.title}`}

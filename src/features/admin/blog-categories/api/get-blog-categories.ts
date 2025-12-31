@@ -3,16 +3,18 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
 
-export type BlogTag = {
+export type BlogCategory = {
   id: string;
   name: string;
   slug: string;
+  description: string;
+  blog_count: number;
   created_at: string;
   updated_at: string;
 };
 
-export type BlogTagsResponse = {
-  items: BlogTag[];
+export type BlogCategoriesResponse = {
+  items: BlogCategory[];
   pagination: {
     page: number;
     per_page: number;
@@ -21,7 +23,7 @@ export type BlogTagsResponse = {
   };
 };
 
-export type GetBlogTagsParams = {
+export type GetBlogCategoriesParams = {
   page?: number;
   per_page?: number;
   q?: string;
@@ -29,9 +31,9 @@ export type GetBlogTagsParams = {
   sort_by?: "created_at" | "updated_at" | "name";
 };
 
-export const getBlogTags = (
-  params?: GetBlogTagsParams
-): Promise<BlogTagsResponse> => {
+export const getBlogCategories = (
+  params?: GetBlogCategoriesParams
+): Promise<BlogCategoriesResponse> => {
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(
@@ -40,29 +42,31 @@ export const getBlogTags = (
       )
     : undefined;
 
-  return api.get("/admin/blog-tags", {
+  return api.get("/admin/blog-categories", {
     params: filteredParams,
   });
 };
 
-export const getBlogTagsQueryOptions = (params?: GetBlogTagsParams) => {
+export const getBlogCategoriesQueryOptions = (
+  params?: GetBlogCategoriesParams
+) => {
   return queryOptions({
-    queryKey: ["blog-tags", params],
-    queryFn: () => getBlogTags(params),
+    queryKey: ["blog-categories", params],
+    queryFn: () => getBlogCategories(params),
   });
 };
 
-type UseBlogTagsOptions = {
-  params?: GetBlogTagsParams;
-  queryConfig?: QueryConfig<typeof getBlogTagsQueryOptions>;
+type UseBlogCategoriesOptions = {
+  params?: GetBlogCategoriesParams;
+  queryConfig?: QueryConfig<typeof getBlogCategoriesQueryOptions>;
 };
 
-export const useBlogTags = ({
+export const useBlogCategories = ({
   params,
   queryConfig,
-}: UseBlogTagsOptions = {}) => {
+}: UseBlogCategoriesOptions = {}) => {
   return useQuery({
-    ...getBlogTagsQueryOptions(params),
+    ...getBlogCategoriesQueryOptions(params),
     ...queryConfig,
   });
 };

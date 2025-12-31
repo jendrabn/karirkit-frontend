@@ -2,8 +2,8 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { BlogCategory } from "./get-blog-categories";
-import type { BlogTag } from "./get-blog-tags";
+import type { BlogCategory } from "@/features/admin/blog-categories/api/get-blog-categories";
+import type { BlogTag } from "@/features/admin/blog-tags/api/get-blog-tags";
 
 export type BlogUser = {
   id: string;
@@ -52,7 +52,13 @@ export type GetBlogsParams = {
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "created_at" | "updated_at" | "published_at" | "title" | "views" | "status";
+  sort_by?:
+    | "created_at"
+    | "updated_at"
+    | "published_at"
+    | "title"
+    | "views"
+    | "status";
   status?: "draft" | "published" | "archived";
   category_id?: string;
   author_id?: string;

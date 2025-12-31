@@ -64,7 +64,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout breadcrumbItems={[{ label: "Dashboard" }]}>
         <MinimalSEO
           title={seoConfig.dashboard.title}
           description={seoConfig.dashboard.description}
@@ -83,7 +83,7 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <DashboardLayout>
+      <DashboardLayout breadcrumbItems={[{ label: "Dashboard" }]}>
         <MinimalSEO
           title={seoConfig.dashboard.title}
           description={seoConfig.dashboard.description}
@@ -101,7 +101,7 @@ export default function Dashboard() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout breadcrumbItems={[{ label: "Dashboard" }]}>
       <MinimalSEO
         title={seoConfig.dashboard.title}
         description={seoConfig.dashboard.description}

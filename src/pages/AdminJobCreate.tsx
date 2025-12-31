@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { toast } from "sonner";
 import { useCreateJob } from "@/features/admin/jobs/api/create-job";
 import { JobForm } from "@/features/admin/jobs/components/JobForm";
+import { paths } from "@/config/paths";
 
 export default function AdminJobCreate() {
   const navigate = useNavigate();
@@ -19,7 +20,13 @@ export default function AdminJobCreate() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+        { label: "Tambah Lowongan" },
+      ]}
+    >
       <PageHeader
         title="Tambah Lowongan Baru"
         subtitle="Buat lowongan pekerjaan baru."

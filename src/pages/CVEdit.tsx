@@ -39,7 +39,13 @@ export default function CVEdit() {
 
   if (isCVLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "CV Saya", href: "/cvs" },
+          { label: "Edit CV" },
+        ]}
+      >
         <MinimalSEO
           title="Loading..."
           description="Memuat data CV..."
@@ -62,7 +68,13 @@ export default function CVEdit() {
 
   if (!cv) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "CV Saya", href: "/cvs" },
+          { label: "CV Tidak Ditemukan" },
+        ]}
+      >
         <MinimalSEO
           title="CV Tidak Ditemukan"
           description="CV tidak ditemukan."
@@ -79,7 +91,13 @@ export default function CVEdit() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "CV Saya", href: "/cvs" },
+        { label: "Edit CV" },
+      ]}
+    >
       <MinimalSEO
         title={`Edit CV: ${cv.name}`}
         description={`Edit CV ${cv.name}`}

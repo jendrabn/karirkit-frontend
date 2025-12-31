@@ -16,6 +16,7 @@ import {
   Building2,
   Loader2,
 } from "lucide-react";
+import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -93,7 +94,13 @@ export default function AdminJobShow() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+          { label: "Detail Lowongan" },
+        ]}
+      >
         <div className="flex flex-col items-center justify-center h-64 gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Memuat data lowongan...</p>
@@ -104,7 +111,13 @@ export default function AdminJobShow() {
 
   if (error || !job) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+          { label: "Lowongan Tidak Ditemukan" },
+        ]}
+      >
         <div className="flex flex-col items-center justify-center h-64 gap-4">
           <p className="text-muted-foreground">Lowongan tidak ditemukan</p>
           <Button onClick={() => navigate("/admin/jobs")}>
@@ -116,7 +129,13 @@ export default function AdminJobShow() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+        { label: "Detail Lowongan" },
+      ]}
+    >
       <PageHeader
         title={job.title}
         subtitle={job.job_role?.name}

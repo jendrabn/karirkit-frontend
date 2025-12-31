@@ -23,6 +23,7 @@ import {
   type ColumnVisibility,
   defaultColumnVisibility,
 } from "@/features/admin/companies/components/CompanyColumnToggle";
+import { paths } from "@/config/paths";
 
 export default function AdminCompanies() {
   const queryClient = useQueryClient();
@@ -139,7 +140,13 @@ export default function AdminCompanies() {
   const totalPages = pagination?.total_pages || 1;
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+        { label: "Perusahaan" },
+      ]}
+    >
       <PageHeader
         title="Manajemen Perusahaan"
         subtitle="Kelola semua perusahaan."

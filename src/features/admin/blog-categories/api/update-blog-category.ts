@@ -6,7 +6,6 @@ import type { BlogCategory } from "./get-blog-categories";
 
 export type UpdateBlogCategoryInput = {
   name: string;
-  slug: string;
   description: string;
 };
 

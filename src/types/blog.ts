@@ -12,6 +12,7 @@ export interface BlogTag {
   id: string;
   name: string;
   slug: string;
+  blog_count: number;
   created_at?: string;
   updated_at?: string;
 }

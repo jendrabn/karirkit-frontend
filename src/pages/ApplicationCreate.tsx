@@ -24,7 +24,13 @@ export default function ApplicationCreate() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lamaran Kerja", href: "/applications" },
+        { label: "Tambah Lamaran" },
+      ]}
+    >
       <MinimalSEO
         title={seoConfig.applicationCreate.title}
         description={seoConfig.applicationCreate.description}

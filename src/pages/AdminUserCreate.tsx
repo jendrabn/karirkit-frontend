@@ -6,6 +6,7 @@ import { useCreateUser } from "@/features/admin/users/api/create-user";
 import { toast } from "sonner";
 import type { CreateUserInput } from "@/features/admin/users/api/create-user";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { paths } from "@/config/paths";
 
 const AdminUserCreate = () => {
   const navigate = useNavigate();
@@ -24,7 +25,13 @@ const AdminUserCreate = () => {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Pengguna", href: paths.admin.users.list.getHref() },
+        { label: "Tambah Pengguna" },
+      ]}
+    >
       <MinimalSEO
         title="Tambah User | KarirKit"
         description="Tambahkan pengguna baru ke sistem."

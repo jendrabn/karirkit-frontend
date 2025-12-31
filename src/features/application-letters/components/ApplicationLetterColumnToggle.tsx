@@ -40,8 +40,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   company_city: false,
   marital_status: false,
   gender: false,
+  created_at: true,
   updated_at: false,
-  created_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
@@ -57,8 +57,8 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   company_city: "Kota Perusahaan",
   marital_status: "Status Pernikahan",
   gender: "Gender",
-  updated_at: "Terakhir Diperbarui",
-  created_at: "Tanggal Dibuat",
+  created_at: "Dibuat",
+  updated_at: "Diperbarui",
 };
 
 interface ColumnToggleProps {
@@ -91,8 +91,8 @@ export function ApplicationLetterColumnToggle({
     "company_city",
     "marital_status",
     "gender",
-    "updated_at",
     "created_at",
+    "updated_at",
   ];
 
   return (

@@ -19,8 +19,8 @@ export interface ColumnVisibility {
   workSystem: boolean;
   salary: boolean;
   status: boolean;
-  createdAt: boolean;
-  updatedAt: boolean;
+  created_at: boolean;
+  updated_at: boolean;
 }
 
 export const defaultColumnVisibility: ColumnVisibility = {
@@ -32,8 +32,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   workSystem: true,
   salary: true,
   status: true,
-  createdAt: false,
-  updatedAt: false,
+  created_at: true,
+  updated_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
@@ -45,8 +45,8 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   workSystem: "Sistem Kerja",
   salary: "Gaji",
   status: "Status",
-  createdAt: "Dibuat",
-  updatedAt: "Diupdate",
+  created_at: "Dibuat",
+  updated_at: "Diperbarui",
 };
 
 interface ColumnToggleProps {

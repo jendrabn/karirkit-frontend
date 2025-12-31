@@ -22,6 +22,7 @@ import {
   type ColumnVisibility,
   defaultColumnVisibility,
 } from "@/features/admin/job-roles/components/JobRoleColumnToggle";
+import { paths } from "@/config/paths";
 
 export default function AdminJobRoles() {
   const queryClient = useQueryClient();
@@ -130,7 +131,13 @@ export default function AdminJobRoles() {
   const totalPages = pagination?.total_pages || 1;
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lowongan Kerja", href: paths.admin.jobs.list.getHref() },
+        { label: "Role Pekerjaan" },
+      ]}
+    >
       <PageHeader
         title="Manajemen Role Pekerjaan"
         subtitle="Kelola semua kategori role pekerjaan."

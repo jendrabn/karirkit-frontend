@@ -17,6 +17,7 @@ export interface ColumnVisibility {
   views_count: boolean;
   min_read: boolean;
   published_at: boolean;
+  created_at: boolean;
   updated_at: boolean;
 }
 
@@ -28,7 +29,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   views_count: true,
   min_read: true,
   published_at: true,
-  updated_at: true,
+  created_at: true,
+  updated_at: false,
 };
 
 interface BlogColumnToggleProps {
@@ -104,10 +106,16 @@ export function BlogColumnToggle({
           Tanggal Publish
         </DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem
+          checked={visibility.created_at}
+          onCheckedChange={() => toggleColumn("created_at")}
+        >
+          Dibuat
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem
           checked={visibility.updated_at}
           onCheckedChange={() => toggleColumn("updated_at")}
         >
-          Terakhir Diperbarui
+          Diperbarui
         </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>

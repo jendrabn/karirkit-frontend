@@ -10,7 +10,12 @@ const AdminDashboard = () => {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Admin" },
+        ]}
+      >
         <div className="flex h-screen items-center justify-center">
           <Spinner size="lg" />
         </div>
@@ -20,7 +25,12 @@ const AdminDashboard = () => {
 
   if (!stats) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Admin" },
+        ]}
+      >
         <div className="flex h-screen items-center justify-center">
           Gagal memuat statistik.
         </div>
@@ -29,7 +39,12 @@ const AdminDashboard = () => {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Admin" },
+      ]}
+    >
       <MinimalSEO
         title="Dashboard Admin"
         description="Ringkasan statistik dan aktivitas platform."

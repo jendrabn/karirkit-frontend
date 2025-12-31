@@ -106,7 +106,7 @@ export function JobCard({ job }: JobCardProps) {
                 onClick={handleBookmark}
               >
                 <Bookmark
-                  className={`h-8 w-8 ${bookmarked ? "fill-current" : ""}`}
+                  className={`!size-5 ${bookmarked ? "fill-current" : ""}`}
                 />
                 <span className="sr-only">Simpan Lowongan</span>
               </Button>
@@ -149,7 +149,7 @@ export function JobCard({ job }: JobCardProps) {
                 </span>
               </div>
 
-              <div className="flex items-center gap-1 text-xs text-muted-foreground/60 ml-auto pl-1">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground/60 ml-auto pl-1">
                 <Clock className="w-3 h-3 shrink-0" />
                 <span className="whitespace-nowrap">
                   {dayjs(job.created_at).fromNow()}

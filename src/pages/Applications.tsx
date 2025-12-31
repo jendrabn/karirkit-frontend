@@ -6,7 +6,12 @@ import { seoConfig } from "@/config/seo";
 
 export default function Applications() {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lamaran Kerja" },
+      ]}
+    >
       <MinimalSEO
         title={seoConfig.applications.title}
         description={seoConfig.applications.description}

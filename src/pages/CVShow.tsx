@@ -71,7 +71,13 @@ export default function CVShow() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "CV Saya", href: "/cvs" },
+          { label: "Detail CV" },
+        ]}
+      >
         <MinimalSEO
           title="Loading..."
           description="Memuat data CV..."
@@ -109,7 +115,13 @@ export default function CVShow() {
 
   if (!cv) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "CV Saya", href: "/cvs" },
+          { label: "CV Tidak Ditemukan" },
+        ]}
+      >
         <MinimalSEO
           title="CV Tidak Ditemukan"
           description="CV tidak ditemukan."
@@ -128,7 +140,13 @@ export default function CVShow() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "CV Saya", href: "/cvs" },
+        { label: "Detail CV" },
+      ]}
+    >
       <MinimalSEO
         title={`${cv.name} - ${cv.headline}`}
         description={`Detail CV dari ${cv.name}`}

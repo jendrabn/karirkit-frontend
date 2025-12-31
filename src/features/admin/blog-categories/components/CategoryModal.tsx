@@ -13,13 +13,12 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import type { BlogCategory } from "@/features/admin/blogs/api/get-blog-categories";
+import type { BlogCategory } from "../api/get-blog-categories";
 import { useEffect } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
 
 const categorySchema = z.object({
   name: z.string().min(1, "Nama kategori wajib diisi"),
-  slug: z.string().min(1, "Slug wajib diisi"),
   description: z.string().min(1, "Deskripsi wajib diisi"),
 });
 
@@ -44,7 +43,6 @@ export function CategoryModal({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
-      slug: "",
       description: "",
     },
   });
@@ -55,33 +53,19 @@ export function CategoryModal({
     if (category) {
       form.reset({
         name: category.name,
-        slug: category.slug,
         description: category.description || "",
       });
     } else {
       form.reset({
         name: "",
-        slug: "",
         description: "",
       });
     }
   }, [category, form, open]);
 
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
-  };
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     form.setValue("name", name);
-    if (!category) {
-      form.setValue("slug", generateSlug(name));
-    }
   };
 
   const handleSubmit = (data: CategoryFormData) => {
@@ -108,12 +92,6 @@ export function CategoryModal({
                 placeholder="Masukkan nama kategori"
               />
               <FieldError>{form.formState.errors.name?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel>Slug *</FieldLabel>
-              <Input {...form.register("slug")} placeholder="nama-kategori" />
-              <FieldError>{form.formState.errors.slug?.message}</FieldError>
             </Field>
 
             <Field>

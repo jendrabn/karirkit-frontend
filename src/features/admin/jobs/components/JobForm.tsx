@@ -24,8 +24,6 @@ import { createJobInputSchema, type CreateJobInput } from "../api/create-job";
 import { updateJobInputSchema, type UpdateJobInput } from "../api/update-job";
 import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 
-import { useEffect } from "react";
-
 interface JobFormProps {
   initialData?: Job;
   onSubmit: (data: CreateJobInput | UpdateJobInput) => void;
@@ -53,7 +51,6 @@ export function JobForm({
           job_role_id: initialData.job_role_id,
           city_id: initialData.city_id,
           title: initialData.title,
-          slug: initialData.slug,
           job_type: initialData.job_type,
           work_system: initialData.work_system,
           education_level: initialData.education_level,
@@ -99,18 +96,6 @@ export function JobForm({
         },
   });
 
-  const title = form.watch("title");
-
-  useEffect(() => {
-    if (!initialData && title) {
-      const slug = title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-      form.setValue("slug", slug);
-    }
-  }, [title, initialData, form]);
-
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <FieldSet disabled={isLoading} className="space-y-6">
@@ -127,15 +112,6 @@ export function JobForm({
                   {...form.register("title")}
                 />
                 <FieldError>{form.formState.errors.title?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel>Slug *</FieldLabel>
-                <Input
-                  placeholder="senior-frontend-developer"
-                  {...form.register("slug")}
-                />
-                <FieldError>{form.formState.errors.slug?.message}</FieldError>
               </Field>
 
               <Controller

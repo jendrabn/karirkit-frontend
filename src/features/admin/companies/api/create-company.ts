@@ -7,7 +7,6 @@ import { getCompaniesQueryOptions } from "./get-companies";
 
 export const createCompanyInputSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
-  slug: z.string().min(1, "Slug wajib diisi"),
   description: z.string().min(1, "Deskripsi wajib diisi"),
   logo: z.string().optional(),
   employee_size: z.enum([

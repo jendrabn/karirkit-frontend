@@ -33,12 +33,10 @@ const AdminBlogCreate = () => {
     try {
       await createBlogMutation.mutateAsync({
         title: data.title,
-        slug: data.slug,
         excerpt: data.excerpt || "",
         content: data.content,
         featured_image: data.featured_image || "",
         status: data.status,
-        read_time: data.read_time,
         category_id: data.category_id || "",
         author_id: user.id, // Use logged-in user's ID
         tag_ids: data.tag_ids || [],
@@ -53,7 +51,13 @@ const AdminBlogCreate = () => {
 
   if (isLoadingCategories || isLoadingTags) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Blog", href: paths.admin.blogs.list.getHref() },
+          { label: "Buat Blog Baru" },
+        ]}
+      >
         <PageHeader
           title="Buat Blog Baru"
           subtitle="Tulis dan publikasikan artikel blog baru."
@@ -80,12 +84,19 @@ const AdminBlogCreate = () => {
       id: tag.id,
       name: tag.name,
       slug: tag.slug,
+      blog_count: 0,
       created_at: tag.created_at,
       updated_at: tag.updated_at,
     })) || [];
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Blog", href: paths.admin.blogs.list.getHref() },
+        { label: "Buat Blog Baru" },
+      ]}
+    >
       <MinimalSEO
         title="Buat Blog Baru"
         description="Buat blog baru."

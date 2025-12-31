@@ -16,6 +16,7 @@ export type ColumnVisibility = {
   language: boolean;
   is_premium: boolean;
   created_at: boolean;
+  updated_at: boolean;
 };
 
 interface TemplatesColumnToggleProps {
@@ -76,6 +77,12 @@ export function TemplatesColumnToggle({
           onCheckedChange={() => onToggle("created_at")}
         >
           Dibuat
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem
+          checked={visibleColumns.updated_at}
+          onCheckedChange={() => onToggle("updated_at")}
+        >
+          Diperbarui
         </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>

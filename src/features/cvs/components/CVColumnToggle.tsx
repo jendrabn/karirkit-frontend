@@ -24,8 +24,8 @@ export interface ColumnVisibility {
   awards_count: boolean;
   organizations_count: boolean;
   language: boolean;
-  updated_at: boolean;
   created_at: boolean;
+  updated_at: boolean;
 }
 
 export const defaultColumnVisibility: ColumnVisibility = {
@@ -43,8 +43,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   certificates_count: false,
   awards_count: false,
   organizations_count: false,
+  created_at: true,
   updated_at: false,
-  created_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
@@ -53,8 +53,6 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   latest_education: "Pendidikan Terakhir",
   skills_count: "Jumlah Skill",
   language: "Bahasa",
-  updated_at: "Terakhir Diperbarui",
-  created_at: "Tanggal Dibuat",
   about: "Ringkasan",
   name: "Nama",
   email: "Email",
@@ -64,6 +62,8 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   certificates_count: "Jumlah Sertifikat",
   awards_count: "Jumlah Penghargaan",
   organizations_count: "Organisasi",
+  created_at: "Dibuat",
+  updated_at: "Diperbarui",
 };
 
 interface CVColumnToggleProps {
@@ -78,8 +78,6 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "latest_education",
   "skills_count",
   "language",
-  "updated_at",
-  "created_at",
   "about",
   "name",
   "email",
@@ -89,6 +87,8 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "certificates_count",
   "awards_count",
   "organizations_count",
+  "created_at",
+  "updated_at",
 ];
 
 export function CVColumnToggle({

@@ -5,7 +5,12 @@ import PortfoliosList from "@/features/portfolios/components/PortfoliosList";
 
 export default function Portfolios() {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Portfolio" },
+      ]}
+    >
       <MinimalSEO
         title="Portfolio"
         description="Kelola dan tampilkan proyek-proyek terbaik Anda."

@@ -378,14 +378,14 @@ export function ApplicationLetterList() {
                       Gender
                     </TableHead>
                   )}
-                  {columnVisibility.updated_at && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Terakhir Diperbarui
-                    </TableHead>
-                  )}
                   {columnVisibility.created_at && (
                     <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Tanggal Dibuat
+                      Dibuat
+                    </TableHead>
+                  )}
+                  {columnVisibility.updated_at && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Diperbarui
                     </TableHead>
                   )}
                   <TableHead className="w-[60px]"></TableHead>
@@ -502,14 +502,18 @@ export function ApplicationLetterList() {
                           {getLabel(letter.gender, GENDER_OPTIONS)}
                         </TableCell>
                       )}
-                      {columnVisibility.updated_at && (
-                        <TableCell className="text-muted-foreground whitespace-nowrap">
-                          {dayjs(letter.updated_at).format("DD MMM YYYY")}
+                      {columnVisibility.created_at && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                          {dayjs(letter.created_at).format(
+                            "DD MMM YYYY, HH:mm"
+                          )}
                         </TableCell>
                       )}
-                      {columnVisibility.created_at && (
-                        <TableCell className="text-muted-foreground whitespace-nowrap">
-                          {dayjs(letter.created_at).format("DD MMM YYYY")}
+                      {columnVisibility.updated_at && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                          {dayjs(letter.updated_at).format(
+                            "DD MMM YYYY, HH:mm"
+                          )}
                         </TableCell>
                       )}
                       <TableCell>

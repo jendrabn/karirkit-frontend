@@ -5,7 +5,12 @@ import { MinimalSEO } from "@/components/MinimalSEO";
 
 const AdminTemplates = () => {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Template" },
+      ]}
+    >
       <MinimalSEO
         title="Kelola Template"
         description="Kelola template CV dan Surat Lamaran."

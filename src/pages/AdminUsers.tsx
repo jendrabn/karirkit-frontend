@@ -5,7 +5,12 @@ import { MinimalSEO } from "@/components/MinimalSEO";
 
 const AdminUsers = () => {
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Pengguna" },
+      ]}
+    >
       <MinimalSEO
         title="Manajemen User"
         description="Kelola semua pengguna aplikasi."

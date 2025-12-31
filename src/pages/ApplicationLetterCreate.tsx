@@ -29,7 +29,13 @@ export default function ApplicationLetterCreate() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Surat Lamaran", href: "/application-letters" },
+        { label: "Buat Surat Lamaran" },
+      ]}
+    >
       <MinimalSEO
         title="Buat Surat Lamaran"
         description="Buat surat lamaran kerja baru."

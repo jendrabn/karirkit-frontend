@@ -10,7 +10,6 @@ export const createJobInputSchema = z.object({
   job_role_id: z.string().min(1, "Role pekerjaan wajib dipilih"),
   city_id: z.string().min(1, "Kota wajib dipilih"),
   title: z.string().min(1, "Judul wajib diisi"),
-  slug: z.string().min(1, "Slug wajib diisi"),
   job_type: z.enum([
     "full_time",
     "part_time",

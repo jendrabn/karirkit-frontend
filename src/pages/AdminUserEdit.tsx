@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import type { UpdateUserInput } from "@/features/admin/users/api/update-user";
 import { Spinner } from "@/components/ui/spinner";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { paths } from "@/config/paths";
 
 const AdminUserEdit = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,7 +38,13 @@ const AdminUserEdit = () => {
 
   if (isUserLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Pengguna", href: paths.admin.users.list.getHref() },
+          { label: "Edit Pengguna" },
+        ]}
+      >
         <div className="flex h-screen items-center justify-center">
           <Spinner size="lg" />
         </div>
@@ -47,7 +54,13 @@ const AdminUserEdit = () => {
 
   if (!user) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Pengguna", href: paths.admin.users.list.getHref() },
+          { label: "User Tidak Ditemukan" },
+        ]}
+      >
         <div className="flex h-screen items-center justify-center">
           User not found
         </div>
@@ -56,7 +69,13 @@ const AdminUserEdit = () => {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Pengguna", href: paths.admin.users.list.getHref() },
+        { label: "Edit Pengguna" },
+      ]}
+    >
       <MinimalSEO
         title={`Edit User: ${user.name}`}
         description={`Edit data pengguna ${user.name}`}

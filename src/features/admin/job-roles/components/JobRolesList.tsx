@@ -1,5 +1,4 @@
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
+import { dayjs } from "@/lib/date";
 import {
   MoreVertical,
   Pencil,
@@ -89,9 +88,9 @@ export function JobRolesList({
               {columnVisibility.name && <TableHead>Nama Role</TableHead>}
               {columnVisibility.slug && <TableHead>Slug</TableHead>}
               {columnVisibility.jobCount && <TableHead>Lowongan</TableHead>}
-              {columnVisibility.createdAt && <TableHead>Dibuat</TableHead>}
-              {columnVisibility.updatedAt && <TableHead>Diupdate</TableHead>}
-              <TableHead className="text-right">Aksi</TableHead>
+              {columnVisibility.created_at && <TableHead>Dibuat</TableHead>}
+              {columnVisibility.updated_at && <TableHead>Diperbarui</TableHead>}
+              <TableHead className="w-[60px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -139,24 +138,24 @@ export function JobRolesList({
                       <Badge variant="secondary">{role.job_count}</Badge>
                     </TableCell>
                   )}
-                  {columnVisibility.createdAt && (
+                  {columnVisibility.created_at && (
                     <TableCell className="text-muted-foreground text-sm">
-                      {format(new Date(role.created_at), "dd MMM yyyy", {
-                        locale: id,
-                      })}
+                      {dayjs(role.created_at).format("DD MMM YYYY, HH:mm")}
                     </TableCell>
                   )}
-                  {columnVisibility.updatedAt && (
+                  {columnVisibility.updated_at && (
                     <TableCell className="text-muted-foreground text-sm">
-                      {format(new Date(role.updated_at), "dd MMM yyyy", {
-                        locale: id,
-                      })}
+                      {dayjs(role.updated_at).format("DD MMM YYYY, HH:mm")}
                     </TableCell>
                   )}
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="h-8 w-8"
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>

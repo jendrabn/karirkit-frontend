@@ -290,11 +290,11 @@ function FilterContent({
                 onCheckedChange={(checked) =>
                   handleJobRoleChange(role.id, checked as boolean)
                 }
-                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
               <Label
                 htmlFor={`role-${role.id}`}
-                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                className="text-sm cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
                 {role.name}
               </Label>
@@ -322,11 +322,11 @@ function FilterContent({
                 onCheckedChange={(checked) =>
                   handleJobTypeChange(value as JobType, checked as boolean)
                 }
-                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
               <Label
                 htmlFor={`job-type-${value}`}
-                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                className="text-sm cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
                 {label}
               </Label>
@@ -352,7 +352,7 @@ function FilterContent({
               placeholder="Tulis kota"
               value={citySearch}
               onChange={(e) => setCitySearch(e.target.value)}
-              className="pl-9 bg-background"
+              className="pl-9 bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
             />
           </div>
           <div className="space-y-3">
@@ -367,11 +367,11 @@ function FilterContent({
                   onCheckedChange={(checked) =>
                     handleCityChange(city.id, checked as boolean)
                   }
-                  className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                  className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
                 />
                 <Label
                   htmlFor={`city-${city.id}`}
-                  className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                  className="text-sm cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
                 >
                   {city.name}
                 </Label>
@@ -403,11 +403,11 @@ function FilterContent({
                 onCheckedChange={(checked) =>
                   handleExperienceChange(option.value, checked as boolean)
                 }
-                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
               <Label
                 htmlFor={`exp-${option.value}`}
-                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                className="text-sm cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
                 {option.label}
               </Label>
@@ -432,11 +432,11 @@ function FilterContent({
                 onCheckedChange={(checked) =>
                   handleSalaryChange(option.value, checked as boolean)
                 }
-                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
               <Label
                 htmlFor={`salary-${option.value}`}
-                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                className="text-sm cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
                 {option.label}
               </Label>
@@ -464,11 +464,11 @@ function FilterContent({
                     checked as boolean
                   )
                 }
-                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
               <Label
                 htmlFor={`edu-${value}`}
-                className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                className="text-sm cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
               >
                 {label}
               </Label>
@@ -494,7 +494,7 @@ function FilterContent({
               placeholder="Cari perusahaan"
               value={companySearch}
               onChange={(e) => setCompanySearch(e.target.value)}
-              className="pl-9 bg-background"
+              className="pl-9 bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
             />
           </div>
           <div className="space-y-3">
@@ -509,11 +509,11 @@ function FilterContent({
                   onCheckedChange={(checked) =>
                     handleCompanyChange(company.id, checked as boolean)
                   }
-                  className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-5 w-5"
+                  className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
                 />
                 <Label
                   htmlFor={`company-${company.id}`}
-                  className="text-base cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
+                  className="text-sm cursor-pointer font-normal text-muted-foreground hover:text-foreground transition-colors flex-1"
                 >
                   {company.name}
                 </Label>

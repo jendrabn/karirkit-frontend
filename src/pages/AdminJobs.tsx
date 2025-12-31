@@ -110,7 +110,12 @@ export default function AdminJobs() {
   const totalPages = pagination?.total_pages || 1;
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Lowongan Kerja" },
+      ]}
+    >
       <PageHeader
         title="Manajemen Lowongan Kerja"
         subtitle="Kelola semua lowongan pekerjaan."

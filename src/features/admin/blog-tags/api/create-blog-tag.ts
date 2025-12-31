@@ -6,7 +6,6 @@ import type { BlogTag } from "./get-blog-tags";
 
 export type CreateBlogTagInput = {
   name: string;
-  slug: string;
 };
 
 export type CreateBlogTagResponse = BlogTag;

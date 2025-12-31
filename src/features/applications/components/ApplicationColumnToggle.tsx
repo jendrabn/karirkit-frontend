@@ -44,8 +44,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   contact_name: false,
   contact_email: false,
   contact_phone: false,
+  created_at: true,
   updated_at: false,
-  created_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
@@ -63,8 +63,8 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   contact_name: "Kontak HR",
   contact_email: "Email HR",
   contact_phone: "Telepon HR",
-  updated_at: "Terakhir Diperbarui",
-  created_at: "Tanggal Dibuat",
+  created_at: "Dibuat",
+  updated_at: "Diperbarui",
 };
 
 // Define the order of columns as specified
@@ -83,8 +83,8 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "contact_name",
   "contact_email",
   "contact_phone",
-  "updated_at",
   "created_at",
+  "updated_at",
 ];
 
 interface ColumnToggleProps {

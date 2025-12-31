@@ -51,7 +51,13 @@ const AdminUserShow = () => {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Pengguna", href: paths.admin.users.list.getHref() },
+          { label: "Detail Pengguna" },
+        ]}
+      >
         <div className="flex bg-background h-screen items-center justify-center">
           <Spinner size="lg" />
         </div>
@@ -61,7 +67,13 @@ const AdminUserShow = () => {
 
   if (!user) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Pengguna", href: paths.admin.users.list.getHref() },
+          { label: "User Tidak Ditemukan" },
+        ]}
+      >
         <div className="flex items-center justify-center h-64">
           <p className="text-muted-foreground">User tidak ditemukan.</p>
         </div>
@@ -70,7 +82,13 @@ const AdminUserShow = () => {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Pengguna", href: paths.admin.users.list.getHref() },
+        { label: "Detail Pengguna" },
+      ]}
+    >
       <MinimalSEO
         title={user.name}
         description={`Informasi pengguna ${user.name}`}

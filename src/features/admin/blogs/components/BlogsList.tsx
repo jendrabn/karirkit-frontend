@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { format } from "date-fns";
+import { dayjs } from "@/lib/date";
 import {
   Search,
   Filter,
@@ -313,10 +313,15 @@ export const BlogsList = () => {
                       </SortableHeader>
                     </TableHead>
                   )}
+                  {columnVisibility.created_at && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Dibuat
+                    </TableHead>
+                  )}
                   {columnVisibility.updated_at && (
                     <TableHead>
                       <SortableHeader field="updated_at">
-                        Terakhir Diperbarui
+                        Diperbarui
                       </SortableHeader>
                     </TableHead>
                   )}
@@ -327,7 +332,7 @@ export const BlogsList = () => {
                 {isLoading ? (
                   <TableRow className="hover:bg-transparent">
                     <TableCell
-                      colSpan={11}
+                      colSpan={12}
                       className="text-center py-16 text-muted-foreground"
                     >
                       Memuat...
@@ -336,7 +341,7 @@ export const BlogsList = () => {
                 ) : blogs.length === 0 ? (
                   <TableRow className="hover:bg-transparent">
                     <TableCell
-                      colSpan={11}
+                      colSpan={12}
                       className="text-center py-16 text-muted-foreground"
                     >
                       <div className="flex flex-col items-center gap-2">
@@ -433,13 +438,20 @@ export const BlogsList = () => {
                       {columnVisibility.published_at && (
                         <TableCell className="text-muted-foreground whitespace-nowrap">
                           {blog.published_at
-                            ? format(new Date(blog.published_at), "dd MMM yyyy")
+                            ? dayjs(blog.published_at).format(
+                                "DD MMM YYYY, HH:mm"
+                              )
                             : "-"}
+                        </TableCell>
+                      )}
+                      {columnVisibility.created_at && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap">
+                          {dayjs(blog.created_at).format("DD MMM YYYY, HH:mm")}
                         </TableCell>
                       )}
                       {columnVisibility.updated_at && (
                         <TableCell className="text-muted-foreground whitespace-nowrap">
-                          {format(new Date(blog.updated_at), "dd MMM yyyy")}
+                          {dayjs(blog.updated_at).format("DD MMM YYYY, HH:mm")}
                         </TableCell>
                       )}
                       <TableCell>

@@ -235,7 +235,7 @@ export function DashboardSidebar() {
         )}
       </SidebarHeader>
 
-      <SidebarContent className="pt-4">
+      <SidebarContent className="pt-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted/30 [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-border/80">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

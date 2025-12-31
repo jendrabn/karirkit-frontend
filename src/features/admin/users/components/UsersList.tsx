@@ -307,7 +307,9 @@ export const UsersList = () => {
                 )}
                 {columnVisibility.updated_at && (
                   <TableHead>
-                    <SortableHeader field="updated_at">Diupdate</SortableHeader>
+                    <SortableHeader field="updated_at">
+                      Diperbarui
+                    </SortableHeader>
                   </TableHead>
                 )}
                 <TableHead className="w-[60px]"></TableHead>
@@ -394,13 +396,13 @@ export const UsersList = () => {
                       </TableCell>
                     )}
                     {columnVisibility.created_at && (
-                      <TableCell className="text-muted-foreground">
-                        {dayjs(user.created_at).format("DD MMM YYYY")}
+                      <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                        {dayjs(user.created_at).format("DD MMM YYYY, HH:mm")}
                       </TableCell>
                     )}
                     {columnVisibility.updated_at && (
-                      <TableCell className="text-muted-foreground">
-                        {dayjs(user.updated_at).format("DD MMM YYYY")}
+                      <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                        {dayjs(user.updated_at).format("DD MMM YYYY, HH:mm")}
                       </TableCell>
                     )}
                     <TableCell className="text-right">

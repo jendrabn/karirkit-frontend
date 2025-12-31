@@ -23,7 +23,6 @@ import { useFormErrors } from "@/hooks/use-form-errors";
 
 const portfolioSchema = z.object({
   title: z.string().min(1, "Judul wajib diisi"),
-  slug: z.string().min(1, "Slug wajib diisi"),
   sort_description: z.string().min(1, "Deskripsi singkat wajib diisi"),
   description: z.string().min(1, "Deskripsi wajib diisi"),
   role_title: z.string().min(1, "Role wajib diisi"),
@@ -86,7 +85,6 @@ export function PortfolioForm({
     resolver: zodResolver(portfolioSchema),
     defaultValues: {
       title: initialData?.title || "",
-      slug: initialData?.slug || "",
       sort_description: initialData?.sort_description || "",
       description: initialData?.description || "",
       role_title: initialData?.role_title || "",
@@ -123,14 +121,6 @@ export function PortfolioForm({
     });
   };
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-");
-  };
-
   return (
     <form onSubmit={form.handleSubmit(handleFormSubmit)}>
       <FieldSet disabled={isLoading} className="space-y-6 mb-6">
@@ -143,22 +133,8 @@ export function PortfolioForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>Judul Proyek</FieldLabel>
-                <Input
-                  {...form.register("title")}
-                  onChange={(e) => {
-                    form.register("title").onChange(e);
-                    if (!initialData) {
-                      form.setValue("slug", generateSlug(e.target.value));
-                    }
-                  }}
-                />
+                <Input {...form.register("title")} />
                 <FieldError>{form.formState.errors.title?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel>Slug</FieldLabel>
-                <Input {...form.register("slug")} />
-                <FieldError>{form.formState.errors.slug?.message}</FieldError>
               </Field>
             </div>
 

@@ -39,7 +39,13 @@ const PortfolioEdit = () => {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Portfolio", href: "/portfolios" },
+          { label: "Edit Portfolio" },
+        ]}
+      >
         <MinimalSEO
           title="Loading..."
           description="Memuat data portfolio..."
@@ -62,7 +68,13 @@ const PortfolioEdit = () => {
 
   if (!portfolio) {
     return (
-      <DashboardLayout>
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Portfolio", href: "/portfolios" },
+          { label: "Portfolio Tidak Ditemukan" },
+        ]}
+      >
         <MinimalSEO
           title="Portfolio Tidak Ditemukan"
           description="Portfolio tidak ditemukan."
@@ -82,7 +94,13 @@ const PortfolioEdit = () => {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      breadcrumbItems={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Portfolio", href: "/portfolios" },
+        { label: "Edit Portfolio" },
+      ]}
+    >
       <MinimalSEO
         title={`Edit Portfolio: ${portfolio.title}`}
         description={`Edit portfolio ${portfolio.title}`}

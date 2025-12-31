@@ -6,7 +6,6 @@ import type { BlogTag } from "./get-blog-tags";
 
 export type UpdateBlogTagInput = {
   name: string;
-  slug: string;
 };
 
 export type UpdateBlogTagResponse = BlogTag;
@@ -36,7 +35,9 @@ export const useUpdateBlogTag = ({
     mutationFn: updateBlogTag,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["blog-tags"] });
-      queryClient.invalidateQueries({ queryKey: ["blog-tag", args[1].id] });
+      queryClient.invalidateQueries({
+        queryKey: ["blog-tag", args[1].id],
+      });
       onSuccess?.(...args);
     },
     ...restConfig,

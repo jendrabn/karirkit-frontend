@@ -9,7 +9,9 @@ import { createJobRoleInputSchema } from "./create-job-role";
 
 export const updateJobRoleInputSchema = createJobRoleInputSchema.partial();
 
-export type UpdateJobRoleInput = z.infer<typeof updateJobRoleInputSchema>;
+export type UpdateJobRoleInput = {
+  name: string;
+};
 
 export const updateJobRole = ({
   data,
