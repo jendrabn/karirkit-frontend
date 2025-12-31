@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Controller } from "react-hook-form";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { AvatarUpload } from "./AvatarUpload";
@@ -32,6 +31,8 @@ interface UserFormProps {
   isLoading?: boolean;
 }
 
+type UserFormValues = CreateUserInput | UpdateUserInput;
+
 export function UserForm({
   initialData,
   onSubmit,
@@ -39,11 +40,10 @@ export function UserForm({
   isLoading,
 }: UserFormProps) {
   const isEdit = !!initialData;
+  const schema = isEdit ? updateUserInputSchema : createUserInputSchema;
 
-  const form = useForm<CreateUserInput | UpdateUserInput>({
-    resolver: zodResolver(
-      isEdit ? updateUserInputSchema : createUserInputSchema
-    ),
+  const form = useForm<UserFormValues>({
+    resolver: zodResolver(schema) as Resolver<UserFormValues>,
     defaultValues: {
       name: initialData?.name || "",
       username: initialData?.username || "",
@@ -58,7 +58,7 @@ export function UserForm({
 
   useFormErrors(form);
 
-  const handleSubmit = (data: CreateUserInput | UpdateUserInput) => {
+  const handleSubmit = (data: UserFormValues) => {
     onSubmit(data);
   };
 
