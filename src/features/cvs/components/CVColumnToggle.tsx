@@ -11,19 +11,21 @@ import {
 
 export interface ColumnVisibility {
   headline: boolean;
-  about: boolean;
   latest_experience: boolean;
   latest_education: boolean;
   skills_count: boolean;
+  language: boolean;
   name: boolean;
   email: boolean;
   phone: boolean;
+  about: boolean;
   address: boolean;
   photo: boolean;
   certificates_count: boolean;
   awards_count: boolean;
   organizations_count: boolean;
-  language: boolean;
+  social_links_count: boolean;
+  template: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
@@ -34,15 +36,17 @@ export const defaultColumnVisibility: ColumnVisibility = {
   latest_education: true,
   skills_count: true,
   language: true,
-  about: false,
   name: false,
   email: false,
   phone: false,
+  about: false,
   address: false,
   photo: false,
   certificates_count: false,
   awards_count: false,
   organizations_count: false,
+  social_links_count: false,
+  template: false,
   created_at: true,
   updated_at: false,
 };
@@ -53,15 +57,17 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   latest_education: "Pendidikan Terakhir",
   skills_count: "Jumlah Skill",
   language: "Bahasa",
-  about: "Ringkasan",
   name: "Nama",
   email: "Email",
   phone: "No. Telepon",
+  about: "Ringkasan",
   address: "Alamat",
   photo: "Foto",
   certificates_count: "Jumlah Sertifikat",
   awards_count: "Jumlah Penghargaan",
   organizations_count: "Organisasi",
+  social_links_count: "Sosial",
+  template: "Template",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };
@@ -78,19 +84,20 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "latest_education",
   "skills_count",
   "language",
-  "about",
   "name",
   "email",
   "phone",
+  "about",
   "address",
   "photo",
   "certificates_count",
   "awards_count",
   "organizations_count",
+  "social_links_count",
+  "template",
   "created_at",
   "updated_at",
 ];
-
 export function CVColumnToggle({
   visibility,
   onVisibilityChange,

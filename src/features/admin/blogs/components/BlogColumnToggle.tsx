@@ -17,6 +17,8 @@ export interface ColumnVisibility {
   views_count: boolean;
   min_read: boolean;
   published_at: boolean;
+  slug: boolean;
+  tags: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
@@ -27,11 +29,41 @@ export const defaultColumnVisibility: ColumnVisibility = {
   author: true,
   status: true,
   views_count: true,
-  min_read: true,
+  min_read: false,
   published_at: true,
+  slug: false,
+  tags: false,
   created_at: true,
   updated_at: false,
 };
+
+const columnLabels: Record<keyof ColumnVisibility, string> = {
+  title: "Judul",
+  category: "Kategori",
+  author: "Penulis",
+  status: "Status",
+  views_count: "Views",
+  min_read: "Waktu Baca",
+  published_at: "Tanggal Publish",
+  slug: "Slug",
+  tags: "Tags",
+  created_at: "Dibuat",
+  updated_at: "Diperbarui",
+};
+
+const columnOrder: (keyof ColumnVisibility)[] = [
+  "title",
+  "category",
+  "author",
+  "status",
+  "views_count",
+  "min_read",
+  "published_at",
+  "slug",
+  "tags",
+  "created_at",
+  "updated_at",
+];
 
 interface BlogColumnToggleProps {
   visibility: ColumnVisibility;
@@ -63,60 +95,15 @@ export function BlogColumnToggle({
       >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuCheckboxItem
-          checked={visibility.title}
-          onCheckedChange={() => toggleColumn("title")}
-        >
-          Judul
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibility.category}
-          onCheckedChange={() => toggleColumn("category")}
-        >
-          Kategori
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibility.author}
-          onCheckedChange={() => toggleColumn("author")}
-        >
-          Penulis
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibility.status}
-          onCheckedChange={() => toggleColumn("status")}
-        >
-          Status
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibility.views_count}
-          onCheckedChange={() => toggleColumn("views_count")}
-        >
-          Views
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibility.min_read}
-          onCheckedChange={() => toggleColumn("min_read")}
-        >
-          Waktu Baca
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibility.published_at}
-          onCheckedChange={() => toggleColumn("published_at")}
-        >
-          Tanggal Publish
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibility.created_at}
-          onCheckedChange={() => toggleColumn("created_at")}
-        >
-          Dibuat
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={visibility.updated_at}
-          onCheckedChange={() => toggleColumn("updated_at")}
-        >
-          Diperbarui
-        </DropdownMenuCheckboxItem>
+        {columnOrder.map((column) => (
+          <DropdownMenuCheckboxItem
+            key={column}
+            checked={visibility[column]}
+            onCheckedChange={() => toggleColumn(column)}
+          >
+            {columnLabels[column]}
+          </DropdownMenuCheckboxItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

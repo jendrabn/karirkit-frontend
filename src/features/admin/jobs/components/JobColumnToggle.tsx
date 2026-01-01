@@ -19,6 +19,10 @@ export interface ColumnVisibility {
   workSystem: boolean;
   salary: boolean;
   status: boolean;
+  expiration_date: boolean;
+  education_level: boolean;
+  experience: boolean;
+  talent_quota: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
@@ -32,6 +36,10 @@ export const defaultColumnVisibility: ColumnVisibility = {
   workSystem: true,
   salary: true,
   status: true,
+  expiration_date: false,
+  education_level: false,
+  experience: false,
+  talent_quota: false,
   created_at: true,
   updated_at: false,
 };
@@ -45,9 +53,30 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   workSystem: "Sistem Kerja",
   salary: "Gaji",
   status: "Status",
+  expiration_date: "Tanggal Expired",
+  education_level: "Pendidikan",
+  experience: "Pengalaman",
+  talent_quota: "Kuota",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };
+
+const columnOrder: (keyof ColumnVisibility)[] = [
+  "title",
+  "company",
+  "role",
+  "city",
+  "type",
+  "workSystem",
+  "salary",
+  "status",
+  "expiration_date",
+  "education_level",
+  "experience",
+  "talent_quota",
+  "created_at",
+  "updated_at",
+];
 
 interface ColumnToggleProps {
   visibility: ColumnVisibility;
@@ -81,15 +110,13 @@ export function JobColumnToggle({
       >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {Object.keys(visibility).map((column) => (
+        {columnOrder.map((column) => (
           <DropdownMenuCheckboxItem
             key={column}
-            checked={visibility[column as keyof ColumnVisibility]}
-            onCheckedChange={() =>
-              toggleColumn(column as keyof ColumnVisibility)
-            }
+            checked={visibility[column]}
+            onCheckedChange={() => toggleColumn(column)}
           >
-            {columnLabels[column as keyof ColumnVisibility]}
+            {columnLabels[column]}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

@@ -16,50 +16,72 @@ export interface ColumnVisibility {
   application_date: boolean;
   language: boolean;
   name: boolean;
-  email: boolean;
-  phone: boolean;
+  education: boolean;
   applicant_city: boolean;
   company_city: boolean;
-  education: boolean;
+  email: boolean;
+  phone: boolean;
   marital_status: boolean;
   gender: boolean;
-  updated_at: boolean;
+  template: boolean;
   created_at: boolean;
+  updated_at: boolean;
 }
 
 export const defaultColumnVisibility: ColumnVisibility = {
-  company_name: true,
   subject: true,
+  company_name: true,
   application_date: true,
   language: true,
-  education: true,
   name: false,
-  email: false,
-  phone: false,
+  education: false,
   applicant_city: false,
   company_city: false,
+  email: false,
+  phone: false,
   marital_status: false,
   gender: false,
+  template: false,
   created_at: true,
   updated_at: false,
 };
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
-  company_name: "Perusahaan",
   subject: "Subjek",
+  company_name: "Perusahaan",
   application_date: "Tanggal",
   language: "Bahasa",
-  education: "Pendidikan",
   name: "Nama Pelamar",
-  email: "Email",
-  phone: "No. Telepon",
+  education: "Pendidikan",
   applicant_city: "Kota Pelamar",
   company_city: "Kota Perusahaan",
+  email: "Email",
+  phone: "No. Telepon",
   marital_status: "Status Pernikahan",
   gender: "Gender",
+  template: "Template",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };
+
+// Define the order of columns as specified
+const columnOrder: (keyof ColumnVisibility)[] = [
+  "subject",
+  "company_name",
+  "application_date",
+  "language",
+  "name",
+  "education",
+  "applicant_city",
+  "company_city",
+  "email",
+  "phone",
+  "marital_status",
+  "gender",
+  "template",
+  "created_at",
+  "updated_at",
+];
 
 interface ColumnToggleProps {
   visibility: ColumnVisibility;
@@ -76,24 +98,6 @@ export function ApplicationLetterColumnToggle({
       [column]: !visibility[column],
     });
   };
-
-  // Define the order of columns as specified
-  const columnOrder: (keyof ColumnVisibility)[] = [
-    "company_name",
-    "subject",
-    "application_date",
-    "language",
-    "education",
-    "name",
-    "email",
-    "phone",
-    "applicant_city",
-    "company_city",
-    "marital_status",
-    "gender",
-    "created_at",
-    "updated_at",
-  ];
 
   return (
     <DropdownMenu>

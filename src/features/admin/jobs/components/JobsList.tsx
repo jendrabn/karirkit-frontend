@@ -44,6 +44,7 @@ import {
   type JobStatus,
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
+  EDUCATION_LEVEL_LABELS,
 } from "@/types/job";
 import { cn } from "@/lib/utils";
 import { type ColumnVisibility } from "./JobColumnToggle";
@@ -113,6 +114,13 @@ export function JobsList({
       currency: "IDR",
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const formatExperienceRange = (min: number, max: number | null) => {
+    if (max && max > min) {
+      return `${min}-${max} tahun`;
+    }
+    return `${min}+ tahun`;
   };
 
   const SortableHeader = ({
@@ -198,6 +206,26 @@ export function JobsList({
                   Status
                 </TableHead>
               )}
+              {columnVisibility.expiration_date && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Tanggal Expired
+                </TableHead>
+              )}
+              {columnVisibility.education_level && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Pendidikan
+                </TableHead>
+              )}
+              {columnVisibility.experience && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Pengalaman
+                </TableHead>
+              )}
+              {columnVisibility.talent_quota && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Kuota
+                </TableHead>
+              )}
               {columnVisibility.created_at && (
                 <TableHead>
                   <SortableHeader field="created_at">Dibuat</SortableHeader>
@@ -215,7 +243,7 @@ export function JobsList({
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={12} className="h-16 text-center">
+                  <TableCell colSpan={16} className="h-16 text-center">
                     <div className="flex items-center justify-center gap-2 text-muted-foreground">
                       <Loader2 className="h-4 w-4 animate-spin" />
                       <span>Memuat data...</span>
@@ -225,7 +253,7 @@ export function JobsList({
               ))
             ) : jobs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={12} className="h-32 text-center">
+                <TableCell colSpan={16} className="h-32 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Briefcase className="h-10 w-10 mb-2 opacity-50" />
                     <p>Tidak ada lowongan ditemukan.</p>
@@ -298,6 +326,34 @@ export function JobsList({
                       <Badge variant={getStatusBadgeVariant(job.status)}>
                         {STATUS_LABELS[job.status]}
                       </Badge>
+                    </TableCell>
+                  )}
+                  {columnVisibility.expiration_date && (
+                    <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                      {job.expiration_date
+                        ? dayjs(job.expiration_date).format("DD MMM YYYY")
+                        : "-"}
+                    </TableCell>
+                  )}
+                  {columnVisibility.education_level && (
+                    <TableCell>
+                      <Badge variant="outline">
+                        {EDUCATION_LEVEL_LABELS[job.education_level] ||
+                          job.education_level}
+                      </Badge>
+                    </TableCell>
+                  )}
+                  {columnVisibility.experience && (
+                    <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                      {formatExperienceRange(
+                        job.min_years_of_experience,
+                        job.max_years_of_experience
+                      )}
+                    </TableCell>
+                  )}
+                  {columnVisibility.talent_quota && (
+                    <TableCell>
+                      <Badge variant="secondary">{job.talent_quota}</Badge>
                     </TableCell>
                   )}
                   {columnVisibility.created_at && (

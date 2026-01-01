@@ -275,14 +275,14 @@ export const CategoryList = () => {
                     Slug
                   </TableHead>
                 )}
-                {columnVisibility.description && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Deskripsi
-                  </TableHead>
-                )}
                 {columnVisibility.blog_count && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Blog
+                  </TableHead>
+                )}
+                {columnVisibility.description && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Deskripsi
                   </TableHead>
                 )}
                 {columnVisibility.created_at && (
@@ -349,14 +349,14 @@ export const CategoryList = () => {
                         {category.slug}
                       </TableCell>
                     )}
-                    {columnVisibility.description && (
-                      <TableCell className="text-muted-foreground max-w-[300px] truncate">
-                        {category.description || "-"}
-                      </TableCell>
-                    )}
                     {columnVisibility.blog_count && (
                       <TableCell className="text-muted-foreground">
                         {category.blog_count || 0}
+                      </TableCell>
+                    )}
+                    {columnVisibility.description && (
+                      <TableCell className="text-muted-foreground max-w-[300px] truncate">
+                        {category.description || "-"}
                       </TableCell>
                     )}
                     {columnVisibility.created_at && (

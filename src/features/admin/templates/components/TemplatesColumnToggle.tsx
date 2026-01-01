@@ -16,6 +16,7 @@ export interface ColumnVisibility {
   name: boolean;
   language: boolean;
   is_premium: boolean;
+  path: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
@@ -26,6 +27,7 @@ export const defaultColumnVisibility: ColumnVisibility = {
   name: true,
   language: true,
   is_premium: true,
+  path: false,
   created_at: true,
   updated_at: false,
 };
@@ -36,9 +38,21 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   name: "Nama",
   language: "Bahasa",
   is_premium: "Premium",
+  path: "Path",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };
+
+const columnOrder: (keyof ColumnVisibility)[] = [
+  "preview",
+  "name",
+  "type",
+  "language",
+  "is_premium",
+  "path",
+  "created_at",
+  "updated_at",
+];
 
 interface ColumnToggleProps {
   visibility: ColumnVisibility;
@@ -72,15 +86,13 @@ export function TemplatesColumnToggle({
       >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {Object.keys(visibility).map((column) => (
+        {columnOrder.map((column) => (
           <DropdownMenuCheckboxItem
             key={column}
-            checked={visibility[column as keyof ColumnVisibility]}
-            onCheckedChange={() =>
-              toggleColumn(column as keyof ColumnVisibility)
-            }
+            checked={visibility[column]}
+            onCheckedChange={() => toggleColumn(column)}
           >
-            {columnLabels[column as keyof ColumnVisibility]}
+            {columnLabels[column]}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

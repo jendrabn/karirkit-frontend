@@ -313,6 +313,16 @@ export const BlogsList = () => {
                       </SortableHeader>
                     </TableHead>
                   )}
+                  {columnVisibility.slug && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Slug
+                    </TableHead>
+                  )}
+                  {columnVisibility.tags && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Tags
+                    </TableHead>
+                  )}
                   {columnVisibility.created_at && (
                     <TableHead className="uppercase text-xs font-medium tracking-wide">
                       Dibuat
@@ -332,7 +342,7 @@ export const BlogsList = () => {
                 {isLoading ? (
                   <TableRow className="hover:bg-transparent">
                     <TableCell
-                      colSpan={12}
+                      colSpan={14}
                       className="text-center py-16 text-muted-foreground"
                     >
                       Memuat...
@@ -340,10 +350,10 @@ export const BlogsList = () => {
                   </TableRow>
                 ) : blogs.length === 0 ? (
                   <TableRow className="hover:bg-transparent">
-                    <TableCell
-                      colSpan={12}
-                      className="text-center py-16 text-muted-foreground"
-                    >
+                      <TableCell
+                        colSpan={14}
+                        className="text-center py-16 text-muted-foreground"
+                      >
                       <div className="flex flex-col items-center gap-2">
                         <FileText className="h-10 w-10 text-muted-foreground/50" />
                         <p className="text-base font-medium">Tidak ada blog</p>
@@ -442,6 +452,16 @@ export const BlogsList = () => {
                                 "DD MMM YYYY, HH:mm"
                               )
                             : "-"}
+                        </TableCell>
+                      )}
+                      {columnVisibility.slug && (
+                        <TableCell className="text-muted-foreground truncate max-w-[200px]">
+                          {blog.slug}
+                        </TableCell>
+                      )}
+                      {columnVisibility.tags && (
+                        <TableCell className="text-muted-foreground">
+                          {blog.tags?.length || 0}
                         </TableCell>
                       )}
                       {columnVisibility.created_at && (

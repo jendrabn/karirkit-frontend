@@ -16,6 +16,8 @@ export interface ColumnVisibility {
   sector: boolean;
   size: boolean;
   jobCount: boolean;
+  website_url: boolean;
+  description: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
@@ -26,6 +28,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   sector: true,
   size: true,
   jobCount: true,
+  website_url: false,
+  description: false,
   created_at: true,
   updated_at: false,
 };
@@ -36,9 +40,23 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   sector: "Sektor Bisnis",
   size: "Ukuran Perusahaan",
   jobCount: "Jumlah Lowongan",
+  website_url: "Website",
+  description: "Deskripsi",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };
+
+const columnOrder: (keyof ColumnVisibility)[] = [
+  "name",
+  "slug",
+  "sector",
+  "size",
+  "jobCount",
+  "website_url",
+  "description",
+  "created_at",
+  "updated_at",
+];
 
 interface ColumnToggleProps {
   visibility: ColumnVisibility;
@@ -72,15 +90,13 @@ export function CompanyColumnToggle({
       >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {Object.keys(visibility).map((column) => (
+        {columnOrder.map((column) => (
           <DropdownMenuCheckboxItem
             key={column}
-            checked={visibility[column as keyof ColumnVisibility]}
-            onCheckedChange={() =>
-              toggleColumn(column as keyof ColumnVisibility)
-            }
+            checked={visibility[column]}
+            onCheckedChange={() => toggleColumn(column)}
           >
-            {columnLabels[column as keyof ColumnVisibility]}
+            {columnLabels[column]}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

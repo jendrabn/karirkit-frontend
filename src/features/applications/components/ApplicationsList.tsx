@@ -562,11 +562,6 @@ export const ApplicationsList = () => {
                     Lokasi
                   </TableHead>
                 )}
-                {columnVisibility.follow_up_date && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Follow Up
-                  </TableHead>
-                )}
                 {columnVisibility.job_type && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Tipe Kerja
@@ -580,6 +575,11 @@ export const ApplicationsList = () => {
                 {columnVisibility.salary_range && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Rentang Gaji
+                  </TableHead>
+                )}
+                {columnVisibility.follow_up_date && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Follow Up
                   </TableHead>
                 )}
                 {columnVisibility.contact_name && (
@@ -695,13 +695,6 @@ export const ApplicationsList = () => {
                         <EditableCell app={app} field="location" />
                       </TableCell>
                     )}
-                    {columnVisibility.follow_up_date && (
-                      <TableCell className="text-muted-foreground whitespace-nowrap">
-                        {app.follow_up_date
-                          ? dayjs(app.follow_up_date).format("DD MMM YYYY")
-                          : "-"}
-                      </TableCell>
-                    )}
                     {columnVisibility.job_type && (
                       <TableCell>
                         <EditableCell
@@ -728,6 +721,13 @@ export const ApplicationsList = () => {
                         >
                           {formatSalaryRange(app.salary_min, app.salary_max)}
                         </Badge>
+                      </TableCell>
+                    )}
+                    {columnVisibility.follow_up_date && (
+                      <TableCell className="text-muted-foreground whitespace-nowrap">
+                        {app.follow_up_date
+                          ? dayjs(app.follow_up_date).format("DD MMM YYYY")
+                          : "-"}
                       </TableCell>
                     )}
                     {columnVisibility.contact_name && (

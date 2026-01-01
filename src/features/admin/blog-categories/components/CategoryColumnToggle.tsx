@@ -21,7 +21,7 @@ export interface CategoryColumnVisibility {
 export const defaultCategoryColumnVisibility: CategoryColumnVisibility = {
   name: true,
   slug: true,
-  description: true,
+  description: false,
   blog_count: true,
   created_at: true,
   updated_at: false,
@@ -36,6 +36,14 @@ const columnLabels: Record<keyof CategoryColumnVisibility, string> = {
   updated_at: "Diperbarui",
 };
 
+const columnOrder: (keyof CategoryColumnVisibility)[] = [
+  "name",
+  "slug",
+  "blog_count",
+  "description",
+  "created_at",
+  "updated_at",
+];
 interface CategoryColumnToggleProps {
   visibility: CategoryColumnVisibility;
   onVisibilityChange: (visibility: CategoryColumnVisibility) => void;
@@ -66,17 +74,15 @@ export function CategoryColumnToggle({
       >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {(Object.keys(visibility) as (keyof CategoryColumnVisibility)[]).map(
-          (column) => (
-            <DropdownMenuCheckboxItem
-              key={column}
-              checked={visibility[column]}
-              onCheckedChange={() => toggleColumn(column)}
-            >
-              {columnLabels[column]}
-            </DropdownMenuCheckboxItem>
-          )
-        )}
+        {columnOrder.map((column) => (
+          <DropdownMenuCheckboxItem
+            key={column}
+            checked={visibility[column]}
+            onCheckedChange={() => toggleColumn(column)}
+          >
+            {columnLabels[column]}
+          </DropdownMenuCheckboxItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

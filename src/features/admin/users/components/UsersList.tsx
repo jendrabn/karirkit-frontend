@@ -453,11 +453,6 @@ export const UsersList = () => {
                     <SortableHeader field="email">Email</SortableHeader>
                   </TableHead>
                 )}
-                {columnVisibility.phone && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Telepon
-                  </TableHead>
-                )}
                 {columnVisibility.role && (
                   <TableHead>
                     <SortableHeader field="role">Role</SortableHeader>
@@ -466,6 +461,11 @@ export const UsersList = () => {
                 {columnVisibility.status && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Status
+                  </TableHead>
+                )}
+                {columnVisibility.phone && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Telepon
                   </TableHead>
                 )}
                 {columnVisibility.daily_download_limit && (
@@ -553,11 +553,6 @@ export const UsersList = () => {
                     {columnVisibility.email && (
                       <TableCell>{user.email}</TableCell>
                     )}
-                    {columnVisibility.phone && (
-                      <TableCell className="text-muted-foreground">
-                        {user.phone || "-"}
-                      </TableCell>
-                    )}
                     {columnVisibility.role && (
                       <TableCell>
                         <Badge
@@ -602,6 +597,11 @@ export const UsersList = () => {
                             }
                           </Badge>
                         )}
+                      </TableCell>
+                    )}
+                    {columnVisibility.phone && (
+                      <TableCell className="text-muted-foreground">
+                        {user.phone || "-"}
                       </TableCell>
                     )}
                     {columnVisibility.daily_download_limit && (

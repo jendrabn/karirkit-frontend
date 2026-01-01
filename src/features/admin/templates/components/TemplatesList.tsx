@@ -304,6 +304,11 @@ export const TemplatesList = () => {
                     <SortableHeader field="is_premium">Premium</SortableHeader>
                   </TableHead>
                 )}
+                {visibility.path && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wider">
+                    Path
+                  </TableHead>
+                )}
                 {visibility.created_at && (
                   <TableHead>
                     <SortableHeader field="created_at">Dibuat</SortableHeader>
@@ -322,16 +327,16 @@ export const TemplatesList = () => {
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={11} className="h-24 text-center">
+                  <TableCell colSpan={12} className="h-24 text-center">
                     Memuat data...
                   </TableCell>
                 </TableRow>
               ) : templates.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell
-                    colSpan={10}
-                    className="text-center py-16 text-muted-foreground"
-                  >
+                    <TableCell
+                      colSpan={12}
+                      className="text-center py-16 text-muted-foreground"
+                    >
                     <div className="flex flex-col items-center gap-2">
                       <FileStack className="h-10 w-10 text-muted-foreground/50" />
                       <p className="text-base font-medium">
@@ -402,6 +407,11 @@ export const TemplatesList = () => {
                         ) : (
                           <Badge variant="secondary">Gratis</Badge>
                         )}
+                      </TableCell>
+                    )}
+                    {visibility.path && (
+                      <TableCell className="text-muted-foreground truncate max-w-[200px]">
+                        {template.path || "-"}
                       </TableCell>
                     )}
                     {visibility.created_at && (

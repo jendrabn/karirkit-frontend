@@ -14,9 +14,9 @@ export interface ColumnVisibility {
   name: boolean;
   username: boolean;
   email: boolean;
-  phone: boolean;
   role: boolean;
   status: boolean;
+  phone: boolean;
   daily_download_limit: boolean;
   total_downloads: boolean;
   created_at: boolean;
@@ -28,22 +28,35 @@ export const defaultColumnVisibility: ColumnVisibility = {
   name: true,
   username: true,
   email: true,
-  phone: true,
   role: true,
   status: true,
+  phone: false,
   daily_download_limit: true,
-  total_downloads: true,
+  total_downloads: false,
   created_at: true,
   updated_at: false,
 };
+
+const columnOrder: (keyof ColumnVisibility)[] = [
+  "name",
+  "username",
+  "email",
+  "role",
+  "status",
+  "phone",
+  "daily_download_limit",
+  "total_downloads",
+  "created_at",
+  "updated_at",
+];
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
   name: "Nama",
   username: "Username",
   email: "Email",
-  phone: "Telepon",
   role: "Role",
   status: "Status",
+  phone: "Telepon",
   daily_download_limit: "Batas Unduhan",
   total_downloads: "Total Unduhan",
   created_at: "Dibuat",
@@ -82,15 +95,13 @@ export function UserColumnToggle({
       >
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {Object.keys(visibility).map((column) => (
+        {columnOrder.map((column) => (
           <DropdownMenuCheckboxItem
             key={column}
-            checked={visibility[column as keyof ColumnVisibility]}
-            onCheckedChange={() =>
-              toggleColumn(column as keyof ColumnVisibility)
-            }
+            checked={visibility[column]}
+            onCheckedChange={() => toggleColumn(column)}
           >
-            {columnLabels[column as keyof ColumnVisibility]}
+            {columnLabels[column]}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

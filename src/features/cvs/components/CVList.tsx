@@ -300,11 +300,6 @@ const CVList = () => {
                       Headline / Posisi
                     </TableHead>
                   )}
-                  {columnVisibility.about && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Ringkasan
-                    </TableHead>
-                  )}
                   {columnVisibility.latest_experience && (
                     <TableHead className="uppercase text-xs font-medium tracking-wide">
                       Pengalaman Terakhir
@@ -340,6 +335,11 @@ const CVList = () => {
                       No. Telepon
                     </TableHead>
                   )}
+                  {columnVisibility.about && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Ringkasan
+                    </TableHead>
+                  )}
                   {columnVisibility.address && (
                     <TableHead className="uppercase text-xs font-medium tracking-wide">
                       Alamat
@@ -365,6 +365,16 @@ const CVList = () => {
                       Organisasi
                     </TableHead>
                   )}
+                  {columnVisibility.social_links_count && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Sosial
+                    </TableHead>
+                  )}
+                  {columnVisibility.template && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Template
+                    </TableHead>
+                  )}
                   {columnVisibility.created_at && (
                     <TableHead>
                       <SortableHeader field="created_at">Dibuat</SortableHeader>
@@ -383,14 +393,14 @@ const CVList = () => {
               <TableBody>
                 {isLoading ? (
                   <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={16} className="text-center py-16">
+                    <TableCell colSpan={20} className="text-center py-16">
                       <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                     </TableCell>
                   </TableRow>
                 ) : cvs.length === 0 ? (
                   <TableRow className="hover:bg-transparent">
                     <TableCell
-                      colSpan={16}
+                      colSpan={20}
                       className="text-center py-16 text-muted-foreground"
                     >
                       <div className="flex flex-col items-center gap-2">
@@ -423,26 +433,10 @@ const CVList = () => {
                           <TableCell className="font-medium max-w-[200px]">
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <span className="block truncate">
-                                  {cv.headline}
-                                </span>
+                                <span className="block truncate">{cv.headline}</span>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>{cv.headline}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TableCell>
-                        )}
-                        {columnVisibility.about && (
-                          <TableCell className="max-w-[200px]">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="block truncate text-muted-foreground">
-                                  {cv.about || "-"}
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-[300px]">
-                                <p>{cv.about || "-"}</p>
                               </TooltipContent>
                             </Tooltip>
                           </TableCell>
@@ -522,6 +516,20 @@ const CVList = () => {
                         {columnVisibility.phone && (
                           <TableCell>{cv.phone}</TableCell>
                         )}
+                        {columnVisibility.about && (
+                          <TableCell className="max-w-[200px]">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate text-muted-foreground">
+                                  {cv.about || "-"}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-[300px]">
+                                <p>{cv.about || "-"}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TableCell>
+                        )}
                         {columnVisibility.address && (
                           <TableCell className="max-w-[150px] truncate">
                             {cv.address}
@@ -557,6 +565,16 @@ const CVList = () => {
                               {cv.organizations?.length || 0}
                             </Badge>
                           </TableCell>
+                        )}
+                        {columnVisibility.social_links_count && (
+                          <TableCell>
+                            <Badge variant="secondary">
+                              {cv.social_links?.length || 0}
+                            </Badge>
+                          </TableCell>
+                        )}
+                        {columnVisibility.template && (
+                          <TableCell>{cv.template?.name || "-"}</TableCell>
                         )}
                         {columnVisibility.created_at && (
                           <TableCell className="text-muted-foreground whitespace-nowrap text-sm">

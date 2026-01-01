@@ -115,6 +115,16 @@ export function CompaniesList({
                   Lowongan
                 </TableHead>
               )}
+              {columnVisibility.website_url && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Website
+                </TableHead>
+              )}
+              {columnVisibility.description && (
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Deskripsi
+                </TableHead>
+              )}
               {columnVisibility.created_at && (
                 <TableHead className="uppercase text-xs font-medium tracking-wide">
                   Dibuat
@@ -132,7 +142,7 @@ export function CompaniesList({
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={10} className="h-16">
+                  <TableCell colSpan={11} className="h-16">
                     <div className="flex items-center gap-3 animate-pulse">
                       <div className="h-8 w-8 bg-muted rounded-full" />
                       <div className="h-4 w-32 bg-muted rounded" />
@@ -142,7 +152,7 @@ export function CompaniesList({
               ))
             ) : companies.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="h-32 text-center">
+                <TableCell colSpan={11} className="h-32 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Building2 className="h-10 w-10 mb-2 opacity-50" />
                     <p>Tidak ada perusahaan ditemukan.</p>
@@ -194,6 +204,27 @@ export function CompaniesList({
                   {columnVisibility.jobCount && (
                     <TableCell className="text-sm">
                       <Badge variant="secondary">{company.job_count}</Badge>
+                    </TableCell>
+                  )}
+                  {columnVisibility.website_url && (
+                    <TableCell>
+                      {company.website_url ? (
+                        <a
+                          href={company.website_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary underline-offset-2 hover:underline"
+                        >
+                          {company.website_url}
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                  )}
+                  {columnVisibility.description && (
+                    <TableCell className="text-muted-foreground max-w-[250px] truncate">
+                      {company.description || "-"}
                     </TableCell>
                   )}
                   {columnVisibility.created_at && (
