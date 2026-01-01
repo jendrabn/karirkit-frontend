@@ -33,6 +33,29 @@ api.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    if (error.response?.status === 403) {
+      const payload = error.response?.data?.data ?? error.response?.data;
+      if (payload?.status && typeof payload.status === "string") {
+        const reason =
+          typeof payload.status_reason === "string" && payload.status_reason
+            ? `Alasan: ${payload.status_reason}`
+            : "";
+        const until =
+          typeof payload.suspended_until === "string" &&
+          payload.suspended_until
+            ? `Berlaku sampai: ${new Date(
+                payload.suspended_until
+              ).toLocaleString("id-ID")}`
+            : "";
+        const messageParts = [
+          `Akun ${payload.status === "banned" ? "diblokir" : "disuspend"}.`,
+          reason,
+          until,
+        ].filter(Boolean);
+        toast.error(messageParts.join(" "));
+      }
+    }
+
     // Handle general errors
     if (
       error.response?.status !== 401 &&

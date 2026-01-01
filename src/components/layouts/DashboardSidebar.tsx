@@ -133,8 +133,8 @@ export function DashboardSidebar() {
   const isJobActive = location.pathname.startsWith("/admin/jobs");
 
   return (
-    <Sidebar collapsible="icon" className="border-r">
-      <SidebarHeader className={cn("border-b", isCollapsed ? "p-2" : "p-4")}>
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
         {isAuthenticated && user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -468,7 +468,7 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className={cn("border-t", isCollapsed ? "p-2" : "p-4")}>
+      <SidebarFooter className={cn(isCollapsed ? "p-2" : "p-4")}>
         <Button
           onClick={() => setDonationOpen(true)}
           className={cn(

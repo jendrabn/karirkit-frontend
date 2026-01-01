@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { buildImageUrl } from "@/lib/utils";
 import {
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
@@ -215,6 +216,33 @@ export default function AdminJobShow() {
               </div>
             </CardContent>
           </Card>
+
+          {job.medias?.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Media Lowongan</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {job.medias.map((media) => (
+                    <div
+                      key={media.id || media.path}
+                      className="aspect-[4/3] w-full overflow-hidden rounded-lg border"
+                    >
+                      <img
+                        src={buildImageUrl(media.path)}
+                        alt="Media lowongan"
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader>

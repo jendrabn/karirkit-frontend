@@ -76,7 +76,7 @@ export function PortfolioFilterModal({
             <DialogTitle>Filter Portfolio</DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto px-6 py-2">
-            <FieldSet className="space-y-4">
+            <FieldSet>
               <Field>
                 <FieldLabel>Tipe Proyek</FieldLabel>
                 <Select

@@ -16,18 +16,23 @@ export interface ColumnVisibility {
   email: boolean;
   phone: boolean;
   role: boolean;
+  status: boolean;
   daily_download_limit: boolean;
+  total_downloads: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const defaultColumnVisibility: ColumnVisibility = {
   name: true,
   username: true,
   email: true,
   phone: true,
   role: true,
+  status: true,
   daily_download_limit: true,
+  total_downloads: true,
   created_at: true,
   updated_at: false,
 };
@@ -38,7 +43,9 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   email: "Email",
   phone: "Telepon",
   role: "Role",
+  status: "Status",
   daily_download_limit: "Batas Unduhan",
+  total_downloads: "Total Unduhan",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };

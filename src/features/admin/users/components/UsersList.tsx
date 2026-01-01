@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { dayjs } from "@/lib/date";
 import {
@@ -16,10 +16,12 @@ import {
   MoreVertical,
   Loader2,
   FileStack,
+  Shield,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -45,6 +47,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -55,6 +70,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
   UserFilterModal,
   type FilterValues,
 } from "@/features/admin/users/components/UserFilterModal";
@@ -63,15 +84,21 @@ import {
   type ColumnVisibility,
   defaultColumnVisibility,
 } from "@/features/admin/users/components/UserColumnToggle";
-import { USER_ROLE_OPTIONS, type User } from "@/types/user";
+import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS, type User } from "@/types/user";
 import { cn, buildImageUrl } from "@/lib/utils";
 import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
 import { useMassDeleteUsers } from "../api/mass-delete-users";
 import { useUpdateUserDownloadLimit } from "../api/update-user-download-limit";
+import { useUpdateUserStatus } from "../api/update-user-status";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFormErrors } from "@/hooks/use-form-errors";
 import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 type SortField =
   | "name"
@@ -81,8 +108,38 @@ type SortField =
   | "created_at"
   | "updated_at";
 
+const getStatusBadgeVariant = (status: User["status"]) => {
+  switch (status) {
+    case "active":
+      return "default";
+    case "suspended":
+      return "secondary";
+    case "banned":
+      return "destructive";
+    default:
+      return "outline";
+  }
+};
+
+const userStatusSchema = z
+  .object({
+    status: z.enum(["active", "suspended", "banned"]),
+    status_reason: z.string().optional(),
+    suspended_until: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.status === "suspended" && !data.suspended_until) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Tanggal suspend wajib diisi",
+        path: ["suspended_until"],
+      });
+    }
+  });
+
 export const UsersList = () => {
   const navigate = useNavigate();
+  const { user: authUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 500);
 
@@ -103,6 +160,14 @@ export const UsersList = () => {
   const [perPage, setPerPage] = useState(10);
 
   const updateLimitMutation = useUpdateUserDownloadLimit();
+  const updateStatusMutation = useUpdateUserStatus({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Status akun berhasil diperbarui");
+        setStatusDialogOpen(false);
+      },
+    },
+  });
 
   const EditableCell = ({
     user,
@@ -209,6 +274,31 @@ export const UsersList = () => {
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [userForStatus, setUserForStatus] = useState<User | null>(null);
+
+  const statusForm = useForm<z.infer<typeof userStatusSchema>>({
+    resolver: zodResolver(userStatusSchema),
+    defaultValues: {
+      status: "active",
+      status_reason: "",
+      suspended_until: "",
+    },
+  });
+
+  useFormErrors(statusForm);
+
+  useEffect(() => {
+    if (!userForStatus) return;
+
+    statusForm.reset({
+      status: userForStatus.status || "active",
+      status_reason: userForStatus.status_reason || "",
+      suspended_until: userForStatus.suspended_until
+        ? dayjs(userForStatus.suspended_until).local().format("YYYY-MM-DDTHH:mm")
+        : "",
+    });
+  }, [statusForm, userForStatus]);
 
   const massDeleteMutation = useMassDeleteUsers({
     mutationConfig: {
@@ -236,6 +326,19 @@ export const UsersList = () => {
 
   const confirmBulkDelete = () => {
     massDeleteMutation.mutate({ ids: selectedIds });
+  };
+
+  const handleOpenStatusDialog = (user: User) => {
+    setUserForStatus(user);
+    setStatusDialogOpen(true);
+  };
+
+  const applySuspendDays = (days: number) => {
+    const nextDate = dayjs().add(days, "day").format("YYYY-MM-DDTHH:mm");
+    statusForm.setValue("suspended_until", nextDate, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const SortableHeader = ({
@@ -360,9 +463,19 @@ export const UsersList = () => {
                     <SortableHeader field="role">Role</SortableHeader>
                   </TableHead>
                 )}
+                {columnVisibility.status && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Status
+                  </TableHead>
+                )}
                 {columnVisibility.daily_download_limit && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Batas Unduhan
+                  </TableHead>
+                )}
+                {columnVisibility.total_downloads && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Total Unduhan
                   </TableHead>
                 )}
                 {columnVisibility.created_at && (
@@ -383,14 +496,14 @@ export const UsersList = () => {
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={10} className="h-24 text-center">
+                  <TableCell colSpan={12} className="h-24 text-center">
                     Memuat data...
                   </TableCell>
                 </TableRow>
               ) : users.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
-                    colSpan={10}
+                    colSpan={12}
                     className="text-center py-16 text-muted-foreground"
                   >
                     <div className="flex flex-col items-center gap-2">
@@ -460,6 +573,37 @@ export const UsersList = () => {
                         </Badge>
                       </TableCell>
                     )}
+                    {columnVisibility.status && (
+                      <TableCell>
+                        {user.suspended_until ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge variant={getStatusBadgeVariant(user.status)}>
+                                {
+                                  USER_STATUS_OPTIONS.find(
+                                    (opt) => opt.value === user.status
+                                  )?.label
+                                }
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Suspend sampai{" "}
+                              {dayjs(user.suspended_until).format(
+                                "DD MMM YYYY, HH:mm"
+                              )}
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <Badge variant={getStatusBadgeVariant(user.status)}>
+                            {
+                              USER_STATUS_OPTIONS.find(
+                                (opt) => opt.value === user.status
+                              )?.label
+                            }
+                          </Badge>
+                        )}
+                      </TableCell>
+                    )}
                     {columnVisibility.daily_download_limit && (
                       <TableCell>
                         <EditableCell
@@ -467,6 +611,11 @@ export const UsersList = () => {
                           field="daily_download_limit"
                           type="number"
                         />
+                      </TableCell>
+                    )}
+                    {columnVisibility.total_downloads && (
+                      <TableCell className="text-muted-foreground">
+                        {user.total_count ?? 0}
                       </TableCell>
                     )}
                     {columnVisibility.created_at && (
@@ -507,6 +656,13 @@ export const UsersList = () => {
                           >
                             <Pencil className="h-4 w-4 mr-2" />
                             Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleOpenStatusDialog(user)}
+                            disabled={authUser?.id === user.id}
+                          >
+                            <Shield className="h-4 w-4 mr-2" />
+                            Ubah Status
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
@@ -605,6 +761,139 @@ export const UsersList = () => {
         filters={filters}
         onApply={setFilters}
       />
+
+      <Dialog
+        open={statusDialogOpen}
+        onOpenChange={(open) => {
+          setStatusDialogOpen(open);
+          if (!open) {
+            setUserForStatus(null);
+            statusForm.reset({
+              status: "active",
+              status_reason: "",
+              suspended_until: "",
+            });
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Ubah Status User</DialogTitle>
+            <DialogDescription>
+              {userForStatus
+                ? `Perbarui status akun ${userForStatus.name}.`
+                : "Pilih status akun yang sesuai."}
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={statusForm.handleSubmit((data) => {
+              if (!userForStatus) return;
+
+              const suspendedUntil =
+                data.status === "suspended" && data.suspended_until
+                  ? new Date(data.suspended_until).toISOString()
+                  : undefined;
+
+              updateStatusMutation.mutate({
+                id: userForStatus.id,
+                data: {
+                  status: data.status,
+                  status_reason: data.status_reason || undefined,
+                  suspended_until: suspendedUntil,
+                },
+              });
+            })}
+            className="space-y-4"
+          >
+            <Field>
+              <FieldLabel>Status</FieldLabel>
+              <Select
+                value={statusForm.watch("status")}
+                onValueChange={(value) => {
+                  statusForm.setValue("status", value as User["status"], {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  });
+                }}
+                disabled={updateStatusMutation.isPending}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih status" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  {USER_STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldDescription>
+                Status menentukan akses user ke aplikasi.
+              </FieldDescription>
+              <FieldError>{statusForm.formState.errors.status?.message}</FieldError>
+            </Field>
+
+            {statusForm.watch("status") === "suspended" && (
+              <Field>
+                <FieldLabel>Suspend Sampai</FieldLabel>
+                <Input
+                  type="datetime-local"
+                  {...statusForm.register("suspended_until")}
+                  disabled={updateStatusMutation.isPending}
+                />
+                <div className="flex flex-wrap gap-2">
+                  {[1, 3, 7, 14, 30].map((days) => (
+                    <Button
+                      key={days}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => applySuspendDays(days)}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      +{days} hari
+                    </Button>
+                  ))}
+                </div>
+                <FieldError>
+                  {statusForm.formState.errors.suspended_until?.message}
+                </FieldError>
+              </Field>
+            )}
+
+            <Field>
+              <FieldLabel>Catatan Status</FieldLabel>
+              <Textarea
+                {...statusForm.register("status_reason")}
+                rows={2}
+                placeholder="Catatan untuk audit (opsional)"
+                disabled={updateStatusMutation.isPending}
+              />
+              <FieldDescription>
+                Catatan ini hanya terlihat oleh admin.
+              </FieldDescription>
+              <FieldError>
+                {statusForm.formState.errors.status_reason?.message}
+              </FieldError>
+            </Field>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setStatusDialogOpen(false)}
+                disabled={updateStatusMutation.isPending}
+              >
+                Batal
+              </Button>
+              <Button type="submit" disabled={updateStatusMutation.isPending}>
+                {updateStatusMutation.isPending ? "Menyimpan..." : "Simpan"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

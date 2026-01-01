@@ -26,7 +26,13 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
+import {
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldSet,
+  FieldDescription,
+} from "@/components/ui/field";
 import { PhotoUpload } from "./PhotoUpload";
 import { TemplateSelector } from "@/components/ui/template-selector";
 import { useTemplates } from "@/features/landing/api/get-templates";
@@ -1021,6 +1027,10 @@ export function CVForm({
                           rows={3}
                           placeholder="Bertanggung jawab untuk mengembangkan fitur..."
                         />
+                        <FieldDescription>
+                          Pisahkan tiap poin dengan menekan Enter agar tampil
+                          sebagai daftar.
+                        </FieldDescription>
                         <FieldError>
                           {errors.experiences?.[index]?.description?.message}
                         </FieldError>
@@ -1106,7 +1116,6 @@ export function CVForm({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="mt-1"
                       onClick={() => skills.remove(index)}
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
@@ -1518,8 +1527,9 @@ export function CVForm({
                       </Field>
                       <Field className="md:col-span-3">
                         <FieldLabel>Deskripsi</FieldLabel>
-                        <Input
+                        <Textarea
                           {...register(`awards.${index}.description`)}
+                          rows={2}
                           placeholder="Penghargaan atas kinerja luar biasa..."
                         />
                         <FieldError>
@@ -1837,6 +1847,10 @@ export function CVForm({
                           rows={2}
                           placeholder="Memimpin organisasi dengan 100 anggota..."
                         />
+                        <FieldDescription>
+                          Pisahkan tiap poin dengan menekan Enter agar tampil
+                          sebagai daftar.
+                        </FieldDescription>
                         <FieldError>
                           {errors.organizations?.[index]?.description?.message}
                         </FieldError>

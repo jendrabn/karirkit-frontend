@@ -74,7 +74,7 @@ export function BlogFilterModal({
           </DialogHeader>
 
           <div className="overflow-y-auto px-6 py-2">
-            <FieldSet className="space-y-4">
+            <FieldSet>
               <Field>
                 <FieldLabel>Judul</FieldLabel>
                 <Input
