@@ -55,11 +55,6 @@ export function QuillEditor({
 
     quillInstanceRef.current = quill;
 
-    // Set initial value
-    if (value) {
-      quill.root.innerHTML = value;
-    }
-
     const handleChange = () => {
       const html = quill.root.innerHTML;
       onChange(html === "<p><br></p>" ? "" : html);
@@ -80,7 +75,7 @@ export function QuillEditor({
       container.innerHTML = "";
       container.className = "";
     };
-  }, [uniqueId]);
+  }, [uniqueId, placeholder, onChange]);
 
   // Sync external value changes
   useEffect(() => {

@@ -1,15 +1,7 @@
-import {
-  useState,
-  useRef,
-  useEffect,
-  useLayoutEffect,
-  forwardRef,
-} from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import Quill from "quill";
-import "quill/dist/quill.snow.css";
 import { X, Image as ImageIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,8 +40,8 @@ import {
 import { toast } from "sonner";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { useUploadFile } from "@/lib/upload";
-import { useUploadBlogFile } from "@/features/admin/blogs/api/upload-blog-file";
 import { useFormErrors } from "@/hooks/use-form-errors";
+import { QuillEditor } from "@/features/admin/blogs/components/QuillEditor";
 
 const blogSchema = z.object({
   title: z.string().min(1, "Judul wajib diisi"),
@@ -63,124 +55,6 @@ const blogSchema = z.object({
 });
 
 export type BlogFormData = z.infer<typeof blogSchema>;
-
-// QuillEditor Component with upload blog file hook
-interface QuillEditorProps {
-  defaultValue?: string;
-  onTextChange?: (html: string) => void;
-  placeholder?: string;
-}
-
-const QuillEditor = forwardRef<Quill | null, QuillEditorProps>(
-  ({ defaultValue, onTextChange, placeholder }, ref) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const onTextChangeRef = useRef(onTextChange);
-    const uploadBlogFileMutation = useUploadBlogFile();
-
-    useLayoutEffect(() => {
-      onTextChangeRef.current = onTextChange;
-    });
-
-    useEffect(() => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const editorContainer = container.appendChild(
-        container.ownerDocument.createElement("div")
-      );
-
-      const imageHandler = async function (this: any) {
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", "image/*");
-        input.click();
-
-        input.onchange = async () => {
-          const file = input.files?.[0];
-          if (!file) return;
-
-          if (!file.type.startsWith("image/")) {
-            toast.error("File harus berupa gambar");
-            return;
-          }
-
-          if (file.size > 5 * 1024 * 1024) {
-            toast.error("Ukuran file maksimal 5MB");
-            return;
-          }
-
-          const quill = (ref as React.MutableRefObject<Quill | null>)?.current;
-          if (!quill) return;
-
-          const range = quill.getSelection(true);
-          const loadingToast = toast.loading("Mengupload gambar...");
-
-          try {
-            const response = await uploadBlogFileMutation.mutateAsync(file);
-            quill.insertEmbed(
-              range.index,
-              "image",
-              buildImageUrl(response.path)
-            );
-            quill.setSelection(range.index + 1, 0);
-            toast.dismiss(loadingToast);
-            toast.success("Gambar berhasil diupload");
-          } catch (error) {
-            toast.dismiss(loadingToast);
-            toast.error("Gagal mengupload gambar");
-            console.error("Upload error:", error);
-          }
-        };
-      };
-
-      const quill = new Quill(editorContainer, {
-        theme: "snow",
-        modules: {
-          toolbar: {
-            container: [
-              [{ header: [1, 2, 3, 4, 5, 6, false] }],
-              ["bold", "italic", "underline", "strike"],
-              [{ list: "ordered" }, { list: "bullet" }],
-              [{ indent: "-1" }, { indent: "+1" }],
-              [{ align: [] }],
-              ["link", "image"],
-              ["blockquote", "code-block"],
-              [{ color: [] }, { background: [] }],
-              ["clean"],
-            ],
-            handlers: { image: imageHandler },
-          },
-        },
-        placeholder: placeholder || "Start writing...",
-      });
-
-      if (ref) {
-        typeof ref === "function" ? ref(quill) : (ref.current = quill);
-      }
-
-      if (defaultValue) quill.root.innerHTML = defaultValue;
-
-      quill.on(Quill.events.TEXT_CHANGE, () => {
-        onTextChangeRef.current?.(quill.root.innerHTML);
-      });
-
-      return () => {
-        if (ref) {
-          typeof ref === "function" ? ref(null) : (ref.current = null);
-        }
-        container.innerHTML = "";
-      };
-    }, [ref, placeholder, defaultValue]);
-
-    return (
-      <div className="min-h-[400px]">
-        <div ref={containerRef}></div>
-      </div>
-    );
-  }
-);
-
-QuillEditor.displayName = "QuillEditor";
 
 // Main BlogForm Component
 interface BlogFormProps {
@@ -209,7 +83,6 @@ export function BlogForm({
   );
   const [tagPopoverOpen, setTagPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const quillRef = useRef<Quill | null>(null);
   const uploadFileMutation = useUploadFile();
 
   const form = useForm<BlogFormData>({
@@ -547,9 +420,8 @@ export function BlogForm({
                 <Field>
                   <FieldLabel>Konten *</FieldLabel>
                   <QuillEditor
-                    ref={quillRef}
-                    defaultValue={field.value}
-                    onTextChange={field.onChange}
+                    value={field.value || ""}
+                    onChange={field.onChange}
                     placeholder="Tulis konten blog secara lengkap di sini..."
                   />
                   <FieldError>

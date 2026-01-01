@@ -18,11 +18,11 @@ import {
   EDUCATION_LEVEL_LABELS,
   type Job,
 } from "@/types/job";
-import { ImageUpload } from "@/components/ui/image-upload";
-import { QuillEditor } from "@/components/jobs/QuillEditor";
+import { QuillEditor } from "@/features/admin/jobs/components/QuillEditor";
 import { createJobInputSchema, type CreateJobInput } from "../api/create-job";
 import { updateJobInputSchema, type UpdateJobInput } from "../api/update-job";
 import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
+import { JobMediasUpload } from "./JobMediasUpload";
 
 interface JobFormProps {
   initialData?: Job;
@@ -65,7 +65,8 @@ export function JobForm({
           contact_name: initialData.contact_name,
           contact_email: initialData.contact_email,
           contact_phone: initialData.contact_phone,
-          poster: initialData.poster,
+          medias: initialData.medias?.map((media) => ({ path: media.path })) ||
+            [],
           status: (initialData.status === "expired"
             ? "closed"
             : initialData.status) as any,
@@ -90,7 +91,7 @@ export function JobForm({
           contact_name: "",
           contact_email: "",
           contact_phone: "",
-          poster: "",
+          medias: [],
           status: "draft",
           expiration_date: null,
         },
@@ -313,31 +314,13 @@ export function JobForm({
             </CardContent>
           </Card>
 
-          {/* ================= Gaji, Kontak & Poster ================= */}
+          {/* ================= Gaji & Kontak ================= */}
           <Card>
             <CardHeader>
-              <CardTitle>Gaji, Kontak & Poster</CardTitle>
+              <CardTitle>Gaji & Kontak</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-4">
-              <Controller
-                control={form.control}
-                name="poster"
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>Poster Lowongan</FieldLabel>
-                    <ImageUpload
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                      label="Poster lowongan pekerjaan"
-                    />
-                    <FieldError>
-                      {form.formState.errors.poster?.message}
-                    </FieldError>
-                  </Field>
-                )}
-              />
-
               <div className="grid grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel>Gaji Minimum *</FieldLabel>
@@ -450,6 +433,33 @@ export function JobForm({
             </CardContent>
           </Card>
         </div>
+
+        {/* ================= Media Poster ================= */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Media Poster</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Controller
+              control={form.control}
+              name="medias"
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel>Media Lowongan</FieldLabel>
+                  <JobMediasUpload
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                  <FieldError>
+                    {typeof form.formState.errors.medias?.message === "string"
+                      ? form.formState.errors.medias?.message
+                      : undefined}
+                  </FieldError>
+                </Field>
+              )}
+            />
+          </CardContent>
+        </Card>
 
         {/* ================= Deskripsi & Persyaratan ================= */}
         <Card>

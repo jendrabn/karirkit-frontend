@@ -59,6 +59,12 @@ export interface Company {
   updated_at: string;
 }
 
+export interface JobMedia {
+  id: string;
+  job_id: string;
+  path: string;
+}
+
 export interface Job {
   id: string;
   company_id: string;
@@ -80,7 +86,7 @@ export interface Job {
   contact_name: string;
   contact_email: string;
   contact_phone: string;
-  poster: string;
+  medias: JobMedia[];
   status: JobStatus;
   expiration_date: string;
   created_at: string;

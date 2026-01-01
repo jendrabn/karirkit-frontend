@@ -234,18 +234,26 @@ export default function JobDetail() {
                 </CardContent>
               </Card>
 
-              {/* Job Poster */}
-              {job.poster && (
+              {/* Job Media */}
+              {job.medias?.length > 0 && (
                 <Card className="overflow-hidden border-none shadow-lg">
-                  <div className="aspect-[21/9] w-full relative">
-                    <img
-                      src={buildImageUrl(job.poster)}
-                      alt="Job Poster"
-                      className="object-cover w-full h-full"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = "none";
-                      }}
-                    />
+                  <div className="grid gap-2 p-2 sm:grid-cols-2">
+                    {job.medias.map((media) => (
+                      <div
+                        key={media.id || media.path}
+                        className="aspect-[4/3] w-full overflow-hidden rounded-md"
+                      >
+                        <img
+                          src={buildImageUrl(media.path)}
+                          alt="Job media"
+                          className="object-cover w-full h-full"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display =
+                              "none";
+                          }}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </Card>
               )}

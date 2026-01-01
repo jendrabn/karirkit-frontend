@@ -40,7 +40,13 @@ export const createJobInputSchema = z.object({
   contact_name: z.string().min(1, "Nama kontak wajib diisi"),
   contact_email: z.string().email("Email kontak tidak valid"),
   contact_phone: z.string().min(1, "Telepon kontak wajib diisi"),
-  poster: z.string().optional(),
+  medias: z
+    .array(
+      z.object({
+        path: z.string().min(1),
+      })
+    )
+    .optional(),
   status: z.enum(["draft", "published", "closed", "archived"]),
   expiration_date: z.string().optional().nullable(),
 });
