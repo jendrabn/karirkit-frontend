@@ -18,6 +18,7 @@ import {
   Moon,
   Briefcase,
   Bookmark,
+  Files,
 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import {
@@ -78,6 +79,11 @@ const menuItems = [
     title: "Portofolio",
     url: paths.portfolios.list.getHref(),
     icon: FolderOpen,
+  },
+  {
+    title: "Dokumen",
+    url: paths.documents.list.getHref(),
+    icon: Files,
   },
 ];
 

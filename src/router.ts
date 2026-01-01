@@ -248,6 +248,11 @@ export const createAppRouter = (queryClient: QueryClient) =>
           convertWithProtection(queryClient)
         ),
     },
+    {
+      path: "/documents",
+      lazy: () =>
+        import("./pages/Documents").then(convertWithProtection(queryClient)),
+    },
     // Admin routes (authentication and admin role required)
     {
       path: "/admin/dashboard",

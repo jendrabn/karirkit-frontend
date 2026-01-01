@@ -119,6 +119,10 @@ export const paths = {
     },
   },
 
+  documents: {
+    list: { getHref: () => "/documents" },
+  },
+
   publicPortfolio: {
     list: {
       getHref: (username: string) => `/u/${username}`,
