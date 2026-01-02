@@ -8,6 +8,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Loader2,
 } from "lucide-react";
 import {
   Table,
@@ -95,13 +96,16 @@ export function JobRolesList({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={7} className="h-16">
-                    <div className="h-4 w-full bg-muted rounded animate-pulse" />
-                  </TableCell>
-                </TableRow>
-              ))
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={7} className="py-14 text-center">
+                  <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Memuat data…
+                    </span>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : roles.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-32 text-center">

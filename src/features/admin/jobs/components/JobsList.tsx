@@ -241,16 +241,16 @@ export function JobsList({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={16} className="h-16 text-center">
-                    <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Memuat data...</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={16} className="py-14 text-center">
+                  <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Memuat data…
+                    </span>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : jobs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={16} className="h-32 text-center">

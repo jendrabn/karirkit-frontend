@@ -389,11 +389,13 @@ export function DocumentsList() {
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell
-                    colSpan={tableColumnCount}
-                    className="h-24 text-center"
-                  >
-                    Memuat data...
+                  <TableCell colSpan={tableColumnCount} className="py-14 text-center">
+                    <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                      <span className="text-sm font-medium text-muted-foreground">
+                        Memuat data…
+                      </span>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : documents.length === 0 ? (

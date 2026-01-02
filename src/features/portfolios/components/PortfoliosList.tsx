@@ -322,7 +322,12 @@ const PortfoliosList = () => {
       {/* Portfolio Grid */}
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[50vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <span className="text-sm font-medium text-muted-foreground">
+              Memuat data…
+            </span>
+          </div>
         </div>
       ) : portfolios.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
