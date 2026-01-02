@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { paths } from "@/config/paths";
 import { dayjs } from "@/lib/date";
 import {
   Search,
@@ -147,8 +148,9 @@ export function ApplicationLetterList() {
 
   const duplicateMutation = useDuplicateApplicationLetter({
     mutationConfig: {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Surat lamaran berhasil diduplikasi");
+        navigate(paths.applicationLetters.detail.getHref(data.id));
       },
     },
   });

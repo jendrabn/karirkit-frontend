@@ -55,7 +55,7 @@ const AdminBlogEdit = () => {
         },
       });
       toast.success("Blog berhasil diperbarui");
-      navigate(paths.admin.blogs.list.getHref());
+      navigate(paths.admin.blogs.detail.getHref(id));
     } catch (error) {
       // Error handling is done in the mutation hook
       console.error("Failed to update blog:", error);

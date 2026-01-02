@@ -22,7 +22,7 @@ export default function AdminJobEdit() {
       {
         onSuccess: () => {
           toast.success("Lowongan berhasil diperbarui");
-          navigate("/admin/jobs");
+          navigate(paths.admin.jobs.detail.getHref(id));
         },
       }
     );

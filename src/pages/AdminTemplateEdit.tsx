@@ -27,7 +27,7 @@ const AdminTemplateEdit = () => {
     mutationConfig: {
       onSuccess: () => {
         toast.success("Template berhasil diperbarui");
-        navigate("/admin/templates");
+        navigate(paths.admin.templates.detail.getHref(id!));
       },
       onError: (error) => {
         console.error(error);

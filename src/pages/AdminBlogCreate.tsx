@@ -31,7 +31,7 @@ const AdminBlogCreate = () => {
     }
 
     try {
-      await createBlogMutation.mutateAsync({
+      const response = await createBlogMutation.mutateAsync({
         title: data.title,
         excerpt: data.excerpt || "",
         content: data.content,
@@ -42,7 +42,7 @@ const AdminBlogCreate = () => {
         tag_ids: data.tag_ids || [],
       });
       toast.success("Blog berhasil dibuat");
-      navigate(paths.admin.blogs.list.getHref());
+      navigate(paths.admin.blogs.detail.getHref(response.id));
     } catch (error) {
       // Error handling is done in the mutation hook
       console.error("Failed to create blog:", error);

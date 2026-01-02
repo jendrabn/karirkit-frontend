@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { CVForm } from "@/features/cvs/components/CVForm";
@@ -17,9 +18,9 @@ export default function CVCreate() {
 
   const createMutation = useCreateCV({
     mutationConfig: {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("CV berhasil dibuat");
-        navigate("/cvs");
+        navigate(paths.cvs.detail.getHref(data.id));
       },
     },
   });

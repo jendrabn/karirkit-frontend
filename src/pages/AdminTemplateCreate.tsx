@@ -15,9 +15,9 @@ const AdminTemplateCreate = () => {
 
   const createTemplateMutation = useCreateTemplate({
     mutationConfig: {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Template berhasil dibuat");
-        navigate("/admin/templates");
+        navigate(paths.admin.templates.detail.getHref(data.id));
       },
       onError: (error) => {
         // Error handling is done via toast in api-client usually, but we can add more here if needed

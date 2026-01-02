@@ -12,9 +12,9 @@ export default function AdminJobCreate() {
 
   const handleSubmit = (data: any) => {
     createJobMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (response) => {
         toast.success("Lowongan berhasil dibuat");
-        navigate("/admin/jobs");
+        navigate(paths.admin.jobs.detail.getHref(response.id));
       },
     });
   };

@@ -25,7 +25,7 @@ const AdminUserEdit = () => {
     mutationConfig: {
       onSuccess: () => {
         toast.success("User berhasil diupdate");
-        navigate("/admin/users");
+        navigate(paths.admin.users.detail.getHref(id!));
       },
     },
   });

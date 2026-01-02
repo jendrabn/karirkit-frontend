@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router";
+import { paths } from "@/config/paths";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -17,9 +18,9 @@ const PortfolioCreate = () => {
 
   const createMutation = useCreatePortfolio({
     mutationConfig: {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Portfolio berhasil dibuat");
-        navigate("/portfolios");
+        navigate(paths.portfolios.detail.getHref(data.id));
       },
     },
   });

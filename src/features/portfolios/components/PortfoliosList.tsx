@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { paths } from "@/config/paths";
 import {
   Search,
   Filter,
@@ -64,7 +65,6 @@ import { useMassDeletePortfolios } from "@/features/portfolios/api/mass-delete-p
 import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
-import { paths } from "@/config/paths";
 import { env } from "@/config/env";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -299,6 +299,8 @@ const PortfoliosList = () => {
               <SelectItem value="updated_at-asc">Terlama Diperbarui</SelectItem>
               <SelectItem value="year-desc">Tahun (Terbaru)</SelectItem>
               <SelectItem value="year-asc">Tahun (Terlama)</SelectItem>
+              <SelectItem value="month-desc">Bulan (Terbaru)</SelectItem>
+              <SelectItem value="month-asc">Bulan (Terlama)</SelectItem>
               <SelectItem value="title-asc">Judul (A-Z)</SelectItem>
               <SelectItem value="title-desc">Judul (Z-A)</SelectItem>
             </SelectContent>

@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { paths } from "@/config/paths";
 import { dayjs } from "@/lib/date";
 import {
   Search,
@@ -219,8 +220,9 @@ export const ApplicationsList = () => {
 
   const duplicateApplicationMutation = useDuplicateApplication({
     mutationConfig: {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Lamaran berhasil diduplikasi");
+        navigate(paths.applications.detail.getHref(data.id));
       },
     },
   });

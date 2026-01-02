@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate, useParams } from "react-router";
+import { paths } from "@/config/paths";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -26,7 +27,7 @@ const PortfolioEdit = () => {
     mutationConfig: {
       onSuccess: () => {
         toast.success("Portfolio berhasil diperbarui");
-        navigate("/portfolios");
+        navigate(paths.portfolios.detail.getHref(id!));
       },
     },
   });

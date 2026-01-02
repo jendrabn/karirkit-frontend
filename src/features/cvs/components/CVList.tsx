@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { paths } from "@/config/paths";
 import { dayjs } from "@/lib/date";
 import {
   Search,
@@ -133,8 +134,9 @@ const CVList = () => {
 
   const duplicateMutation = useDuplicateCV({
     mutationConfig: {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("CV berhasil diduplikasi");
+        navigate(paths.cvs.detail.getHref(data.id));
       },
     },
   });

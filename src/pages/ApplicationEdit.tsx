@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router";
+import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { ApplicationForm } from "@/features/applications/components/ApplicationForm";
@@ -23,7 +24,7 @@ export default function ApplicationEdit() {
     mutationConfig: {
       onSuccess: () => {
         toast.success("Lamaran berhasil diperbarui");
-        navigate("/applications");
+        navigate(paths.applications.detail.getHref(id!));
       },
     },
   });

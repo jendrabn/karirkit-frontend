@@ -12,9 +12,9 @@ const AdminUserCreate = () => {
   const navigate = useNavigate();
   const createUserMutation = useCreateUser({
     mutationConfig: {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("User berhasil ditambahkan");
-        navigate("/admin/users");
+        navigate(paths.admin.users.detail.getHref(data.id));
       },
     },
   });

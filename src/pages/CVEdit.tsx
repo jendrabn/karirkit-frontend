@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router";
+import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { CVForm } from "@/features/cvs/components/CVForm";
@@ -26,7 +27,7 @@ export default function CVEdit() {
     mutationConfig: {
       onSuccess: () => {
         toast.success("CV berhasil diperbarui");
-        navigate("/cvs");
+        navigate(paths.cvs.detail.getHref(id!));
       },
     },
   });
