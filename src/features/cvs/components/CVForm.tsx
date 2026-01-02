@@ -12,6 +12,7 @@ import {
   Trophy,
   Users,
   Share2,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ import { buildImageUrl } from "@/lib/utils";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import {
   type CV,
+  type Project,
   DEGREE_OPTIONS,
   JOB_TYPE_OPTIONS,
   SKILL_LEVEL_OPTIONS,
@@ -109,6 +111,22 @@ const skillSchema = z.object({
   level: z.enum(["beginner", "intermediate", "advanced", "expert"]),
 });
 
+const projectSchema = z.object({
+  name: z.string().min(1, "Nama proyek wajib diisi"),
+  description: z.string().optional(),
+  year: z.number().min(1900).max(2100),
+  repo_url: z.string().optional(),
+  live_url: z.string().optional(),
+});
+
+const normalizeProjects = (projects?: Project[]) =>
+  (projects || []).map((project) => ({
+    ...project,
+    description: project.description ?? "",
+    repo_url: project.repo_url ?? "",
+    live_url: project.live_url ?? "",
+  })) as z.infer<typeof projectSchema>[];
+
 const awardSchema = z.object({
   title: z.string().min(1, "Judul penghargaan wajib diisi"),
   issuer: z.string().min(1, "Pemberi penghargaan wajib diisi"),
@@ -155,6 +173,7 @@ const cvSchema = z.object({
   awards: z.array(awardSchema),
   social_links: z.array(socialLinkSchema),
   organizations: z.array(organizationSchema),
+  projects: z.array(projectSchema),
   language: z.enum(["en", "id"]).optional(),
 });
 
@@ -194,6 +213,7 @@ export function CVForm({
       awards: initialData?.awards || [],
       social_links: initialData?.social_links || [],
       organizations: initialData?.organizations || [],
+      projects: normalizeProjects(initialData?.projects),
       language: initialData?.language || "id",
     },
   });
@@ -237,6 +257,7 @@ export function CVForm({
   const awards = useFieldArray({ control, name: "awards" });
   const socialLinks = useFieldArray({ control, name: "social_links" });
   const organizations = useFieldArray({ control, name: "organizations" });
+  const projects = useFieldArray({ control, name: "projects" });
 
   const photoValue = watch("photo");
 
@@ -1855,6 +1876,142 @@ export function CVForm({
                           {errors.organizations?.[index]?.description?.message}
                         </FieldError>
                       </Field>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Projects */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>Proyek</CardTitle>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                projects.append({
+                  name: "",
+                  description: "",
+                  year: currentYear,
+                  repo_url: "",
+                  live_url: "",
+                })
+              }
+            >
+              <Plus className="h-4 w-4 mr-1" /> Tambah
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
+            {projects.fields.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <Layers className="h-6 w-6" />
+                </div>
+                <p className="font-medium">Belum ada data proyek</p>
+                <p className="text-sm">
+                  Tambahkan proyek yang pernah Anda kerjakan
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {projects.fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border rounded-lg p-4 space-y-4"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">
+                        Proyek #{index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => projects.remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                    <div className="space-y-4">
+                      <Field>
+                        <FieldLabel>Nama Proyek *</FieldLabel>
+                        <Input
+                          {...register(`projects.${index}.name`)}
+                          placeholder="Nama proyek"
+                          className={cn(
+                            errors.projects?.[index]?.name &&
+                              "border-destructive"
+                          )}
+                        />
+                        <FieldError>
+                          {errors.projects?.[index]?.name?.message}
+                        </FieldError>
+                      </Field>
+                      <Field>
+                        <FieldLabel>Deskripsi</FieldLabel>
+                        <Textarea
+                          {...register(`projects.${index}.description`)}
+                          rows={3}
+                          placeholder="Jelaskan peran dan capaian proyek..."
+                        />
+                        <FieldError>
+                          {errors.projects?.[index]?.description?.message}
+                        </FieldError>
+                      </Field>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Field>
+                          <FieldLabel>Tahun *</FieldLabel>
+                          <Select
+                            value={String(
+                              watch(`projects.${index}.year`) ?? currentYear
+                            )}
+                            onValueChange={(value) =>
+                              setValue(
+                                `projects.${index}.year`,
+                                parseInt(value)
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 max-h-48">
+                              {yearOptions.map((y) => (
+                                <SelectItem key={y} value={String(y)}>
+                                  {y}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldError>
+                            {errors.projects?.[index]?.year?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Repository</FieldLabel>
+                          <Input
+                            {...register(`projects.${index}.repo_url`)}
+                            placeholder="https://github.com/username/project"
+                          />
+                          <FieldError>
+                            {errors.projects?.[index]?.repo_url?.message}
+                          </FieldError>
+                        </Field>
+                        <Field>
+                          <FieldLabel>Tautan Live</FieldLabel>
+                          <Input
+                            {...register(`projects.${index}.live_url`)}
+                            placeholder="https://project.example.com"
+                          />
+                          <FieldError>
+                            {errors.projects?.[index]?.live_url?.message}
+                          </FieldError>
+                        </Field>
+                      </div>
                     </div>
                   </div>
                 ))}

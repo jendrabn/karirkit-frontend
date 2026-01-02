@@ -627,11 +627,10 @@ const CVList = () => {
                                 Download Docx
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                disabled
-                                className="text-muted-foreground"
+                                onClick={() => handleDownload(cv, "pdf")}
                               >
                                 <Download className="h-4 w-4 mr-2" />
-                                Download PDF (Segera Hadir)
+                                Download PDF
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem

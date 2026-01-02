@@ -39,6 +39,7 @@ export type CV = {
   awards: Award[];
   social_links: SocialLink[];
   organizations: Organization[];
+  projects: Project[];
   language?: "id" | "en";
 };
 
@@ -94,6 +95,14 @@ export type Experience = {
 export type Skill = {
   name: string;
   level: "beginner" | "intermediate" | "advanced" | "expert";
+};
+
+export type Project = {
+  name: string;
+  description?: string | null;
+  year: number;
+  repo_url?: string | null;
+  live_url?: string | null;
 };
 
 export type Award = {

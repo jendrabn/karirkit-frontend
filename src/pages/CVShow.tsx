@@ -12,6 +12,7 @@ import {
   Users,
   Link as LinkIcon,
   Star,
+  Layers,
   Loader2,
   Trash2,
 } from "lucide-react";
@@ -339,6 +340,57 @@ export default function CVShow() {
                       <p className="mt-3 text-sm whitespace-pre-wrap">
                         {org.description}
                       </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {/* Projects */}
+          {cv.projects.length > 0 && (
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Layers className="h-5 w-5 text-primary" />
+                <h3 className="text-lg font-semibold">Proyek</h3>
+              </div>
+              <div className="space-y-6">
+                {cv.projects.map((project, index) => (
+                  <div key={index} className={index > 0 ? "border-t pt-6" : ""}>
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-medium">{project.name}</h4>
+                      <Badge variant="secondary">{project.year}</Badge>
+                    </div>
+                    {project.description && (
+                      <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap">
+                        {project.description}
+                      </p>
+                    )}
+                    {(project.repo_url || project.live_url) && (
+                      <div className="flex flex-wrap gap-3 mt-3 text-sm">
+                        {project.repo_url && (
+                          <a
+                            href={project.repo_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-primary hover:underline"
+                          >
+                            <LinkIcon className="h-4 w-4" />
+                            Repository
+                          </a>
+                        )}
+                        {project.live_url && (
+                          <a
+                            href={project.live_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-primary hover:underline"
+                          >
+                            <LinkIcon className="h-4 w-4" />
+                            Tautan Live
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}

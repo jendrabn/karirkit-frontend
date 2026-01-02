@@ -314,95 +314,95 @@ export function ApplicationLetterList() {
                       onCheckedChange={(checked) => handleSelectAll(!!checked)}
                     />
                   </TableHead>
-                {columnVisibility.subject && (
-                  <TableHead>
-                    <SortableHeader field="subject">Subjek</SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.company_name && (
-                  <TableHead>
-                    <SortableHeader field="company_name">
-                      Perusahaan
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.application_date && (
-                  <TableHead>
-                    <SortableHeader field="application_date">
-                      Tanggal
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.language && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Bahasa
-                  </TableHead>
-                )}
-                {columnVisibility.name && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Nama Pelamar
-                  </TableHead>
-                )}
-                {columnVisibility.education && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Pendidikan
-                  </TableHead>
-                )}
-                {columnVisibility.applicant_city && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Kota Pelamar
-                  </TableHead>
-                )}
-                {columnVisibility.company_city && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Kota Perusahaan
-                  </TableHead>
-                )}
-                {columnVisibility.email && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Email
-                  </TableHead>
-                )}
-                {columnVisibility.phone && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    No. Telepon
-                  </TableHead>
-                )}
-                {columnVisibility.marital_status && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Status Pernikahan
-                  </TableHead>
-                )}
-                {columnVisibility.gender && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Gender
-                  </TableHead>
-                )}
-                {columnVisibility.template && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Template
-                  </TableHead>
-                )}
-                {columnVisibility.created_at && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Dibuat
-                  </TableHead>
-                )}
-                {columnVisibility.updated_at && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Diperbarui
-                  </TableHead>
-                )}
+                  {columnVisibility.subject && (
+                    <TableHead>
+                      <SortableHeader field="subject">Subjek</SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.company_name && (
+                    <TableHead>
+                      <SortableHeader field="company_name">
+                        Perusahaan
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.application_date && (
+                    <TableHead>
+                      <SortableHeader field="application_date">
+                        Tanggal
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.language && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Bahasa
+                    </TableHead>
+                  )}
+                  {columnVisibility.name && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Nama Pelamar
+                    </TableHead>
+                  )}
+                  {columnVisibility.education && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Pendidikan
+                    </TableHead>
+                  )}
+                  {columnVisibility.applicant_city && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Kota Pelamar
+                    </TableHead>
+                  )}
+                  {columnVisibility.company_city && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Kota Perusahaan
+                    </TableHead>
+                  )}
+                  {columnVisibility.email && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Email
+                    </TableHead>
+                  )}
+                  {columnVisibility.phone && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      No. Telepon
+                    </TableHead>
+                  )}
+                  {columnVisibility.marital_status && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Status Pernikahan
+                    </TableHead>
+                  )}
+                  {columnVisibility.gender && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Gender
+                    </TableHead>
+                  )}
+                  {columnVisibility.template && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Template
+                    </TableHead>
+                  )}
+                  {columnVisibility.created_at && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Dibuat
+                    </TableHead>
+                  )}
+                  {columnVisibility.updated_at && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Diperbarui
+                    </TableHead>
+                  )}
                   <TableHead className="w-[60px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow className="hover:bg-transparent">
-                  <TableCell
-                    colSpan={17}
-                    className="text-center py-16 text-muted-foreground"
-                  >
+                    <TableCell
+                      colSpan={17}
+                      className="text-center py-16 text-muted-foreground"
+                    >
                       <div className="flex flex-col items-center gap-2">
                         <Loader2 className="h-10 w-10 animate-spin text-primary" />
                         <p className="text-base font-medium">Memuat data...</p>
@@ -571,11 +571,10 @@ export function ApplicationLetterList() {
                               Download Docx
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              disabled
-                              className="text-muted-foreground"
+                              onClick={() => handleDownload(letter, "pdf")}
                             >
                               <Download className="h-4 w-4 mr-2" />
-                              Download PDF (Segera Hadir)
+                              Download PDF
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem

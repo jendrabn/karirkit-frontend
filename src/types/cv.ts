@@ -73,6 +73,14 @@ export interface Award {
   year?: number | null;
 }
 
+export interface Project {
+  name: string;
+  description?: string | null;
+  year: number;
+  repo_url?: string | null;
+  live_url?: string | null;
+}
+
 export interface SocialLink {
   platform: string;
   url: string;
@@ -111,6 +119,7 @@ export interface CV {
   awards: Award[];
   social_links: SocialLink[];
   organizations: Organization[];
+  projects: Project[];
   language?: "id" | "en";
 }
 

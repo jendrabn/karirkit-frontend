@@ -61,12 +61,12 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Lamaran Kerja",
+    title: "Lamaran",
     url: paths.applications.list.getHref(),
     icon: Briefcase,
   },
   {
-    title: "Surat Lamaran Kerja",
+    title: "Surat Lamaran",
     url: paths.applicationLetters.list.getHref(),
     icon: FileText,
   },

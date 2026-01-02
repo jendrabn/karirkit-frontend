@@ -11,6 +11,7 @@ import type {
   Award,
   SocialLink,
   Organization,
+  Project,
 } from "./get-cvs";
 
 export type UpdateCVInput = {
@@ -29,6 +30,7 @@ export type UpdateCVInput = {
   awards?: Award[];
   social_links?: SocialLink[];
   organizations?: Organization[];
+  projects?: Project[];
   language?: "en" | "id";
 };
 
