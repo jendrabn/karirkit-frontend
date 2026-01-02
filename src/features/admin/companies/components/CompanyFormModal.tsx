@@ -97,7 +97,7 @@ export function CompanyFormModal({
           </DialogHeader>
 
           <div className="overflow-y-auto px-6 py-2">
-            <FieldSet disabled={isLoading} className="space-y-4">
+            <FieldSet disabled={isLoading}>
               <Field>
                 <FieldLabel>Nama Perusahaan *</FieldLabel>
                 <Input

@@ -68,7 +68,7 @@ export function DocumentFilterModal({
           <DialogTitle>Filter Dokumen</DialogTitle>
         </DialogHeader>
 
-        <FieldSet className="space-y-4 py-4">
+        <FieldSet className="py-4">
           <Field>
             <FieldLabel htmlFor="q">Cari</FieldLabel>
             <Input

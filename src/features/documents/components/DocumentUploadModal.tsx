@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
-import { Upload, X, FileText, Loader2, ImageIcon } from "lucide-react";
+import { Upload, X, FileText, Loader2, ImageIcon, File } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,11 +19,18 @@ import {
 import {
   documentTypes,
   documentTypeLabels,
-  DocumentType,
-  DocumentCompressionLevel,
+  type DocumentType,
+  type DocumentCompressionLevel,
 } from "@/types/document";
-import { Field, FieldDescription, FieldLabel, FieldSet } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import { toast } from "@/components/ui/sonner";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 
 export type CompressionLevel = DocumentCompressionLevel;
 
@@ -36,11 +44,13 @@ const compressionLabels: Record<CompressionLevel, string> = {
 interface DocumentUploadModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onUpload: (
-    file: File,
-    type: DocumentType,
-    compression?: CompressionLevel
-  ) => Promise<void>;
+  onUpload: (payload: {
+    files: File[];
+    type: DocumentType;
+    compression?: CompressionLevel;
+    merge?: boolean;
+    name?: string;
+  }) => Promise<void>;
 }
 
 export function DocumentUploadModal({
@@ -48,14 +58,25 @@ export function DocumentUploadModal({
   onOpenChange,
   onUpload,
 }: DocumentUploadModalProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedType, setSelectedType] = useState<DocumentType | "">("");
   const [compression, setCompression] = useState<CompressionLevel | "">("");
+  const [mergeFiles, setMergeFiles] = useState(false);
+  const [customName, setCustomName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const isImageFile = selectedFile?.type.startsWith("image/");
+  const hasFiles = selectedFiles.length > 0;
+  const isImageFile = selectedFiles.some((file) =>
+    file.type.startsWith("image/")
+  );
+  const isPdfFile = selectedFiles.some(
+    (file) =>
+      file.type === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf")
+  );
+  const isCompressibleFile = isImageFile || isPdfFile;
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -73,11 +94,11 @@ export function DocumentUploadModal({
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
+      handleFiles(e.dataTransfer.files);
     }
   };
 
-  const handleFile = (file: File) => {
+  const handleFiles = (files: FileList | File[]) => {
     const allowedTypes = [
       "application/pdf",
       "image/jpeg",
@@ -89,25 +110,48 @@ export function DocumentUploadModal({
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ];
 
-    if (!allowedTypes.includes(file.type)) {
-      toast.error("Tipe file tidak didukung. Gunakan PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, atau XLSX.");
-      return;
+    const incomingFiles = Array.from(files);
+    const validFiles: File[] = [];
+    let hasInvalidType = false;
+    let hasOversize = false;
+
+    incomingFiles.forEach((file) => {
+      if (!allowedTypes.includes(file.type)) {
+        hasInvalidType = true;
+        return;
+      }
+      if (file.size > 25 * 1024 * 1024) {
+        hasOversize = true;
+        return;
+      }
+      validFiles.push(file);
+    });
+
+    if (hasInvalidType) {
+      toast.error(
+        "Tipe file tidak didukung. Gunakan PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, atau XLSX."
+      );
     }
 
-    if (file.size > 25 * 1024 * 1024) {
+    if (hasOversize) {
       toast.error("Ukuran file maksimal 25MB");
+    }
+
+    if (validFiles.length === 0) {
       return;
     }
 
-    setSelectedFile(file);
-    // Reset compression when file changes
+    setSelectedFiles(validFiles);
     setCompression("");
+    if (validFiles.length <= 1) {
+      setMergeFiles(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e.target.files);
     }
   };
 
@@ -120,7 +164,7 @@ export function DocumentUploadModal({
   };
 
   const handleSubmit = async () => {
-    if (!selectedFile || !selectedType) {
+    if (!hasFiles || !selectedType) {
       toast.error("Pilih file dan tipe dokumen");
       return;
     }
@@ -129,10 +173,17 @@ export function DocumentUploadModal({
     try {
       // Pass compression only for image files
       const compressionValue =
-        isImageFile && compression ? compression : undefined;
-      await onUpload(selectedFile, selectedType, compressionValue);
+        isCompressibleFile && compression ? compression : undefined;
+      await onUpload({
+        files: selectedFiles,
+        type: selectedType,
+        compression: compressionValue,
+        merge: selectedFiles.length > 1 ? mergeFiles : undefined,
+        name: customName.trim() ? customName.trim() : undefined,
+      });
       toast.success("Dokumen berhasil diupload");
       handleClose();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Gagal mengupload dokumen");
     } finally {
@@ -141,169 +192,248 @@ export function DocumentUploadModal({
   };
 
   const handleClose = () => {
-    setSelectedFile(null);
+    setSelectedFiles([]);
     setSelectedType("");
     setCompression("");
+    setMergeFiles(false);
+    setCustomName("");
     onOpenChange(false);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      if (next.length <= 1) {
+        setMergeFiles(false);
+      }
+      return next;
+    });
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Upload Dokumen</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[500px] p-0 gap-0">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleSubmit();
+          }}
+          className="flex flex-col max-h-[85vh]"
+        >
+          <DialogHeader className="px-6 pt-6 pb-4">
+            <DialogTitle>Upload Dokumen</DialogTitle>
+          </DialogHeader>
 
-        <FieldSet className="space-y-4 py-4">
-          <Field>
-            <FieldLabel>File Dokumen *</FieldLabel>
-            <div
-              className={`relative rounded-lg transition-colors ${
-                selectedFile
-                  ? "border border-border p-3 bg-muted/40"
-                  : "border-2 border-dashed p-8 text-center"
-              } ${
-                dragActive
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50"
-              }`}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <input
-                ref={inputRef}
-                type="file"
-                className="hidden"
-                onChange={handleChange}
-                accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx"
-              />
+          <div className="overflow-y-auto px-6 py-2">
+            <FieldSet>
+              <Field>
+                <FieldLabel>File Dokumen *</FieldLabel>
+                <div
+                  className={`relative rounded-lg transition-colors ${
+                    hasFiles
+                      ? "border border-border p-3 bg-muted/40"
+                      : "border-2 border-dashed p-8 text-center"
+                  } ${
+                    dragActive
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    className="hidden"
+                    onChange={handleChange}
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx"
+                    multiple
+                  />
 
-              {selectedFile ? (
-                <div className="flex items-center justify-between min-w-0">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      {isImageFile ? (
-                        <ImageIcon className="h-5 w-5 text-primary" />
-                      ) : (
-                        <FileText className="h-5 w-5 text-primary" />
-                      )}
+                  {hasFiles ? (
+                    <div className="space-y-2">
+                      {selectedFiles.map((file, index) => {
+                        const isImage = file.type.startsWith("image/");
+                        const isPdf =
+                          file.type === "application/pdf" ||
+                          file.name.toLowerCase().endsWith(".pdf");
+                        return (
+                          <div
+                            key={`${file.name}-${index}`}
+                            className="flex items-center justify-between gap-3 w-full min-w-0 overflow-hidden"
+                          >
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                {isImage ? (
+                                  <ImageIcon className="h-5 w-5 text-primary" />
+                                ) : isPdf ? (
+                                  <FileText className="h-5 w-5 text-primary" />
+                                ) : (
+                                  <File className="h-5 w-5 text-primary" />
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium max-w-full">
+                                  {file.name}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatFileSize(file.size)}
+                                </p>
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="shrink-0"
+                              onClick={() => handleRemoveFile(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        );
+                      })}
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {selectedFile.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatFileSize(selectedFile.size)}
-                      </p>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                        <Upload className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          Drag & drop file atau{" "}
+                          <button
+                            type="button"
+                            className="text-primary hover:underline"
+                            onClick={() => inputRef.current?.click()}
+                          >
+                            pilih file
+                          </button>
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, XLSX (Maks. 25MB)
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0"
-                    onClick={() => setSelectedFile(null)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  )}
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                    <Upload className="h-6 w-6 text-primary" />
+                <FieldDescription>
+                  PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, XLSX (Maks. 25MB)
+                </FieldDescription>
+              </Field>
+
+              <Field>
+                <FieldLabel>
+                  Tipe Dokumen <span className="text-destructive">*</span>
+                </FieldLabel>
+                <Select
+                  value={selectedType}
+                  onValueChange={(value) =>
+                    setSelectedType(value as DocumentType)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih tipe dokumen" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {documentTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {documentTypeLabels[type]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel>Nama Dokumen (Opsional)</FieldLabel>
+                <Input
+                  placeholder="Nama dokumen"
+                  value={customName}
+                  onChange={(event) => setCustomName(event.target.value)}
+                />
+                <FieldDescription>
+                  Untuk upload tunggal akan mengganti nama asli. Untuk merge
+                  menjadi nama output PDF.
+                </FieldDescription>
+              </Field>
+
+              {selectedFiles.length > 1 && (
+                <Field orientation="horizontal" className="items-center">
+                  <FieldLabel>Gabungkan File (Merge)</FieldLabel>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={mergeFiles}
+                      onCheckedChange={setMergeFiles}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      Jadikan 1 PDF
+                    </span>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">
-                      Drag & drop file atau{" "}
-                      <button
-                        type="button"
-                        className="text-primary hover:underline"
-                        onClick={() => inputRef.current?.click()}
-                      >
-                        pilih file
-                      </button>
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, XLSX (Maks. 25MB)
-                    </p>
-                  </div>
-                </div>
+                </Field>
               )}
-            </div>
-            <FieldDescription>
-              PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, XLSX (Maks. 25MB)
-            </FieldDescription>
-          </Field>
 
-          <Field>
-            <FieldLabel>
-              Tipe Dokumen <span className="text-destructive">*</span>
-            </FieldLabel>
-            <Select
-              value={selectedType}
-              onValueChange={(value) => setSelectedType(value as DocumentType)}
+              {isCompressibleFile && (
+                <Field>
+                  <FieldLabel>Kompresi File (Opsional)</FieldLabel>
+                  <Select
+                    value={compression}
+                    onValueChange={(value) =>
+                      setCompression(value as CompressionLevel)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih level kompresi" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">
+                        {compressionLabels.auto}
+                      </SelectItem>
+                      <SelectItem value="light">
+                        {compressionLabels.light}
+                      </SelectItem>
+                      <SelectItem value="medium">
+                        {compressionLabels.medium}
+                      </SelectItem>
+                      <SelectItem value="strong">
+                        {compressionLabels.strong}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    Kompresi dapat mengurangi ukuran file untuk upload lebih
+                    cepat.
+                  </FieldDescription>
+                </Field>
+              )}
+            </FieldSet>
+          </div>
+
+          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+            <DialogClose asChild>
+              <Button variant="outline" type="button" onClick={handleClose}>
+                Batal
+              </Button>
+            </DialogClose>
+            <Button
+              type="submit"
+              disabled={!hasFiles || !selectedType || isUploading}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih tipe dokumen" />
-              </SelectTrigger>
-              <SelectContent className="max-h-[300px]">
-                {documentTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {documentTypeLabels[type]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-
-          {isImageFile && (
-            <Field>
-              <FieldLabel>Kompresi Gambar (Opsional)</FieldLabel>
-              <Select
-                value={compression}
-                onValueChange={(value) =>
-                  setCompression(value as CompressionLevel)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih level kompresi" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="auto">{compressionLabels.auto}</SelectItem>
-                  <SelectItem value="light">{compressionLabels.light}</SelectItem>
-                  <SelectItem value="medium">{compressionLabels.medium}</SelectItem>
-                  <SelectItem value="strong">{compressionLabels.strong}</SelectItem>
-                </SelectContent>
-              </Select>
-              <FieldDescription>
-                Kompresi dapat mengurangi ukuran file gambar untuk upload lebih cepat.
-              </FieldDescription>
-            </Field>
-          )}
-        </FieldSet>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
-            Batal
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={!selectedFile || !selectedType || isUploading}
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Mengupload...
-              </>
-            ) : (
-              <>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload
-              </>
-            )}
-          </Button>
-        </DialogFooter>
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Mengupload...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

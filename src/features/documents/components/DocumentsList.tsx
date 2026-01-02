@@ -250,12 +250,22 @@ export function DocumentsList() {
     massDeleteMutation.mutate({ ids: activeSelectedIds });
   };
 
-  const handleUpload = async (
-    file: File,
-    type: DocumentType,
-    compression?: CompressionLevel
-  ) => {
-    await uploadMutation.mutateAsync({ file, type, compression });
+  const handleUpload = async (payload: {
+    files: File[];
+    type: DocumentType;
+    compression?: CompressionLevel;
+    merge?: boolean;
+    name?: string;
+  }) => {
+    const [firstFile] = payload.files;
+    await uploadMutation.mutateAsync({
+      type: payload.type,
+      compression: payload.compression,
+      merge: payload.merge,
+      name: payload.name,
+      file: payload.files.length === 1 ? firstFile : undefined,
+      files: payload.files.length > 1 ? payload.files : undefined,
+    });
   };
 
   const handleDownload = (doc: Document) => {
