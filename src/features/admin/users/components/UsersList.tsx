@@ -85,12 +85,17 @@ import {
   defaultColumnVisibility,
 } from "@/features/admin/users/components/UserColumnToggle";
 import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS, type User } from "@/types/user";
-import { cn, buildImageUrl } from "@/lib/utils";
+import {
+  buildImageUrl,
+  bytesToMegabytes,
+  cn,
+  formatBytes,
+  megabytesToBytes,
+} from "@/lib/utils";
 import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
 import { useMassDeleteUsers } from "../api/mass-delete-users";
-import { useUpdateUserDownloadLimit } from "../api/update-user-download-limit";
-import { useUpdateUserStatus } from "../api/update-user-status";
+import { useUpdateUser } from "../api/update-user";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useAuth } from "@/contexts/AuthContext";
@@ -146,11 +151,16 @@ export const UsersList = () => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<FilterValues>({});
 
-  const [columnVisibility, setColumnVisibility] =
+  const [columnVisibilityState, setColumnVisibilityState] =
     useLocalStorage<ColumnVisibility>(
       "users-table-columns",
       defaultColumnVisibility
     );
+
+  const columnVisibility = {
+    ...defaultColumnVisibility,
+    ...columnVisibilityState,
+  };
 
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -159,59 +169,121 @@ export const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const updateLimitMutation = useUpdateUserDownloadLimit();
-  const updateStatusMutation = useUpdateUserStatus({
+  const updateDownloadLimitMutation = useUpdateUser({
+    mutationConfig: {
+      onSuccess: (_, variables) => {
+        toast.success(
+          `Berhasil mengupdate batas unduhan untuk user (Limit: ${
+            variables.data.daily_download_limit ?? "-"
+          })`
+        );
+      },
+      onError: () => {
+        toast.error("Gagal mengupdate batas unduhan user");
+      },
+    },
+  });
+  const updateStorageLimitMutation = useUpdateUser({
+    mutationConfig: {
+      onSuccess: (_, variables) => {
+        toast.success(
+          `Berhasil mengupdate batas penyimpanan untuk user (Limit: ${formatBytes(
+            variables.data.document_storage_limit ?? 0
+          )})`
+        );
+      },
+      onError: () => {
+        toast.error("Gagal mengupdate batas penyimpanan user");
+      },
+    },
+  });
+  const updateStatusMutation = useUpdateUser({
     mutationConfig: {
       onSuccess: () => {
         toast.success("Status akun berhasil diperbarui");
         setStatusDialogOpen(false);
       },
+      onError: () => {
+        toast.error("Gagal memperbarui status user");
+      },
     },
   });
 
+  const defaultFormatDisplay = (value?: number | null) => {
+    if (value == null || Number.isNaN(value)) {
+      return "-";
+    }
+    return String(value);
+  };
+
+  const defaultFormatInput = (value?: number | null) => {
+    if (value == null || Number.isNaN(value)) {
+      return "";
+    }
+    return String(value);
+  };
+
+  const defaultParseValue = (input: string) => {
+    if (input.trim() === "") {
+      return null;
+    }
+    const parsed = Number(input);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+
   const EditableCell = ({
-    user,
-    field,
-    type = "text",
+    label,
+    value,
+    onSave,
+    type = "number",
+    formatDisplay,
+    formatInput,
+    parseValue,
   }: {
-    user: User;
-    field: keyof User;
+    label: string;
+    value?: number | null;
+    onSave: (value: number) => void;
     type?: "text" | "number";
+    formatDisplay?: (value?: number | null) => string;
+    formatInput?: (value?: number | null) => string;
+    parseValue?: (input: string) => number | null;
   }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [value, setValue] = useState(user[field] ?? "");
+    const displayFormatter = formatDisplay ?? defaultFormatDisplay;
+    const inputFormatter = formatInput ?? defaultFormatInput;
+    const parser = parseValue ?? defaultParseValue;
+    const [inputValue, setInputValue] = useState(() => inputFormatter(value));
+
+    useEffect(() => {
+      if (!isEditing) {
+        setInputValue(inputFormatter(value));
+      }
+    }, [inputFormatter, isEditing, value]);
 
     const handleBlur = () => {
       setIsEditing(false);
-      const newValue = type === "number" ? Number(value) : value;
-      if (newValue !== user[field]) {
-        if (field === "daily_download_limit") {
-          const limit = Number(newValue);
-          if (isNaN(limit) || limit < 0) {
-            toast.error("Batas unduhan tidak valid");
-            setValue(user[field] || 0);
-            return;
-          }
-          updateLimitMutation.mutate({
-            id: user.id,
-            daily_download_limit: limit,
-          });
-        }
+      const parsedValue = parser(inputValue);
+      if (parsedValue === null) {
+        toast.error(`${label} tidak valid`);
+        setInputValue(inputFormatter(value));
+        return;
       }
+      if (parsedValue === value) {
+        return;
+      }
+      onSave(parsedValue);
     };
 
     if (isEditing) {
       return (
         <Input
           type={type}
-          value={value as string}
-          onChange={(e) =>
-            setValue(type === "number" ? e.target.value : e.target.value)
-          }
+          value={inputValue}
+          onChange={(event) => setInputValue(event.target.value)}
           onBlur={handleBlur}
-          onKeyDown={(e) => e.key === "Enter" && handleBlur()}
+          onKeyDown={(event) => event.key === "Enter" && handleBlur()}
           autoFocus
-          className="h-8 w-20 px-2"
+          className="h-8 w-24 px-2"
         />
       );
     }
@@ -221,7 +293,7 @@ export const UsersList = () => {
         className="cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors whitespace-nowrap block min-h-[1.5rem]"
         onClick={() => setIsEditing(true)}
       >
-        {user[field] || (type === "number" ? "0" : "-")}
+        {displayFormatter(value)}
       </span>
     );
   };
@@ -415,7 +487,7 @@ export const UsersList = () => {
           </Button>
           <UserColumnToggle
             visibility={columnVisibility}
-            onVisibilityChange={setColumnVisibility}
+            onVisibilityChange={setColumnVisibilityState}
           />
           <Button size="sm" onClick={() => navigate("/admin/users/create")}>
             <Plus className="h-4 w-4 mr-2" />
@@ -471,6 +543,11 @@ export const UsersList = () => {
                 {columnVisibility.daily_download_limit && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
                     Batas Unduhan
+                  </TableHead>
+                )}
+                {columnVisibility.document_storage_limit && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Batas Penyimpanan
                   </TableHead>
                 )}
                 {columnVisibility.total_downloads && (
@@ -612,9 +689,44 @@ export const UsersList = () => {
                     {columnVisibility.daily_download_limit && (
                       <TableCell>
                         <EditableCell
-                          user={user}
-                          field="daily_download_limit"
+                          label="Batas Unduhan"
+                          value={user.daily_download_limit}
+                          onSave={(value) =>
+                            updateDownloadLimitMutation.mutate({
+                              id: user.id,
+                              data: { daily_download_limit: value },
+                            })
+                          }
                           type="number"
+                        />
+                      </TableCell>
+                    )}
+                    {columnVisibility.document_storage_limit && (
+                      <TableCell>
+                        <EditableCell
+                          label="Batas Penyimpanan"
+                          value={user.document_storage_limit}
+                          onSave={(value) =>
+                            updateStorageLimitMutation.mutate({
+                              id: user.id,
+                              data: { document_storage_limit: value },
+                            })
+                          }
+                          type="number"
+                          formatDisplay={(val) =>
+                            formatBytes(val ?? 0)
+                          }
+                          formatInput={(val) =>
+                            String(Math.round(bytesToMegabytes(val ?? 0)))
+                          }
+                          parseValue={(input) => {
+                            const parsed = Number(input);
+                            if (!Number.isFinite(parsed) || parsed < 0) {
+                              return null;
+                            }
+
+                            return megabytesToBytes(parsed);
+                          }}
                         />
                       </TableCell>
                     )}

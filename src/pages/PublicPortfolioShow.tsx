@@ -23,6 +23,8 @@ import { projectTypeLabels } from "@/types/portfolio";
 import { buildImageUrl } from "@/lib/utils";
 import { SEO } from "@/components/SEO";
 import { env } from "@/config/env";
+import { getSocialIcon } from "@/lib/socials";
+import { SOCIAL_PLATFORM_LABELS } from "@/types/social";
 
 const monthNames = [
   "Januari",
@@ -85,6 +87,7 @@ export default function PublicPortfolioShow() {
   }
 
   const { user, portfolio } = data;
+  const socialLinks = user.social_links || [];
 
   const nextMedia = () => {
     setCurrentMediaIndex((prev) =>
@@ -335,9 +338,47 @@ export default function PublicPortfolioShow() {
                       </div>
                     </Link>
                     <Separator className="my-4" />
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {user.headline}
-                    </p>
+                    {user.headline && (
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {user.headline}
+                      </p>
+                    )}
+                    {user.bio && (
+                      <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+                        {user.bio}
+                      </p>
+                    )}
+                    {user.location && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-3">
+                        <MapPin className="h-4 w-4" />
+                        <span>{user.location}</span>
+                      </div>
+                    )}
+                    {socialLinks.length > 0 && (
+                      <div className="flex gap-2 flex-wrap mt-4">
+                        {socialLinks.map((link) => (
+                          <Button
+                            key={link.id ?? `${link.platform}-${link.url}`}
+                            variant="outline"
+                            size="icon"
+                            asChild
+                            className="rounded-full border-border/70"
+                          >
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={
+                                SOCIAL_PLATFORM_LABELS[link.platform] ??
+                                link.platform
+                              }
+                            >
+                              {getSocialIcon(link.platform)}
+                            </a>
+                          </Button>
+                        ))}
+                      </div>
+                    )}
                     <Button variant="outline" className="w-full mt-4" asChild>
                       <Link to={`/me/${username}`}>Lihat Semua Portfolio</Link>
                     </Button>

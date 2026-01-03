@@ -1,3 +1,6 @@
+import type { DocumentStorageStats, DownloadStats } from "@/types/storage";
+import type { SocialLink } from "@/types/social";
+
 export type UserRole = "user" | "admin";
 export type UserStatus = "active" | "suspended" | "banned";
 
@@ -14,9 +17,18 @@ export interface User {
 
   avatar: string;
   daily_download_limit: number;
+  download_stats?: DownloadStats;
   total_count?: number;
+  document_storage_limit: number;
+  document_storage_stats: DocumentStorageStats;
+  headline?: string | null;
+  bio?: string | null;
+  location?: string | null;
+  gender?: string | null;
+  birth_date?: string | null;
   created_at: string;
   updated_at: string;
+  social_links: SocialLink[];
 }
 
 export const USER_ROLE_OPTIONS = [

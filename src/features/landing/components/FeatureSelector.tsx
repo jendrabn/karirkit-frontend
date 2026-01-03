@@ -11,14 +11,14 @@ const features = [
   {
     id: "application",
     image: iconTracker,
-    title: "Pelacak Lamaran Kerja",
+    title: "Pelacak Lamaran",
     subtitle: "Pantau semua proses lamaran kerja dalam satu tempat.",
   },
   {
     id: "applicationletter",
     image: iconSurat,
     title: "Surat Lamaran",
-    subtitle: "Buat surat lamaran profesional dengan cepat dan rapi.",
+    subtitle: "Buat surat lamaran kerja profesional dengan cepat dan rapi.",
   },
   {
     id: "cv",
@@ -36,59 +36,66 @@ const features = [
 
 const featureDetails = {
   application: {
-    title: "Kelola Semua Lamaran Kerja dengan Lebih Teratur",
+    title: "Kelola Lamaran Kerja dengan Lebih Teratur",
     description:
-      "Tidak perlu lagi mencatat lamaran kerja secara manual. Simpan dan pantau semua lamaran dalam satu dashboard agar setiap proses tetap terkendali.",
+      "Simpan semua lamaran dalam satu dashboard agar progres, catatan, dan tindak lanjut tetap terkendali.",
     bullets: [
-      "Status lamaran yang jelas dari dikirim hingga diterima",
-      "Catatan interview dan progres di setiap perusahaan",
-      "Pengingat tindak lanjut agar tidak ada lamaran terlewat",
+      "Tahapan proses lengkap dan hasil (pending/passed/failed)",
+      "Kontak HR, catatan interview, dan jadwal follow-up",
+      "Detail lamaran: tipe kerja, sistem kerja, lokasi, gaji, sumber, dan link",
+      "Pencarian & filter untuk menemukan lamaran lebih cepat",
     ],
-    cta: "Lihat cara kerja Pelacak Lamaran",
+    cta: "Mulai catat lamaran",
     image: "/images/placeholder.png",
     imageAlt: "Dashboard Pelacak Lamaran",
     bgColor: "bg-gradient-to-br from-secondary via-secondary/50 to-background",
   },
+
   applicationletter: {
-    title: "Buat Surat Lamaran yang Meyakinkan Recruiter",
+    title: "Buat Surat Lamaran yang Rapi dan Meyakinkan",
     description:
-      "Gunakan template surat lamaran dengan bahasa profesional dan struktur yang rapi. Sesuaikan isi surat untuk setiap posisi hanya dalam beberapa langkah.",
+      "Isi form, pilih template, lalu unduh. Setiap surat tersimpan rapi per posisi/perusahaan.",
     bullets: [
-      "Template siap pakai untuk berbagai posisi pekerjaan",
-      "Data otomatis terisi dari profil dan CV",
-      "Ekspor ke Word (.docx) — ekspor PDF segera tersedia",
+      "Form lengkap dan struktur surat jelas dari pembuka hingga penutup",
+      "Template & bahasa (ID/EN) agar konsisten dan profesional",
+      "Kelola banyak surat lamaran tanpa tertukar",
+      "Unduh DOCX atau PDF kapan saja",
     ],
-    cta: "Pelajari cara membuat Surat Lamaran",
+    cta: "Buat surat lamaran pertama",
     image: "/images/placeholder.png",
-    imageAlt: "Editor Surat Lamaran",
+    imageAlt: "Form Surat Lamaran",
     bgColor: "bg-gradient-to-br from-primary/10 via-primary/5 to-background",
   },
+
   cv: {
-    title: "Susun CV ATS-Friendly yang Mudah Dibaca",
+    title: "Buat CV Profesional dengan Berbagai Template",
     description:
-      "Bangun CV yang rapi, terstruktur, dan fokus pada isi tanpa perlu repot desain. Cocok untuk fresh graduate maupun profesional berpengalaman.",
+      "Susun CV lewat form terstruktur, pilih template sesuai kebutuhan, lalu unduh untuk melamar kerja.",
     bullets: [
-      "Template CV modern dan profesional",
-      "Struktur jelas: pengalaman, pendidikan, dan keahlian",
-      "Ekspor ke Word (.docx) — ekspor PDF segera tersedia",
+      "Bagian lengkap: pengalaman, pendidikan, skill, sertifikat, organisasi, penghargaan",
+      "Tambahkan proyek dan link demo dan link kode (repo)",
+      "Bisa membuat beberapa versi CV dan pilihan bahasa (ID/EN)",
+      "Unduh CV dalam DOCX atau PDF",
     ],
-    cta: "Pelajari cara membuat CV",
+    cta: "Buat CV sekarang",
     image: "/images/placeholder.png",
-    imageAlt: "Tampilan Pembuat CV",
+    imageAlt: "Form Pembuatan CV",
     bgColor: "bg-gradient-to-br from-accent via-accent/50 to-background",
   },
+
   portfolio: {
-    title: "Tampilkan Keahlian Anda Lewat Portofolio Digital",
+    title: "Portofolio Digital yang Siap Dibagikan",
     description:
-      "Kumpulkan dan tampilkan hasil karya terbaik—gambar, video, tautan, hingga studi kasus—dalam satu portofolio yang mudah dibagikan.",
+      "Tampilkan karya terbaik dalam halaman portofolio publik dengan link yang bisa dibagikan.",
     bullets: [
-      "Tampilan portofolio visual yang menarik",
-      "Tautan publik siap dibagikan ke recruiter",
-      "Cocok untuk desainer, developer, dan profesional kreatif",
+      "Halaman portofolio publik dengan tampilan proyek yang menarik",
+      "Detail proyek: peran, periode, deskripsi, serta tools/teknologi",
+      "Tambahkan gambar/media proyek, link demo, dan link kode (repo)",
+      "Cocok untuk developer, desainer, dan profesional kreatif",
     ],
-    cta: "Pelajari cara membuat Portofolio",
+    cta: "Buat portofolio dan bagikan link",
     image: "/images/placeholder.png",
-    imageAlt: "Galeri Portofolio Digital",
+    imageAlt: "Portofolio Publik",
     bgColor: "bg-gradient-to-br from-muted via-muted/50 to-background",
   },
 };

@@ -3,6 +3,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
 import type { Portfolio } from "@/features/portfolios/api/get-portfolios";
+import type { SocialLink } from "@/types/social";
 
 export type PublicUser = {
   id: string;
@@ -10,6 +11,9 @@ export type PublicUser = {
   username: string;
   avatar: string;
   headline: string;
+  location?: string | null;
+  bio?: string | null;
+  social_links: SocialLink[];
 };
 
 export type PublicPortfolio = Portfolio;

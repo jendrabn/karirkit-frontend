@@ -19,6 +19,7 @@ import {
   Briefcase,
   Bookmark,
   Files,
+  Bell,
 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import {
@@ -187,6 +188,12 @@ export function DashboardSidebar() {
               >
                 <User className="h-4 w-4 mr-2" />
                 Profil
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate(paths.account.notifications.getHref())}
+              >
+                <Bell className="h-4 w-4 mr-2" />
+                Pengaturan Notifikasi
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigate(paths.account.changePassword.getHref())}

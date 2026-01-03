@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -49,6 +49,8 @@ import {
   MONTH_OPTIONS,
   LANGUAGE_OPTIONS,
 } from "@/types/cv";
+import { SOCIAL_PLATFORM_VALUES, SOCIAL_PLATFORM_OPTIONS } from "@/types/social";
+import { getSocialIcon } from "@/lib/socials";
 
 const educationSchema = z.object({
   degree: z.enum([
@@ -135,7 +137,9 @@ const awardSchema = z.object({
 });
 
 const socialLinkSchema = z.object({
-  platform: z.string().min(1, "Platform wajib diisi"),
+  platform: z.enum(SOCIAL_PLATFORM_VALUES, {
+    errorMap: () => ({ message: "Platform wajib diisi" }),
+  }),
   url: z.string().url("URL tidak valid"),
 });
 
@@ -2024,14 +2028,16 @@ export function CVForm({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle>Media Sosial</CardTitle>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => socialLinks.append({ platform: "", url: "" })}
-            >
-              <Plus className="h-4 w-4 mr-1" /> Tambah
-            </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  socialLinks.append({ platform: "linkedin", url: "" })
+                }
+              >
+                <Plus className="h-4 w-4 mr-1" /> Tambah
+              </Button>
           </CardHeader>
 
           <CardContent className="space-y-3 pt-4">
@@ -2049,13 +2055,37 @@ export function CVForm({
               <div className="space-y-3">
                 {socialLinks.fields.map((field, index) => (
                   <div key={field.id} className="flex gap-3 items-start">
-                    <Field className="w-40">
-                      <Input
-                        placeholder="LinkedIn"
-                        {...register(`social_links.${index}.platform`)}
-                        className={cn(
-                          errors.social_links?.[index]?.platform &&
-                            "border-destructive"
+                    <Field className="w-48">
+                      <Controller
+                        control={control}
+                        name={`social_links.${index}.platform`}
+                        render={({ field: controllerField }) => (
+                          <Select
+                            onValueChange={controllerField.onChange}
+                            value={controllerField.value}
+                          >
+                            <SelectTrigger
+                              className={cn(
+                                errors.social_links?.[index]?.platform &&
+                                  "border-destructive"
+                              )}
+                            >
+                              <SelectValue placeholder="Platform" />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
+                              {SOCIAL_PLATFORM_OPTIONS.map((option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {getSocialIcon(option.value, "h-4 w-4")}
+                                    <span>{option.label}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         )}
                       />
                       <FieldError>

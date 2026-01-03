@@ -10,7 +10,6 @@ import {
   Briefcase,
   Award,
   Users,
-  Link as LinkIcon,
   Star,
   Layers,
   Loader2,
@@ -45,6 +44,8 @@ import {
 } from "@/types/cv";
 import { toast } from "sonner";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { getSocialIcon } from "@/lib/socials";
+import { SOCIAL_PLATFORM_LABELS } from "@/types/social";
 
 export default function CVShow() {
   const navigate = useNavigate();
@@ -496,20 +497,22 @@ export default function CVShow() {
           {cv.social_links.length > 0 && (
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <LinkIcon className="h-5 w-5 text-primary" />
+                <Users className="h-5 w-5 text-primary" />
                 <h3 className="text-lg font-semibold">Media Sosial</h3>
               </div>
-              <div className="space-y-3">
+              <div className="flex flex-wrap gap-3">
                 {cv.social_links.map((link, index) => (
                   <a
-                    key={index}
+                    key={`${link.platform}-${index}`}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-primary hover:underline"
+                    className="flex items-center gap-2 rounded-full border border-border/60 px-4 py-2 text-sm font-medium text-foreground hover:border-primary transition-colors"
                   >
-                    <LinkIcon className="h-4 w-4" />
-                    {link.platform}
+                    {getSocialIcon(link.platform, "h-4 w-4")}
+                    <span>
+                      {SOCIAL_PLATFORM_LABELS[link.platform] ?? link.platform}
+                    </span>
                   </a>
                 ))}
               </div>

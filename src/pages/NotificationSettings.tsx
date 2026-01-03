@@ -1,30 +1,29 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
-
-import ProfileForm from "@/features/account/components/ProfileForm";
+import NotificationSetting from "@/features/account/components/NotificationSetting";
 import { MinimalSEO } from "@/components/MinimalSEO";
 import { seoConfig } from "@/config/seo";
 
-export default function Profile() {
+export default function NotificationSettings() {
   return (
     <DashboardLayout
       breadcrumbItems={[
         { label: "Dashboard", href: "/dashboard" },
-        { label: "Profil Saya" },
+        { label: "Pengaturan Notifikasi" },
       ]}
     >
       <MinimalSEO
-        title={seoConfig.profile.title}
-        description={seoConfig.profile.description}
+        title={`Pengaturan Notifikasi | ${seoConfig.appName}`}
+        description="Kelola preferensi notifikasi WhatsApp dan Telegram Anda."
         noIndex={true}
       />
       <PageHeader
-        title="Profil Saya"
-        subtitle="Kelola informasi profil dan akun Anda."
+        title="Pengaturan Notifikasi"
+        subtitle="Atur notifikasi WhatsApp dan Telegram untuk pengingat lamaran."
       />
 
       <div className="max-w-3xl">
-        <ProfileForm />
+        <NotificationSetting />
       </div>
     </DashboardLayout>
   );

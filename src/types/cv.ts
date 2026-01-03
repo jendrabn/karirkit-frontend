@@ -1,3 +1,5 @@
+import type { SocialLink } from "@/types/social";
+
 export type DegreeType =
   | "middle_school"
   | "high_school"
@@ -79,11 +81,6 @@ export interface Project {
   year: number;
   repo_url?: string | null;
   live_url?: string | null;
-}
-
-export interface SocialLink {
-  platform: string;
-  url: string;
 }
 
 export interface Organization {

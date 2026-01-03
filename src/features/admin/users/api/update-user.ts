@@ -11,17 +11,22 @@ export const updateUserInputSchema = z.object({
   phone: z.string().optional(),
   role: z.enum(["user", "admin"]),
   avatar: z.string().optional(),
+  status: z.enum(["active", "suspended", "banned"]).optional(),
+  status_reason: z.string().optional(),
+  suspended_until: z.string().optional(),
   daily_download_limit: z.coerce.number().min(0).max(1000).optional(),
+  document_storage_limit: z.coerce.number().min(0).optional(),
 });
 
 export type UpdateUserInput = z.infer<typeof updateUserInputSchema>;
+export type UpdateUserData = Partial<UpdateUserInput>;
 
 export const updateUser = ({
   id,
   data,
 }: {
   id: string;
-  data: UpdateUserInput;
+  data: UpdateUserData;
 }): Promise<User> => {
   return api.put(`/admin/users/${id}`, data);
 };

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard/api/get-dashboard-stats";
 import { DownloadStatsWidget } from "@/features/dashboard/components/DownloadStatsWidget";
+import { DocumentStorageWidget } from "@/features/dashboard/components/DocumentStorageWidget";
 import { MinimalSEO } from "@/components/MinimalSEO";
 import { seoConfig } from "@/config/seo";
 
@@ -116,6 +117,9 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <div className="sm:col-span-2 lg:col-span-1 xl:col-span-2">
           <DownloadStatsWidget />
+        </div>
+        <div className="sm:col-span-2 lg:col-span-1 xl:col-span-2">
+          <DocumentStorageWidget />
         </div>
         {statCards.map((stat, index) => (
           <Card key={index} className="p-5 rounded-2xl">

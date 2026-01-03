@@ -58,6 +58,9 @@ export const paths = {
     changePassword: {
       getHref: () => "/change-password",
     },
+    notifications: {
+      getHref: () => "/notifications",
+    },
   },
   applications: {
     list: {

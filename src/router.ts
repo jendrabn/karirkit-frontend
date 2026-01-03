@@ -137,6 +137,13 @@ export const createAppRouter = (queryClient: QueryClient) =>
         import("./pages/Profile").then(convertWithProtection(queryClient)),
     },
     {
+      path: "/notifications",
+      lazy: () =>
+        import("./pages/NotificationSettings").then(
+          convertWithProtection(queryClient)
+        ),
+    },
+    {
       path: "/change-password",
       lazy: () =>
         import("./pages/ChangePassword").then(

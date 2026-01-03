@@ -27,3 +27,36 @@ export function buildImageUrl(path?: string | null): string {
   // Combine API URL with path
   return `${env.API_URL}/${cleanPath}`;
 }
+
+const BYTE_UNITS = ["B", "KB", "MB", "GB", "TB"];
+export const BYTES_IN_MEGABYTE = 1024 * 1024;
+
+export function formatBytes(value?: number | null, precision = 2) {
+  if (value == null || isNaN(value)) {
+    return "0 B";
+  }
+
+  let bytes = Math.max(0, value);
+  let unitIndex = 0;
+
+  while (bytes >= 1024 && unitIndex < BYTE_UNITS.length - 1) {
+    bytes /= 1024;
+    unitIndex += 1;
+  }
+
+  const formatted =
+    unitIndex === 0 ? Math.round(bytes) : bytes.toFixed(precision);
+
+  return `${formatted} ${BYTE_UNITS[unitIndex]}`;
+}
+
+export function bytesToMegabytes(value?: number | null) {
+  if (value == null || isNaN(value)) {
+    return 0;
+  }
+  return value / BYTES_IN_MEGABYTE;
+}
+
+export function megabytesToBytes(value: number) {
+  return Math.round(value * BYTES_IN_MEGABYTE);
+}

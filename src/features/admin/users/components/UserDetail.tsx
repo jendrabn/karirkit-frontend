@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -25,9 +26,10 @@ import {
 } from "@/components/ui/field";
 import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS, type UserRole } from "@/types/user";
 import type { User } from "../api/get-users";
-import { useUpdateUserStatus } from "../api/update-user-status";
+import { useUpdateUser } from "../api/update-user";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFormErrors } from "@/hooks/use-form-errors";
+import { formatBytes } from "@/lib/utils";
 import { toast } from "sonner";
 
 const getRoleBadgeVariant = (role: UserRole) => {
@@ -66,10 +68,21 @@ const userStatusSchema = z
 export const UserDetail = ({ user }: { user: User }) => {
   const { user: authUser } = useAuth();
   const isSelf = authUser?.id === user.id;
-  const updateStatusMutation = useUpdateUserStatus({
+  const storageStats = user.document_storage_stats;
+  const storageLimit = user.document_storage_limit || 0;
+  const storageUsed = storageStats?.used ?? 0;
+  const storageRemaining =
+    storageStats?.remaining ?? Math.max(storageLimit - storageUsed, 0);
+  const storagePercentage = storageLimit
+    ? Math.min(100, Math.round((storageUsed / storageLimit) * 100))
+    : 0;
+  const updateStatusMutation = useUpdateUser({
     mutationConfig: {
       onSuccess: () => {
         toast.success("Status akun berhasil diperbarui");
+      },
+      onError: () => {
+        toast.error("Gagal memperbarui status user");
       },
     },
   });
@@ -219,6 +232,19 @@ export const UserDetail = ({ user }: { user: User }) => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="mt-8 space-y-3 border-t border-border/70 pt-6">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-semibold">Penyimpanan Dokumen</p>
+            <p className="text-sm text-muted-foreground">
+              {formatBytes(storageLimit)}
+            </p>
+          </div>
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <span>Digunakan {formatBytes(storageUsed)}</span>
+            <span>Tersisa {formatBytes(storageRemaining)}</span>
+          </div>
+          <Progress value={storagePercentage} className="h-2" />
         </div>
       </div>
 

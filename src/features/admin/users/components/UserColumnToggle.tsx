@@ -18,6 +18,7 @@ export interface ColumnVisibility {
   status: boolean;
   phone: boolean;
   daily_download_limit: boolean;
+  document_storage_limit: boolean;
   total_downloads: boolean;
   created_at: boolean;
   updated_at: boolean;
@@ -32,6 +33,7 @@ export const defaultColumnVisibility: ColumnVisibility = {
   status: true,
   phone: false,
   daily_download_limit: true,
+  document_storage_limit: true,
   total_downloads: false,
   created_at: true,
   updated_at: false,
@@ -45,6 +47,7 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "status",
   "phone",
   "daily_download_limit",
+  "document_storage_limit",
   "total_downloads",
   "created_at",
   "updated_at",
@@ -58,6 +61,7 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   status: "Status",
   phone: "Telepon",
   daily_download_limit: "Batas Unduhan",
+  document_storage_limit: "Batas Penyimpanan",
   total_downloads: "Total Unduhan",
   created_at: "Dibuat",
   updated_at: "Diperbarui",

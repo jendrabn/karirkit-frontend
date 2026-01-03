@@ -9,11 +9,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { AvatarUpload } from "./AvatarUpload";
 import { USER_ROLE_OPTIONS } from "@/types/user";
 import {
+  DEFAULT_DOCUMENT_STORAGE_LIMIT,
   createUserInputSchema,
   type CreateUserInput,
 } from "../api/create-user";
@@ -52,6 +59,8 @@ export function UserForm({
       role: initialData?.role || "user",
       avatar: initialData?.avatar || "",
       daily_download_limit: initialData?.daily_download_limit || 10,
+      document_storage_limit:
+        initialData?.document_storage_limit || DEFAULT_DOCUMENT_STORAGE_LIMIT,
       ...(isEdit ? {} : { password: "" }),
     },
   });
@@ -182,6 +191,22 @@ export function UserForm({
                 />
                 <FieldError>
                   {form.formState.errors.daily_download_limit?.message}
+                </FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel>Batas Penyimpanan Dokumen</FieldLabel>
+                <Input
+                  type="number"
+                  min={0}
+                  placeholder="104857600"
+                  {...form.register("document_storage_limit")}
+                />
+                <FieldDescription>
+                  Nilai dalam byte (1 MB = 1.048.576 byte)
+                </FieldDescription>
+                <FieldError>
+                  {form.formState.errors.document_storage_limit?.message}
                 </FieldError>
               </Field>
             </div>
