@@ -2,6 +2,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
+import type { SocialPlatform } from "@/types/social";
 
 export type CVsResponse = {
   items: CV[];
@@ -113,7 +114,7 @@ export type Award = {
 };
 
 export type SocialLink = {
-  platform: string;
+  platform: SocialPlatform;
   url: string;
 };
 

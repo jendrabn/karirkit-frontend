@@ -12,6 +12,7 @@ import {
   Users,
   Star,
   Layers,
+  Link2 as LinkIcon,
   Loader2,
   Trash2,
 } from "lucide-react";

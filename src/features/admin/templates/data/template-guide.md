@@ -123,7 +123,7 @@ Hormat saya,
 
 - `{{name}}` - Nama lengkap (HURUF BESAR)
 - `{{headline}}` - Headline/tagline profesional
-- `{{email}}` - Email (dapat berupa link atau teks)
+- `{{email}}` - Email (objek link)
   - `{{email.url}}` - URL mailto
   - `{{email.label}}` - Teks email
 - `{{phone}}` - Nomor telepon
@@ -176,6 +176,7 @@ Setiap item pengalaman memiliki:
 - `{{$experience.end_year}}` - Tahun selesai
 - `{{$experience.is_current}}` - Masih bekerja (true/false)
 - `{{$experience.description}}` - Deskripsi pekerjaan
+- `{{$experience.description_points}}` - Array poin deskripsi (opsional)
 
 #### Keterampilan (skills) - Array
 
@@ -215,6 +216,151 @@ Setiap item organisasi memiliki:
 - `{{$organization.end_year}}` - Tahun selesai
 - `{{$organization.is_current}}` - Masih aktif (true/false)
 - `{{$organization.description}}` - Deskripsi
+- `{{$organization.description_points}}` - Array poin deskripsi (opsional)
+
+#### Proyek (projects) - Array
+
+Setiap item proyek memiliki:
+
+- `{{$project.name}}` - Nama proyek
+- `{{$project.description}}` - Deskripsi proyek
+- `{{$project.year}}` - Tahun
+- `{{$project.repo_url}}` - URL repositori
+- `{{$project.repo_label}}` - Label repositori (opsional)
+- `{{$project.live_url}}` - URL demo/live
+- `{{$project.live_label}}` - Label demo/live (opsional)
+- `{{$project.description_points}}` - Array poin deskripsi (opsional)
+
+---
+
+### Contoh Data CV Terbaru
+
+```js
+{
+  name: 'ADMIN USER CV',
+  headline: 'Project Manager',
+  email: { url: 'mailto:admin@example.com', label: 'admin@example.com' },
+  phone: '+1234567892',
+  address: '789 Pine Rd, Chicago, IL',
+  about: 'Experienced project manager with a track record of successful project delivery.',
+  photo_path: '/uploads/cvs/1767434687496-4cca49166743-3cffec91-4148-4854-b463-0d710a746dcc.png',
+  educations: [
+    {
+      degree: 'Doktor',
+      school_name: 'International Business University',
+      school_location: 'London, UK',
+      major: 'Strategic Management',
+      start_month: 'Sep',
+      start_year: 2020,
+      end_month: 'Jun',
+      end_year: 2024,
+      is_current: false,
+      gpa: 4,
+      description: 'Research in organizational leadership and innovation'
+    },
+    {
+      degree: 'Magister',
+      school_name: 'Business School',
+      school_location: 'New York, NY',
+      major: 'Business Administration',
+      start_month: 'Sep',
+      start_year: 2014,
+      end_month: 'Jun',
+      end_year: 2016,
+      is_current: false,
+      gpa: 3.7,
+      description: 'Focused on project management and leadership'
+    }
+  ],
+  certificates: [
+    {
+      title: 'PMP Certification',
+      issuer: 'Project Management Institute',
+      issue_month: 'Sep',
+      issue_year: 2019,
+      expiry_month: '',
+      expiry_year: null,
+      no_expiry: true,
+      credential_id: 'PMP-345678',
+      credential_url: 'https://www.pmi.org/certifications',
+      description: 'Project Management Professional certification'
+    }
+  ],
+  experiences: [
+    {
+      job_title: 'Project Manager',
+      company_name: 'Global Corp',
+      company_location: 'Chicago, IL',
+      job_type: 'Penuh Waktu',
+      start_month: 'Jan',
+      start_year: 2017,
+      end_month: 'Des',
+      end_year: 2020,
+      is_current: false,
+      description: 'Managed multiple projects with budgets over $1M',
+      description_points: [
+        'Managed multiple projects with budgets over $1M',
+        'Delivered cross-functional initiatives on time',
+        'Improved reporting cadence for executives'
+      ]
+    }
+  ],
+  skills: [
+    { name: 'Agile', level: 'Lanjutan' },
+    { name: 'Scrum', level: 'Lanjutan' },
+    { name: 'Project Management', level: 'Ahli' }
+  ],
+  awards: [
+    {
+      title: 'Project Manager of the Year',
+      issuer: 'Global Corp',
+      description: 'Recognized for successful project delivery',
+      year: 2019
+    }
+  ],
+  social_links: [
+    { platform: 'X', url: 'https://twitter.com/adminuser', label: 'X' },
+    {
+      platform: 'LinkedIn',
+      url: 'https://linkedin.com/in/adminuser',
+      label: 'LinkedIn'
+    }
+  ],
+  organizations: [
+    {
+      organization_name: 'Project Management Institute',
+      role_title: 'Member',
+      organization_type: 'Profesional',
+      location: 'Chicago, IL',
+      start_month: 'Mar',
+      start_year: 2018,
+      end_month: '',
+      end_year: null,
+      is_current: true,
+      description: 'Active member of PMI local chapter',
+      description_points: [
+        'Active member of PMI local chapter',
+        'Led community knowledge-sharing sessions'
+      ]
+    }
+  ],
+  projects: [
+    {
+      name: 'PMO Reporting Suite',
+      description: 'Launched KPI reporting suite for executive stakeholders.',
+      year: 2021,
+      repo_url: 'https://github.com/adminuser/pmo-reporting',
+      repo_label: 'Repositori',
+      live_url: 'https://reports.example.com',
+      live_label: 'Live Demo',
+      description_points: [
+        'Automated monthly reporting pipeline',
+        'Reduced manual reporting time by 60%'
+      ]
+    }
+  ]
+}
+```
 
 ### Contoh Template CV
 
