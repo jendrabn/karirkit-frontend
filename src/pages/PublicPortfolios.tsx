@@ -14,6 +14,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { usePublicPortfolios } from "@/features/public/api/get-public-portfolios";
 import { projectTypeLabels } from "@/types/portfolio";
+import type { SocialPlatform } from "@/types/social";
 import { buildImageUrl } from "@/lib/utils";
 import { SEO } from "@/components/SEO";
 import { env } from "@/config/env";

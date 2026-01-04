@@ -50,7 +50,6 @@ import {
   LANGUAGE_OPTIONS,
 } from "@/types/cv";
 import { SOCIAL_PLATFORM_VALUES, SOCIAL_PLATFORM_OPTIONS } from "@/types/social";
-import { getSocialIcon } from "@/lib/socials";
 
 const educationSchema = z.object({
   degree: z.enum([
@@ -138,7 +137,7 @@ const awardSchema = z.object({
 
 const socialLinkSchema = z.object({
   platform: z.enum(SOCIAL_PLATFORM_VALUES, {
-    errorMap: () => ({ message: "Platform wajib diisi" }),
+    message: "Platform wajib diisi",
   }),
   url: z.string().url("URL tidak valid"),
 });
@@ -2078,10 +2077,7 @@ export function CVForm({
                                   key={option.value}
                                   value={option.value}
                                 >
-                                  <div className="flex items-center gap-2">
-                                    {getSocialIcon(option.value, "h-4 w-4")}
-                                    <span>{option.label}</span>
-                                  </div>
+                                  {option.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>

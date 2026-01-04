@@ -1,15 +1,8 @@
 import { useState } from "react";
-import { Eye } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { TemplatePreviewModal } from "./template-preview-modal";
+import { Label } from "@/components/ui/label";
+import { TemplateGridModal } from "./template-grid-modal";
 import { type DocumentTemplate } from "@/types/template";
 
 interface TemplateSelectorProps {
@@ -25,44 +18,62 @@ export function TemplateSelector({
   value,
   onChange,
 }: TemplateSelectorProps) {
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const selectedTemplate = templates.find((t) => t.id === value) || null;
+  const [modalOpen, setModalOpen] = useState(false);
+  const selectedTemplate = templates.find((t) => t.id === value);
 
   return (
-    <Field>
-      <FieldLabel>{label}</FieldLabel>
+    <div className="space-y-2">
+      <Label>{label}</Label>
 
-      <div className="flex gap-2">
-        <Select value={value} onValueChange={onChange}>
-          <SelectTrigger className="flex-1">
-            <SelectValue placeholder="Pilih template" />
-          </SelectTrigger>
-          <SelectContent className="z-50">
-            {templates.map((template) => (
-              <SelectItem key={template.id} value={template.id}>
-                {template.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
+      {selectedTemplate ? (
+        <div
+          className="group relative aspect-[3/4] max-w-[200px] cursor-pointer overflow-hidden rounded-lg border-2 border-primary"
+          onClick={() => setModalOpen(true)}
+        >
+          <img
+            src={selectedTemplate.previewImage}
+            alt={selectedTemplate.name}
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="text-sm font-medium text-white">
+              Ganti Template
+            </span>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+            <p className="truncate text-xs font-medium text-white">
+              {selectedTemplate.name}
+            </p>
+          </div>
+        </div>
+      ) : (
         <Button
           type="button"
           variant="outline"
-          size="icon"
-          onClick={() => setPreviewOpen(true)}
-          disabled={!value}
-          title="Lihat Contoh Template"
+          className="h-24 w-full border-dashed"
+          onClick={() => setModalOpen(true)}
         >
-          <Eye className="h-4 w-4" />
+          <FileText className="mr-2 h-6 w-6" />
+          Pilih Template
         </Button>
-      </div>
+      )}
 
-      <TemplatePreviewModal
-        open={previewOpen}
-        onOpenChange={setPreviewOpen}
-        template={selectedTemplate}
+      <Button
+        type="button"
+        variant="link"
+        className="h-auto p-0 text-sm"
+        onClick={() => setModalOpen(true)}
+      >
+        {selectedTemplate ? "Lihat semua template" : ""}
+      </Button>
+
+      <TemplateGridModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        templates={templates}
+        value={value}
+        onSelect={onChange}
       />
-    </Field>
+    </div>
   );
 }

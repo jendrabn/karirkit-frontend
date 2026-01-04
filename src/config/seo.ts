@@ -1,5 +1,6 @@
 // SEO Configuration for all pages
 export const seoConfig = {
+  appName: "KarirKit",
   // Public Pages
   landing: {
     title: "Platform All-in-One untuk Mengelola Karir Anda",

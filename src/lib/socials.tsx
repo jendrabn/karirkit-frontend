@@ -1,4 +1,4 @@
-import type { Icon } from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 import {
   Dribbble,
   Facebook,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import type { SocialPlatform } from "@/types/social";
 
-const ICON_MAP: Partial<Record<SocialPlatform, Icon>> = {
+const ICON_MAP: Partial<Record<SocialPlatform, LucideIcon>> = {
   linkedin: Linkedin,
   github: Github,
   twitter: Twitter,

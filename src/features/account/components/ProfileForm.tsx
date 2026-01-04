@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Camera, Loader2, Share2, Trash2 } from "lucide-react";
 
@@ -29,14 +28,13 @@ import { buildImageUrl } from "@/lib/utils";
 import {
   updateProfileInputSchema,
   useUpdateProfile,
-  type UpdateProfileInput,
 } from "@/features/account/api/update-profile";
 import { useAuth } from "@/contexts/AuthContext";
 import type { User } from "@/types/api";
 import { useFormErrors } from "@/hooks/use-form-errors";
+import { z } from "zod";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SOCIAL_PLATFORM_OPTIONS } from "@/types/social";
-import { getSocialIcon } from "@/lib/socials";
 
 const genderOptions = [
   { value: "male", label: "Laki-laki" },
@@ -44,7 +42,8 @@ const genderOptions = [
   { value: "other", label: "Lainnya" },
 ];
 
-type ProfileFormData = UpdateProfileInput;
+
+type ProfileFormData = z.infer<typeof updateProfileInputSchema>;
 
 const ProfileForm = () => {
   const { user } = useAuth();
@@ -79,7 +78,7 @@ const ProfileForm = () => {
   });
 
   const form = useForm<ProfileFormData>({
-    resolver: zodResolver(updateProfileInputSchema),
+    mode: "onChange",
     defaultValues: {
       name: user?.name || "",
       username: user?.username || "",
@@ -89,7 +88,7 @@ const ProfileForm = () => {
       headline: user?.headline || "",
       bio: user?.bio || "",
       location: user?.location || "",
-      gender: user?.gender || "",
+      gender: (user?.gender as "male" | "female" | "other" | undefined) || undefined,
       birth_date: user?.birth_date || "",
       social_links: (user?.social_links || []).map((link) => ({
         platform: link.platform,
@@ -138,7 +137,23 @@ const ProfileForm = () => {
   };
 
   const onSubmit = (data: ProfileFormData) => {
-    updateProfileMutation.mutate({ data });
+    // Validasi data menggunakan schema Zod
+    const result = updateProfileInputSchema.safeParse(data);
+    if (!result.success) {
+      // Set error ke form berdasarkan error Zod
+      result.error.issues.forEach((issue) => {
+        const path = issue.path.join('.') as keyof ProfileFormData;
+        form.setError(path, {
+          type: "manual",
+          message: issue.message,
+        });
+      });
+      return;
+    }
+
+    // Pastikan tipe gender sesuai dengan yang diharapkan oleh API
+    const submitData = result.data;
+    updateProfileMutation.mutate({ data: submitData });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -249,8 +264,8 @@ const ProfileForm = () => {
                     name="gender"
                     render={({ field }) => (
                       <Select
-                        value={field.value ?? ""}
-                        onValueChange={(value) => field.onChange(value)}
+                        value={field.value ?? undefined}
+                        onValueChange={(value) => field.onChange(value as "male" | "female" | "other" | undefined)}
                       >
                         <SelectTrigger
                           className={!field.value ? "text-muted-foreground" : undefined}
@@ -370,10 +385,7 @@ const ProfileForm = () => {
                                     key={option.value}
                                     value={option.value}
                                   >
-                                    <div className="flex items-center gap-2">
-                                      {getSocialIcon(option.value)}
-                                      <span>{option.label}</span>
-                                    </div>
+                                    {option.label}
                                   </SelectItem>
                                 ))}
                               </SelectContent>

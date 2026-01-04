@@ -22,16 +22,9 @@ import { Card } from "@/components/ui/card";
 import {
   type ParagraphType,
   type ParagraphTemplate,
-  type ParagraphTemplates,
   type ParagraphTypeLabels,
 } from "@/types/template";
-
-// Placeholder data since src/data was missing
-const paragraphTemplates: ParagraphTemplates = {
-  opening: [],
-  body: [],
-  closing: [],
-};
+import { paragraphTemplates } from "@/features/application-letters/data/paragraph-templates";
 
 const paragraphTypeLabels: ParagraphTypeLabels = {
   opening: "Paragraf Pembuka",
@@ -97,7 +90,7 @@ export function ParagraphTemplateModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl p-0 gap-0">
+        <DialogContent className="!max-w-7xl p-0 gap-0">
           <div className="flex flex-col max-h-[80vh]">
             <DialogHeader className="px-6 pt-6 pb-4">
               <DialogTitle>Pilih Template {typeLabel}</DialogTitle>

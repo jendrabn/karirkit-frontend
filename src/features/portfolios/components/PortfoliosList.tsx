@@ -21,6 +21,7 @@ import {
   MoreVertical,
   Calendar,
   Briefcase,
+  Info,
   Link2,
   Check,
   Loader2,
@@ -236,6 +237,28 @@ const PortfoliosList = () => {
             Lihat
           </Button>
         </div>
+      </div>
+
+      <div className="bg-muted/40 border border-border/60 rounded-lg p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+            <Info className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Info Profil Publik</p>
+            <p className="text-sm text-muted-foreground">
+              Bio, headline, media sosial, lokasi, dan info kontak tampil di
+              halaman portofolio publik. Ubah datanya melalui halaman Profil.
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate(paths.account.profile.getHref())}
+        >
+          Ke Profil
+        </Button>
       </div>
 
       {/* Actions Bar */}
