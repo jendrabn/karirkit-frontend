@@ -8,7 +8,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MainErrorFallback from "@/components/errors/main";
 import { env } from "@/config/env";
 import { LoadingFallback } from "@/components/ui/loading-fallback";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { RouterProvider } from "react-router";
 import { createAppRouter } from "./router";
 import { AuthProvider } from "@/contexts/AuthContext";

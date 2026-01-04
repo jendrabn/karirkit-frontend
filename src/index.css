@@ -208,6 +208,22 @@
     --sidebar-accent-foreground: 142 71% 35%;
     --sidebar-border: 140 20% 90%;
     --sidebar-ring: 142 71% 45%;
+
+    --sonner-default-bg: var(--card);
+    --sonner-default-fg: var(--card-foreground);
+    --sonner-default-border: var(--border);
+    --sonner-success-bg: 142 70% 92%;
+    --sonner-success-fg: 142 65% 25%;
+    --sonner-success-border: 142 50% 80%;
+    --sonner-error-bg: 0 85% 94%;
+    --sonner-error-fg: 0 75% 35%;
+    --sonner-error-border: 0 75% 80%;
+    --sonner-warning-bg: 45 100% 92%;
+    --sonner-warning-fg: 35 90% 30%;
+    --sonner-warning-border: 45 90% 75%;
+    --sonner-info-bg: 200 90% 92%;
+    --sonner-info-fg: 200 80% 30%;
+    --sonner-info-border: 200 80% 75%;
   }
 
   .dark {
@@ -256,6 +272,22 @@
     --sidebar-accent-foreground: 142 50% 80%;
     --sidebar-border: 160 12% 18%;
     --sidebar-ring: 142 71% 45%;
+
+    --sonner-default-bg: var(--card);
+    --sonner-default-fg: var(--card-foreground);
+    --sonner-default-border: var(--border);
+    --sonner-success-bg: 142 40% 18%;
+    --sonner-success-fg: 142 60% 82%;
+    --sonner-success-border: 142 40% 35%;
+    --sonner-error-bg: 0 40% 18%;
+    --sonner-error-fg: 0 80% 80%;
+    --sonner-error-border: 0 50% 35%;
+    --sonner-warning-bg: 45 35% 18%;
+    --sonner-warning-fg: 45 90% 78%;
+    --sonner-warning-border: 45 40% 35%;
+    --sonner-info-bg: 200 35% 18%;
+    --sonner-info-fg: 200 85% 80%;
+    --sonner-info-border: 200 40% 35%;
   }
 }
 
@@ -329,5 +361,30 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  .toaster[data-sonner-toaster] {
+    --normal-bg: hsl(var(--sonner-default-bg));
+    --normal-border: hsl(var(--sonner-default-border));
+    --normal-text: hsl(var(--sonner-default-fg));
+    --success-bg: hsl(var(--sonner-success-bg));
+    --success-border: hsl(var(--sonner-success-border));
+    --success-text: hsl(var(--sonner-success-fg));
+    --error-bg: hsl(var(--sonner-error-bg));
+    --error-border: hsl(var(--sonner-error-border));
+    --error-text: hsl(var(--sonner-error-fg));
+    --warning-bg: hsl(var(--sonner-warning-bg));
+    --warning-border: hsl(var(--sonner-warning-border));
+    --warning-text: hsl(var(--sonner-warning-fg));
+    --info-bg: hsl(var(--sonner-info-bg));
+    --info-border: hsl(var(--sonner-info-border));
+    --info-text: hsl(var(--sonner-info-fg));
+    --border-radius: var(--radius);
+  }
+
+  .toaster [data-sonner-toast][data-styled="true"] {
+    box-shadow: var(--card-shadow);
   }
 }

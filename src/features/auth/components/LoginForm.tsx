@@ -22,9 +22,9 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { useLogin, loginInputSchema, type LoginInput } from "@/lib/auth";
-import { toast } from "sonner";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { paths } from "@/config/paths";
+import { toast } from "sonner";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);

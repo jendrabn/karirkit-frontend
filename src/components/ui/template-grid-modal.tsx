@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Plus } from "lucide-react";
+import { Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -48,18 +48,6 @@ export function TemplateGridModal({
 
           <div className="overflow-y-auto px-6 py-2 pb-6">
             <div className="grid grid-cols-2 gap-4 py-4 md:grid-cols-3 lg:grid-cols-4">
-              <div
-                className="group relative flex aspect-[3/4] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 transition-all hover:border-primary/50 hover:bg-muted/40"
-                onClick={() => {
-                  onOpenChange(false);
-                }}
-              >
-                <Plus className="h-10 w-10 text-muted-foreground transition-colors group-hover:text-primary" />
-                <span className="text-sm font-medium text-muted-foreground transition-colors group-hover:text-primary">
-                  CV Baru
-                </span>
-              </div>
-
               {templates.map((template) => {
                 const isSelected = value === template.id;
                 const isHovered = hoveredId === template.id;

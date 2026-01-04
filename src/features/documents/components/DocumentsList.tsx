@@ -72,7 +72,7 @@ import {
   documentTypeLabels,
   type DocumentType,
 } from "@/types/document";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -389,7 +389,10 @@ export function DocumentsList() {
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={tableColumnCount} className="py-14 text-center">
+                  <TableCell
+                    colSpan={tableColumnCount}
+                    className="py-14 text-center"
+                  >
                     <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
                       <Loader2 className="h-5 w-5 animate-spin text-primary" />
                       <span className="text-sm font-medium text-muted-foreground">

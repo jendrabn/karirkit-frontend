@@ -28,7 +28,7 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 
