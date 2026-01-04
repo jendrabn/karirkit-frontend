@@ -84,29 +84,29 @@ export function BenefitsSection() {
                 Keunggulan
               </p>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                Atur Strategi Karier Anda dengan Lebih Terarah
+                Kelola Proses Job Hunting dengan Lebih Terorganisir
               </h2>
             </div>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              KarirKit membantu Anda mengelola semua berkas dan lamaran kerja
-              dalam satu tempat, sehingga Anda bisa fokus mempersiapkan diri
-              untuk tahap berikutnya.
+              Dari melacak lamaran sampai bikin CV profesional, semua ada dalam
+              satu platform. Fokus ke persiapan interview, biar tracking-nya
+              KarirKit yang urus.
             </p>
             <div className="space-y-5">
               {[
                 {
                   icon: Clock,
-                  text: "Pantau progres lamaran secara real time",
+                  text: "Track semua lamaran dari satu dashboard",
                   color: "bg-primary/20",
                 },
                 {
                   icon: RefreshCw,
-                  text: "Selaraskan CV, surat lamaran, dan portofolio",
+                  text: "CV, surat lamaran, dan portfolio dalam satu tempat",
                   color: "bg-secondary",
                 },
                 {
                   icon: Bell,
-                  text: "Minimalkan risiko lupa follow up",
+                  text: "Reminder otomatis untuk follow-up recruiter",
                   color: "bg-accent",
                 },
               ].map((item, index) => (

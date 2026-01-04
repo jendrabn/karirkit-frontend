@@ -15,6 +15,7 @@ import {
   Link2 as LinkIcon,
   Loader2,
   Trash2,
+  Download,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -35,6 +36,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useCV } from "@/features/cvs/api/get-cv";
 import { useDeleteCV } from "@/features/cvs/api/delete-cv";
+import { useDownloadCV } from "@/features/cvs/api/download-cv";
 import { buildImageUrl } from "@/lib/utils";
 import {
   DEGREE_OPTIONS,
@@ -65,6 +67,7 @@ export default function CVShow() {
       },
     },
   });
+  const downloadMutation = useDownloadCV();
 
   const handleDelete = () => {
     if (id) {
@@ -157,6 +160,38 @@ export default function CVShow() {
       />
       <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs">
         <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              downloadMutation.mutate({
+                id: cv.id,
+                format: "docx",
+                name: cv.name,
+                headline: cv.headline,
+              })
+            }
+            disabled={downloadMutation.isPending}
+          >
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            Download Docx
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              downloadMutation.mutate({
+                id: cv.id,
+                format: "pdf",
+                name: cv.name,
+                headline: cv.headline,
+              })
+            }
+            disabled={downloadMutation.isPending}
+          >
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            Download PDF
+          </Button>
           <Button
             size="sm"
             variant="outline"

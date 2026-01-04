@@ -9,27 +9,57 @@ const faqs = [
   {
     question: "Apa itu KarirKit?",
     answer:
-      "KarirKit adalah platform all-in-one untuk pencari kerja yang menyediakan fitur Application Tracker, CV Builder, Surat Lamaran, dan Portofolio digital. Semua alat yang Anda butuhkan untuk mengelola proses lamaran kerja dalam satu tempat.",
+      "KarirKit adalah platform lengkap untuk pencari kerja yang menyediakan fitur Pelacak Lamaran, CV Builder, Surat Lamaran, dan Portfolio Digital. Semua tools yang kamu butuhkan untuk kelola proses lamaran kerja dalam satu tempat.",
   },
   {
-    question: "Apakah fitur CV Builder dan Surat Lamaran gratis?",
+    question: "Apakah KarirKit benar-benar gratis?",
     answer:
-      "Ya! Semua fitur dasar KarirKit termasuk CV Builder dan Surat Lamaran tersedia gratis. Anda bisa membuat CV profesional dan surat lamaran tanpa biaya, serta mengekspornya dalam format PDF.",
+      "Ya! Semua fitur utama KarirKit tersedia gratis. Kamu bisa membuat CV profesional, surat lamaran, melacak lamaran, dan membuat portfolio digital tanpa biaya apapun.",
   },
   {
-    question: "Bagaimana cara mulai menggunakan Application Tracker?",
+    question: "Apakah saya bisa download CV dan Surat Lamaran?",
     answer:
-      "Sangat mudah! Cukup daftar akun gratis, lalu masuk ke menu Application Tracker. Anda bisa menambahkan lamaran baru dengan mengisi nama perusahaan, posisi, dan status lamaran. Semua data akan tersimpan dan bisa Anda pantau kapan saja.",
+      "Tentu! Kamu bisa download CV dan Surat Lamaran dalam format DOCX atau PDF. File yang dihasilkan berkualitas tinggi dan siap dikirim ke recruiter atau diunggah ke portal lowongan kerja.",
+  },
+  {
+    question: "Bagaimana cara mulai menggunakan Pelacak Lamaran?",
+    answer:
+      "Mudah! Daftar akun gratis, masuk ke menu Lamaran, lalu klik 'Tambah Lamaran'. Isi nama perusahaan, posisi, status, dan detail lainnya. Semua data tersimpan otomatis dan bisa kamu pantau kapan saja.",
   },
   {
     question: "Apakah KarirKit cocok untuk fresh graduate?",
     answer:
-      "Tentu saja! KarirKit sangat cocok untuk fresh graduate. Kami menyediakan template CV dan surat lamaran yang dirancang khusus untuk yang baru lulus, dengan panduan lengkap cara mengisi setiap bagian.",
+      "Sangat cocok! KarirKit menyediakan template CV dan surat lamaran yang cocok untuk fresh graduate. Kamu juga bisa menambahkan pengalaman organisasi, proyek, dan sertifikat untuk memperkuat CV.",
   },
   {
-    question: "Bisakah saya mengunduh CV dan Surat Lamaran dalam bentuk PDF?",
+    question: "Berapa banyak CV yang bisa saya buat?",
     answer:
-      "Ya, Anda bisa mengunduh CV dan Surat Lamaran dalam format PDF dengan sekali klik. File PDF yang dihasilkan berkualitas tinggi dan siap dikirim ke recruiter atau diunggah ke portal lowongan kerja.",
+      "Tidak ada batasan! Kamu bisa membuat banyak versi CV untuk posisi yang berbeda. Misalnya: satu CV untuk posisi software engineer, satu lagi untuk data analyst.",
+  },
+  {
+    question: "Apakah CV Builder mendukung bahasa Inggris?",
+    answer:
+      "Ya! CV Builder dan Surat Lamaran mendukung Bahasa Indonesia dan Bahasa Inggris. Kamu bisa pilih bahasa sesuai kebutuhan saat membuat dokumen.",
+  },
+  {
+    question: "Bagaimana cara membuat Portfolio Digital?",
+    answer:
+      "Masuk ke menu Portfolio, klik 'Tambah Portfolio', lalu isi detail project kamu seperti judul, deskripsi, tech stack, dan upload gambar. Setelah selesai, kamu akan dapat link unik untuk dibagikan ke recruiter atau client.",
+  },
+  {
+    question: "Apakah ada limit download CV dan Surat Lamaran?",
+    answer:
+      "Ada limit harian untuk download gratis, tapi cukup untuk penggunaan normal. Kamu bisa download hingga 10 dokumen per hari.",
+  },
+  {
+    question: "Bagaimana cara melacak status lamaran saya?",
+    answer:
+      "Di halaman Pelacak Lamaran, kamu bisa update status setiap lamaran dari 'Submit' sampai 'Offering'. Ada 15+ tahapan yang bisa kamu track, termasuk screening, test, interview, dan lainnya. Kamu juga bisa tambahkan catatan dan reminder follow-up.",
+  },
+  {
+    question: "Apakah KarirKit menyediakan template surat lamaran?",
+    answer:
+      "Ya! Kami menyediakan berbagai template profesional untuk paragraf pembuka, isi, dan penutup surat lamaran. Kamu tinggal pilih template, isi data, dan surat lamaran siap digunakan.",
   },
 ];
 

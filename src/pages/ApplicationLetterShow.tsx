@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { dayjs } from "@/lib/date";
-import { Pencil, Loader2, Trash2 } from "lucide-react";
+import { Pencil, Loader2, Trash2, Download } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
 import { useDeleteApplicationLetter } from "@/features/application-letters/api/delete-application-letter";
+import { useDownloadApplicationLetter } from "@/features/application-letters/api/download-application-letter";
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -46,6 +47,7 @@ export default function ApplicationLetterShow() {
       },
     },
   });
+  const downloadMutation = useDownloadApplicationLetter();
 
   const letter = letterResponse;
 
@@ -154,6 +156,38 @@ export default function ApplicationLetterShow() {
         backButtonUrl="/application-letters"
       >
         <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              downloadMutation.mutate({
+                id: letter.id,
+                format: "docx",
+                name: letter.name,
+                subject: letter.subject,
+              })
+            }
+            disabled={downloadMutation.isPending}
+          >
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            Download Docx
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              downloadMutation.mutate({
+                id: letter.id,
+                format: "pdf",
+                name: letter.name,
+                subject: letter.subject,
+              })
+            }
+            disabled={downloadMutation.isPending}
+          >
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            Download PDF
+          </Button>
           <Button
             size="sm"
             variant="outline"
