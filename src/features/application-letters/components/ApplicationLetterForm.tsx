@@ -234,6 +234,9 @@ export function ApplicationLetterForm({
                       }}
                     />
                   )}
+                  <FieldError>
+                    {form.formState.errors.template_id?.message}
+                  </FieldError>
                 </div>
               </div>
             </CardContent>
@@ -624,6 +627,9 @@ export function ApplicationLetterForm({
                     value={form.watch("signature") || ""}
                     onChange={(value) => form.setValue("signature", value)}
                   />
+                  <FieldError>
+                    {form.formState.errors.signature?.message}
+                  </FieldError>
                 </div>
               </FieldGroup>
             </CardContent>

@@ -111,15 +111,15 @@ export const loginInputSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
 
-export type LoginResponse =
-  | User
-  | {
-      message: string;
-      requires_otp: boolean;
-      expiresAt: number;
-      expiresIn: number;
-      resendAvailableAt: number;
-    };
+export type LoginOtpResponse = {
+  message: string;
+  requires_otp: boolean;
+  expires_at: number;
+  expires_in: number;
+  resend_available_at: number;
+};
+
+export type LoginResponse = User | LoginOtpResponse;
 
 export const login = (data: LoginInput): Promise<LoginResponse> => {
   return api.post("/auth/login", data);
@@ -130,13 +130,7 @@ export const useLogin = ({
   onOtpRequired,
 }: {
   onSuccess?: () => void;
-  onOtpRequired?: (data: {
-    message: string;
-    requires_otp: boolean;
-    expiresAt: number;
-    expiresIn: number;
-    resendAvailableAt: number;
-  }) => void;
+  onOtpRequired?: (data: LoginOtpResponse) => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -144,15 +138,7 @@ export const useLogin = ({
     mutationFn: login,
     onSuccess: (response) => {
       if ("requires_otp" in response && response.requires_otp) {
-        onOtpRequired?.(
-          response as {
-            message: string;
-            requires_otp: boolean;
-            expiresAt: number;
-            expiresIn: number;
-            resendAvailableAt: number;
-          }
-        );
+        onOtpRequired?.(response as LoginOtpResponse);
       } else {
         queryClient.setQueryData(userQueryKey, response as User);
         onSuccess?.();
@@ -197,13 +183,15 @@ export type ResendOtpInput = z.infer<typeof resendOtpInputSchema>;
 
 export type ResendOtpResponse = {
   message: string;
-  expiresAt: number;
-  expiresIn: number;
-  resendAvailableAt: number;
+  expires_at: number;
+  expires_in: number;
+  resend_available_at: number;
 };
 
-export const resendOtp = (data: ResendOtpInput): Promise<ResendOtpResponse> => {
-  return api.post("/auth/resend-otp", data);
+export const resendOtp = async (
+  data: ResendOtpInput
+): Promise<ResendOtpResponse> => {
+  return (await api.post("/auth/resend-otp", data)) as ResendOtpResponse;
 };
 
 export const useResendOtp = ({
@@ -224,16 +212,16 @@ export const checkOtpStatusInputSchema = z.object({
 export type CheckOtpStatusInput = z.infer<typeof checkOtpStatusInputSchema>;
 
 export type CheckOtpStatusResponse = {
-  hasActiveOtp: boolean;
-  expiresAt?: number;
-  expiresIn?: number;
-  resendAvailableAt?: number;
+  has_active_otp: boolean;
+  expires_at?: number;
+  expires_in?: number;
+  resend_available_at?: number;
 };
 
-export const checkOtpStatus = (
+export const checkOtpStatus = async (
   data: CheckOtpStatusInput
 ): Promise<CheckOtpStatusResponse> => {
-  return api.post("/auth/check-otp-status", data);
+  return (await api.post("/auth/check-otp-status", data)) as CheckOtpStatusResponse;
 };
 
 export const useCheckOtpStatus = () => {

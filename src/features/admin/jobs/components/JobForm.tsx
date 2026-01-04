@@ -23,6 +23,7 @@ import { createJobInputSchema, type CreateJobInput } from "../api/create-job";
 import { updateJobInputSchema, type UpdateJobInput } from "../api/update-job";
 import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 import { JobMediasUpload } from "./JobMediasUpload";
+import { useFormErrors } from "@/hooks/use-form-errors";
 
 interface JobFormProps {
   initialData?: Job;
@@ -96,6 +97,8 @@ export function JobForm({
           expiration_date: null,
         },
   });
+
+  useFormErrors(form);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

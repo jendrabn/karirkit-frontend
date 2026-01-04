@@ -101,6 +101,11 @@ export function PortfolioForm({
   // Handle form validation errors from API
   useFormErrors(form);
 
+  const extraErrors = form.formState.errors as typeof form.formState.errors & {
+    tools?: { message?: string };
+    medias?: { message?: string };
+  };
+
   const handleAddTool = () => {
     if (newTool.trim() && !tools.includes(newTool.trim())) {
       setTools([...tools, newTool.trim()]);
@@ -351,6 +356,7 @@ export function PortfolioForm({
                 ))}
               </div>
             )}
+            <FieldError>{extraErrors.tools?.message}</FieldError>
           </CardContent>
         </Card>
 
@@ -361,6 +367,7 @@ export function PortfolioForm({
           </CardHeader>
           <CardContent className="pt-4">
             <CoverUpload value={cover} onChange={setCover} />
+            <FieldError>{form.formState.errors.cover?.message}</FieldError>
           </CardContent>
         </Card>
 
@@ -371,6 +378,7 @@ export function PortfolioForm({
           </CardHeader>
           <CardContent className="pt-4">
             <MediaUpload value={medias} onChange={setMedias} />
+            <FieldError>{extraErrors.medias?.message}</FieldError>
           </CardContent>
         </Card>
       </FieldSet>

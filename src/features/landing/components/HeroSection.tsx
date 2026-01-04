@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
-import { CheckCircle2, Sparkles } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Link } from "react-router";
 
 export function HeroSection() {
@@ -18,12 +18,6 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <div className="space-y-8">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-full text-sm font-medium">
-              <Sparkles className="w-4 h-4" />
-              <span>Platform Gratis untuk Karier Anda</span>
-            </div>
-
             <h1 className="text-4xl xl:text-5xl font-bold text-shine leading-tight">
               Kelola Semua Lamaran Kerja Anda dengan Lebih Mudah
             </h1>
@@ -36,7 +30,7 @@ export function HeroSection() {
             {/* Feature highlights */}
             <div className="grid grid-cols-2 gap-3">
               {[
-                "Pelacak Lamaran Kerja",
+                "Pelacak Lamaran",
                 "CV",
                 "Surat Lamaran",
                 "Portofolio Digital",

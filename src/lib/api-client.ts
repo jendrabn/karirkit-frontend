@@ -33,6 +33,17 @@ api.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    const shouldSkipGeneralErrorToast = (() => {
+      const url = error.config?.url ?? "";
+      const authEndpoints = [
+        "/auth/login",
+        "/auth/verify-otp",
+        "/auth/check-otp-status",
+        "/auth/resend-otp",
+      ];
+      return authEndpoints.some((endpoint) => url.includes(endpoint));
+    })();
+
     if (error.response?.status === 403) {
       const payload = error.response?.data?.data ?? error.response?.data;
       if (payload?.status && typeof payload.status === "string") {
@@ -59,7 +70,8 @@ api.interceptors.response.use(
     // Handle general errors
     if (
       error.response?.status !== 401 &&
-      error.response?.data?.errors?.general
+      error.response?.data?.errors?.general &&
+      !shouldSkipGeneralErrorToast
     ) {
       const generalErrors = error.response.data.errors.general;
       if (Array.isArray(generalErrors)) {

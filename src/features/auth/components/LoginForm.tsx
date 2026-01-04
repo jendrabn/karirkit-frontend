@@ -48,18 +48,43 @@ const LoginForm = () => {
 
       sessionStorage.setItem("otp_identifier", form.getValues("identifier"));
       sessionStorage.setItem("otp_password", form.getValues("password"));
-      sessionStorage.setItem("otp_expires_at", data.expiresAt.toString());
+      sessionStorage.setItem("otp_expires_at", data.expires_at.toString());
       sessionStorage.setItem(
         "otp_resend_available_at",
-        data.resendAvailableAt.toString()
+        data.resend_available_at.toString()
       );
 
       navigate(paths.auth.verifyOtp.getHref());
     },
   });
 
+  const toastGeneralErrors = (error: unknown) => {
+    const generalErrors = (
+      error as { response?: { data?: { errors?: unknown } } }
+    )?.response?.data?.errors;
+    if (!generalErrors || typeof generalErrors !== "object") {
+      return;
+    }
+
+    const messages = (generalErrors as { general?: unknown }).general;
+    if (Array.isArray(messages)) {
+      messages
+        .filter((message): message is string => typeof message === "string")
+        .forEach((message) => toast.error(message));
+      return;
+    }
+
+    if (typeof messages === "string") {
+      toast.error(messages);
+    }
+  };
+
   const onSubmit = (data: LoginInput) => {
-    loginMutation.mutate(data);
+    loginMutation.mutate(data, {
+      onError: (error) => {
+        toastGeneralErrors(error);
+      },
+    });
   };
 
   const isSubmitting = loginMutation.isPending;

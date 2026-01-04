@@ -321,11 +321,9 @@ export function CVForm({
                         setSelectedTemplate(value);
                       }}
                     />
-                    {errors.template_id && (
-                      <p className="text-sm font-medium text-destructive mt-2">
-                        {errors.template_id.message}
-                      </p>
-                    )}
+                    <FieldError className="mt-2">
+                      {errors.template_id?.message}
+                    </FieldError>
                   </>
                 )}
               </div>
@@ -348,11 +346,9 @@ export function CVForm({
                   webp={false}
                   format="jpg,png"
                 />
-                {errors.photo && (
-                  <p className="text-sm font-medium text-destructive mt-2">
-                    {errors.photo.message}
-                  </p>
-                )}
+                <FieldError className="mt-2">
+                  {errors.photo?.message}
+                </FieldError>
               </div>
 
               <Field>

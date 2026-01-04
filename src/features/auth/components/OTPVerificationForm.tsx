@@ -1,22 +1,22 @@
 import { Button } from "@/components/ui/button";
-import { FieldGroup, FieldSet } from "@/components/ui/field";
+import { FieldError, FieldGroup, FieldSet } from "@/components/ui/field";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { paths } from "@/config/paths";
 import { useCheckOtpStatus, useVerifyOtp, useResendOtp } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
-import {
-  useState,
-  useRef,
-  useEffect,
-  type ClipboardEvent,
-  type KeyboardEvent,
-} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 const OTPVerificationForm = () => {
   const navigate = useNavigate();
 
-  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState<string | null>(null);
 
   // Initialize auth state with lazy evaluation to avoid effect
   const [authState, setAuthState] = useState(() => {
@@ -50,9 +50,51 @@ const OTPVerificationForm = () => {
     };
   });
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
   const checkOtpStatusMutation = useCheckOtpStatus();
+
+  const resolveOtpFieldError = (error: unknown) => {
+    const fieldErrors = (error as { response?: { data?: { errors?: unknown } } })
+      ?.response?.data?.errors;
+    if (!fieldErrors || typeof fieldErrors !== "object") {
+      return null;
+    }
+
+    const candidates = ["otp_code", "identifier", "password"];
+    for (const key of candidates) {
+      const value = (fieldErrors as Record<string, unknown>)[key];
+      if (Array.isArray(value) && typeof value[0] === "string") {
+        return value[0];
+      }
+      if (typeof value === "string") {
+        return value;
+      }
+    }
+
+    return null;
+  };
+
+  const toastGeneralErrors = (error: unknown) => {
+    const generalErrors = (error as { response?: { data?: { errors?: unknown } } })
+      ?.response?.data?.errors;
+    if (!generalErrors || typeof generalErrors !== "object") {
+      return false;
+    }
+
+    const messages = (generalErrors as { general?: unknown }).general;
+    if (Array.isArray(messages)) {
+      messages
+        .filter((message): message is string => typeof message === "string")
+        .forEach((message) => toast.error(message));
+      return messages.length > 0;
+    }
+
+    if (typeof messages === "string") {
+      toast.error(messages);
+      return true;
+    }
+
+    return false;
+  };
 
   // Check OTP status on mount and redirect if no active session
   useEffect(() => {
@@ -66,19 +108,19 @@ const OTPVerificationForm = () => {
       { identifier: authState.identifier },
       {
         onSuccess: (data) => {
-          if (!data.hasActiveOtp) {
+          if (!data.has_active_otp) {
             toast.error("Sesi OTP tidak valid. Silakan login kembali.");
             sessionStorage.removeItem("otp_identifier");
             sessionStorage.removeItem("otp_password");
             sessionStorage.removeItem("otp_expires_at");
             sessionStorage.removeItem("otp_resend_available_at");
             navigate(paths.auth.login.getHref());
-          } else if (data.resendAvailableAt) {
+          } else if (data.resend_available_at) {
             // Update countdown if server provides different time
             const currentTime = Date.now();
             const remainingTime = Math.max(
               0,
-              Math.floor((data.resendAvailableAt - currentTime) / 1000)
+              Math.floor((data.resend_available_at - currentTime) / 1000)
             );
 
             setAuthState((prev) => ({
@@ -90,12 +132,13 @@ const OTPVerificationForm = () => {
             if (remainingTime > 0) {
               sessionStorage.setItem(
                 "otp_resend_available_at",
-                data.resendAvailableAt.toString()
+                data.resend_available_at.toString()
               );
             }
           }
         },
-        onError: () => {
+        onError: (error) => {
+          toastGeneralErrors(error);
           toast.error("Terjadi kesalahan. Silakan login kembali.");
           sessionStorage.removeItem("otp_identifier");
           sessionStorage.removeItem("otp_password");
@@ -134,55 +177,11 @@ const OTPVerificationForm = () => {
     }
   }, [authState.countdown]);
 
-  // Auto-focus first input on mount
-  useEffect(() => {
-    inputRefs.current[0]?.focus();
-  }, []);
-
-  const handleChange = (index: number, value: string) => {
-    // Allow both digits and letters (alphanumeric)
-    if (!/^[a-zA-Z0-9]*$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value.slice(-1).toUpperCase(); // Only take last character and convert to uppercase
-    setOtp(newOtp);
-
-    // Auto-focus next input
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData
-      .getData("text")
-      .replace(/[^a-zA-Z0-9]/g, "") // Allow alphanumeric
-      .toUpperCase()
-      .slice(0, 6);
-
-    if (pastedData.length > 0) {
-      const newOtp = [...otp];
-      pastedData.split("").forEach((char, index) => {
-        if (index < 6) {
-          newOtp[index] = char;
-        }
-      });
-      setOtp(newOtp);
-
-      // Focus on the next empty input or last input
-      const nextEmptyIndex = newOtp.findIndex((val) => !val);
-      if (nextEmptyIndex !== -1) {
-        inputRefs.current[nextEmptyIndex]?.focus();
-      } else {
-        inputRefs.current[5]?.focus();
-      }
+  const handleOtpChange = (value: string) => {
+    const normalized = value.toUpperCase();
+    setOtp(normalized);
+    if (otpError) {
+      setOtpError(null);
     }
   };
 
@@ -194,6 +193,7 @@ const OTPVerificationForm = () => {
       sessionStorage.removeItem("otp_password");
       sessionStorage.removeItem("otp_expires_at");
       sessionStorage.removeItem("otp_resend_available_at");
+      setOtpError(null);
       navigate("/dashboard");
     },
   });
@@ -204,11 +204,11 @@ const OTPVerificationForm = () => {
         data.message || "Kode OTP baru telah dikirim ke email Anda"
       );
 
-      // Calculate countdown from resendAvailableAt
+      // Calculate countdown from resend_available_at
       const currentTime = Date.now();
       const remainingTime = Math.max(
         0,
-        Math.floor((data.resendAvailableAt - currentTime) / 1000)
+        Math.floor((data.resend_available_at - currentTime) / 1000)
       );
 
       setAuthState((prev) => ({
@@ -217,14 +217,14 @@ const OTPVerificationForm = () => {
         isResendActive: false,
       }));
 
-      setOtp(Array(6).fill(""));
-      inputRefs.current[0]?.focus();
+      setOtp("");
+      setOtpError(null);
 
       // Update sessionStorage with new timestamps
-      sessionStorage.setItem("otp_expires_at", data.expiresAt.toString());
+      sessionStorage.setItem("otp_expires_at", data.expires_at.toString());
       sessionStorage.setItem(
         "otp_resend_available_at",
-        data.resendAvailableAt.toString()
+        data.resend_available_at.toString()
       );
     },
   });
@@ -236,13 +236,22 @@ const OTPVerificationForm = () => {
       return;
     }
 
-    resendOtpMutation.mutate({ identifier: authState.identifier });
+    resendOtpMutation.mutate(
+      { identifier: authState.identifier },
+      {
+        onError: (error) => {
+          toastGeneralErrors(error);
+        },
+      }
+    );
   };
 
   const handleVerify = () => {
-    const otpCode = otp.join("");
+    const otpCode = otp;
     if (otpCode.length !== 6) {
-      toast.error("Mohon masukkan 6 digit kode OTP");
+      const message = "Mohon masukkan 6 digit kode OTP";
+      setOtpError(message);
+      toast.error(message);
       return;
     }
 
@@ -252,10 +261,19 @@ const OTPVerificationForm = () => {
       return;
     }
 
+    setOtpError(null);
     verifyOtpMutation.mutate({
       identifier: authState.identifier,
       otp_code: otpCode,
       password: authState.password,
+    }, {
+      onError: (error) => {
+        toastGeneralErrors(error);
+        const fieldError = resolveOtpFieldError(error);
+        if (fieldError) {
+          setOtpError(fieldError);
+        }
+      },
     });
   };
 
@@ -267,7 +285,7 @@ const OTPVerificationForm = () => {
       .padStart(2, "0")}`;
   };
 
-  const isOtpComplete = otp.every((digit) => digit !== "");
+  const isOtpComplete = otp.length === 6;
   const isVerifying = verifyOtpMutation.isPending;
   const isResending = resendOtpMutation.isPending;
 
@@ -276,23 +294,26 @@ const OTPVerificationForm = () => {
       {/* OTP Input */}
       <FieldSet disabled={isVerifying}>
         <FieldGroup>
-          <div className="flex justify-center gap-2 sm:gap-3 mb-6">
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => {
-                  inputRefs.current[index] = el;
-                }}
-                type="text"
-                inputMode="text"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                onPaste={index === 0 ? handlePaste : undefined}
-                className="w-11 h-12 sm:w-12 sm:h-14 text-center text-xl font-semibold border-2 rounded-lg bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-            ))}
+          <div className="flex flex-col items-center gap-2 mb-6">
+            <InputOTP
+              maxLength={6}
+              value={otp}
+              onChange={handleOtpChange}
+              inputMode="text"
+              autoFocus
+              pattern="^[a-zA-Z0-9]*$"
+            >
+              <InputOTPGroup className="gap-2 sm:gap-3">
+                {Array.from({ length: 6 }, (_, index) => (
+                  <InputOTPSlot
+                    key={index}
+                    index={index}
+                    className="h-12 w-11 text-xl font-semibold uppercase sm:h-14 sm:w-12 bg-background text-foreground border-2 rounded-lg first:rounded-lg last:rounded-lg"
+                  />
+                ))}
+              </InputOTPGroup>
+            </InputOTP>
+            <FieldError>{otpError}</FieldError>
           </div>
         </FieldGroup>
       </FieldSet>

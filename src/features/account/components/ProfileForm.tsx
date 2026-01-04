@@ -203,6 +203,7 @@ const ProfileForm = () => {
                     disabled={uploadMutation.isPending}
                   />
                 </div>
+                <FieldError>{errors.avatar?.message}</FieldError>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">

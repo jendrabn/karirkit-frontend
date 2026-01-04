@@ -317,6 +317,8 @@ export function BlogForm({
                   ))}
                 </div>
               )}
+
+              <FieldError>{form.formState.errors.tag_ids?.message}</FieldError>
             </Field>
 
             {/* Excerpt */}
@@ -390,6 +392,9 @@ export function BlogForm({
                   disabled={isUploadingImage}
                 />
               </div>
+              <FieldError>
+                {form.formState.errors.featured_image?.message}
+              </FieldError>
             </Field>
 
             {/* Image Caption */}
