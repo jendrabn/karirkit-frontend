@@ -141,6 +141,7 @@ export const useLogin = ({
         onOtpRequired?.(response as LoginOtpResponse);
       } else {
         queryClient.setQueryData(userQueryKey, response as User);
+        queryClient.invalidateQueries({ queryKey: userQueryKey });
         onSuccess?.();
       }
     },
@@ -170,6 +171,7 @@ export const useVerifyOtp = ({ onSuccess }: { onSuccess?: () => void }) => {
     mutationFn: verifyOtp,
     onSuccess: (user) => {
       queryClient.setQueryData(userQueryKey, user);
+      queryClient.invalidateQueries({ queryKey: userQueryKey });
       onSuccess?.();
     },
   });
@@ -221,7 +223,10 @@ export type CheckOtpStatusResponse = {
 export const checkOtpStatus = async (
   data: CheckOtpStatusInput
 ): Promise<CheckOtpStatusResponse> => {
-  return (await api.post("/auth/check-otp-status", data)) as CheckOtpStatusResponse;
+  return (await api.post(
+    "/auth/check-otp-status",
+    data
+  )) as CheckOtpStatusResponse;
 };
 
 export const useCheckOtpStatus = () => {
