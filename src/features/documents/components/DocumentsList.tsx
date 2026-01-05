@@ -10,14 +10,12 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Download,
-  FileText,
   FileStack,
-  Image,
-  File,
   MoreVertical,
   Loader2,
   ArrowUpDown,
 } from "lucide-react";
+import { getFileIcon } from "@/features/documents/utils/file-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -105,16 +103,6 @@ const SortableHeader = ({ field, children, onSort }: SortableHeaderProps) => (
   </Button>
 );
 
-const getFileIcon = (mimeType: string) => {
-  if (mimeType.startsWith("image/")) {
-    return <Image className="h-5 w-5 text-primary" />;
-  }
-  if (mimeType === "application/pdf") {
-    return <FileText className="h-5 w-5 text-destructive" />;
-  }
-  return <File className="h-5 w-5 text-muted-foreground" />;
-};
-
 const formatFileSize = (bytes: number) => {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
@@ -181,14 +169,17 @@ export function DocumentsList() {
 
   const downloadMutation = useDownloadDocument();
 
-  const documents = documentsResponse?.items || [];
+  const documents = useMemo(
+    () => documentsResponse?.items || [],
+    [documentsResponse]
+  );
   const pagination = documentsResponse?.pagination;
   const totalPages = pagination?.total_pages || 1;
   const displayPage = Math.min(currentPage, totalPages);
 
   const activeSelectedIds = useMemo(
     () => selectedIds.filter((id) => documents.some((doc) => doc.id === id)),
-    [documents, selectedIds]
+    [selectedIds, documents]
   );
 
   const visibleColumnsCount = useMemo(
@@ -435,7 +426,7 @@ export function DocumentsList() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                            {getFileIcon(doc.mime_type)}
+                            {getFileIcon(doc.mime_type, doc.original_name)}
                           </div>
                           <div className="min-w-0">
                             <p className="font-medium truncate max-w-[200px]">

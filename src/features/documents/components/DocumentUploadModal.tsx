@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Upload, X, FileText, Loader2, ImageIcon, File } from "lucide-react";
+import { Upload, X, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,7 @@ import {
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
+import { getFileIconFromFile } from "@/features/documents/utils/file-icons";
 
 export type CompressionLevel = DocumentCompressionLevel;
 
@@ -100,14 +101,21 @@ export function DocumentUploadModal({
 
   const handleFiles = (files: FileList | File[]) => {
     const allowedTypes = [
-      "application/pdf",
       "image/jpeg",
+      "image/jpg",
       "image/png",
+      "image/gif",
       "image/webp",
+      "image/svg+xml",
+      "application/pdf",
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "application/vnd.ms-excel",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "text/plain",
+      "application/rtf",
     ];
 
     const incomingFiles = Array.from(files);
@@ -129,7 +137,7 @@ export function DocumentUploadModal({
 
     if (hasInvalidType) {
       toast.error(
-        "Tipe file tidak didukung. Gunakan PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, atau XLSX."
+        "Tipe file tidak didukung. Gunakan JPG, JPEG, PNG, GIF, WEBP, SVG, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, atau RTF."
       );
     }
 
@@ -212,7 +220,7 @@ export function DocumentUploadModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] p-0 gap-0">
+      <DialogContent className="!max-w-xl p-0 gap-0">
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -248,17 +256,13 @@ export function DocumentUploadModal({
                     type="file"
                     className="hidden"
                     onChange={handleChange}
-                    accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx"
+                    accept=".jpg,.jpeg,.png,.gif,.webp,.svg,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.rtf"
                     multiple
                   />
 
                   {hasFiles ? (
                     <div className="space-y-2">
                       {selectedFiles.map((file, index) => {
-                        const isImage = file.type.startsWith("image/");
-                        const isPdf =
-                          file.type === "application/pdf" ||
-                          file.name.toLowerCase().endsWith(".pdf");
                         return (
                           <div
                             key={`${file.name}-${index}`}
@@ -266,15 +270,9 @@ export function DocumentUploadModal({
                           >
                             <div className="flex items-center gap-3 min-w-0 flex-1">
                               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                {isImage ? (
-                                  <ImageIcon className="h-5 w-5 text-primary" />
-                                ) : isPdf ? (
-                                  <FileText className="h-5 w-5 text-primary" />
-                                ) : (
-                                  <File className="h-5 w-5 text-primary" />
-                                )}
+                                {getFileIconFromFile(file)}
                               </div>
-                              <div className="min-w-0 flex-1">
+                              <div className="min-w-0 flex-1 break-all">
                                 <p className="text-sm font-medium max-w-full">
                                   {file.name}
                                 </p>
@@ -305,21 +303,19 @@ export function DocumentUploadModal({
                           Drag & drop file atau{" "}
                           <button
                             type="button"
-                            className="text-primary hover:underline"
+                            className="text-primary hover:underline cursor-pointer"
                             onClick={() => inputRef.current?.click()}
                           >
                             pilih file
                           </button>
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, XLSX (Maks. 25MB)
                         </p>
                       </div>
                     </div>
                   )}
                 </div>
                 <FieldDescription>
-                  PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, XLSX (Maks. 25MB)
+                  JPG, JPEG, PNG, GIF, WEBP, SVG, PDF, DOC, DOCX, XLS, XLSX,
+                  PPT, PPTX, TXT, RTF (Maks. 25MB)
                 </FieldDescription>
               </Field>
 
@@ -353,25 +349,27 @@ export function DocumentUploadModal({
                   value={customName}
                   onChange={(event) => setCustomName(event.target.value)}
                 />
-                <FieldDescription>
-                  Untuk upload tunggal akan mengganti nama asli. Untuk merge
-                  menjadi nama output PDF.
-                </FieldDescription>
               </Field>
 
               {selectedFiles.length > 1 && (
-                <Field orientation="horizontal" className="items-center">
-                  <FieldLabel>Gabungkan File (Merge)</FieldLabel>
-                  <div className="flex items-center gap-2">
+                <div className="rounded-lg border border-border bg-muted/30 p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium">
+                        Gabungkan Semua File
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Satukan {selectedFiles.length} file menjadi satu dokumen
+                        PDF
+                      </p>
+                    </div>
                     <Switch
                       checked={mergeFiles}
                       onCheckedChange={setMergeFiles}
+                      className="mt-0.5"
                     />
-                    <span className="text-sm text-muted-foreground">
-                      Jadikan 1 PDF
-                    </span>
                   </div>
-                </Field>
+                </div>
               )}
 
               {isCompressibleFile && (
@@ -401,10 +399,6 @@ export function DocumentUploadModal({
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  <FieldDescription>
-                    Kompresi dapat mengurangi ukuran file untuk upload lebih
-                    cepat.
-                  </FieldDescription>
                 </Field>
               )}
             </FieldSet>
