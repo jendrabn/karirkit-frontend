@@ -5,16 +5,8 @@ import {
   ChevronDown,
   ChevronUp,
   Search,
-  Briefcase,
-  Clock,
-  MapPin,
-  TrendingUp,
-  Banknote,
-  GraduationCap,
-  Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -81,32 +73,34 @@ const salaryOptions = [
 
 function FilterSection({
   title,
-  icon: Icon,
   children,
   defaultOpen = true,
 }: {
   title: string;
-  icon?: React.ElementType;
   children: React.ReactNode;
   defaultOpen?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
-      <CollapsibleTrigger className="flex items-center justify-between w-full group py-1 px-0">
-        <div className="flex items-center gap-2">
-          {Icon && <Icon className="h-5 w-5 text-foreground" />}
-          <h4 className="font-bold text-base text-foreground">{title}</h4>
-        </div>
-        {isOpen ? (
-          <ChevronUp className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-        ) : (
-          <ChevronDown className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-        )}
-      </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-4 overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
-        {children}
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <div className="relative mb-5">
+        <CollapsibleTrigger className="flex items-center justify-between w-full group">
+          <h3 className="font-bold text-base uppercase tracking-wide text-foreground relative inline-block">
+            <span className="relative z-10 bg-background pr-3">{title}</span>
+          </h3>
+          <div className="flex items-center gap-2">
+            {isOpen ? (
+              <ChevronUp className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            )}
+          </div>
+        </CollapsibleTrigger>
+        <div className="absolute left-0 top-1/2 w-full h-0.5 bg-gradient-to-r from-primary/40 via-primary/20 to-transparent" />
+      </div>
+      <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+        <div className="pb-6">{children}</div>
       </CollapsibleContent>
     </Collapsible>
   );
@@ -124,7 +118,7 @@ function ShowMoreToggle({
       <button
         type="button"
         onClick={onToggle}
-        className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors mt-2"
+        className="text-sm font-medium text-primary hover:underline transition-colors mt-2"
       >
         {isShowingMore ? "Lihat lebih sedikit" : "Lihat lebih banyak"}
       </button>
@@ -135,7 +129,7 @@ function ShowMoreToggle({
 function FilterContent({
   jobRoles,
   cities,
-  companies, // Keeping for completeness, though not explicitly in "the image" request, usually standard
+  companies,
   filters,
   onFilterChange,
   onClearFilters,
@@ -221,11 +215,6 @@ function FilterContent({
   };
 
   const handleExperienceChange = (value: number, checked: boolean) => {
-    // If checking an already selected one, uncheck it (undefined).
-    // Or if different logic needed (single select vs multi select).
-    // Usually experience ranges are single select intervals or min.
-    // The previous code was `filters.experience_min === value`.
-    // Let's stick to single select behavior for simplicity unless multi.
     onFilterChange({
       ...filters,
       experience_min: checked ? value : undefined,
@@ -261,14 +250,14 @@ function FilterContent({
     : educationLevels.slice(0, 5);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {hasActiveFilters && (
-        <div className="bg-destructive/5 rounded-lg p-2 mb-4">
+        <div className="bg-destructive/10 rounded-lg p-3 mb-6">
           <Button
             variant="ghost"
             size="sm"
             onClick={onClearFilters}
-            className="w-full justify-center text-destructive hover:text-destructive hover:bg-destructive/10 h-8 font-medium"
+            className="w-full justify-center text-destructive hover:text-destructive hover:bg-destructive/20 h-9 font-medium"
           >
             <X className="h-4 w-4 mr-2" />
             Hapus Semua Filter
@@ -277,7 +266,7 @@ function FilterContent({
       )}
 
       {/* Job Role Filter */}
-      <FilterSection title="Role Pekerjaan" icon={Briefcase}>
+      <FilterSection title="Role Pekerjaan">
         <div className="space-y-3">
           {displayedRoles.map((role) => (
             <div
@@ -309,10 +298,10 @@ function FilterContent({
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/40" />
+      <Separator />
 
       {/* Job Type Filter */}
-      <FilterSection title="Tipe Pekerjaan" icon={Clock}>
+      <FilterSection title="Tipe Pekerjaan">
         <div className="space-y-3">
           {displayedJobTypes.map(([value, label]) => (
             <div key={value} className="flex items-center space-x-3 group/item">
@@ -341,10 +330,10 @@ function FilterContent({
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/40" />
+      <Separator />
 
       {/* City Filter */}
-      <FilterSection title="Kota" icon={MapPin}>
+      <FilterSection title="Kota">
         <div className="space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -352,7 +341,7 @@ function FilterContent({
               placeholder="Tulis kota"
               value={citySearch}
               onChange={(e) => setCitySearch(e.target.value)}
-              className="pl-9 bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
+              className="pl-9 h-10 bg-background border-2 rounded-lg focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-colors"
             />
           </div>
           <div className="space-y-3">
@@ -387,10 +376,10 @@ function FilterContent({
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/40" />
+      <Separator />
 
       {/* Experience Filter */}
-      <FilterSection title="Pengalaman Bekerja" icon={TrendingUp}>
+      <FilterSection title="Pengalaman Bekerja">
         <div className="space-y-3">
           {experienceOptions.map((option) => (
             <div
@@ -416,10 +405,10 @@ function FilterContent({
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/40" />
+      <Separator />
 
-      {/* Salary Filter (Treated as Single Select for simplicity like Experience) */}
-      <FilterSection title="Gaji Minimum" icon={Banknote}>
+      {/* Salary Filter */}
+      <FilterSection title="Gaji Minimum">
         <div className="space-y-3">
           {salaryOptions.map((option) => (
             <div
@@ -445,10 +434,10 @@ function FilterContent({
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/40" />
+      <Separator />
 
       {/* Education Filter */}
-      <FilterSection title="Level Pendidikan" icon={GraduationCap}>
+      <FilterSection title="Level Pendidikan">
         <div className="space-y-3">
           {displayedEducation.map(([value, label]) => (
             <div key={value} className="flex items-center space-x-3 group/item">
@@ -483,10 +472,11 @@ function FilterContent({
         </div>
       </FilterSection>
 
-      <Separator className="bg-border/40" />
+      <Separator />
 
       {/* Company Filter */}
-      <FilterSection title="Perusahaan" icon={Building2}>
+      {/* Company Filter */}
+      <FilterSection title="Perusahaan">
         <div className="space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -494,7 +484,7 @@ function FilterContent({
               placeholder="Cari perusahaan"
               value={companySearch}
               onChange={(e) => setCompanySearch(e.target.value)}
-              className="pl-9 bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
+              className="pl-9 h-10 bg-background border-2 rounded-lg focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-colors"
             />
           </div>
           <div className="space-y-3">
@@ -548,11 +538,9 @@ export function JobFilterSidebar(props: JobFilterSidebarProps) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <Card className="hidden lg:block sticky top-24 border border-border/60 shadow-none bg-card">
-        <CardContent className="pt-6">
-          <FilterContent {...props} />
-        </CardContent>
-      </Card>
+      <aside className="hidden lg:block">
+        <FilterContent {...props} />
+      </aside>
 
       {/* Mobile Modal */}
       <div className="lg:hidden">

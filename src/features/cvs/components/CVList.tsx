@@ -440,7 +440,9 @@ const CVList = () => {
                           <TableCell className="font-medium max-w-[200px]">
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <span className="block truncate">{cv.headline}</span>
+                                <span className="block truncate">
+                                  {cv.headline}
+                                </span>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>{cv.headline}</p>

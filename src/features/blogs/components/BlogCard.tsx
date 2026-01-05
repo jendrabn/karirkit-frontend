@@ -1,6 +1,4 @@
 import { Link } from "react-router";
-import { format } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
 import { Clock, Calendar, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buildImageUrl } from "@/lib/utils";
 import type { Blog } from "@/features/blogs/api/get-blogs";
 import { paths } from "@/config/paths";
+import { formatDate } from "@/lib/date";
 
 interface BlogCardProps {
   blog: Blog;
@@ -53,10 +52,9 @@ export function BlogCard({ blog }: BlogCardProps) {
           <div className="flex items-center gap-1">
             <Calendar className="h-3.5 w-3.5" />
             <time dateTime={blog.published_at || blog.created_at}>
-              {format(
-                new Date(blog.published_at || blog.created_at),
-                "dd MMM yyyy",
-                { locale: idLocale }
+              {formatDate(
+                blog.published_at || blog.created_at,
+                "DD MMM YYYY"
               )}
             </time>
           </div>

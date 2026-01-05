@@ -6,12 +6,20 @@ import {
   Bookmark,
   Banknote,
   Clock,
+  GraduationCap,
+  Users,
+  Calendar,
+  ArrowRight,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { type Job, JOB_TYPE_LABELS, WORK_SYSTEM_LABELS } from "@/types/job";
+import {
+  type Job,
+  JOB_TYPE_LABELS,
+  WORK_SYSTEM_LABELS,
+  EDUCATION_LEVEL_LABELS,
+} from "@/types/job";
 import { useBookmarks } from "../hooks/use-bookmarks";
 import { dayjs } from "@/lib/date";
 
@@ -32,76 +40,69 @@ export function JobCard({ job }: JobCardProps) {
   const experienceLabel =
     job.min_years_of_experience === 0
       ? "Fresh Graduate"
-      : `${job.min_years_of_experience} Tahun`;
+      : job.max_years_of_experience
+      ? `${job.min_years_of_experience}-${job.max_years_of_experience} Tahun`
+      : `${job.min_years_of_experience}+ Tahun`;
 
   const formatSalary = (min: number, max: number) => {
-    const formatter = new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0,
-      minimumFractionDigits: 0,
-    });
-
-    if (min === 0 && max === 0) return "Gaji Dirahasiakan";
-
-    // Format compact for millions to save space if needed, but standard is safer for reading
-    // Let's try to make it slightly compact if it's in millions
     const formatCompact = (num: number) => {
       if (num >= 1000000) {
         return `Rp ${(num / 1000000).toLocaleString("id-ID", {
           maximumFractionDigits: 1,
         })}jt`;
       }
-      return formatter.format(num).replace(",00", "");
+      return `Rp ${(num / 1000).toLocaleString("id-ID")}rb`;
     };
 
-    if (max) {
+    if (min === 0 && max === 0) return "Gaji Dirahasiakan";
+
+    if (max && max !== min) {
       return `${formatCompact(min)} - ${formatCompact(max)}`;
     }
-    return formatCompact(min);
+    return `${formatCompact(min)}+`;
   };
 
-  return (
-    <Link to={`/jobs/${job.slug}`} className="block h-full">
-      <Card className="group relative h-full overflow-hidden border-border/60 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 hover:bg-card">
-        <CardContent className="p-5 flex gap-4 h-full">
-          {/* Company Logo */}
-          <div className="shrink-0">
-            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl border bg-white/50 ring-1 ring-border/50 group-hover:ring-primary/20 transition-all">
-              <AvatarImage
-                src={job.company.logo}
-                alt={job.company.name}
-                className="object-contain p-1"
-              />
-              <AvatarFallback className="rounded-xl bg-primary/5 text-primary font-bold text-lg">
-                {job.company.name.substring(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </div>
+  const daysUntilExpiration = dayjs(job.expiration_date).diff(dayjs(), "days");
+  const isExpiringSoon = daysUntilExpiration <= 7 && daysUntilExpiration > 0;
 
-          {/* Main Content */}
-          <div className="flex-1 min-w-0 flex flex-col gap-2.5">
-            {/* Header: Title & Company */}
-            <div className="flex justify-between items-start gap-3">
-              <div className="space-y-1">
-                <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1">
-                  {job.title}
-                </h3>
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Building2 className="w-3.5 h-3.5 text-muted-foreground/70" />
-                  <span className="font-medium hover:underline truncate">
-                    {job.company.name}
-                  </span>
-                </div>
+  return (
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+      <Link to={`/jobs/${job.slug}`} className="block">
+        <CardContent className="p-5">
+          <div className="space-y-3">
+            {/* Header: Badges and Bookmark */}
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge
+                  variant="secondary"
+                  className="rounded-md px-2 py-0.5 text-xs font-medium"
+                >
+                  {JOB_TYPE_LABELS[job.job_type]}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="rounded-md px-2 py-0.5 text-xs font-medium"
+                >
+                  {WORK_SYSTEM_LABELS[job.work_system]}
+                </Badge>
+                {job.talent_quota > 0 && (
+                  <Badge
+                    variant="outline"
+                    className="rounded-md px-2 py-0.5 text-xs font-medium text-primary border-primary/30 inline-flex items-center gap-1"
+                  >
+                    <Users className="h-3 w-3" />
+                    {job.talent_quota} posisi
+                  </Badge>
+                )}
               </div>
 
               <Button
                 variant="ghost"
                 size="icon"
-                className={`hover:bg-primary/10 -mt-2 -mr-2 ${
+                className={`h-10 w-10 rounded-full flex-shrink-0 transition-all ${
                   bookmarked
-                    ? "text-primary bg-primary/5"
-                    : "text-muted-foreground"
+                    ? "text-primary bg-primary/10 hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-primary hover:bg-primary/10"
                 }`}
                 onClick={handleBookmark}
               >
@@ -112,53 +113,102 @@ export function JobCard({ job }: JobCardProps) {
               </Button>
             </div>
 
-            {/* Tags Row */}
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                variant="secondary"
-                className="rounded-md px-2 py-0.5 font-normal text-xs bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 hover:bg-blue-500/20 shadow-none border-blue-200/50 dark:border-blue-800/50"
-              >
-                {JOB_TYPE_LABELS[job.job_type]}
-              </Badge>
-              <Badge
-                variant="secondary"
-                className="rounded-md px-2 py-0.5 font-normal text-xs bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400 hover:bg-violet-500/20 shadow-none border-violet-200/50 dark:border-violet-800/50"
-              >
-                {WORK_SYSTEM_LABELS[job.work_system]}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="rounded-md px-2 py-0.5 font-normal text-xs text-muted-foreground shadow-none"
-              >
-                <Briefcase className="w-3 h-3 mr-1" />
-                {experienceLabel}
-              </Badge>
+            {/* Title */}
+            <div>
+              <h2 className="text-lg font-bold leading-tight hover:text-primary transition-colors line-clamp-2 mb-1.5">
+                {job.title}
+              </h2>
+
+              {/* Company and Job Role */}
+              <div className="flex items-center gap-2.5 text-sm text-muted-foreground flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="font-medium hover:text-foreground transition-colors">
+                    {job.company.name}
+                  </span>
+                </div>
+                <span className="text-muted-foreground/50">•</span>
+                <div className="flex items-center gap-1.5">
+                  <Briefcase className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span>{job.job_role.name}</span>
+                </div>
+              </div>
             </div>
 
-            {/* Footer Row: Details */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground mt-1 pt-2 border-t border-dashed border-border/60">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <MapPin className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">{job.city.name}</span>
-              </div>
-
-              <div className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
-                <Banknote className="w-3.5 h-3.5 shrink-0" />
-                <span className="whitespace-nowrap">
-                  {formatSalary(job.salary_min, job.salary_max)}
+            {/* Job Details Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 py-2.5 border-y border-border/50">
+              {/* Location */}
+              <div className="flex items-center gap-1.5 text-sm">
+                <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-foreground truncate">
+                  {job.city.name}
                 </span>
               </div>
 
-              <div className="flex items-center gap-1 text-sm text-muted-foreground/60 ml-auto pl-1">
-                <Clock className="w-3 h-3 shrink-0" />
-                <span className="whitespace-nowrap">
-                  {dayjs(job.created_at).fromNow()}
+              {/* Experience */}
+              <div className="flex items-center gap-1.5 text-sm">
+                <Briefcase className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-foreground truncate">
+                  {experienceLabel}
                 </span>
               </div>
+
+              {/* Education */}
+              <div className="flex items-center gap-1.5 text-sm col-span-2 sm:col-span-1">
+                <GraduationCap className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-foreground truncate">
+                  {EDUCATION_LEVEL_LABELS[job.education_level]}
+                </span>
+              </div>
+            </div>
+
+            {/* Footer: Salary, Posted Date, and Action */}
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              {/* Left: Salary and Date */}
+              <div className="flex items-center gap-3 flex-wrap">
+                {/* Salary */}
+                <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400 text-sm">
+                  <Banknote className="h-4 w-4 flex-shrink-0" />
+                  <span className="whitespace-nowrap">
+                    {formatSalary(job.salary_min, job.salary_max)}
+                  </span>
+                </div>
+
+                {/* Posted Time */}
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span className="whitespace-nowrap">
+                    {dayjs(job.created_at).fromNow()}
+                  </span>
+                </div>
+
+                {/* Expiration Warning */}
+                {isExpiringSoon && (
+                  <div className="flex items-center gap-1.5 text-xs text-orange-600 dark:text-orange-400 font-medium">
+                    <Calendar className="h-3.5 w-3.5" />
+                    <span className="whitespace-nowrap">
+                      {daysUntilExpiration} hari lagi
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Action Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1 text-primary hover:text-primary hover:bg-primary/10 h-8 px-3"
+                asChild
+              >
+                <Link to={`/jobs/${job.slug}`}>
+                  Lihat Detail
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
             </div>
           </div>
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+    </Card>
   );
 }

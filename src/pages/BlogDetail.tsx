@@ -1,12 +1,11 @@
 import { useParams, Link } from "react-router";
-import { format } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { formatDate } from "@/lib/date";
 import {
   ArrowLeft,
   Clock,
@@ -176,10 +175,9 @@ const BlogDetail = () => {
                 <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   <time dateTime={blog.published_at || blog.created_at}>
-                    {format(
-                      new Date(blog.published_at || blog.created_at),
-                      "dd MMMM yyyy",
-                      { locale: idLocale }
+                    {formatDate(
+                      blog.published_at || blog.created_at,
+                      "DD MMMM YYYY"
                     )}
                   </time>
                 </span>
