@@ -425,7 +425,6 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     }}
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                   >
-                    <Icon className="h-4 w-4" />
                     {link.label}
                   </Link>
                 );
