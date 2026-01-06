@@ -1,4 +1,9 @@
 export type ParagraphType = "opening" | "body" | "closing";
+export type CVParagraphType =
+  | "about"
+  | "experience"
+  | "organization"
+  | "project";
 export type TemplateType = "cv" | "application_letter";
 
 export interface ParagraphTemplate {
@@ -16,6 +21,8 @@ export interface DocumentTemplate {
 
 export type ParagraphTemplates = Record<ParagraphType, ParagraphTemplate[]>;
 export type ParagraphTypeLabels = Record<ParagraphType, string>;
+export type CVParagraphTemplates = Record<CVParagraphType, ParagraphTemplate[]>;
+export type CVParagraphTypeLabels = Record<CVParagraphType, string>;
 
 export const TEMPLATE_TYPE_OPTIONS = [
   { label: "CV", value: "cv" },

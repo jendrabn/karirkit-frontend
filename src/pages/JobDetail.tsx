@@ -17,6 +17,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  ArrowLeft,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -27,6 +28,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ShareMenu } from "@/components/jobs/ShareMenu";
 import { buildImageUrl } from "@/lib/utils";
+import { paths } from "@/config/paths";
 import {
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
@@ -118,7 +120,7 @@ export default function JobDetail() {
             <h1 className="text-2xl font-bold mb-4">
               Lowongan tidak ditemukan
             </h1>
-            <Link to="/jobs">
+            <Link to={paths.jobs.list.getHref()}>
               <Button>Lihat Semua Lowongan</Button>
             </Link>
           </div>
@@ -138,11 +140,12 @@ export default function JobDetail() {
         <div className="container mx-auto px-4 max-w-7xl">
           {/* Back Button */}
           <div className="mb-6">
-            <Link to="/jobs">
-              <Button variant="ghost" size="sm" className="gap-2">
-                <ChevronLeft className="h-4 w-4" />
-                Kembali
-              </Button>
+            <Link
+              to={paths.jobs.list.getHref()}
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Kembali ke Lowongan
             </Link>
           </div>
 

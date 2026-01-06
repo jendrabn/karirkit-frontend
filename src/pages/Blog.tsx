@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -7,18 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import {
-  Search,
-  Clock,
-  Eye,
+  ArrowRight,
   Calendar,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Clock,
+  Eye,
+  Search,
   Sparkles,
-  ArrowRight,
 } from "lucide-react";
 import { useBlogs, type GetBlogsParams } from "@/features/blogs/api/get-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
@@ -26,23 +24,27 @@ import { useBlogTags } from "@/features/blogs/api/get-blog-tags";
 import { buildImageUrl } from "@/lib/utils";
 import { SEO } from "@/components/SEO";
 import { env } from "@/config/env";
+import { BlogSidebar } from "@/features/blogs/components/BlogSidebar";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 const Blog = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedTag, setSelectedTag] = useState<{ id: string; name: string } | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("q") ?? "";
+  const selectedCategoryId = searchParams.get("category_id") ?? "all";
+  const selectedTagId = searchParams.get("tag_id");
   const perPage = 6;
+  const pageParam = Number(searchParams.get("page"));
+  const currentPage =
+    Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
   // Build API params
   const apiParams: GetBlogsParams = {
     page: currentPage,
     per_page: perPage,
     q: searchQuery || undefined,
-    category_id: selectedCategory !== "all" ? selectedCategory : undefined,
-    tag_id: selectedTag?.id || undefined,
+    category_id: selectedCategoryId !== "all" ? selectedCategoryId : undefined,
+    tag_id: selectedTagId || undefined,
     status: "published",
     sort_by: "published_at",
     sort_order: "desc",
@@ -63,46 +65,36 @@ const Blog = () => {
 
   // Prepare categories
   const categories = categoriesData?.items || [];
-
+  const tags = tagsData?.items || [];
 
   const handleSearch = (value: string) => {
-    setSearchQuery(value);
-    // Clear tag filter when search is performed to avoid conflicting filters
-    if (selectedTag) {
-      setSelectedTag(null);
-    }
-    setCurrentPage(1);
-  };
+    const nextParams = new URLSearchParams(searchParams);
 
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setSelectedTag(null); // Clear tag filter when category is selected
-    setCurrentPage(1);
-  };
-
-  const handleTagChange = (tagId: string, tagName: string) => {
-    // If clicking the same tag, clear the filter
-    if (selectedTag && selectedTag.id === tagId) {
-      setSelectedTag(null);
+    if (value) {
+      nextParams.set("q", value);
     } else {
-      // Find the tag object from the tags data to store both id and name
-      const tagObject = tagsData?.items?.find(tag => tag.id === tagId);
-      if (tagObject) {
-        setSelectedTag({ id: tagObject.id, name: tagObject.name });
-      } else {
-        // Fallback in case tag is not found in current data
-        setSelectedTag({ id: tagId, name: tagName });
-      }
+      nextParams.delete("q");
     }
-    setCurrentPage(1);
-    // Clear search query when tag is selected to avoid conflicting filters
-    if (searchQuery) {
-      setSearchQuery("");
+
+    // Clear tag filter when search is performed to avoid conflicting filters
+    if (selectedTagId) {
+      nextParams.delete("tag_id");
     }
+
+    nextParams.delete("page");
+    setSearchParams(nextParams);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (page <= 1) {
+      nextParams.delete("page");
+    } else {
+      nextParams.set("page", String(page));
+    }
+
+    setSearchParams(nextParams);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -383,211 +375,17 @@ const Blog = () => {
                 </div>
 
                 {/* Sidebar */}
-                <aside className="space-y-8">
-                  {/* Latest Articles */}
-                  <div>
-                    <div className="relative mb-5">
-                      <h3 className="font-bold text-base uppercase tracking-wide text-foreground relative inline-block">
-                        <span className="relative z-10 bg-background pr-3">
-                          Artikel Terbaru
-                        </span>
-                      </h3>
-                      <div className="absolute left-0 top-1/2 w-full h-0.5 bg-gradient-to-r from-primary/40 via-primary/20 to-transparent" />
-                    </div>
-                    <div className="space-y-4">
-                      {latestPosts.map((post) => (
-                        <Link
-                          key={post.id}
-                          to={`/blog/${post.slug}`}
-                          className="flex gap-3 group"
-                        >
-                          <div className="relative w-24 aspect-[4/3] rounded-lg overflow-hidden flex-shrink-0 border">
-                            <img
-                              src={
-                                post.featured_image
-                                  ? buildImageUrl(post.featured_image)
-                                  : "https://placehold.co/400x300"
-                              }
-                              alt={post.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors mb-1.5">
-                              {post.title}
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              {format(
-                                new Date(post.published_at || post.created_at),
-                                "dd MMM yyyy",
-                                { locale: idLocale }
-                              )}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Popular Articles */}
-                  <div>
-                    <div className="relative mb-5">
-                      <h3 className="font-bold text-base uppercase tracking-wide text-foreground relative inline-block">
-                        <span className="relative z-10 bg-background pr-3">
-                          Artikel Populer
-                        </span>
-                      </h3>
-                      <div className="absolute left-0 top-1/2 w-full h-0.5 bg-gradient-to-r from-primary/40 via-primary/20 to-transparent" />
-                    </div>
-                    <div className="space-y-4">
-                      {popularPosts.map((post) => (
-                        <Link
-                          key={post.id}
-                          to={`/blog/${post.slug}`}
-                          className="flex gap-3 group"
-                        >
-                          <div className="relative w-24 aspect-[4/3] rounded-lg overflow-hidden flex-shrink-0 border">
-                            <img
-                              src={
-                                post.featured_image
-                                  ? buildImageUrl(post.featured_image)
-                                  : "https://placehold.co/400x300"
-                              }
-                              alt={post.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors mb-1.5">
-                              {post.title}
-                            </h4>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Eye className="h-3 w-3" />
-                              {post.views.toLocaleString()} views
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Categories */}
-                  <div>
-                    <div className="relative mb-5">
-                      <h3 className="font-bold text-base uppercase tracking-wide text-foreground relative inline-block">
-                        <span className="relative z-10 bg-background pr-3">
-                          Kategori
-                        </span>
-                      </h3>
-                      <div className="absolute left-0 top-1/2 w-full h-0.5 bg-gradient-to-r from-primary/40 via-primary/20 to-transparent" />
-                    </div>
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => handleCategoryChange("all")}
-                        className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                          selectedCategory === "all"
-                            ? "bg-primary text-primary-foreground"
-                            : "hover:bg-accent"
-                        }`}
-                      >
-                        Semua Kategori
-                      </button>
-                      {categories.map((category) => (
-                        <button
-                          key={category.id}
-                          onClick={() => handleCategoryChange(category.id)}
-                          className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            selectedCategory === category.id
-                              ? "bg-primary text-primary-foreground"
-                              : "hover:bg-accent"
-                          }`}
-                        >
-                          {category.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Tags */}
-                  <div>
-                    <div className="relative mb-5">
-                      <h3 className="font-bold text-base uppercase tracking-wide text-foreground relative inline-block">
-                        <span className="relative z-10 bg-background pr-3">
-                          Popular Tags
-                        </span>
-                      </h3>
-                      <div className="absolute left-0 top-1/2 w-full h-0.5 bg-gradient-to-r from-primary/40 via-primary/20 to-transparent" />
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {tagsData?.items?.map((tag) => (
-                        <Badge
-                          key={tag.id}
-                          variant="outline"
-                          className={`cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors text-sm px-3 py-1.5 ${
-                            selectedTag?.id === tag.id
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : ""
-                          }`}
-                          onClick={() => handleTagChange(tag.id, tag.name)}
-                        >
-                          {tag.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Ad Space - Trending Style */}
-                  <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-6 border-2 border-dashed border-primary/20">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold text-base uppercase tracking-wide">
-                        Trending
-                      </h3>
-                      <Link
-                        to="/blog"
-                        className="text-xs text-primary hover:underline flex items-center gap-1"
-                      >
-                        Lihat lainnya
-                        <ArrowRight className="h-3 w-3" />
-                      </Link>
-                    </div>
-                    <div className="space-y-3">
-                      {blogPosts.slice(0, 4).map((post) => (
-                        <Link
-                          key={post.id}
-                          to={`/blog/${post.slug}`}
-                          className="flex gap-3 items-start group"
-                        >
-                          <div className="relative w-20 aspect-[4/3] rounded-md overflow-hidden flex-shrink-0 border">
-                            <img
-                              src={
-                                post.featured_image
-                                  ? buildImageUrl(post.featured_image)
-                                  : "https://placehold.co/400x300"
-                              }
-                              alt={post.title}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors mb-1">
-                              {post.title}
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              {post.user?.name} | {post.read_time} min baca
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
+                <aside>
+                  <BlogSidebar
+                    latestPosts={latestPosts}
+                    popularPosts={popularPosts}
+                    trendingPosts={blogPosts.slice(0, 4)}
+                    categories={categories}
+                    tags={tags}
+                    selectedCategoryId={selectedCategoryId}
+                    selectedTagId={selectedTagId}
+                    searchQuery={searchQuery}
+                  />
                 </aside>
               </div>
             </div>

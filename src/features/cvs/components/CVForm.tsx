@@ -7,6 +7,7 @@ import {
   Trash2,
   GraduationCap,
   Briefcase,
+  FileText,
   Wrench,
   Award,
   Trophy,
@@ -35,6 +36,7 @@ import {
   FieldDescription,
 } from "@/components/ui/field";
 import { PhotoUpload } from "./PhotoUpload";
+import { CVParagraphTemplateModal } from "./CVParagraphTemplateModal";
 import { TemplateSelector } from "@/components/ui/template-selector";
 import { useTemplates } from "@/features/landing/api/get-templates";
 import { buildImageUrl } from "@/lib/utils";
@@ -50,6 +52,7 @@ import {
   LANGUAGE_OPTIONS,
 } from "@/types/cv";
 import { SOCIAL_PLATFORM_VALUES, SOCIAL_PLATFORM_OPTIONS } from "@/types/social";
+import type { CVParagraphType } from "@/types/template";
 
 const educationSchema = z.object({
   degree: z.enum([
@@ -247,6 +250,12 @@ export function CVForm({
   const [selectedTemplate, setSelectedTemplate] = useState(
     initialData?.template_id || ""
   );
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
+  const [activeParagraphType, setActiveParagraphType] =
+    useState<CVParagraphType | null>(null);
+  const [activeParagraphIndex, setActiveParagraphIndex] = useState<
+    number | null
+  >(null);
 
   // Set default template when data is loaded
   if (!selectedTemplate && apiTemplates.length > 0) {
@@ -263,14 +272,69 @@ export function CVForm({
   const projects = useFieldArray({ control, name: "projects" });
 
   const photoValue = watch("photo");
+  const handleOpenTemplateModal = (type: CVParagraphType, index?: number) => {
+    setActiveParagraphType(type);
+    setActiveParagraphIndex(typeof index === "number" ? index : null);
+    setTemplateModalOpen(true);
+  };
+
+  const handleSelectTemplate = (content: string) => {
+    if (!activeParagraphType) return;
+
+    if (activeParagraphType === "about") {
+      setValue("about", content);
+      return;
+    }
+
+    if (activeParagraphIndex === null) return;
+
+    if (activeParagraphType === "experience") {
+      setValue(`experiences.${activeParagraphIndex}.description`, content);
+      return;
+    }
+
+    if (activeParagraphType === "organization") {
+      setValue(`organizations.${activeParagraphIndex}.description`, content);
+      return;
+    }
+
+    if (activeParagraphType === "project") {
+      setValue(`projects.${activeParagraphIndex}.description`, content);
+    }
+  };
+
+  const getCurrentParagraphValue = () => {
+    if (!activeParagraphType) return "";
+
+    if (activeParagraphType === "about") {
+      return watch("about") || "";
+    }
+
+    if (activeParagraphIndex === null) return "";
+
+    if (activeParagraphType === "experience") {
+      return watch(`experiences.${activeParagraphIndex}.description`) || "";
+    }
+
+    if (activeParagraphType === "organization") {
+      return watch(`organizations.${activeParagraphIndex}.description`) || "";
+    }
+
+    if (activeParagraphType === "project") {
+      return watch(`projects.${activeParagraphIndex}.description`) || "";
+    }
+
+    return "";
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit, (errors) => {
-        console.log("CV Validation Errors:", errors);
-      })}
-    >
-      <FieldSet disabled={isLoading} className="space-y-6 mb-6">
+    <>
+      <form
+        onSubmit={handleSubmit(onSubmit, (errors) => {
+          console.log("CV Validation Errors:", errors);
+        })}
+      >
+        <FieldSet disabled={isLoading} className="space-y-6 mb-6">
         {/* Template Selection */}
         <Card>
           <CardHeader>
@@ -408,7 +472,18 @@ export function CVForm({
               </Field>
 
               <Field className="md:col-span-2">
-                <FieldLabel htmlFor="about">Tentang Saya</FieldLabel>
+                <div className="flex items-center justify-between">
+                  <FieldLabel htmlFor="about">Tentang Saya</FieldLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleOpenTemplateModal("about")}
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    Gunakan Template
+                  </Button>
+                </div>
                 <Textarea
                   id="about"
                   {...register("about")}
@@ -1041,7 +1116,20 @@ export function CVForm({
                       </Field>
 
                       <Field>
-                        <FieldLabel>Deskripsi</FieldLabel>
+                        <div className="flex items-center justify-between">
+                          <FieldLabel>Deskripsi</FieldLabel>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleOpenTemplateModal("experience", index)
+                            }
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            Gunakan Template
+                          </Button>
+                        </div>
                         <Textarea
                           {...register(`experiences.${index}.description`)}
                           rows={3}
@@ -1861,7 +1949,20 @@ export function CVForm({
                       </Field>
 
                       <Field>
-                        <FieldLabel>Deskripsi</FieldLabel>
+                        <div className="flex items-center justify-between">
+                          <FieldLabel>Deskripsi</FieldLabel>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleOpenTemplateModal("organization", index)
+                            }
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            Gunakan Template
+                          </Button>
+                        </div>
                         <Textarea
                           {...register(`organizations.${index}.description`)}
                           rows={2}
@@ -1951,7 +2052,20 @@ export function CVForm({
                         </FieldError>
                       </Field>
                       <Field>
-                        <FieldLabel>Deskripsi</FieldLabel>
+                        <div className="flex items-center justify-between">
+                          <FieldLabel>Deskripsi</FieldLabel>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleOpenTemplateModal("project", index)
+                            }
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            Gunakan Template
+                          </Button>
+                        </div>
                         <Textarea
                           {...register(`projects.${index}.description`)}
                           rows={3}
@@ -2113,23 +2227,33 @@ export function CVForm({
         </Card>
       </FieldSet>
 
-      <div className="flex justify-end gap-3 pt-6 border-t mt-8">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Batal
-        </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-              Menyimpan...
-            </>
-          ) : initialData ? (
-            "Simpan Perubahan"
-          ) : (
-            "Simpan"
-          )}
-        </Button>
-      </div>
-    </form>
+        <div className="flex justify-end gap-3 pt-6 border-t mt-8">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Batal
+          </Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                Menyimpan...
+              </>
+            ) : initialData ? (
+              "Simpan Perubahan"
+            ) : (
+              "Simpan"
+            )}
+          </Button>
+        </div>
+      </form>
+
+      <CVParagraphTemplateModal
+        open={templateModalOpen}
+        onOpenChange={setTemplateModalOpen}
+        paragraphType={activeParagraphType}
+        currentValue={getCurrentParagraphValue()}
+        onSelectTemplate={handleSelectTemplate}
+        language={watch("language")}
+      />
+    </>
   );
 }

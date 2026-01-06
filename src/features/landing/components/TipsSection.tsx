@@ -1,10 +1,9 @@
-import { Card } from "@/components/ui/card";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLatestBlogs } from "@/features/blogs/api/get-latest-blogs";
-import { buildImageUrl } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router";
+import { BlogCard } from "@/features/blogs/components/BlogCard";
 
 export function TipsSection() {
   const { data: articles, isLoading } = useLatestBlogs({ limit: 4 });
@@ -50,42 +49,7 @@ export function TipsSection() {
                 </div>
               ))
             : articles?.map((article) => (
-                <Card
-                  key={article.id}
-                  className="overflow-hidden rounded-2xl bg-card hover:shadow-xl transition-all duration-300 group cursor-pointer border-border/50 hover:-translate-y-1 h-full flex flex-col"
-                >
-                  <Link to={`/blog/${article.slug}`} className="block h-full">
-                    <div className="aspect-video overflow-hidden relative">
-                      <img
-                        src={buildImageUrl(article.featured_image)}
-                        alt={article.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      {/* Category badge */}
-                      {article.category && (
-                        <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
-                          {article.category.name}
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5 lg:p-6 flex flex-col flex-grow">
-                      <div className="flex items-center gap-2 text-muted-foreground text-xs mb-3">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{article.read_time} min baca</span>
-                      </div>
-                      <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                        {article.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-grow">
-                        {article.excerpt}
-                      </p>
-                      <div className="inline-flex items-center gap-1.5 text-sm text-primary font-semibold hover:underline mt-auto">
-                        Baca selengkapnya
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
-                  </Link>
-                </Card>
+                <BlogCard key={article.id} blog={article} />
               ))}
         </div>
       </div>

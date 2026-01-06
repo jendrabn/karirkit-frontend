@@ -11,7 +11,15 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "images/**/*"],
+      includeAssets: [
+        "favicon.ico",
+        "favicon-16x16.png",
+        "favicon-32x32.png",
+        "apple-touch-icon.png",
+        "android-chrome-192x192.png",
+        "android-chrome-512x512.png",
+        "images/**/*",
+      ],
       manifest: {
         name: "KarirKit - Platform Manajemen Karir",
         short_name: "KarirKit",
@@ -25,13 +33,33 @@ export default defineConfig({
         start_url: "/",
         icons: [
           {
+            src: "favicon-16x16.png",
+            sizes: "16x16",
+            type: "image/png",
+          },
+          {
+            src: "favicon-32x32.png",
+            sizes: "32x32",
+            type: "image/png",
+          },
+          {
             src: "images/pwa-64x64.png",
             sizes: "64x64",
             type: "image/png",
           },
           {
+            src: "android-chrome-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
             src: "images/pwa-192x192.png",
             sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "android-chrome-512x512.png",
+            sizes: "512x512",
             type: "image/png",
           },
           {

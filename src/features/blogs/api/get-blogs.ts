@@ -65,6 +65,7 @@ export const getBlogs = (params?: GetBlogsParams): Promise<BlogsResponse> => {
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           ([_, value]) => value !== null && value !== "" && value !== undefined
         )
       )

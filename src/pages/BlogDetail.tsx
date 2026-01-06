@@ -4,7 +4,6 @@ import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/date";
 import {
   ArrowLeft,
@@ -12,14 +11,15 @@ import {
   Eye,
   Calendar,
   Share2,
-  Facebook,
-  Twitter,
-  Linkedin,
   Loader2,
   Tag,
 } from "lucide-react";
 import { BlogCard } from "@/features/blogs/components/BlogCard";
+import { BlogSidebar } from "@/features/blogs/components/BlogSidebar";
 import { useBlog } from "@/features/blogs/api/get-blog";
+import { useBlogs } from "@/features/blogs/api/get-blogs";
+import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
+import { useBlogTags } from "@/features/blogs/api/get-blog-tags";
 import { useRelatedBlogs } from "@/features/blogs/api/get-related-blogs";
 import { buildImageUrl } from "@/lib/utils";
 import { paths } from "@/config/paths";
@@ -52,6 +52,25 @@ const BlogDetail = () => {
   });
 
   const relatedPosts = relatedBlogs || [];
+
+  const { data: sidebarBlogsData } = useBlogs({
+    params: {
+      per_page: 10,
+      status: "published",
+      sort_by: "published_at",
+      sort_order: "desc",
+    },
+  });
+  const { data: sidebarCategoriesData } = useBlogCategories();
+  const { data: sidebarTagsData } = useBlogTags();
+
+  const sidebarPosts = sidebarBlogsData?.items || [];
+  const latestPosts = sidebarPosts.slice(0, 5);
+  const popularPosts = [...sidebarPosts]
+    .sort((a, b) => b.views - a.views)
+    .slice(0, 5);
+  const categories = sidebarCategoriesData?.items || [];
+  const tags = sidebarTagsData?.items || [];
 
   // Loading state
   if (isLoading) {
@@ -95,7 +114,27 @@ const BlogDetail = () => {
   const shareUrl = `${window.location.origin}${paths.blog.detail.getHref(
     blog.slug
   )}`;
-  const shareTitle = encodeURIComponent(blog.title);
+  const shareText = blog.excerpt || blog.title;
+
+  const handleShare = async () => {
+    if (!("share" in navigator)) {
+      const nav = navigator as Navigator & { clipboard?: Clipboard };
+      if (nav.clipboard && nav.clipboard.writeText) {
+        await nav.clipboard.writeText(shareUrl);
+      }
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: blog.title,
+        text: shareText,
+        url: shareUrl,
+      });
+    } catch {
+      // Intentionally ignore share cancellation errors.
+    }
+  };
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -165,165 +204,139 @@ const BlogDetail = () => {
           </div>
 
           {/* Article Header */}
-          <article className="container mx-auto px-4 lg:px-8 pb-12">
-            <div className="max-w-4xl mx-auto">
-              {/* Category & Meta */}
-              <div className="flex flex-wrap items-center gap-3 mb-4">
-                {blog.category && (
-                  <Badge variant="secondary">{blog.category.name}</Badge>
-                )}
-                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <time dateTime={blog.published_at || blog.created_at}>
-                    {formatDate(
-                      blog.published_at || blog.created_at,
-                      "DD MMMM YYYY"
+          <section className="pb-12">
+            <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
+              <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-12">
+                <article className="min-w-0">
+                  <div className="max-w-4xl">
+                    {/* Category & Meta */}
+                    <div className="flex flex-wrap items-center gap-3 mb-4">
+                      {blog.category && (
+                        <Badge variant="secondary">{blog.category.name}</Badge>
+                      )}
+                      <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4" />
+                        <time dateTime={blog.published_at || blog.created_at}>
+                          {formatDate(
+                            blog.published_at || blog.created_at,
+                            "DD MMMM YYYY"
+                          )}
+                        </time>
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        {blog.read_time} menit baca
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <Eye className="h-4 w-4" />
+                        {blog.views.toLocaleString()} views
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+                      {blog.title}
+                    </h1>
+
+                    {/* Excerpt */}
+                    {blog.excerpt && (
+                      <p className="text-lg text-muted-foreground mb-6">
+                        {blog.excerpt}
+                      </p>
                     )}
-                  </time>
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  {blog.read_time} menit baca
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Eye className="h-4 w-4" />
-                  {blog.views.toLocaleString()} views
-                </span>
-              </div>
 
-              {/* Title */}
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-                {blog.title}
-              </h1>
+                    {/* Author */}
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage
+                            src={
+                              blog.user.avatar
+                                ? buildImageUrl(blog.user.avatar)
+                                : undefined
+                            }
+                            alt={blog.user.name}
+                          />
+                          <AvatarFallback>
+                            {blog.user.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-foreground">
+                            {blog.user.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Penulis
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        className="gap-2"
+                        onClick={handleShare}
+                      >
+                        <Share2 className="h-4 w-4" />
+                        Bagikan
+                      </Button>
+                    </div>
 
-              {/* Excerpt */}
-              {blog.excerpt && (
-                <p className="text-lg text-muted-foreground mb-6">
-                  {blog.excerpt}
-                </p>
-              )}
+                    {/* Featured Image */}
+                    {blog.featured_image && (
+                      <div className="rounded-2xl overflow-hidden mb-8 aspect-video">
+                        <img
+                          src={buildImageUrl(blog.featured_image)}
+                          alt={blog.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
 
-              {/* Author */}
-              <div className="flex items-center gap-3 mb-8">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage
-                    src={
-                      blog.user.avatar
-                        ? buildImageUrl(blog.user.avatar)
-                        : undefined
-                    }
-                    alt={blog.user.name}
-                  />
-                  <AvatarFallback>{blog.user.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium text-foreground">
-                    {blog.user.name}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Penulis</p>
-                </div>
-              </div>
+                    {/* Content */}
+                    <div
+                      className="prose prose-lg max-w-none 
+                        prose-headings:text-foreground prose-headings:font-bold
+                        prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
+                        prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
+                        prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-4
+                        prose-strong:text-foreground
+                        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                        prose-img:rounded-lg
+                        prose-ul:text-muted-foreground
+                        prose-ol:text-muted-foreground"
+                      dangerouslySetInnerHTML={{ __html: blog.content }}
+                    />
 
-              {/* Featured Image */}
-              {blog.featured_image && (
-                <div className="rounded-2xl overflow-hidden mb-8">
-                  <img
-                    src={buildImageUrl(blog.featured_image)}
-                    alt={blog.title}
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              )}
-
-              {/* Content */}
-              <div
-                className="prose prose-lg max-w-none 
-                  prose-headings:text-foreground prose-headings:font-bold
-                  prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
-                  prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-                  prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-4
-                  prose-strong:text-foreground
-                  prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                  prose-img:rounded-lg
-                  prose-ul:text-muted-foreground
-                  prose-ol:text-muted-foreground"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
-              />
-
-              {/* Tags */}
-              {blog.tags && blog.tags.length > 0 && (
-                <div className="mt-8">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Tag className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Tags:</span>
-                    {blog.tags.map((tag) => (
-                      <Badge key={tag.id} variant="outline">
-                        {tag.name}
-                      </Badge>
-                    ))}
+                    {/* Tags */}
+                    {blog.tags && blog.tags.length > 0 && (
+                      <div className="mt-8">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Tag className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            Tags:
+                          </span>
+                          {blog.tags.map((tag) => (
+                            <Badge key={tag.id} variant="outline">
+                              {tag.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
+                </article>
 
-              {/* Share */}
-              <Separator className="my-8" />
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="flex items-center gap-2">
-                  <Share2 className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    Bagikan artikel ini:
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                    asChild
-                  >
-                    <a
-                      href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Share on Facebook"
-                    >
-                      <Facebook className="h-4 w-4" />
-                    </a>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                    asChild
-                  >
-                    <a
-                      href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Share on Twitter"
-                    >
-                      <Twitter className="h-4 w-4" />
-                    </a>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                    asChild
-                  >
-                    <a
-                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Share on LinkedIn"
-                    >
-                      <Linkedin className="h-4 w-4" />
-                    </a>
-                  </Button>
-                </div>
+                <aside>
+                  <BlogSidebar
+                    latestPosts={latestPosts}
+                    popularPosts={popularPosts}
+                    trendingPosts={sidebarPosts.slice(0, 4)}
+                    categories={categories}
+                    tags={tags}
+                  />
+                </aside>
               </div>
             </div>
-          </article>
+          </section>
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
@@ -332,7 +345,7 @@ const BlogDetail = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-8">
                   Artikel Terkait
                 </h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {relatedPosts.map((post) => (
                     <BlogCard key={post.id} blog={post} />
                   ))}

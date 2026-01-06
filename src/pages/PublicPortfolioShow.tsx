@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link } from "react-router";
 import {
   ExternalLink,
   Github,
@@ -25,6 +25,7 @@ import { SEO } from "@/components/SEO";
 import { env } from "@/config/env";
 import { getSocialIcon } from "@/lib/socials";
 import { SOCIAL_PLATFORM_LABELS } from "@/types/social";
+import { paths } from "@/config/paths";
 
 const monthNames = [
   "Januari",
@@ -43,7 +44,6 @@ const monthNames = [
 
 export default function PublicPortfolioShow() {
   const { username, id } = useParams<{ username: string; id: string }>();
-  const navigate = useNavigate();
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
   const { data, isLoading, error } = usePublicPortfolio({
@@ -75,9 +75,11 @@ export default function PublicPortfolioShow() {
             <p className="text-muted-foreground mt-2">
               Portfolio yang Anda cari tidak tersedia.
             </p>
-            <Button className="mt-4" onClick={() => navigate(-1)}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Kembali
+            <Button className="mt-4" asChild>
+              <Link to={paths.publicPortfolio.list.getHref(username!)}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Kembali
+              </Link>
             </Button>
           </div>
         </div>
@@ -141,27 +143,19 @@ export default function PublicPortfolioShow() {
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
 
-        {/* Breadcrumb */}
-        <div className="border-b bg-muted/30">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Link
-                to={`/me/${username}`}
-                className="hover:text-primary transition-colors"
-              >
-                {user.name}
-              </Link>
-              <span>/</span>
-              <span className="text-foreground font-medium line-clamp-1">
-                {portfolio.title}
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Main Content */}
         <main className="flex-1 py-8 lg:py-12">
           <div className="container mx-auto px-4">
+            {/* Back Button */}
+            <div className="mb-6">
+              <Link
+                to={paths.publicPortfolio.list.getHref(username!)}
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Kembali ke Portfolio
+              </Link>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
               {/* Left Content - 3 columns */}
               <div className="lg:col-span-3 space-y-8">
@@ -316,7 +310,7 @@ export default function PublicPortfolioShow() {
                   </CardHeader>
                   <CardContent>
                     <Link
-                      to={`/me/${username}`}
+                      to={paths.publicPortfolio.list.getHref(username!)}
                       className="flex items-center gap-4 group"
                     >
                       <Avatar className="h-16 w-16 ring-2 ring-primary/20">
@@ -380,7 +374,9 @@ export default function PublicPortfolioShow() {
                       </div>
                     )}
                     <Button variant="outline" className="w-full mt-4" asChild>
-                      <Link to={`/me/${username}`}>Lihat Semua Portfolio</Link>
+                      <Link to={paths.publicPortfolio.list.getHref(username!)}>
+                        Lihat Semua Portfolio
+                      </Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -442,16 +438,6 @@ export default function PublicPortfolioShow() {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* Back Button */}
-                <Button
-                  variant="ghost"
-                  className="w-full"
-                  onClick={() => navigate(`/me/${username}`)}
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Kembali ke Portfolio
-                </Button>
               </div>
             </div>
           </div>
