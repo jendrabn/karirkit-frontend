@@ -13,6 +13,7 @@ import type {
   Organization,
   Project,
 } from "./get-cvs";
+import type { CvVisibility } from "@/types/cv";
 
 export type UpdateCVInput = {
   name: string;
@@ -32,6 +33,8 @@ export type UpdateCVInput = {
   organizations?: Organization[];
   projects?: Project[];
   language?: "en" | "id";
+  slug?: string;
+  visibility?: CvVisibility;
 };
 
 export type UpdateCVResponse = CV;

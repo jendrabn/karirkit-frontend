@@ -16,6 +16,9 @@ import {
   Loader2,
   Trash2,
   Download,
+  Globe,
+  Lock,
+  Eye,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -48,7 +51,7 @@ import {
 import { toast } from "sonner";
 import { MinimalSEO } from "@/components/MinimalSEO";
 import { getSocialIcon } from "@/lib/socials";
-import { SOCIAL_PLATFORM_LABELS } from "@/types/social";
+import { SKILL_CATEGORY_LABELS } from "@/types/skill-categories";
 
 export default function CVShow() {
   const navigate = useNavigate();
@@ -118,6 +121,8 @@ export default function CVShow() {
     if (!endMonth || !endYear) return start;
     return `${start} - ${getLabel(endMonth, MONTH_OPTIONS)} ${endYear}`;
   };
+
+  console.log("cv", cv);
 
   if (!cv) {
     return (
@@ -450,7 +455,14 @@ export default function CVShow() {
                     key={index}
                     className="flex justify-between items-center"
                   >
-                    <span>{skill.name}</span>
+                    <div>
+                      <div className="font-medium">{skill.name}</div>
+                      <div className="text-xs text-muted-foreground capitalize">
+                        {SKILL_CATEGORY_LABELS[cv.language || "id"][
+                          skill.skill_category as keyof (typeof SKILL_CATEGORY_LABELS)["id"]
+                        ] || skill.skill_category}
+                      </div>
+                    </div>
                     <Badge variant="outline">
                       {getLabel(skill.level, SKILL_LEVEL_OPTIONS)}
                     </Badge>
@@ -543,12 +555,9 @@ export default function CVShow() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-full border border-border/60 px-4 py-2 text-sm font-medium text-foreground hover:border-primary transition-colors"
+                    className="flex items-center gap-2 rounded-full border border-border/60 p-3 text-sm font-medium text-foreground hover:border-primary hover:text-primary transition-colors"
                   >
-                    {getSocialIcon(link.platform, "h-4 w-4")}
-                    <span>
-                      {SOCIAL_PLATFORM_LABELS[link.platform] ?? link.platform}
-                    </span>
+                    {getSocialIcon(link.platform, "h-5 w-5")}
                   </a>
                 ))}
               </div>
@@ -569,6 +578,43 @@ export default function CVShow() {
                 <span className="text-muted-foreground">Diperbarui</span>
                 <span>{dayjs(cv.updated_at).format("DD MMM YYYY HH:mm")}</span>
               </div>
+              <Separator />
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Visibilitas</span>
+                <Badge
+                  variant={cv.visibility === "public" ? "default" : "secondary"}
+                  className="gap-1"
+                >
+                  {cv.visibility === "public" ? (
+                    <Globe className="h-3 w-3" />
+                  ) : (
+                    <Lock className="h-3 w-3" />
+                  )}
+                  {cv.visibility === "public" ? "Public" : "Private"}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Dilihat</span>
+                <div className="flex items-center gap-1">
+                  <Eye className="h-3 w-3 text-muted-foreground" />
+                  <span>{cv.views || 0} kali</span>
+                </div>
+              </div>
+              {cv.visibility === "public" && cv.slug && (
+                <div className="pt-2">
+                  <span className="text-muted-foreground block mb-1">
+                    Public URL
+                  </span>
+                  <a
+                    href={`/cv/${cv.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary hover:underline break-all"
+                  >
+                    {window.location.origin}/cv/{cv.slug}
+                  </a>
+                </div>
+              )}
             </div>
           </Card>
         </div>

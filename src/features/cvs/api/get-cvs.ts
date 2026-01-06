@@ -3,6 +3,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
 import type { SocialPlatform } from "@/types/social";
+import type { SkillCategory, CvVisibility } from "@/types/cv";
 
 export type CVsResponse = {
   items: CV[];
@@ -42,6 +43,9 @@ export type CV = {
   organizations: Organization[];
   projects: Project[];
   language?: "id" | "en";
+  slug?: string;
+  visibility: CvVisibility;
+  views: number;
 };
 
 export type Education = {
@@ -96,6 +100,7 @@ export type Experience = {
 export type Skill = {
   name: string;
   level: "beginner" | "intermediate" | "advanced" | "expert";
+  skill_category: SkillCategory;
 };
 
 export type Project = {

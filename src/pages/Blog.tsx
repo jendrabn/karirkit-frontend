@@ -57,12 +57,6 @@ const Blog = () => {
   const blogPosts = blogsData?.items || [];
   const pagination = blogsData?.pagination;
 
-  // Get latest and popular posts
-  const latestPosts = blogPosts.slice(0, 5);
-  const popularPosts = [...blogPosts]
-    .sort((a, b) => b.views - a.views)
-    .slice(0, 5);
-
   // Prepare categories
   const categories = categoriesData?.items || [];
   const tags = tagsData?.items || [];
@@ -377,9 +371,6 @@ const Blog = () => {
                 {/* Sidebar */}
                 <aside>
                   <BlogSidebar
-                    latestPosts={latestPosts}
-                    popularPosts={popularPosts}
-                    trendingPosts={blogPosts.slice(0, 4)}
                     categories={categories}
                     tags={tags}
                     selectedCategoryId={selectedCategoryId}

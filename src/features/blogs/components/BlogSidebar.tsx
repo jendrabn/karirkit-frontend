@@ -7,14 +7,13 @@ import { Separator } from "@/components/ui/separator";
 import { badgeVariants } from "@/components/ui/badge";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { paths } from "@/config/paths";
-import type { Blog } from "@/features/blogs/api/get-blogs";
+import { useLatestBlogs } from "@/features/blogs/api/get-latest-blogs";
+import { usePopularBlogs } from "@/features/blogs/api/get-popular-blogs";
+
 import type { BlogCategory } from "@/features/blogs/api/get-blog-categories";
 import type { BlogTag } from "@/features/blogs/api/get-blog-tags";
 
 type BlogSidebarProps = {
-  latestPosts: Blog[];
-  popularPosts: Blog[];
-  trendingPosts: Blog[];
   categories: BlogCategory[];
   tags: BlogTag[];
   selectedCategoryId?: string;
@@ -50,9 +49,6 @@ const buildListHref = (
 };
 
 export const BlogSidebar = ({
-  latestPosts,
-  popularPosts,
-  trendingPosts,
   categories,
   tags,
   selectedCategoryId = "all",
@@ -60,6 +56,11 @@ export const BlogSidebar = ({
   searchQuery = "",
   basePath = paths.blog.list.getHref(),
 }: BlogSidebarProps) => {
+  const { data: latestPosts = [] } = useLatestBlogs({ limit: 4 });
+  const { data: popularPosts = [] } = usePopularBlogs({
+    params: { limit: 4, window: "7d" },
+  });
+
   const categoryHref = (categoryId?: string) =>
     buildListHref(basePath, {
       categoryId,
@@ -68,8 +69,7 @@ export const BlogSidebar = ({
 
   const tagHref = (tagId: string) =>
     buildListHref(basePath, {
-      categoryId:
-        selectedCategoryId !== "all" ? selectedCategoryId : undefined,
+      categoryId: selectedCategoryId !== "all" ? selectedCategoryId : undefined,
       tagId: selectedTagId === tagId ? undefined : tagId,
     });
 
@@ -249,7 +249,7 @@ export const BlogSidebar = ({
           </Link>
         </div>
         <div className="space-y-3">
-          {trendingPosts.map((post) => (
+          {popularPosts.map((post) => (
             <Link
               key={post.id}
               to={`/blog/${post.slug}`}

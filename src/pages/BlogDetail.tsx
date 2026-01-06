@@ -17,7 +17,6 @@ import {
 import { BlogCard } from "@/features/blogs/components/BlogCard";
 import { BlogSidebar } from "@/features/blogs/components/BlogSidebar";
 import { useBlog } from "@/features/blogs/api/get-blog";
-import { useBlogs } from "@/features/blogs/api/get-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { useBlogTags } from "@/features/blogs/api/get-blog-tags";
 import { useRelatedBlogs } from "@/features/blogs/api/get-related-blogs";
@@ -53,22 +52,9 @@ const BlogDetail = () => {
 
   const relatedPosts = relatedBlogs || [];
 
-  const { data: sidebarBlogsData } = useBlogs({
-    params: {
-      per_page: 10,
-      status: "published",
-      sort_by: "published_at",
-      sort_order: "desc",
-    },
-  });
   const { data: sidebarCategoriesData } = useBlogCategories();
   const { data: sidebarTagsData } = useBlogTags();
 
-  const sidebarPosts = sidebarBlogsData?.items || [];
-  const latestPosts = sidebarPosts.slice(0, 5);
-  const popularPosts = [...sidebarPosts]
-    .sort((a, b) => b.views - a.views)
-    .slice(0, 5);
   const categories = sidebarCategoriesData?.items || [];
   const tags = sidebarTagsData?.items || [];
 
@@ -326,13 +312,7 @@ const BlogDetail = () => {
                 </article>
 
                 <aside>
-                  <BlogSidebar
-                    latestPosts={latestPosts}
-                    popularPosts={popularPosts}
-                    trendingPosts={sidebarPosts.slice(0, 4)}
-                    categories={categories}
-                    tags={tags}
-                  />
+                  <BlogSidebar categories={categories} tags={tags} />
                 </aside>
               </div>
             </div>

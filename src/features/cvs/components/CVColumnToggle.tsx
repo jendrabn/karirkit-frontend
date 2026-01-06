@@ -15,6 +15,8 @@ export interface ColumnVisibility {
   latest_education: boolean;
   skills_count: boolean;
   language: boolean;
+  visibility: boolean;
+  views: boolean;
   name: boolean;
   email: boolean;
   phone: boolean;
@@ -36,6 +38,8 @@ export const defaultColumnVisibility: ColumnVisibility = {
   latest_education: true,
   skills_count: true,
   language: true,
+  visibility: false,
+  views: false,
   name: false,
   email: false,
   phone: false,
@@ -57,6 +61,8 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   latest_education: "Pendidikan Terakhir",
   skills_count: "Jumlah Skill",
   language: "Bahasa",
+  visibility: "Visibility",
+  views: "Views",
   name: "Nama",
   email: "Email",
   phone: "No. Telepon",
@@ -84,6 +90,8 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "latest_education",
   "skills_count",
   "language",
+  "visibility",
+  "views",
   "name",
   "email",
   "phone",

@@ -22,6 +22,8 @@ import {
   User,
   MoreVertical,
   Loader2,
+  Globe,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,6 +69,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { CVVisibilityModal } from "./CVVisibilityModal";
 import { CVFilterModal } from "@/features/cvs/components/CVFilterModal";
 import type { FilterValues } from "@/features/cvs/components/CVFilterModal";
 import {
@@ -105,6 +108,8 @@ const CVList = () => {
   const [cvToDelete, setCvToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [visibilityModalOpen, setVisibilityModalOpen] = useState(false);
+  const [cvToEditVisibility, setCvToEditVisibility] = useState<CV | null>(null);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -322,6 +327,16 @@ const CVList = () => {
                       Bahasa
                     </TableHead>
                   )}
+                  {columnVisibility.visibility && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Visibility
+                    </TableHead>
+                  )}
+                  {columnVisibility.views && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Views
+                    </TableHead>
+                  )}
                   {columnVisibility.name && (
                     <TableHead>
                       <SortableHeader field="name">Nama</SortableHeader>
@@ -506,6 +521,30 @@ const CVList = () => {
                             </Badge>
                           </TableCell>
                         )}
+                        {columnVisibility.visibility && (
+                          <TableCell>
+                            <Badge
+                              variant={
+                                cv.visibility === "public"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className="gap-1"
+                            >
+                              {cv.visibility === "public" ? (
+                                <Globe className="h-3 w-3" />
+                              ) : (
+                                <Lock className="h-3 w-3" />
+                              )}
+                              {cv.visibility === "public"
+                                ? "Public"
+                                : "Private"}
+                            </Badge>
+                          </TableCell>
+                        )}
+                        {columnVisibility.views && (
+                          <TableCell>{cv.views || 0}</TableCell>
+                        )}
                         {columnVisibility.name && (
                           <TableCell>
                             <div className="flex items-center gap-2">
@@ -628,6 +667,15 @@ const CVList = () => {
                                 <Copy className="h-4 w-4 mr-2" />
                                 Duplikasi
                               </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setCvToEditVisibility(cv);
+                                  setVisibilityModalOpen(true);
+                                }}
+                              >
+                                <Globe className="h-4 w-4 mr-2" />
+                                Atur Visibilitas
+                              </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
                                 onClick={() => handleDownload(cv, "docx")}
@@ -734,6 +782,11 @@ const CVList = () => {
       </div>
 
       {/* Filter Modal */}
+      <CVVisibilityModal
+        open={visibilityModalOpen}
+        onOpenChange={setVisibilityModalOpen}
+        cv={cvToEditVisibility}
+      />
       <CVFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}

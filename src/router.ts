@@ -91,6 +91,10 @@ export const createAppRouter = (queryClient: QueryClient) =>
       lazy: () =>
         import("./pages/PublicPortfolioShow").then(convert(queryClient)),
     },
+    {
+      path: "/cv/:slug",
+      lazy: () => import("./pages/PublicCVShow").then(convert(queryClient)),
+    },
     // Auth routes (only for non-authenticated users)
     {
       path: "/auth/login",
