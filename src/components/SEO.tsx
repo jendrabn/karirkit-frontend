@@ -21,7 +21,7 @@ export const SEO = ({
   title,
   description = "KarirKit adalah platform lengkap untuk mengelola lamaran kerja, membuat CV profesional, surat lamaran, dan portofolio digital. Tingkatkan peluang karir Anda dengan tools yang mudah digunakan.",
   keywords = "karirkit, lamaran kerja, cv maker, curriculum vitae, surat lamaran, cover letter, portofolio digital, job application tracker, career management, lowongan kerja, pencari kerja, job seeker, resume builder, aplikasi karir, manajemen karir",
-  image = `${env.APP_URL}/images/og-image.jpg`,
+  image = `${env.APP_URL}/images/og-image.png`,
   url,
   type = "website",
   author,
