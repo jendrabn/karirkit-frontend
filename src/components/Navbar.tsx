@@ -414,7 +414,6 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
 
               {/* Navigation Links */}
               {navLinks.map((link) => {
-                const Icon = link.icon;
                 return (
                   <Link
                     key={link.href}
@@ -423,7 +422,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                       handleHashNavigation(e, link.href);
                       setMobileMenuOpen(false);
                     }}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                    className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                   >
                     {link.label}
                   </Link>
