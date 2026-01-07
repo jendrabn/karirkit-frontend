@@ -83,7 +83,7 @@ const AdminTemplateShow = () => {
 
   const handleDelete = () => {
     if (template.id) {
-      deleteTemplateMutation.mutate({ id: template.id });
+      deleteTemplateMutation.mutate(template.id);
     }
   };
 

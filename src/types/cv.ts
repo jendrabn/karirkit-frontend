@@ -1,4 +1,5 @@
-import type { SocialLink } from "@/types/social";
+import type { ListResponse } from "./api";
+import { JOB_TYPE_LABELS } from "./job";
 
 export type DegreeType =
   | "middle_school"
@@ -10,57 +11,53 @@ export type DegreeType =
   | "master"
   | "doctorate"
   | "any";
-export type JobType =
-  | "full_time"
-  | "part_time"
-  | "contract"
-  | "internship"
-  | "freelance";
+
 export type SkillLevel = "beginner" | "intermediate" | "advanced" | "expert";
 export type OrganizationType =
   | "student"
-  | "professional"
   | "community"
-  | "volunteer";
+  | "professional"
+  | "volunteer"
+  | "other";
 
-export interface Education {
+export interface CvEducation {
   degree: DegreeType;
   school_name: string;
   school_location: string;
-  major?: string;
+  major: string;
   start_month: number;
   start_year: number;
-  end_month?: number | null;
-  end_year?: number | null;
+  end_month: number | null;
+  end_year: number | null;
   is_current: boolean;
-  gpa?: number | null;
-  description?: string;
+  gpa: number | null;
+  description: string | null;
 }
 
-export interface Certificate {
+export interface CvCertificate {
   title: string;
   issuer: string;
   issue_month: number;
   issue_year: number;
-  expiry_month?: number | null;
-  expiry_year?: number | null;
-  no_expiry: boolean;
-  credential_id?: string;
-  credential_url?: string;
-  description?: string;
+  expiry_month: number | null;
+  expiry_year: number | null;
+  no_expiry: boolean | null;
+  credential_id: string | null;
+  credential_url: string | null;
+  description: string | null;
 }
 
-export interface Experience {
+export interface CvExperience {
   job_title: string;
   company_name: string;
   company_location: string;
-  job_type: JobType;
+  job_type: any; // Simplified to avoid circular dependency or keep it flexible
   start_month: number;
   start_year: number;
-  end_month?: number | null;
-  end_year?: number | null;
+  end_month: number | null;
+  end_year: number | null;
   is_current: boolean;
-  description?: string;
+  description: string | null;
 }
 
 export type SkillCategory =
@@ -207,74 +204,96 @@ export type SkillCategory =
   | "manufacturing"
   | "construction";
 
-export interface Skill {
+export interface CvSkill {
   name: string;
   level: SkillLevel;
   skill_category: SkillCategory;
 }
 
-export interface Award {
+export interface CvAward {
   title: string;
   issuer: string;
-  description?: string;
-  year?: number | null;
-}
-
-export interface Project {
-  name: string;
-  description?: string | null;
+  description: string | null;
   year: number;
-  repo_url?: string | null;
-  live_url?: string | null;
 }
 
-export interface Organization {
+export interface CvSocialLink {
+  platform: string;
+  url: string;
+}
+
+export interface CvOrganization {
   organization_name: string;
   role_title: string;
   organization_type: OrganizationType;
-  location?: string;
+  location: string;
   start_month: number;
   start_year: number;
-  end_month?: number | null;
-  end_year?: number | null;
+  end_month: number | null;
+  end_year: number | null;
   is_current: boolean;
-  description?: string;
+  description: string | null;
 }
+
+export interface CvProject {
+  name: string;
+  description: string | null;
+  year: number;
+  repo_url: string | null;
+  live_url: string | null;
+}
+
+export type CvVisibility = "private" | "public";
 
 export interface CV {
   id: string;
   user_id: string;
-  template_id?: string;
+  slug: string;
   name: string;
   headline: string;
   email: string;
   phone: string;
   address: string;
   about: string;
-  photo: string;
-  created_at: string;
-  updated_at: string;
-  educations: Education[];
-  certificates: Certificate[];
-  experiences: Experience[];
-  skills: Skill[];
-  awards: Award[];
-  social_links: SocialLink[];
-  organizations: Organization[];
-  projects: Project[];
-  language?: "id" | "en";
-  slug?: string;
+  photo: string | null;
+  language: "id" | "en";
   visibility: CvVisibility;
   views: number;
+  template_id: string;
+  template?: {
+    id: string;
+    name: string;
+    path: string;
+    type: "cv" | "application_letter";
+  };
+  created_at: string;
+  updated_at: string;
+  educations: CvEducation[];
+  certificates: CvCertificate[];
+  experiences: CvExperience[];
+  skills: CvSkill[];
+  awards: CvAward[];
+  social_links: CvSocialLink[];
+  organizations: CvOrganization[];
+  projects: CvProject[];
 }
 
-export type CvVisibility = "public" | "private";
-export type LabelLanguage = "id" | "en";
+export type CvResponse = CV;
+export type CvListResponse = ListResponse<CV>;
 
 export const LANGUAGE_OPTIONS = [
   { value: "id", label: "Indonesia" },
   { value: "en", label: "Inggris" },
-];
+] as const;
+
+export type LabelLanguage = (typeof LANGUAGE_OPTIONS)[number]["value"];
+
+export const JOB_TYPE_OPTIONS = Object.entries(JOB_TYPE_LABELS).map(
+  ([value, label]) => ({
+    value,
+    label,
+  })
+);
 
 export const DEGREE_OPTIONS = [
   { value: "middle_school", label: "SMP/MTs" },
@@ -286,14 +305,6 @@ export const DEGREE_OPTIONS = [
   { value: "master", label: "Magister (S2)" },
   { value: "doctorate", label: "Doktor (S3)" },
   { value: "any", label: "Tidak ditentukan" },
-];
-
-export const JOB_TYPE_OPTIONS = [
-  { value: "full_time", label: "Full Time" },
-  { value: "part_time", label: "Part Time" },
-  { value: "contract", label: "Kontrak" },
-  { value: "internship", label: "Magang" },
-  { value: "freelance", label: "Freelance" },
 ];
 
 export const SKILL_LEVEL_OPTIONS = [
@@ -308,6 +319,7 @@ export const ORGANIZATION_TYPE_OPTIONS = [
   { value: "professional", label: "Organisasi Profesional" },
   { value: "community", label: "Komunitas" },
   { value: "volunteer", label: "Volunteer" },
+  { value: "other", label: "Lainnya" },
 ];
 
 export const MONTH_OPTIONS = [

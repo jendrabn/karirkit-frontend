@@ -2,26 +2,9 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-
-export type BlogCategory = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  blog_count: number;
-  created_at: string;
-  updated_at: string;
-};
-
-export type BlogCategoriesResponse = {
-  items: BlogCategory[];
-  pagination: {
-    page: number;
-    per_page: number;
-    total_items: number;
-    total_pages: number;
-  };
-};
+import type { BlogCategory } from "@/types/blog";
+export type { BlogCategory };
+import type { ListResponse } from "@/types/api";
 
 export type GetBlogCategoriesParams = {
   page?: number;
@@ -33,7 +16,7 @@ export type GetBlogCategoriesParams = {
 
 export const getBlogCategories = (
   params?: GetBlogCategoriesParams
-): Promise<BlogCategoriesResponse> => {
+): Promise<ListResponse<BlogCategory>> => {
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(

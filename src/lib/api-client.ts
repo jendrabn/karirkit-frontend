@@ -52,8 +52,7 @@ api.interceptors.response.use(
             ? `Alasan: ${payload.status_reason}`
             : "";
         const until =
-          typeof payload.suspended_until === "string" &&
-          payload.suspended_until
+          typeof payload.suspended_until === "string" && payload.suspended_until
             ? `Berlaku sampai: ${new Date(
                 payload.suspended_until
               ).toLocaleString("id-ID")}`

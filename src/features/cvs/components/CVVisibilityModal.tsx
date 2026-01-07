@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -19,22 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import { useUpdateCV } from "@/features/cvs/api/update-cv";
 import { toast } from "sonner";
+import {
+  cvVisibilitySchema,
+  type UpdateCvVisibilityInput as FormValues,
+  useUpdateCvVisibility,
+} from "../api/update-cv-visibility";
 import type { CV } from "@/features/cvs/api/get-cvs";
-
-const schema = z.object({
-  slug: z
-    .string()
-    .min(3, "Slug minimal 3 karakter")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Slug hanya boleh berisi huruf kecil, angka, dan strip"
-    ),
-  visibility: z.enum(["public", "private"]),
-});
-
-type FormValues = z.infer<typeof schema>;
 
 interface CVVisibilityModalProps {
   open: boolean;
@@ -55,21 +45,23 @@ export function CVVisibilityModal({
     formState: { errors },
     reset,
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(cvVisibilitySchema),
     defaultValues: {
       slug: "",
       visibility: "private",
     },
   });
 
-  const updateMutation = useUpdateCV({
+  const updateMutation = useUpdateCvVisibility({
     mutationConfig: {
       onSuccess: () => {
         toast.success("Pengaturan visibilitas berhasil disimpan");
         onOpenChange(false);
       },
-      onError: (error) => {
-        toast.error("Gagal menyimpan pengaturan: " + error.message);
+      onError: (error: any) => {
+        toast.error(
+          "Gagal menyimpan pengaturan: " + (error.message || "Unknown error")
+        );
       },
     },
   });
@@ -86,25 +78,11 @@ export function CVVisibilityModal({
   const onSubmit = (data: FormValues) => {
     if (!cv) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, user_id, created_at, updated_at, template, ...restCv } = cv;
-
     updateMutation.mutate({
       id: cv.id,
       data: {
-        ...restCv,
         slug: data.slug,
         visibility: data.visibility,
-        // Ensure arrays are not null
-        educations: cv.educations || [],
-        certificates: cv.certificates || [],
-        experiences: cv.experiences || [],
-        skills: cv.skills || [],
-        awards: cv.awards || [],
-        social_links: cv.social_links || [],
-        organizations: cv.organizations || [],
-        projects: cv.projects || [],
-        language: cv.language || "id",
       },
     });
   };
@@ -129,16 +107,17 @@ export function CVVisibilityModal({
             <FieldLabel>Visibilitas *</FieldLabel>
             <Select
               value={watch("visibility")}
-              onValueChange={(val) =>
-                setValue("visibility", val as "public" | "private")
-              }
+              onValueChange={(val) => setValue("visibility", val as any)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih visibilitas" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[100] bg-popover">
                 <SelectItem value="private">Private (Hanya Saya)</SelectItem>
                 <SelectItem value="public">Public (Semua Orang)</SelectItem>
+                <SelectItem value="unlisted">
+                  Unlisted (Hanya yang punya link)
+                </SelectItem>
               </SelectContent>
             </Select>
             <FieldError>{errors.visibility?.message}</FieldError>

@@ -3,13 +3,10 @@ import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
 import type { Job } from "@/types/job";
-import { getJobsQueryOptions } from "./get-jobs";
-import { getJobQueryOptions } from "./get-job";
 import { createJobInputSchema } from "./create-job";
+export { createJobInputSchema as updateJobInputSchema };
 
-export const updateJobInputSchema = createJobInputSchema.partial();
-
-export type UpdateJobInput = z.infer<typeof updateJobInputSchema>;
+export type UpdateJobInput = z.infer<typeof createJobInputSchema>;
 
 export const updateJob = ({
   data,
@@ -33,10 +30,10 @@ export const useUpdateJob = ({ mutationConfig }: UseUpdateJobOptions = {}) => {
   return useMutation({
     onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({
-        queryKey: getJobsQueryOptions().queryKey,
+        queryKey: ["jobs"],
       });
       queryClient.invalidateQueries({
-        queryKey: getJobQueryOptions(data.id).queryKey,
+        queryKey: ["job", data.id],
       });
       onSuccess?.(data, ...args);
     },

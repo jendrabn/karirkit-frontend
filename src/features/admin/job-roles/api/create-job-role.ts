@@ -2,14 +2,14 @@ import { z } from "zod";
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import type { JobRole } from "@/types/job";
-import { getJobRolesQueryOptions } from "./get-job-roles";
+import type { JobRole } from "@/types/jobRole";
 
-export const createJobRoleInputSchema = z.object({
-  name: z.string().min(1, "Nama wajib diisi"),
+export const jobRoleSchema = z.object({
+  name: z.string().min(1, "Nama role wajib diisi"),
 });
 
-export type CreateJobRoleInput = z.infer<typeof createJobRoleInputSchema>;
+export type JobRoleFormData = z.infer<typeof jobRoleSchema>;
+export type CreateJobRoleInput = JobRoleFormData;
 
 export const createJobRole = (data: CreateJobRoleInput): Promise<JobRole> => {
   return api.post("/admin/job-roles", data);
@@ -29,7 +29,7 @@ export const useCreateJobRole = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getJobRolesQueryOptions().queryKey,
+        queryKey: ["job-roles"],
       });
       onSuccess?.(...args);
     },

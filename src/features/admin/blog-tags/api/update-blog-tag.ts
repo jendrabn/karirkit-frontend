@@ -1,14 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { BlogTag } from "./get-blog-tags";
+import type { BlogTag } from "@/types/blog";
+import { tagSchema } from "./create-blog-tag";
 
-export type UpdateBlogTagInput = {
-  name: string;
-};
-
-export type UpdateBlogTagResponse = BlogTag;
+export type UpdateBlogTagInput = z.infer<typeof tagSchema>;
 
 export const updateBlogTag = ({
   id,
@@ -16,7 +14,7 @@ export const updateBlogTag = ({
 }: {
   id: string;
   data: UpdateBlogTagInput;
-}): Promise<UpdateBlogTagResponse> => {
+}): Promise<BlogTag> => {
   return api.put(`/admin/blog-tags/${id}`, data);
 };
 
@@ -33,12 +31,12 @@ export const useUpdateBlogTag = ({
 
   return useMutation({
     mutationFn: updateBlogTag,
-    onSuccess: (...args) => {
+    onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({ queryKey: ["blog-tags"] });
       queryClient.invalidateQueries({
-        queryKey: ["blog-tag", args[1].id],
+        queryKey: ["blog-tag", data.id],
       });
-      onSuccess?.(...args);
+      onSuccess?.(data, ...args);
     },
     ...restConfig,
   });

@@ -98,12 +98,12 @@ const AdminBlogShow = () => {
     >
       <MinimalSEO
         title={blog.title}
-        description={blog.excerpt}
+        description={blog.excerpt || undefined}
         noIndex={true}
       />
       <PageHeader
         title={blog.title}
-        subtitle={blog.excerpt}
+        subtitle={blog.excerpt || undefined}
         showBackButton
         backButtonUrl={paths.admin.blogs.list.getHref()}
       >

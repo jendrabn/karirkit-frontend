@@ -1,19 +1,7 @@
 import { api } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
-import type { Company, EmployeeSize } from "@/types/company";
-
-export interface Meta {
-  page: number;
-  per_page: number;
-  total_items: number;
-  total_pages: number;
-}
-
-export interface CompaniesListResponse {
-  items: Company[];
-  pagination: Meta;
-}
+import type { EmployeeSize, CompanyListResponse } from "@/types/company";
 
 export interface GetCompaniesParams {
   page?: number;
@@ -27,7 +15,7 @@ export interface GetCompaniesParams {
 
 export const getCompanies = (
   params?: GetCompaniesParams
-): Promise<CompaniesListResponse> => {
+): Promise<CompanyListResponse> => {
   return api.get("/admin/companies", {
     params,
   });

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
@@ -22,6 +23,31 @@ export type CreatePortfolioInput = {
     caption: string;
   }[];
 };
+
+export const portfolioSchema = z.object({
+  title: z.string().min(1, "Judul wajib diisi"),
+  sort_description: z.string().min(1, "Deskripsi singkat wajib diisi"),
+  description: z.string().min(1, "Deskripsi wajib diisi"),
+  role_title: z.string().min(1, "Role wajib diisi"),
+  project_type: z.enum(["work", "personal", "freelance", "academic"]),
+  industry: z.string().min(1, "Industri wajib diisi"),
+  month: z.number().min(1).max(12),
+  year: z.number().min(1900).max(2100),
+  live_url: z.string().optional().nullable(),
+  repo_url: z.string().optional().nullable(),
+  cover: z.string().optional().nullable(),
+  tools: z.array(z.string()).optional(),
+  medias: z
+    .array(
+      z.object({
+        path: z.string().min(1, "Path media wajib diisi"),
+        caption: z.string().optional().nullable(),
+      })
+    )
+    .optional(),
+});
+
+export type PortfolioFormData = z.infer<typeof portfolioSchema>;
 
 export type CreatePortfolioResponse = Portfolio;
 

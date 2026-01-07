@@ -3,17 +3,12 @@ import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { Template } from "./get-templates";
+import type { DocumentTemplate } from "@/types/template";
 
 export const createTemplateInputSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
-
-  type: z.enum(["cv", "application_letter"], {
-    message: "Tipe wajib dipilih",
-  }),
-  language: z.enum(["en", "id"], {
-    message: "Bahasa wajib dipilih",
-  }),
+  type: z.enum(["cv", "application_letter"], "Tipe wajib dipilih"),
+  language: z.enum(["en", "id"], "Bahasa wajib dipilih"),
   path: z.string().min(1, "Path file wajib diisi"),
   preview: z.string().min(1, "Preview image wajib diisi"),
   is_premium: z.boolean().default(false),
@@ -21,11 +16,9 @@ export const createTemplateInputSchema = z.object({
 
 export type CreateTemplateInput = z.infer<typeof createTemplateInputSchema>;
 
-export const createTemplate = ({
-  data,
-}: {
-  data: CreateTemplateInput;
-}): Promise<Template> => {
+export const createTemplate = (
+  data: CreateTemplateInput
+): Promise<DocumentTemplate> => {
   return api.post("/admin/templates", data);
 };
 

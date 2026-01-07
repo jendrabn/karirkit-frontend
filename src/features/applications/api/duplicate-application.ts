@@ -4,7 +4,11 @@ import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 import type { Application } from "@/types/application";
 
-export const duplicateApplication = ({ id }: { id: string }): Promise<Application> => {
+export const duplicateApplication = ({
+  id,
+}: {
+  id: string;
+}): Promise<Application> => {
   return api.post(`/applications/${id}/duplicate`);
 };
 

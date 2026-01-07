@@ -9,26 +9,27 @@ export interface User {
   name: string;
   username: string;
   email: string;
-  phone: string;
+  phone: string | null;
   role: UserRole;
-  status: UserStatus;
-  status_reason: string | null;
-  suspended_until: string | null;
-
-  avatar: string;
-  daily_download_limit: number;
+  avatar: string | null;
+  created_at: string;
+  updated_at: string;
+  /** @alias download_stats.total */
+  total_downloads?: number;
+  email_verified_at?: string | null;
   download_stats?: DownloadStats;
-  total_count?: number;
+  daily_download_limit: number;
   document_storage_limit: number;
-  document_storage_stats: DocumentStorageStats;
+  document_storage_stats?: DocumentStorageStats;
+  social_links?: SocialLink[];
+  status: UserStatus;
+  status_reason?: string | null;
+  suspended_until?: string | null;
   headline?: string | null;
   bio?: string | null;
   location?: string | null;
-  gender?: string | null;
+  gender?: "male" | "female" | null;
   birth_date?: string | null;
-  created_at: string;
-  updated_at: string;
-  social_links: SocialLink[];
 }
 
 export const USER_ROLE_OPTIONS = [

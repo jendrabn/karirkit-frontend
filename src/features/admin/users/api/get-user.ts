@@ -1,7 +1,7 @@
 import { api } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
-import type { User } from "./get-users";
+import type { User } from "@/types/user";
 
 export const getUser = ({ id }: { id: string }): Promise<User> => {
   return api.get(`/admin/users/${id}`);

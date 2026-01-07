@@ -85,7 +85,7 @@ export function JobCard({ job }: JobCardProps) {
                 >
                   {WORK_SYSTEM_LABELS[job.work_system]}
                 </Badge>
-                {job.talent_quota > 0 && (
+                {(job.talent_quota ?? 0) > 0 && (
                   <Badge
                     variant="outline"
                     className="rounded-md px-2 py-0.5 text-xs font-medium text-primary border-primary/30 inline-flex items-center gap-1"
@@ -124,13 +124,13 @@ export function JobCard({ job }: JobCardProps) {
                 <div className="flex items-center gap-1.5">
                   <Building2 className="h-3.5 w-3.5 flex-shrink-0" />
                   <span className="font-medium hover:text-foreground transition-colors">
-                    {job.company.name}
+                    {job.company?.name || "Perusahaan"}
                   </span>
                 </div>
                 <span className="text-muted-foreground/50">•</span>
                 <div className="flex items-center gap-1.5">
                   <Briefcase className="h-3.5 w-3.5 flex-shrink-0" />
-                  <span>{job.job_role.name}</span>
+                  <span>{job.job_role?.name || "Role"}</span>
                 </div>
               </div>
             </div>
@@ -141,7 +141,7 @@ export function JobCard({ job }: JobCardProps) {
               <div className="flex items-center gap-1.5 text-sm">
                 <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                 <span className="text-foreground truncate">
-                  {job.city.name}
+                  {job.city?.name || "Lokasi"}
                 </span>
               </div>
 
@@ -170,7 +170,7 @@ export function JobCard({ job }: JobCardProps) {
                 <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400 text-sm">
                   <Banknote className="h-4 w-4 flex-shrink-0" />
                   <span className="whitespace-nowrap">
-                    {formatSalary(job.salary_min, job.salary_max)}
+                    {formatSalary(job.salary_min || 0, job.salary_max || 0)}
                   </span>
                 </div>
 

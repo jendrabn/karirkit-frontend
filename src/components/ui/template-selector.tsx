@@ -31,7 +31,7 @@ export function TemplateSelector({
           onClick={() => setModalOpen(true)}
         >
           <img
-            src={selectedTemplate.previewImage}
+            src={selectedTemplate.preview}
             alt={selectedTemplate.name}
             className="h-full w-full object-cover"
           />

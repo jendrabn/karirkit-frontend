@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { dayjs } from "@/lib/date";
 import { CalendarIcon, FileText } from "lucide-react";
 import { ParagraphTemplateModal } from "./ParagraphTemplateModal";
@@ -43,33 +42,10 @@ import {
 } from "@/types/applicationLetter";
 import { useTemplates } from "@/features/landing/api/get-templates";
 import { useFormErrors } from "@/hooks/use-form-errors";
-
-const applicationLetterSchema = z.object({
-  template_id: z.string().optional(),
-  name: z.string().min(1, "Nama lengkap wajib diisi"),
-  birth_place_date: z.string().min(1, "Tempat, tanggal lahir wajib diisi"),
-  gender: z.enum(["male", "female"]),
-  marital_status: z.enum(["single", "married", "widowed", "divorced"]),
-  education: z.string().min(1, "Pendidikan wajib diisi"),
-  phone: z.string().min(1, "Nomor telepon wajib diisi"),
-  email: z.string().email("Email tidak valid").min(1, "Email wajib diisi"),
-  address: z.string().min(1, "Alamat wajib diisi"),
-  subject: z.string().min(1, "Subjek wajib diisi"),
-  applicant_city: z.string().min(1, "Kota pelamar wajib diisi"),
-  application_date: z.string().min(1, "Tanggal lamaran wajib diisi"),
-  receiver_title: z.string().min(1, "Jabatan penerima wajib diisi"),
-  company_name: z.string().min(1, "Nama perusahaan wajib diisi"),
-  company_city: z.string().min(1, "Kota perusahaan wajib diisi"),
-  company_address: z.string().min(1, "Alamat perusahaan wajib diisi"),
-  opening_paragraph: z.string().min(1, "Paragraf pembuka wajib diisi"),
-  body_paragraph: z.string().min(1, "Paragraf isi wajib diisi"),
-  attachments: z.string().optional(),
-  closing_paragraph: z.string().min(1, "Paragraf penutup wajib diisi"),
-  signature: z.string().optional(),
-  language: z.enum(["en", "id"]),
-});
-
-export type ApplicationLetterFormData = z.infer<typeof applicationLetterSchema>;
+import {
+  applicationLetterSchema,
+  type ApplicationLetterFormData,
+} from "../api/create-application-letter";
 
 interface ApplicationLetterFormProps {
   initialData?: Partial<ApplicationLetter>;
@@ -130,8 +106,7 @@ export function ApplicationLetterForm({
 
   const templates =
     templatesResponse?.items.map((t) => ({
-      id: t.id,
-      name: t.name,
+      ...t,
       previewImage: buildImageUrl(t.preview),
     })) || [];
 
@@ -140,7 +115,6 @@ export function ApplicationLetterForm({
     if (!form.getValues("template_id") && templates.length > 0) {
       const defaultTemplateId = templates[0].id;
       setSelectedTemplate(defaultTemplateId);
-      form.setValue("template_id", defaultTemplateId);
     }
   }, [templates, form]);
 

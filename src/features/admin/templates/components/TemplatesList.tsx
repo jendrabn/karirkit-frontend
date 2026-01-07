@@ -143,7 +143,7 @@ export const TemplatesList = () => {
 
   const confirmDelete = () => {
     if (templateToDelete) {
-      deleteTemplateMutation.mutate({ id: templateToDelete });
+      deleteTemplateMutation.mutate(templateToDelete);
     }
   };
 
@@ -175,7 +175,7 @@ export const TemplatesList = () => {
   };
 
   const confirmBulkDelete = () => {
-    massDeleteMutation.mutate({ ids: selectedIds });
+    massDeleteMutation.mutate(selectedIds);
   };
 
   const SortableHeader = ({
@@ -338,10 +338,10 @@ export const TemplatesList = () => {
                 </TableRow>
               ) : templates.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                    <TableCell
-                      colSpan={12}
-                      className="text-center py-16 text-muted-foreground"
-                    >
+                  <TableCell
+                    colSpan={12}
+                    className="text-center py-16 text-muted-foreground"
+                  >
                     <div className="flex flex-col items-center gap-2">
                       <FileStack className="h-10 w-10 text-muted-foreground/50" />
                       <p className="text-base font-medium">

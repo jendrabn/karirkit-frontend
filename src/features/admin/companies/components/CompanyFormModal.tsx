@@ -126,8 +126,7 @@ export function CompanyFormModal({
                     <FieldLabel>Ukuran Perusahaan *</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
+                      value={field.value || undefined}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih ukuran" />

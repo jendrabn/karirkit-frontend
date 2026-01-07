@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,12 +14,7 @@ import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import type { BlogTag } from "../api/get-blog-tags";
 import { useEffect } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
-
-const tagSchema = z.object({
-  name: z.string().min(1, "Nama tag wajib diisi"),
-});
-
-type TagFormData = z.infer<typeof tagSchema>;
+import { tagSchema, type TagFormData } from "../api/create-blog-tag";
 
 interface TagModalProps {
   open: boolean;

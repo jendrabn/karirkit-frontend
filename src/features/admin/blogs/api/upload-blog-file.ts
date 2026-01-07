@@ -2,15 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
+import type { UploadData } from "@/lib/upload";
 
-export type UploadBlogFileResponse = {
-  path: string;
-  original_name: string;
-  size: number;
-  mime_type: string;
-};
-
-export const uploadBlogFile = (file: File): Promise<UploadBlogFileResponse> => {
+export const uploadBlogFile = (file: File): Promise<UploadData> => {
   const formData = new FormData();
   formData.append("file", file);
 

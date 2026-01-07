@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,22 +19,10 @@ import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
-
-const portfolioSchema = z.object({
-  title: z.string().min(1, "Judul wajib diisi"),
-  sort_description: z.string().min(1, "Deskripsi singkat wajib diisi"),
-  description: z.string().min(1, "Deskripsi wajib diisi"),
-  role_title: z.string().min(1, "Role wajib diisi"),
-  project_type: z.enum(["work", "personal", "freelance", "academic"]),
-  industry: z.string().min(1, "Industri wajib diisi"),
-  month: z.number().min(1).max(12),
-  year: z.number().min(1900).max(2100),
-  live_url: z.string().optional(),
-  repo_url: z.string().optional(),
-  cover: z.string().optional(),
-});
-
-type PortfolioFormData = z.infer<typeof portfolioSchema>;
+import {
+  portfolioSchema,
+  type PortfolioFormData,
+} from "../api/create-portfolio";
 
 interface PortfolioFormProps {
   initialData?: Portfolio;
@@ -71,15 +58,17 @@ export function PortfolioForm({
   onSubmit,
   isLoading,
 }: PortfolioFormProps) {
+  const [newTool, setNewTool] = useState("");
   const [tools, setTools] = useState<string[]>(
     initialData?.tools?.map((t) => t.name) || []
   );
-  const [newTool, setNewTool] = useState("");
-  const [medias, setMedias] = useState<{ path: string; caption: string }[]>(
-    initialData?.medias?.map((m) => ({ path: m.path, caption: m.caption })) ||
-      []
-  );
   const [cover, setCover] = useState(initialData?.cover || "");
+  const [medias, setMedias] = useState<{ path: string; caption: string }[]>(
+    initialData?.medias?.map((m) => ({
+      path: m.path,
+      caption: m.caption || "",
+    })) || []
+  );
 
   const form = useForm<PortfolioFormData>({
     resolver: zodResolver(portfolioSchema),

@@ -66,7 +66,7 @@ export function TemplateGridModal({
                     onClick={() => handleSelect(template.id)}
                   >
                     <img
-                      src={template.previewImage}
+                      src={template.preview}
                       alt={template.name}
                       className="h-full w-full object-cover transition-transform group-hover:scale-105"
                     />
@@ -79,7 +79,10 @@ export function TemplateGridModal({
                     >
                       <Button
                         size="sm"
-                        className={cn("transition-all", isSelected && "bg-primary")}
+                        className={cn(
+                          "transition-all",
+                          isSelected && "bg-primary"
+                        )}
                       >
                         {isSelected ? (
                           <>

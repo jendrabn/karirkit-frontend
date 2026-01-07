@@ -3,7 +3,7 @@ import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { ApplicationLetterForm } from "@/features/application-letters/components/ApplicationLetterForm";
-import type { ApplicationLetterFormData } from "@/features/application-letters/components/ApplicationLetterForm";
+import { type ApplicationLetterFormData } from "@/features/application-letters/api/create-application-letter";
 import { useCreateApplicationLetter } from "@/features/application-letters/api/create-application-letter";
 import { toast } from "sonner";
 import { useFormErrors } from "@/hooks/use-form-errors";

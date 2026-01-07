@@ -178,7 +178,9 @@ export function CompaniesList({
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={buildImageUrl(company.logo)} />
+                          <AvatarImage
+                            src={buildImageUrl(company.logo) || undefined}
+                          />
                           <AvatarFallback className="bg-primary/10 text-primary text-xs">
                             {company.name.charAt(0)}
                           </AvatarFallback>
@@ -199,7 +201,9 @@ export function CompaniesList({
                   )}
                   {columnVisibility.size && (
                     <TableCell className="text-sm text-muted-foreground">
-                      {EMPLOYEE_SIZE_LABELS[company.employee_size]}
+                      {company.employee_size
+                        ? EMPLOYEE_SIZE_LABELS[company.employee_size]
+                        : "-"}
                     </TableCell>
                   )}
                   {columnVisibility.jobCount && (

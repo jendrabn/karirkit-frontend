@@ -2,14 +2,21 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { ApplicationsResponse } from "@/types/application";
+import type { ApplicationListResponse } from "@/types/application";
 
 export type GetApplicationsParams = {
   page?: number;
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "date" | "created_at" | "updated_at" | "company_name" | "position" | "status" | "result_status";
+  sort_by?:
+    | "date"
+    | "created_at"
+    | "updated_at"
+    | "company_name"
+    | "position"
+    | "status"
+    | "result_status";
   status?: string;
   result_status?: string;
   job_type?: string;
@@ -21,7 +28,7 @@ export type GetApplicationsParams = {
 
 export const getApplications = (
   params?: GetApplicationsParams
-): Promise<ApplicationsResponse> => {
+): Promise<ApplicationListResponse> => {
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(

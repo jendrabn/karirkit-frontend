@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -84,9 +83,12 @@ import {
   type ColumnVisibility,
   defaultColumnVisibility,
 } from "@/features/admin/users/components/UserColumnToggle";
-import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS, type User } from "@/types/user";
 import {
-  buildImageUrl,
+  USER_ROLE_OPTIONS,
+  USER_STATUS_OPTIONS,
+  type User,
+} from "@/types/user";
+import {
   bytesToMegabytes,
   cn,
   formatBytes,
@@ -95,7 +97,9 @@ import {
 import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
 import { useMassDeleteUsers } from "../api/mass-delete-users";
-import { useUpdateUser } from "../api/update-user";
+import { useUpdateUserStatus } from "../api/update-user-status";
+import { useUpdateUserDownloadLimit } from "../api/update-user-download-limit";
+import { useUpdateUserStorageLimit } from "../api/update-user-storage-limit";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useAuth } from "@/contexts/AuthContext";
@@ -169,7 +173,7 @@ export const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const updateDownloadLimitMutation = useUpdateUser({
+  const updateDownloadLimitMutation = useUpdateUserDownloadLimit({
     mutationConfig: {
       onSuccess: (_, variables) => {
         toast.success(
@@ -183,7 +187,7 @@ export const UsersList = () => {
       },
     },
   });
-  const updateStorageLimitMutation = useUpdateUser({
+  const updateStorageLimitMutation = useUpdateUserStorageLimit({
     mutationConfig: {
       onSuccess: (_, variables) => {
         toast.success(
@@ -197,7 +201,7 @@ export const UsersList = () => {
       },
     },
   });
-  const updateStatusMutation = useUpdateUser({
+  const updateStatusMutation = useUpdateUserStatus({
     mutationConfig: {
       onSuccess: () => {
         toast.success("Status akun berhasil diperbarui");
@@ -367,7 +371,9 @@ export const UsersList = () => {
       status: userForStatus.status || "active",
       status_reason: userForStatus.status_reason || "",
       suspended_until: userForStatus.suspended_until
-        ? dayjs(userForStatus.suspended_until).local().format("YYYY-MM-DDTHH:mm")
+        ? dayjs(userForStatus.suspended_until)
+            .local()
+            .format("YYYY-MM-DDTHH:mm")
         : "",
     });
   }, [statusForm, userForStatus]);
@@ -616,20 +622,12 @@ export const UsersList = () => {
                     </TableCell>
                     {columnVisibility.name && (
                       <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={buildImageUrl(user.avatar)} />
-                            <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                              {user.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="font-medium">{user.name}</span>
-                        </div>
+                        <span className="font-medium">{user.name}</span>
                       </TableCell>
                     )}
                     {columnVisibility.username && (
                       <TableCell className="text-muted-foreground">
-                        @{user.username}
+                        {user.username}
                       </TableCell>
                     )}
                     {columnVisibility.email && (
@@ -655,7 +653,9 @@ export const UsersList = () => {
                         {user.suspended_until ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Badge variant={getStatusBadgeVariant(user.status)}>
+                              <Badge
+                                variant={getStatusBadgeVariant(user.status)}
+                              >
                                 {
                                   USER_STATUS_OPTIONS.find(
                                     (opt) => opt.value === user.status
@@ -713,9 +713,7 @@ export const UsersList = () => {
                             })
                           }
                           type="number"
-                          formatDisplay={(val) =>
-                            formatBytes(val ?? 0)
-                          }
+                          formatDisplay={(val) => formatBytes(val ?? 0)}
                           formatInput={(val) =>
                             String(Math.round(bytesToMegabytes(val ?? 0)))
                           }
@@ -732,7 +730,7 @@ export const UsersList = () => {
                     )}
                     {columnVisibility.total_downloads && (
                       <TableCell className="text-muted-foreground">
-                        {user.total_count ?? 0}
+                        {user.total_downloads ?? 0}
                       </TableCell>
                     )}
                     {columnVisibility.created_at && (
@@ -948,7 +946,9 @@ export const UsersList = () => {
               <FieldDescription>
                 Status menentukan akses user ke aplikasi.
               </FieldDescription>
-              <FieldError>{statusForm.formState.errors.status?.message}</FieldError>
+              <FieldError>
+                {statusForm.formState.errors.status?.message}
+              </FieldError>
             </Field>
 
             {statusForm.watch("status") === "suspended" && (

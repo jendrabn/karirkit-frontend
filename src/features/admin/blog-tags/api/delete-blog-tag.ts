@@ -2,8 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
+import type { MessageResponse } from "@/types/api";
 
-export const deleteBlogTag = (id: string): Promise<void> => {
+export const deleteBlogTag = (id: string): Promise<MessageResponse> => {
   return api.delete(`/admin/blog-tags/${id}`);
 };
 

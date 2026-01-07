@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,13 +15,10 @@ import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import type { BlogCategory } from "../api/get-blog-categories";
 import { useEffect } from "react";
 import { useFormErrors } from "@/hooks/use-form-errors";
-
-const categorySchema = z.object({
-  name: z.string().min(1, "Nama kategori wajib diisi"),
-  description: z.string().min(1, "Deskripsi wajib diisi"),
-});
-
-type CategoryFormData = z.infer<typeof categorySchema>;
+import {
+  categorySchema,
+  type CategoryFormData,
+} from "../api/create-blog-category";
 
 interface CategoryModalProps {
   open: boolean;

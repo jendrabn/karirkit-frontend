@@ -24,10 +24,7 @@ type UseApplicationOptions = {
   queryConfig?: QueryConfig<typeof getApplicationQueryOptions>;
 };
 
-export const useApplication = ({
-  id,
-  queryConfig,
-}: UseApplicationOptions) => {
+export const useApplication = ({ id, queryConfig }: UseApplicationOptions) => {
   return useQuery({
     ...getApplicationQueryOptions(id),
     ...queryConfig,

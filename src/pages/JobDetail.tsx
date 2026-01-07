@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import {
   MapPin,
@@ -26,7 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { ShareMenu } from "@/components/jobs/ShareMenu";
+import { ShareMenu } from "@/features/jobs/components/ShareMenu";
 import { buildImageUrl } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import {
@@ -40,10 +40,11 @@ import { useJob } from "@/features/jobs/api/get-job";
 import { dayjs } from "@/lib/date";
 
 const formatSalary = (min: number, max: number): string => {
-  const formatNumber = (num: number) => num.toLocaleString("id-ID", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
+  const formatNumber = (num: number) =>
+    num.toLocaleString("id-ID", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
   if (min === 0 && max === 0) return "Negotiable";
   if (max === 0) return `Rp ${formatNumber(min)}+`;
   return `Rp ${formatNumber(min)} - Rp ${formatNumber(max)}`;
@@ -92,12 +93,12 @@ export default function JobDetail() {
   };
 
   // Add keyboard event listener
-  useState(() => {
+  useEffect(() => {
     if (typeof window !== "undefined") {
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
     }
-  });
+  }, [selectedImageIndex]);
 
   if (isLoading) {
     return (
@@ -158,12 +159,13 @@ export default function JobDetail() {
                   <div className="flex gap-4">
                     <Avatar className="h-16 w-16 rounded-lg shrink-0">
                       <AvatarImage
-                        src={buildImageUrl(job.company.logo)}
-                        alt={job.company.name}
+                        src={buildImageUrl(job.company?.logo)}
+                        alt={job.company?.name}
                         className="object-contain"
                       />
                       <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold text-xl">
-                        {job.company.name.substring(0, 2).toUpperCase()}
+                        {job.company?.name?.substring(0, 2).toUpperCase() ||
+                          "NA"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
@@ -173,7 +175,7 @@ export default function JobDetail() {
                             {job.title}
                           </h1>
                           <p className="text-lg text-muted-foreground mb-3">
-                            {job.company.name}
+                            {job.company?.name}
                           </p>
                         </div>
                         <div className="flex gap-2">
@@ -203,7 +205,7 @@ export default function JobDetail() {
                         </Badge>
                         <Badge variant="outline">
                           <MapPin className="h-3 w-3 mr-1" />
-                          {job.city.name}, {job.city.province.name}
+                          {job.city?.name}, {job.city?.province?.name}
                         </Badge>
                       </div>
                     </div>
@@ -352,7 +354,7 @@ export default function JobDetail() {
                       Kisaran Gaji
                     </p>
                     <p className="text-2xl font-bold text-primary">
-                      {formatSalary(job.salary_min, job.salary_max)}
+                      {formatSalary(job.salary_min || 0, job.salary_max || 0)}
                     </p>
                   </div>
                   <Separator className="my-4" />
@@ -394,26 +396,27 @@ export default function JobDetail() {
                   <div className="flex items-center gap-3 mb-4">
                     <Avatar className="h-12 w-12 rounded-lg shrink-0">
                       <AvatarImage
-                        src={buildImageUrl(job.company.logo)}
-                        alt={job.company.name}
+                        src={buildImageUrl(job.company?.logo)}
+                        alt={job.company?.name}
                         className="object-contain"
                       />
                       <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold">
-                        {job.company.name.substring(0, 2).toUpperCase()}
+                        {job.company?.name?.substring(0, 2).toUpperCase() ||
+                          "NA"}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold">{job.company.name}</p>
+                      <p className="font-semibold">{job.company?.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {job.company.business_sector}
+                        {job.company?.business_sector}
                       </p>
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                    {job.company.description}
+                    {job.company?.description}
                   </p>
                   <div className="space-y-2 text-sm">
-                    {job.company.employee_size && (
+                    {job.company?.employee_size && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Users className="h-4 w-4 shrink-0" />
                         <span>
@@ -422,7 +425,7 @@ export default function JobDetail() {
                         </span>
                       </div>
                     )}
-                    {job.company.website_url && (
+                    {job.company?.website_url && (
                       <div className="flex items-center gap-2">
                         <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
                         <a

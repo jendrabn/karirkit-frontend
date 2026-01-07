@@ -1,9 +1,11 @@
+import type { ListResponse } from "./api";
+
 export type JobType =
   | "full_time"
-  | "part_time"
   | "contract"
   | "internship"
-  | "freelance";
+  | "freelance"
+  | "part_time";
 export type WorkSystem = "onsite" | "hybrid" | "remote";
 export type EducationLevel =
   | "middle_school"
@@ -15,14 +17,15 @@ export type EducationLevel =
   | "master"
   | "doctorate"
   | "any";
+
 export type EmployeeSize =
   | "one_to_ten"
   | "eleven_to_fifty"
   | "fifty_one_to_two_hundred"
   | "two_hundred_one_to_five_hundred"
-  | "five_hundred_one_to_thousand"
-  | "more_than_thousand";
-export type JobStatus = "draft" | "published" | "closed" | "expired";
+  | "five_hundred_plus";
+
+export type JobStatus = "draft" | "published" | "closed" | "archived";
 
 export interface Province {
   id: string;
@@ -33,7 +36,7 @@ export interface City {
   id: string;
   province_id: string;
   name: string;
-  province: Province;
+  province?: Province;
   job_count?: number;
 }
 
@@ -41,7 +44,6 @@ export interface JobRole {
   id: string;
   name: string;
   slug: string;
-  job_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -50,11 +52,13 @@ export interface Company {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  logo: string;
+  description: string | null;
+  logo: string | null;
   employee_size: EmployeeSize;
-  business_sector: string;
-  website_url: string;
+  business_sector: string | null;
+  website_url: string | null;
+  email: string | null;
+  phone: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -69,7 +73,7 @@ export interface Job {
   id: string;
   company_id: string;
   job_role_id: string;
-  city_id: string;
+  city_id: string | null;
   title: string;
   slug: string;
   job_type: JobType;
@@ -79,52 +83,42 @@ export interface Job {
   max_years_of_experience: number | null;
   description: string;
   requirements: string;
-  salary_min: number;
-  salary_max: number;
-  talent_quota: number;
-  job_url: string;
-  contact_name: string;
-  contact_email: string;
-  contact_phone: string;
+  salary_min: number | null;
+  salary_max: number | null;
+  talent_quota: number | null;
+  job_url: string | null;
+  contact_name: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
   medias: JobMedia[];
   status: JobStatus;
-  expiration_date: string;
+  expiration_date: string | null;
   created_at: string;
   updated_at: string;
   company: Company;
   job_role: JobRole;
-  city: City;
+  city: City | null;
 }
 
-export interface JobPagination {
-  page: number;
-  per_page: number;
-  total_items: number;
-  total_pages: number;
-}
-
-export interface JobsResponse {
-  data: {
-    items: Job[];
-    pagination: JobPagination;
-  };
-}
+export type JobResponse = Job;
+export type JobListResponse = ListResponse<Job>;
+export type JobPagination = ListResponse<Job>["pagination"];
 
 export interface JobFilters {
   q?: string;
-  company_id?: string | string[];
-  job_role_id?: string | string[];
-  city_id?: string | string[];
-  province_id?: string | string[];
-  job_type?: JobType | JobType[];
-  work_system?: WorkSystem | WorkSystem[];
-  education_level?: EducationLevel | EducationLevel[];
-  experience_min?: number;
-  salary_min?: number;
   page?: number;
   per_page?: number;
-  sort?: "created_at" | "salary_min" | "experience_min";
-  sort_order?: "asc" | "desc";
+  job_type?: JobType[];
+  work_system?: WorkSystem[];
+  education_level?: EducationLevel[];
+  min_years_of_experience?: number;
+  max_years_of_experience?: number;
+  experience_min?: number;
+  city_id?: string[];
+  job_role_id?: string[];
+  company_id?: string[];
+  salary_min?: number;
+  salary_max?: number;
 }
 
 export const JOB_TYPE_LABELS: Record<JobType, string> = {
@@ -158,6 +152,5 @@ export const EMPLOYEE_SIZE_LABELS: Record<EmployeeSize, string> = {
   eleven_to_fifty: "11-50 karyawan",
   fifty_one_to_two_hundred: "51-200 karyawan",
   two_hundred_one_to_five_hundred: "201-500 karyawan",
-  five_hundred_one_to_thousand: "501-1000 karyawan",
-  more_than_thousand: "1000+ karyawan",
+  five_hundred_plus: "500+ karyawan",
 };

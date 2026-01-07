@@ -3,7 +3,7 @@ import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { CVForm } from "@/features/cvs/components/CVForm";
-import type { CVFormData } from "@/features/cvs/components/CVForm";
+import { type CVFormData } from "@/features/cvs/api/create-cv";
 import { useCreateCV } from "@/features/cvs/api/create-cv";
 import { toast } from "sonner";
 import { useFormErrors } from "@/hooks/use-form-errors";
@@ -26,7 +26,7 @@ export default function CVCreate() {
   });
 
   const handleSubmit = (data: CVFormData) => {
-    createMutation.mutate(data);
+    createMutation.mutate(data as any);
   };
 
   return (

@@ -1,16 +1,11 @@
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import { getCompaniesQueryOptions } from "./get-companies";
-
-export interface MassDeleteCompaniesResponse {
-  message: string;
-  deleted_count: number;
-}
+import type { MessageResponse } from "@/types/api";
 
 export const massDeleteCompanies = (
   ids: string[]
-): Promise<MassDeleteCompaniesResponse> => {
+): Promise<MessageResponse> => {
   return api.delete("/admin/companies/mass-delete", {
     data: { ids },
   });
@@ -30,7 +25,7 @@ export const useMassDeleteCompanies = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getCompaniesQueryOptions().queryKey,
+        queryKey: ["companies"],
       });
       onSuccess?.(...args);
     },

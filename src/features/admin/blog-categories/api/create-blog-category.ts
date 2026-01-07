@@ -1,19 +1,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { BlogCategory } from "./get-blog-categories";
+import type { BlogCategory } from "@/types/blog";
 
-export type CreateBlogCategoryInput = {
-  name: string;
-  description: string;
-};
+export const categorySchema = z.object({
+  name: z.string().min(1, "Nama kategori wajib diisi"),
+  description: z.string().min(1, "Deskripsi wajib diisi"),
+});
 
-export type CreateBlogCategoryResponse = BlogCategory;
+export type CategoryFormData = z.infer<typeof categorySchema>;
+export type CreateBlogCategoryInput = CategoryFormData;
 
 export const createBlogCategory = (
   data: CreateBlogCategoryInput
-): Promise<CreateBlogCategoryResponse> => {
+): Promise<BlogCategory> => {
   return api.post("/admin/blog-categories", data);
 };
 

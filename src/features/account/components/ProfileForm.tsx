@@ -22,7 +22,7 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { useUploadFile, type UploadResponse } from "@/lib/upload";
+import { useUploadFile, type UploadData } from "@/lib/upload";
 import { dayjs } from "@/lib/date";
 import { buildImageUrl } from "@/lib/utils";
 import {
@@ -30,7 +30,7 @@ import {
   useUpdateProfile,
 } from "@/features/account/api/update-profile";
 import { useAuth } from "@/contexts/AuthContext";
-import type { User } from "@/types/api";
+import type { User } from "@/types/user";
 import { useFormErrors } from "@/hooks/use-form-errors";
 import { z } from "zod";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -39,9 +39,7 @@ import { SOCIAL_PLATFORM_OPTIONS } from "@/types/social";
 const genderOptions = [
   { value: "male", label: "Laki-laki" },
   { value: "female", label: "Perempuan" },
-  { value: "other", label: "Lainnya" },
-];
-
+] as const;
 
 type ProfileFormData = z.infer<typeof updateProfileInputSchema>;
 
@@ -53,7 +51,7 @@ const ProfileForm = () => {
 
   const uploadMutation = useUploadFile({
     mutationConfig: {
-      onSuccess: (data: UploadResponse) => {
+      onSuccess: (data: UploadData) => {
         form.setValue("avatar", data.path);
         setAvatarPreview(buildImageUrl(data.path));
         toast.success("Foto berhasil diupload, silakan klik Simpan Perubahan");
@@ -88,9 +86,9 @@ const ProfileForm = () => {
       headline: user?.headline || "",
       bio: user?.bio || "",
       location: user?.location || "",
-      gender: (user?.gender as "male" | "female" | "other" | undefined) || undefined,
+      gender: (user?.gender as "male" | "female" | undefined) || undefined,
       birth_date: user?.birth_date || "",
-      social_links: (user?.social_links || []).map((link) => ({
+      social_links: (user?.social_links || []).map((link: any) => ({
         platform: link.platform,
         url: link.url,
         id: link.id,
@@ -142,7 +140,7 @@ const ProfileForm = () => {
     if (!result.success) {
       // Set error ke form berdasarkan error Zod
       result.error.issues.forEach((issue) => {
-        const path = issue.path.join('.') as keyof ProfileFormData;
+        const path = issue.path.join(".") as keyof ProfileFormData;
         form.setError(path, {
           type: "manual",
           message: issue.message,
@@ -266,10 +264,14 @@ const ProfileForm = () => {
                     render={({ field }) => (
                       <Select
                         value={field.value ?? undefined}
-                        onValueChange={(value) => field.onChange(value as "male" | "female" | "other" | undefined)}
+                        onValueChange={(value) =>
+                          field.onChange(value as "male" | "female" | undefined)
+                        }
                       >
                         <SelectTrigger
-                          className={!field.value ? "text-muted-foreground" : undefined}
+                          className={
+                            !field.value ? "text-muted-foreground" : undefined
+                          }
                         >
                           <SelectValue placeholder="Pilih gender" />
                         </SelectTrigger>
@@ -324,7 +326,8 @@ const ProfileForm = () => {
                 <div>
                   <FieldLabel>Media Sosial</FieldLabel>
                   <FieldDescription className="mt-1">
-                    Gunakan platform yang tersedia untuk menjaga konsistensi tautan.
+                    Gunakan platform yang tersedia untuk menjaga konsistensi
+                    tautan.
                   </FieldDescription>
                 </div>
                 <Button
@@ -350,7 +353,8 @@ const ProfileForm = () => {
                   </div>
                   <p className="font-medium">Belum ada tautan sosial</p>
                   <p className="text-sm">
-                    Tambahkan tautan profil profesional Anda agar mudah ditemukan.
+                    Tambahkan tautan profil profesional Anda agar mudah
+                    ditemukan.
                   </p>
                 </div>
               ) : (

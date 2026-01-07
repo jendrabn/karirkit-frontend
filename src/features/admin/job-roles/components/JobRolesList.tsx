@@ -35,7 +35,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { type JobRole } from "@/types/job";
+import { type JobRole } from "@/types/jobRole";
 import { cn } from "@/lib/utils";
 import { type ColumnVisibility } from "./JobRoleColumnToggle";
 

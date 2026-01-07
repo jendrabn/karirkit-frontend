@@ -2,9 +2,13 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { Template } from "./get-templates";
+import type { DocumentTemplate } from "@/types/template";
 
-export const getTemplate = ({ id }: { id: string }): Promise<Template> => {
+export const getTemplate = ({
+  id,
+}: {
+  id: string;
+}): Promise<DocumentTemplate> => {
   return api.get(`/admin/templates/${id}`);
 };
 

@@ -28,7 +28,7 @@ import {
   updateUserInputSchema,
   type UpdateUserInput,
 } from "../api/update-user";
-import type { User } from "../api/get-users";
+import type { User } from "@/types/user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface UserFormProps {
@@ -86,7 +86,7 @@ export function UserForm({
                 <div className="flex justify-center mb-6">
                   <Field>
                     <AvatarUpload
-                      value={field.value}
+                      value={field.value || ""}
                       onChange={field.onChange}
                       name={form.watch("name")}
                     />
@@ -158,10 +158,7 @@ export function UserForm({
                 render={({ field }) => (
                   <Field>
                     <FieldLabel>Role *</FieldLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih role" />
                       </SelectTrigger>

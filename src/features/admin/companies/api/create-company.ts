@@ -3,25 +3,28 @@ import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
 import type { Company } from "@/types/company";
-import { getCompaniesQueryOptions } from "./get-companies";
 
 export const createCompanyInputSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
-  description: z.string().min(1, "Deskripsi wajib diisi"),
-  logo: z.string().optional(),
-  employee_size: z.enum([
-    "one_to_ten",
-    "eleven_to_fifty",
-    "fifty_one_to_two_hundred",
-    "two_hundred_one_to_five_hundred",
-    "five_hundred_plus",
-  ] as const),
-  business_sector: z.string().min(1, "Sektor bisnis wajib diisi"),
+  description: z.string().optional().nullable(),
+  logo: z.string().optional().nullable(),
+  employee_size: z
+    .enum([
+      "one_to_ten",
+      "eleven_to_fifty",
+      "fifty_one_to_two_hundred",
+      "two_hundred_one_to_five_hundred",
+      "five_hundred_plus",
+    ])
+    .optional()
+    .nullable(),
+  business_sector: z.string().optional().nullable(),
   website_url: z
     .string()
     .url("Domain URL tidak valid")
     .or(z.literal(""))
-    .optional(),
+    .optional()
+    .nullable(),
 });
 
 export type CreateCompanyInput = z.infer<typeof createCompanyInputSchema>;
@@ -44,7 +47,7 @@ export const useCreateCompany = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getCompaniesQueryOptions().queryKey,
+        queryKey: ["companies"],
       });
       onSuccess?.(...args);
     },

@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import type { User } from "@/features/admin/users/api/get-users";
+import type { User } from "@/types/user";
 
 const getRoleBadgeVariant = (role: string) => {
   return role === "admin" ? "default" : "secondary";
@@ -65,7 +65,7 @@ export const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar} />
+                        <AvatarImage src={user.avatar || undefined} />
                         <AvatarFallback className="bg-primary/10 text-primary text-xs">
                           {user.name.charAt(0)}
                         </AvatarFallback>

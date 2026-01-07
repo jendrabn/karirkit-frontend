@@ -2,50 +2,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { BlogCategory } from "@/features/admin/blog-categories/api/get-blog-categories";
-import type { BlogTag } from "@/features/admin/blog-tags/api/get-blog-tags";
-
-export type BlogUser = {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  phone: string;
-  role: "user" | "admin";
-  avatar: string;
-  created_at: string;
-  updated_at: string;
-};
-
-export type Blog = {
-  id: string;
-  user_id: string;
-  category_id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  featured_image: string;
-  status: "draft" | "published" | "archived";
-  read_time: number;
-  views: number;
-  created_at: string;
-  updated_at: string;
-  published_at: string | null;
-  user: BlogUser;
-  category: BlogCategory;
-  tags: BlogTag[];
-};
-
-export type BlogsResponse = {
-  items: Blog[];
-  pagination: {
-    page: number;
-    per_page: number;
-    total_items: number;
-    total_pages: number;
-  };
-};
+import type { BlogListResponse } from "@/types/blog";
 
 export type GetBlogsParams = {
   page?: number;
@@ -66,7 +23,9 @@ export type GetBlogsParams = {
   published_to?: string;
 };
 
-export const getBlogs = (params?: GetBlogsParams): Promise<BlogsResponse> => {
+export const getBlogs = (
+  params?: GetBlogsParams
+): Promise<BlogListResponse> => {
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(

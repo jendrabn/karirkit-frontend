@@ -119,7 +119,7 @@ export function DashboardSidebar() {
   const isAdmin =
     isAuthenticated &&
     user &&
-    (user.role === "admin" || user.role === "superadmin");
+    (user.role === "admin" || (user.role as string) === "superadmin");
 
   const handleLogout = () => {
     logout();

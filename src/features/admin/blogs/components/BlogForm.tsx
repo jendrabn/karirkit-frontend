@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { X, Image as ImageIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
-import { Controller } from "react-hook-form";
 import {
   Select,
   SelectContent,
@@ -41,20 +39,8 @@ import { toast } from "sonner";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { useUploadFile } from "@/lib/upload";
 import { useFormErrors } from "@/hooks/use-form-errors";
+import { blogSchema, type BlogFormData } from "../api/create-blog";
 import { QuillEditor } from "@/features/admin/blogs/components/QuillEditor";
-
-const blogSchema = z.object({
-  title: z.string().min(1, "Judul wajib diisi"),
-  featured_image: z.string().nullable().optional(),
-  image_caption: z.string().nullable().optional(),
-  content: z.string().min(1, "Konten wajib diisi"),
-  excerpt: z.string().nullable().optional(),
-  status: z.enum(["draft", "published", "archived"]),
-  category_id: z.string().nullable().optional(),
-  tag_ids: z.array(z.string()).optional(),
-});
-
-export type BlogFormData = z.infer<typeof blogSchema>;
 
 // Main BlogForm Component
 interface BlogFormProps {
@@ -75,7 +61,7 @@ export function BlogForm({
   tags,
 }: BlogFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(
-    initialData?.image || null
+    buildImageUrl(initialData?.image) || null
   );
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>(
@@ -90,18 +76,17 @@ export function BlogForm({
     defaultValues: {
       title: initialData?.title || "",
       featured_image: initialData?.image || null,
-      image_caption: initialData?.image_caption || "",
       content: initialData?.content || "",
       excerpt: initialData?.teaser || "",
       status:
         (initialData?.status as "draft" | "published" | "archived") || "draft",
-      category_id: initialData?.category?.id?.toString() || null,
+      category_id: initialData?.category?.id?.toString() || "",
       tag_ids: initialData?.tags?.map((t) => t.id.toString()) || [],
     },
   });
 
   // Handle form validation errors from API
-  useFormErrors(form);
+  useFormErrors(form as any);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
@@ -160,7 +145,7 @@ export function BlogForm({
   );
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit) as any}>
       <FieldSet
         disabled={isLoading || isUploadingImage}
         className="space-y-8 mb-6"
@@ -193,16 +178,13 @@ export function BlogForm({
                   <Field>
                     <FieldLabel>Kategori</FieldLabel>
                     <Select
-                      value={field.value || "none"}
-                      onValueChange={(v) =>
-                        field.onChange(v === "none" ? null : v)
-                      }
+                      value={field.value || ""}
+                      onValueChange={(v) => field.onChange(v)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih kategori blog" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">Tidak ada</SelectItem>
                         {categories.map((cat) => (
                           <SelectItem key={cat.id} value={cat.id.toString()}>
                             {cat.name}
@@ -228,9 +210,7 @@ export function BlogForm({
                         <SelectValue placeholder="Pilih status blog" />
                       </SelectTrigger>
                       <SelectContent>
-                        {BLOG_STATUS_OPTIONS.filter(
-                          (opt) => opt.value !== "scheduled"
-                        ).map((opt) => (
+                        {BLOG_STATUS_OPTIONS.map((opt) => (
                           <SelectItem key={opt.value} value={opt.value}>
                             {opt.label}
                           </SelectItem>
@@ -394,18 +374,6 @@ export function BlogForm({
               </div>
               <FieldError>
                 {form.formState.errors.featured_image?.message}
-              </FieldError>
-            </Field>
-
-            {/* Image Caption */}
-            <Field>
-              <FieldLabel>Caption Gambar</FieldLabel>
-              <Input
-                {...form.register("image_caption")}
-                placeholder="Contoh: Ilustrasi workflow Frontend Developer"
-              />
-              <FieldError>
-                {form.formState.errors.image_caption?.message}
               </FieldError>
             </Field>
           </CardContent>

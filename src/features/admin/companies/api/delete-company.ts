@@ -1,9 +1,9 @@
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import { getCompaniesQueryOptions } from "./get-companies";
+import type { MessageResponse } from "@/types/api";
 
-export const deleteCompany = (id: string): Promise<null> => {
+export const deleteCompany = (id: string): Promise<MessageResponse> => {
   return api.delete(`/admin/companies/${id}`);
 };
 
@@ -21,7 +21,7 @@ export const useDeleteCompany = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getCompaniesQueryOptions().queryKey,
+        queryKey: ["companies"],
       });
       onSuccess?.(...args);
     },

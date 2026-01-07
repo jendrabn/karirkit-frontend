@@ -7,7 +7,6 @@ import {
   Instagram,
   Linkedin,
   Twitch,
-  Twitter,
   Youtube,
   X,
   ExternalLink,
@@ -17,7 +16,6 @@ import type { SocialPlatform } from "@/types/social";
 const ICON_MAP: Partial<Record<SocialPlatform, LucideIcon>> = {
   linkedin: Linkedin,
   github: Github,
-  twitter: Twitter,
   instagram: Instagram,
   facebook: Facebook,
   youtube: Youtube,

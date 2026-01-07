@@ -211,13 +211,20 @@ export default function ApplicationShow() {
             />
             <InfoItem
               label="URL Perusahaan"
-              value={application.company_url}
+              value={application.company_url || "-"}
               isLink
             />
             <InfoItem label="Posisi" value={application.position} />
-            <InfoItem label="Sumber Lowongan" value={application.job_source} />
-            <InfoItem label="URL Lowongan" value={application.job_url} isLink />
-            <InfoItem label="Lokasi" value={application.location} />
+            <InfoItem
+              label="Sumber Lowongan"
+              value={application.job_source || "-"}
+            />
+            <InfoItem
+              label="URL Lowongan"
+              value={application.job_url || "-"}
+              isLink
+            />
+            <InfoItem label="Lokasi" value={application.location || "-"} />
           </div>
         </Card>
 
@@ -258,11 +265,17 @@ export default function ApplicationShow() {
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">Informasi Kontak</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <InfoItem label="Nama Kontak" value={application.contact_name} />
-            <InfoItem label="Email Kontak" value={application.contact_email} />
+            <InfoItem
+              label="Nama Kontak"
+              value={application.contact_name || "-"}
+            />
+            <InfoItem
+              label="Email Kontak"
+              value={application.contact_email || "-"}
+            />
             <InfoItem
               label="Telepon Kontak"
-              value={application.contact_phone}
+              value={application.contact_phone || "-"}
             />
           </div>
         </Card>
@@ -280,7 +293,7 @@ export default function ApplicationShow() {
             />
             <InfoItem
               label="Catatan Follow Up"
-              value={application.follow_up_note}
+              value={application.follow_up_note || "-"}
             />
           </div>
         </Card>

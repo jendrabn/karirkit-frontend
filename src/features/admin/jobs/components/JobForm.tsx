@@ -66,11 +66,9 @@ export function JobForm({
           contact_name: initialData.contact_name,
           contact_email: initialData.contact_email,
           contact_phone: initialData.contact_phone,
-          medias: initialData.medias?.map((media) => ({ path: media.path })) ||
-            [],
-          status: (initialData.status === "expired"
-            ? "closed"
-            : initialData.status) as any,
+          medias:
+            initialData.medias?.map((media) => ({ path: media.path })) || [],
+          status: initialData.status as any,
           expiration_date: initialData.expiration_date,
         }
       : {
@@ -159,7 +157,7 @@ export function JobForm({
                           label: r.name,
                         })) || []
                       }
-                      value={field.value}
+                      value={field.value ?? undefined}
                       onValueChange={field.onChange}
                       placeholder="Pilih role atau posisi pekerjaan"
                       searchPlaceholder="Cari role pekerjaan..."
@@ -185,7 +183,7 @@ export function JobForm({
                           label: c.name,
                         })) || []
                       }
-                      value={field.value}
+                      value={field.value ?? undefined}
                       onValueChange={field.onChange}
                       placeholder="Pilih lokasi penempatan kerja"
                       searchPlaceholder="Cari nama kota..."
@@ -207,7 +205,7 @@ export function JobForm({
                       <FieldLabel>Tipe Pekerjaan *</FieldLabel>
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value}
+                        value={field.value ?? undefined}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Full-time / Internship / Freelance" />
@@ -235,7 +233,7 @@ export function JobForm({
                       <FieldLabel>Sistem Kerja *</FieldLabel>
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value}
+                        value={field.value ?? undefined}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Onsite / Hybrid / Remote" />
@@ -416,7 +414,10 @@ export function JobForm({
                 render={({ field }) => (
                   <Field>
                     <FieldLabel>Status Lowongan *</FieldLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || undefined}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih status publikasi" />
                       </SelectTrigger>

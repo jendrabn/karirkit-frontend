@@ -12,6 +12,7 @@ export type Template = {
   slug: string;
   type: TemplateType;
   language: TemplateLanguage;
+  path: string;
   preview: string;
   is_premium: boolean;
   created_at: string;

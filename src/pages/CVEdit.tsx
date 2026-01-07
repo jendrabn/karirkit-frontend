@@ -3,7 +3,7 @@ import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { CVForm } from "@/features/cvs/components/CVForm";
-import type { CVFormData } from "@/features/cvs/components/CVForm";
+import { type CVFormData } from "@/features/cvs/api/create-cv";
 import { useCV } from "@/features/cvs/api/get-cv";
 import { useUpdateCV } from "@/features/cvs/api/update-cv";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ export default function CVEdit() {
 
   const handleSubmit = (data: CVFormData) => {
     if (id) {
-      updateMutation.mutate({ id, data });
+      updateMutation.mutate({ id, data: data as any });
     }
   };
 
@@ -111,7 +111,7 @@ export default function CVEdit() {
         backButtonUrl="/cvs"
       />
       <CVForm
-        initialData={cv}
+        initialData={cv as any}
         onSubmit={handleSubmit}
         onCancel={() => navigate("/cvs")}
         isLoading={updateMutation.isPending}

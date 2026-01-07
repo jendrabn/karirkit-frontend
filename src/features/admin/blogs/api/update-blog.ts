@@ -2,20 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { Blog } from "./get-blogs";
+import type { Blog } from "@/types/blog";
+import { type CreateBlogInput } from "./create-blog";
 
-export type UpdateBlogInput = {
-  title: string;
-  excerpt: string;
-  content: string;
-  featured_image: string;
-  status: "draft" | "published" | "archived";
-  category_id: string;
-  author_id: string;
-  tag_ids: string[];
-};
-
-export type UpdateBlogResponse = Blog;
+export type UpdateBlogInput = CreateBlogInput;
 
 export const updateBlog = ({
   id,
@@ -23,7 +13,7 @@ export const updateBlog = ({
 }: {
   id: string;
   data: UpdateBlogInput;
-}): Promise<UpdateBlogResponse> => {
+}): Promise<Blog> => {
   return api.put(`/admin/blogs/${id}`, data);
 };
 
@@ -40,12 +30,12 @@ export const useUpdateBlog = ({
 
   return useMutation({
     mutationFn: updateBlog,
-    onSuccess: (...args) => {
+    onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({ queryKey: ["admin-blogs"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-blog", args[1].id] });
+      queryClient.invalidateQueries({ queryKey: ["admin-blog", data.id] });
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
       queryClient.invalidateQueries({ queryKey: ["blog"] });
-      onSuccess?.(...args);
+      onSuccess?.(data, ...args);
     },
     ...restConfig,
   });

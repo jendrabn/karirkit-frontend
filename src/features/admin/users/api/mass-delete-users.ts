@@ -2,8 +2,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
+import type { MessageResponse } from "@/types/api";
 
-export const massDeleteUsers = ({ ids }: { ids: string[] }) => {
+export const massDeleteUsers = ({
+  ids,
+}: {
+  ids: string[];
+}): Promise<MessageResponse> => {
   return api.delete(`/admin/users/mass-delete`, {
     data: { ids },
   });

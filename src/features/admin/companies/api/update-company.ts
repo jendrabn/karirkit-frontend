@@ -3,12 +3,9 @@ import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
 import type { Company } from "@/types/company";
-import { getCompaniesQueryOptions } from "./get-companies";
-import { getCompanyQueryOptions } from "./get-company";
 import { createCompanyInputSchema } from "./create-company";
 
-export const updateCompanyInputSchema = createCompanyInputSchema.partial();
-
+export const updateCompanyInputSchema = createCompanyInputSchema;
 export type UpdateCompanyInput = z.infer<typeof updateCompanyInputSchema>;
 
 export const updateCompany = ({
@@ -35,10 +32,10 @@ export const useUpdateCompany = ({
   return useMutation({
     onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({
-        queryKey: getCompaniesQueryOptions().queryKey,
+        queryKey: ["companies"],
       });
       queryClient.invalidateQueries({
-        queryKey: getCompanyQueryOptions(data.id).queryKey,
+        queryKey: ["company", data.id],
       });
       onSuccess?.(data, ...args);
     },

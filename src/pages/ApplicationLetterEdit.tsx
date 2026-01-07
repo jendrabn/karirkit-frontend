@@ -3,7 +3,7 @@ import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { ApplicationLetterForm } from "@/features/application-letters/components/ApplicationLetterForm";
-import type { ApplicationLetterFormData } from "@/features/application-letters/components/ApplicationLetterForm";
+import { type ApplicationLetterFormData } from "@/features/application-letters/api/create-application-letter";
 import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
 import { useUpdateApplicationLetter } from "@/features/application-letters/api/update-application-letter";
 import { toast } from "sonner";
@@ -114,7 +114,7 @@ export default function ApplicationLetterEdit() {
       />
 
       <ApplicationLetterForm
-        initialData={letter}
+        initialData={letter as any}
         onSubmit={handleSubmit}
         onCancel={() => navigate("/application-letters")}
         isLoading={updateMutation.isPending}

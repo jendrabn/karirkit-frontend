@@ -2,7 +2,7 @@ import { api } from "./api-client";
 import type { MutationConfig } from "./react-query";
 import { useMutation } from "@tanstack/react-query";
 
-export interface UploadResponse {
+export interface UploadData {
   path: string;
   original_name: string;
   size: number;
@@ -13,7 +13,7 @@ export type UploadInput =
   | File
   | { file: File; quality?: number; webp?: boolean; format?: string };
 
-export const uploadFile = (input: UploadInput): Promise<UploadResponse> => {
+export const uploadFile = (input: UploadInput): Promise<UploadData> => {
   const formData = new FormData();
   let file: File;
   const params = new URLSearchParams();
@@ -42,7 +42,7 @@ export const uploadFile = (input: UploadInput): Promise<UploadResponse> => {
     headers: {
       "Content-Type": "multipart/form-data",
     },
-  });
+  }) as Promise<UploadData>;
 };
 
 type UseUploadFileOptions = {

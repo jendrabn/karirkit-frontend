@@ -1,18 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { BlogTag } from "./get-blog-tags";
+import type { BlogTag } from "@/types/blog";
 
-export type CreateBlogTagInput = {
-  name: string;
-};
+export const tagSchema = z.object({
+  name: z.string().min(1, "Nama tag wajib diisi"),
+});
 
-export type CreateBlogTagResponse = BlogTag;
+export type TagFormData = z.infer<typeof tagSchema>;
+export type CreateBlogTagInput = TagFormData;
 
-export const createBlogTag = (
-  data: CreateBlogTagInput
-): Promise<CreateBlogTagResponse> => {
+export const createBlogTag = (data: CreateBlogTagInput): Promise<BlogTag> => {
   return api.post("/admin/blog-tags", data);
 };
 

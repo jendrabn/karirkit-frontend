@@ -2,25 +2,9 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-
-export type BlogTag = {
-  id: string;
-  name: string;
-  slug: string;
-  blog_count: number;
-  created_at: string;
-  updated_at: string;
-};
-
-export type BlogTagsResponse = {
-  items: BlogTag[];
-  pagination: {
-    page: number;
-    per_page: number;
-    total_items: number;
-    total_pages: number;
-  };
-};
+import type { BlogTag } from "@/types/blog";
+export type { BlogTag };
+import type { ListResponse } from "@/types/api";
 
 export type GetBlogTagsParams = {
   page?: number;
@@ -32,7 +16,7 @@ export type GetBlogTagsParams = {
 
 export const getBlogTags = (
   params?: GetBlogTagsParams
-): Promise<BlogTagsResponse> => {
+): Promise<ListResponse<BlogTag>> => {
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(

@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -80,7 +79,7 @@ import {
   BLOG_STATUS_OPTIONS,
   getStatusBadgeVariant,
 } from "@/types/blog";
-import { cn, buildImageUrl } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { paths } from "@/config/paths";
 import {
@@ -353,10 +352,10 @@ export const BlogsList = () => {
                   </TableRow>
                 ) : blogs.length === 0 ? (
                   <TableRow className="hover:bg-transparent">
-                      <TableCell
-                        colSpan={14}
-                        className="text-center py-16 text-muted-foreground"
-                      >
+                    <TableCell
+                      colSpan={14}
+                      className="text-center py-16 text-muted-foreground"
+                    >
                       <div className="flex flex-col items-center gap-2">
                         <FileText className="h-10 w-10 text-muted-foreground/50" />
                         <p className="text-base font-medium">Tidak ada blog</p>
@@ -407,21 +406,7 @@ export const BlogsList = () => {
                       {columnVisibility.author && (
                         <TableCell className="whitespace-nowrap">
                           {blog.user ? (
-                            <div className="flex items-center gap-2">
-                              <Avatar className="h-6 w-6">
-                                <AvatarImage
-                                  src={
-                                    blog.user.avatar
-                                      ? buildImageUrl(blog.user.avatar)
-                                      : undefined
-                                  }
-                                />
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                                  {blog.user.name.charAt(0)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <span className="text-sm">{blog.user.name}</span>
-                            </div>
+                            <span className="text-sm">{blog.user.name}</span>
                           ) : (
                             <span className="text-muted-foreground">-</span>
                           )}
@@ -525,9 +510,7 @@ export const BlogsList = () => {
                                 Ubah Status
                               </DropdownMenuSubTrigger>
                               <DropdownMenuSubContent>
-                                {BLOG_STATUS_OPTIONS.filter(
-                                  (opt) => opt.value !== "scheduled"
-                                ).map((opt) => (
+                                {BLOG_STATUS_OPTIONS.map((opt) => (
                                   <DropdownMenuItem
                                     key={opt.value}
                                     onClick={() =>

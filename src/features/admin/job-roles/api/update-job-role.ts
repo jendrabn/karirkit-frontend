@@ -1,16 +1,11 @@
+import { z } from "zod";
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import type { JobRole } from "@/types/job";
-import { getJobRolesQueryOptions } from "./get-job-roles";
-import { getJobRoleQueryOptions } from "./get-job-role";
-import { createJobRoleInputSchema } from "./create-job-role";
+import type { JobRole } from "@/types/jobRole";
+import { jobRoleSchema } from "./create-job-role";
 
-export const updateJobRoleInputSchema = createJobRoleInputSchema.partial();
-
-export type UpdateJobRoleInput = {
-  name: string;
-};
+export type UpdateJobRoleInput = z.infer<typeof jobRoleSchema>;
 
 export const updateJobRole = ({
   data,
@@ -36,10 +31,10 @@ export const useUpdateJobRole = ({
   return useMutation({
     onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({
-        queryKey: getJobRolesQueryOptions().queryKey,
+        queryKey: ["job-roles"],
       });
       queryClient.invalidateQueries({
-        queryKey: getJobRoleQueryOptions(data.id).queryKey,
+        queryKey: ["job-role", data.id],
       });
       onSuccess?.(data, ...args);
     },

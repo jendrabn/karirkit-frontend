@@ -1,9 +1,9 @@
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import { getJobsQueryOptions } from "./get-jobs";
+import type { MessageResponse } from "@/types/api";
 
-export const deleteJob = (id: string): Promise<null> => {
+export const deleteJob = (id: string): Promise<MessageResponse> => {
   return api.delete(`/admin/jobs/${id}`);
 };
 
@@ -19,7 +19,7 @@ export const useDeleteJob = ({ mutationConfig }: UseDeleteJobOptions = {}) => {
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getJobsQueryOptions().queryKey,
+        queryKey: ["jobs"],
       });
       onSuccess?.(...args);
     },

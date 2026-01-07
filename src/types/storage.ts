@@ -2,6 +2,7 @@ export interface DownloadStats {
   daily_limit: number;
   today_count: number;
   remaining: number;
+  total_count: number;
 }
 
 export interface DocumentStorageStats {

@@ -1,16 +1,9 @@
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import { getJobRolesQueryOptions } from "./get-job-roles";
+import type { MessageResponse } from "@/types/api";
 
-export interface MassDeleteJobRolesResponse {
-  message: string;
-  deleted_count: number;
-}
-
-export const massDeleteJobRoles = (
-  ids: string[]
-): Promise<MassDeleteJobRolesResponse> => {
+export const massDeleteJobRoles = (ids: string[]): Promise<MessageResponse> => {
   return api.delete("/admin/job-roles/mass-delete", {
     data: { ids },
   });
@@ -30,7 +23,7 @@ export const useMassDeleteJobRoles = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getJobRolesQueryOptions().queryKey,
+        queryKey: ["job-roles"],
       });
       onSuccess?.(...args);
     },

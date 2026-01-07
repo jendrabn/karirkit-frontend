@@ -1,15 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { BlogCategory } from "./get-blog-categories";
+import type { BlogCategory } from "@/types/blog";
+import { categorySchema } from "./create-blog-category";
 
-export type UpdateBlogCategoryInput = {
-  name: string;
-  description: string;
-};
-
-export type UpdateBlogCategoryResponse = BlogCategory;
+export type UpdateBlogCategoryInput = z.infer<typeof categorySchema>;
 
 export const updateBlogCategory = ({
   id,
@@ -17,7 +14,7 @@ export const updateBlogCategory = ({
 }: {
   id: string;
   data: UpdateBlogCategoryInput;
-}): Promise<UpdateBlogCategoryResponse> => {
+}): Promise<BlogCategory> => {
   return api.put(`/admin/blog-categories/${id}`, data);
 };
 
@@ -34,12 +31,12 @@ export const useUpdateBlogCategory = ({
 
   return useMutation({
     mutationFn: updateBlogCategory,
-    onSuccess: (...args) => {
+    onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({ queryKey: ["blog-categories"] });
       queryClient.invalidateQueries({
-        queryKey: ["blog-category", args[1].id],
+        queryKey: ["blog-category", data.id],
       });
-      onSuccess?.(...args);
+      onSuccess?.(data, ...args);
     },
     ...restConfig,
   });

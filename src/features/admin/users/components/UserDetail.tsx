@@ -24,8 +24,12 @@ import {
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
-import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS, type UserRole } from "@/types/user";
-import type { User } from "../api/get-users";
+import {
+  USER_ROLE_OPTIONS,
+  USER_STATUS_OPTIONS,
+  type UserRole,
+} from "@/types/user";
+import type { User } from "@/types/user";
 import { useUpdateUser } from "../api/update-user";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFormErrors } from "@/hooks/use-form-errors";
@@ -135,7 +139,8 @@ export const UserDetail = ({ user }: { user: User }) => {
       <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6">
         <div className="flex flex-col md:flex-row items-center gap-6">
           <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-            <AvatarImage src={user.avatar} />
+            <AvatarImage src={user.avatar || undefined} />
+
             <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
               {user.name.charAt(0)}
             </AvatarFallback>
@@ -237,7 +242,7 @@ export const UserDetail = ({ user }: { user: User }) => {
           <div className="flex items-center justify-between">
             <p className="text-base font-semibold">Penyimpanan Dokumen</p>
             <p className="text-sm text-muted-foreground">
-              {formatBytes(storageLimit)}
+              {formatBytes(user.document_storage_limit)}
             </p>
           </div>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -256,7 +261,8 @@ export const UserDetail = ({ user }: { user: User }) => {
           <div className="mb-4 space-y-1 text-sm text-muted-foreground">
             {user.status_reason && (
               <p>
-                Alasan: <span className="text-foreground">{user.status_reason}</span>
+                Alasan:{" "}
+                <span className="text-foreground">{user.status_reason}</span>
               </p>
             )}
             {user.suspended_until && (
@@ -327,7 +333,9 @@ export const UserDetail = ({ user }: { user: User }) => {
             <FieldDescription>
               Tampilkan alasan status ini pada admin lain.
             </FieldDescription>
-            <FieldError>{form.formState.errors.status_reason?.message}</FieldError>
+            <FieldError>
+              {form.formState.errors.status_reason?.message}
+            </FieldError>
           </Field>
 
           {isSelf && (
@@ -341,7 +349,9 @@ export const UserDetail = ({ user }: { user: User }) => {
               type="submit"
               disabled={isSelf || updateStatusMutation.isPending}
             >
-              {updateStatusMutation.isPending ? "Menyimpan..." : "Simpan Status"}
+              {updateStatusMutation.isPending
+                ? "Menyimpan..."
+                : "Simpan Status"}
             </Button>
           </div>
         </form>

@@ -1,11 +1,12 @@
 export type Gender = "male" | "female";
-export type MaritalStatus = "single" | "married" | "widowed" | "divorced";
+export type MaritalStatus = "single" | "married" | "widowed";
 export type Language = "en" | "id";
+
+import type { ListResponse } from "./api";
 
 export interface ApplicationLetter {
   id: string;
   user_id: string;
-  template_id?: string;
   name: string;
   birth_place_date: string;
   gender: Gender;
@@ -19,27 +20,27 @@ export interface ApplicationLetter {
   application_date: string;
   receiver_title: string;
   company_name: string;
-  company_city: string;
-  company_address: string;
+  company_city: string | null;
+  company_address: string | null;
   opening_paragraph: string;
   body_paragraph: string;
   attachments: string;
   closing_paragraph: string;
-  signature: string;
+  signature: string | null;
   language: Language;
+  template_id: string;
+  template?: {
+    id: string;
+    name: string;
+    path: string;
+    type: "cv" | "application_letter";
+  };
   created_at: string;
   updated_at: string;
 }
 
-export interface ApplicationLettersResponse {
-  items: ApplicationLetter[];
-  pagination: {
-    page: number;
-    per_page: number;
-    total_items: number;
-    total_pages: number;
-  };
-}
+export type ApplicationLetterResponse = ApplicationLetter;
+export type ApplicationLetterListResponse = ListResponse<ApplicationLetter>;
 
 export const GENDER_OPTIONS: { value: Gender; label: string }[] = [
   { value: "male", label: "Laki-laki" },
@@ -50,7 +51,6 @@ export const MARITAL_STATUS_OPTIONS: { value: MaritalStatus; label: string }[] =
   [
     { value: "single", label: "Belum Menikah" },
     { value: "married", label: "Menikah" },
-    { value: "divorced", label: "Cerai" },
     { value: "widowed", label: "Janda/Duda" },
   ];
 

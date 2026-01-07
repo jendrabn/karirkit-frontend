@@ -1,19 +1,7 @@
 import { api } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
-import type { JobRole } from "@/types/job";
-
-export interface Meta {
-  page: number;
-  per_page: number;
-  total_items: number;
-  total_pages: number;
-}
-
-export interface JobRolesListResponse {
-  items: JobRole[];
-  pagination: Meta;
-}
+import type { JobRoleListResponse } from "@/types/jobRole";
 
 export interface GetJobRolesParams {
   page?: number;
@@ -25,7 +13,7 @@ export interface GetJobRolesParams {
 
 export const getJobRoles = (
   params?: GetJobRolesParams
-): Promise<JobRolesListResponse> => {
+): Promise<JobRoleListResponse> => {
   return api.get("/admin/job-roles", {
     params,
   });

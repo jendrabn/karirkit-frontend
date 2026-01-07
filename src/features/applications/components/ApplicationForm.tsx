@@ -87,10 +87,10 @@ export function ApplicationForm({
         },
   });
 
-  useFormErrors(form);
+  useFormErrors(form as any);
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit) as any}>
       <FieldSet disabled={isLoading} className="space-y-8 mb-6">
         {/* ================= Informasi Perusahaan ================= */}
         <Card>

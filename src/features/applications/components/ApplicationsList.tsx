@@ -124,12 +124,7 @@ const getResultStatusBadgeVariant = (resultStatus: ResultStatus) => {
 
 const getStatusBadgeVariant = (status: ApplicationStatus) => {
   const screeningStatuses = ["administration_screening", "hr_screening"];
-  const testStatuses = [
-    "online_test",
-    "psychology_test",
-    "technical_test",
-    "hr_test",
-  ];
+  const testStatuses = ["online_test", "psychological_test", "technical_test"];
   const interviewStatuses = [
     "hr_interview",
     "user_interview",
@@ -199,7 +194,7 @@ export const ApplicationsList = () => {
     ...(activeStatFilter === "active" ? { result_status: "pending" } : {}),
     ...(activeStatFilter === "rejected" ? { result_status: "failed" } : {}),
     ...(activeStatFilter === "offer" ? { status: "offering" } : {}),
-    ...(activeStatFilter === "interview" ? { status: "user_interview" } : {}), // Map closest
+    ...(activeStatFilter === "interview" ? { status: "hr_interview" } : {}), // Map closest
   };
 
   const { data: applicationsData, isLoading } = useApplications({

@@ -68,7 +68,7 @@ export function CompanyDetailModal({
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                     <Avatar className="h-24 w-24 border sm:h-32 sm:w-32">
                       <AvatarImage
-                        src={buildImageUrl(company.logo)}
+                        src={buildImageUrl(company.logo) || undefined}
                         alt={company.name}
                         className="object-cover"
                       />
@@ -125,7 +125,9 @@ export function CompanyDetailModal({
                     </div>
                     <div
                       className="prose prose-sm max-w-none text-muted-foreground"
-                      dangerouslySetInnerHTML={{ __html: company.description }}
+                      dangerouslySetInnerHTML={{
+                        __html: company.description || "",
+                      }}
                     />
                   </div>
 

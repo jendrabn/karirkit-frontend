@@ -76,7 +76,7 @@ const getStatusBadgeVariant = (status: JobStatus) => {
     published: "default",
     draft: "secondary",
     closed: "destructive",
-    expired: "outline",
+    archived: "outline",
   };
   return variants[status];
 };
@@ -85,7 +85,7 @@ const STATUS_LABELS: Record<JobStatus, string> = {
   published: "Published",
   draft: "Draft",
   closed: "Closed",
-  expired: "Expired",
+  archived: "Archived",
 };
 
 export function JobsList({
@@ -283,7 +283,7 @@ export function JobsList({
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={job.company?.logo} />
+                          <AvatarImage src={job.company?.logo || undefined} />
                           <AvatarFallback className="bg-primary/10 text-primary text-xs">
                             {job.company?.name.charAt(0)}
                           </AvatarFallback>
@@ -318,7 +318,7 @@ export function JobsList({
                   )}
                   {columnVisibility.salary && (
                     <TableCell className="text-sm">
-                      {formatSalary(job.salary_min)}
+                      {formatSalary(job.salary_min || 0)}
                     </TableCell>
                   )}
                   {columnVisibility.status && (

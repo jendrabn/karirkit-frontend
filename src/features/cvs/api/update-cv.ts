@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
@@ -22,7 +23,7 @@ export type UpdateCVInput = {
   phone: string;
   address: string;
   about?: string;
-  photo?: string;
+  photo?: string | null;
   template_id?: string;
   educations?: Education[];
   certificates?: Certificate[];
@@ -36,6 +37,19 @@ export type UpdateCVInput = {
   slug?: string;
   visibility?: CvVisibility;
 };
+
+export const cvVisibilitySchema = z.object({
+  slug: z
+    .string()
+    .min(3, "Slug minimal 3 karakter")
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug hanya boleh berisi huruf kecil, angka, dan strip"
+    ),
+  visibility: z.enum(["public", "private"]),
+});
+
+export type CVVisibilityFormData = z.infer<typeof cvVisibilitySchema>;
 
 export type UpdateCVResponse = CV;
 

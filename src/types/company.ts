@@ -1,3 +1,5 @@
+import type { ListResponse } from "./api";
+
 export type EmployeeSize =
   | "one_to_ten"
   | "eleven_to_fifty"
@@ -9,29 +11,17 @@ export interface Company {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  logo: string;
-  employee_size: EmployeeSize;
-  business_sector: string;
-  website_url: string;
-  job_count: number;
+  description: string | null;
+  logo: string | null;
+  employee_size: EmployeeSize | null;
+  business_sector: string | null;
+  website_url: string | null;
   created_at: string;
   updated_at: string;
+  job_count?: number;
 }
 
-export interface CompanyPagination {
-  page: number;
-  per_page: number;
-  total_items: number;
-  total_pages: number;
-}
-
-export interface CompaniesResponse {
-  data: {
-    items: Company[];
-    pagination: CompanyPagination;
-  };
-}
+export type CompanyListResponse = ListResponse<Company>;
 
 export const EMPLOYEE_SIZE_LABELS: Record<EmployeeSize, string> = {
   one_to_ten: "1-10 karyawan",
@@ -40,3 +30,10 @@ export const EMPLOYEE_SIZE_LABELS: Record<EmployeeSize, string> = {
   two_hundred_one_to_five_hundred: "201-500 karyawan",
   five_hundred_plus: "500+ karyawan",
 };
+
+export const EMPLOYEE_SIZE_OPTIONS = Object.entries(EMPLOYEE_SIZE_LABELS).map(
+  ([value, label]) => ({
+    value,
+    label,
+  })
+);

@@ -2,10 +2,8 @@ import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { MinimalSEO } from "@/components/MinimalSEO";
-import {
-  BlogForm,
-  type BlogFormData,
-} from "@/features/admin/blogs/components/BlogForm";
+import { BlogForm } from "@/features/admin/blogs/components/BlogForm";
+import { type BlogFormData } from "@/features/admin/blogs/api/create-blog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreateBlog } from "@/features/admin/blogs/api/create-blog";

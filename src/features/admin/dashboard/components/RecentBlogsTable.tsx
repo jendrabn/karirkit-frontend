@@ -79,7 +79,7 @@ export const RecentBlogsTable = ({ blogs }: RecentBlogsTableProps) => {
                     </span>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {blog.user.name}
+                    {blog.user?.name || "System"}
                   </TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(blog.status)}>

@@ -2,6 +2,7 @@ import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
 import z from "zod";
+import type { MessageResponse } from "@/types/api";
 
 export const updatePasswordInputSchema = z
   .object({
@@ -16,17 +17,11 @@ export const updatePasswordInputSchema = z
 
 export type UpdatePasswordInput = z.infer<typeof updatePasswordInputSchema>;
 
-// Type for the API request (without confirm_password)
-export type UpdatePasswordRequest = {
-  current_password: string;
-  new_password: string;
-};
-
 export const updatePassword = ({
   data,
 }: {
-  data: UpdatePasswordRequest;
-}): Promise<{ message: string }> => {
+  data: UpdatePasswordInput;
+}): Promise<MessageResponse> => {
   return api.put("/account/change-password", data);
 };
 

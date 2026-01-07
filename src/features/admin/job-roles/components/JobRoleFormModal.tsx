@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -14,12 +13,10 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import { type JobRole } from "@/types/job";
 import { useEffect } from "react";
-
-const roleSchema = z.object({
-  name: z.string().min(1, "Nama role wajib diisi"),
-});
-
-type RoleInput = z.infer<typeof roleSchema>;
+import {
+  jobRoleSchema,
+  type JobRoleFormData as RoleInput,
+} from "../api/create-job-role";
 
 interface JobRoleFormModalProps {
   isOpen: boolean;
@@ -41,7 +38,7 @@ export function JobRoleFormModal({
   const isEdit = !!editingRole;
 
   const form = useForm<RoleInput>({
-    resolver: zodResolver(roleSchema),
+    resolver: zodResolver(jobRoleSchema),
     defaultValues: {
       name: editingRole?.name || "",
     },

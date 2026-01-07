@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import {
   useUpdatePassword,
   type UpdatePasswordInput,
-  type UpdatePasswordRequest,
   updatePasswordInputSchema,
 } from "@/features/account/api/update-password";
 import { useFormErrors } from "@/hooks/use-form-errors";
@@ -49,10 +48,8 @@ const ChangePasswordForm = () => {
   useFormErrors(form);
 
   const onSubmit = (data: UpdatePasswordInput) => {
-    // Extract only the fields needed for the API request
-    const { current_password, new_password }: UpdatePasswordRequest = data;
     updatePasswordMutation.mutate({
-      data: { current_password, new_password },
+      data: data,
     });
   };
 

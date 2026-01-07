@@ -3,12 +3,10 @@ import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { Template } from "./get-templates";
+import type { DocumentTemplate } from "@/types/template";
 import { createTemplateInputSchema } from "./create-template";
 
-export const updateTemplateInputSchema = createTemplateInputSchema;
-
-export type UpdateTemplateInput = z.infer<typeof updateTemplateInputSchema>;
+export type UpdateTemplateInput = z.infer<typeof createTemplateInputSchema>;
 
 export const updateTemplate = ({
   data,
@@ -16,7 +14,7 @@ export const updateTemplate = ({
 }: {
   data: UpdateTemplateInput;
   id: string;
-}): Promise<Template> => {
+}): Promise<DocumentTemplate> => {
   return api.put(`/admin/templates/${id}`, data);
 };
 
@@ -33,11 +31,11 @@ export const useUpdateTemplate = ({
 
   return useMutation({
     onSuccess: (data, ...args) => {
-      queryClient.refetchQueries({
-        queryKey: ["templates", data.id],
-      });
       queryClient.invalidateQueries({
         queryKey: ["templates"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["templates", data.id],
       });
       onSuccess?.(data, ...args);
     },

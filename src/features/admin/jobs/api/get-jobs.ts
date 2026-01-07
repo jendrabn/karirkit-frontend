@@ -2,24 +2,12 @@ import { api } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
 import type {
-  Job,
   JobType,
   WorkSystem,
   EducationLevel,
   JobStatus,
+  JobListResponse,
 } from "@/types/job";
-
-export interface Meta {
-  page: number;
-  per_page: number;
-  total_items: number;
-  total_pages: number;
-}
-
-export interface JobsListResponse {
-  items: Job[];
-  pagination: Meta;
-}
 
 export interface GetJobsParams {
   q?: string;
@@ -39,7 +27,7 @@ export interface GetJobsParams {
   sort_order?: "asc" | "desc";
 }
 
-export const getJobs = (params?: GetJobsParams): Promise<JobsListResponse> => {
+export const getJobs = (params?: GetJobsParams): Promise<JobListResponse> => {
   return api.get("/admin/jobs", {
     params,
   });

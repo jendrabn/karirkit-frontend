@@ -2,11 +2,9 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { Blog } from "./get-blogs";
+import type { Blog } from "@/types/blog";
 
-export type BlogResponse = Blog;
-
-export const getBlog = (id: string): Promise<BlogResponse> => {
+export const getBlog = (id: string): Promise<Blog> => {
   return api.get(`/admin/blogs/${id}`);
 };
 

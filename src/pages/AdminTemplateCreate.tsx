@@ -27,7 +27,7 @@ const AdminTemplateCreate = () => {
   });
 
   const handleSubmit = (data: CreateTemplateInput) => {
-    createTemplateMutation.mutate({ data });
+    createTemplateMutation.mutate(data);
   };
 
   return (

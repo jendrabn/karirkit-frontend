@@ -1,9 +1,9 @@
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import { getJobRolesQueryOptions } from "./get-job-roles";
+import type { MessageResponse } from "@/types/api";
 
-export const deleteJobRole = (id: string): Promise<null> => {
+export const deleteJobRole = (id: string): Promise<MessageResponse> => {
   return api.delete(`/admin/job-roles/${id}`);
 };
 
@@ -21,7 +21,7 @@ export const useDeleteJobRole = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getJobRolesQueryOptions().queryKey,
+        queryKey: ["job-roles"],
       });
       onSuccess?.(...args);
     },

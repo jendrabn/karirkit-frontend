@@ -29,7 +29,7 @@ export function TemplatePreviewModal({
           </DialogHeader>
           <div className="overflow-y-auto px-6 py-2 pb-6">
             <img
-              src={template.previewImage}
+              src={template.preview}
               alt={template.name}
               className="w-full h-auto rounded-lg border border-border shadow-xs"
             />

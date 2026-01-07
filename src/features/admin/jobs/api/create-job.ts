@@ -3,12 +3,11 @@ import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
 import type { Job } from "@/types/job";
-import { getJobsQueryOptions } from "./get-jobs";
 
 export const createJobInputSchema = z.object({
   company_id: z.string().min(1, "Perusahaan wajib dipilih"),
   job_role_id: z.string().min(1, "Role pekerjaan wajib dipilih"),
-  city_id: z.string().min(1, "Kota wajib dipilih"),
+  city_id: z.string().min(1, "Kota wajib dipilih").optional().nullable(),
   title: z.string().min(1, "Judul wajib diisi"),
   job_type: z.enum([
     "full_time",
@@ -29,17 +28,22 @@ export const createJobInputSchema = z.object({
     "doctorate",
     "any",
   ]),
-  min_years_of_experience: z.number().min(0),
+  min_years_of_experience: z.number().min(0, "Minimal pengalaman wajib diisi"),
   max_years_of_experience: z.number().min(0).nullable().optional(),
   description: z.string().min(1, "Deskripsi wajib diisi"),
   requirements: z.string().min(1, "Persyaratan wajib diisi"),
-  salary_min: z.number().min(0),
-  salary_max: z.number().min(0),
-  talent_quota: z.number().min(1),
-  job_url: z.string().url().or(z.literal("")).optional(),
-  contact_name: z.string().min(1, "Nama kontak wajib diisi"),
-  contact_email: z.string().email("Email kontak tidak valid"),
-  contact_phone: z.string().min(1, "Telepon kontak wajib diisi"),
+  salary_min: z.number().min(0).optional().nullable(),
+  salary_max: z.number().min(0).optional().nullable(),
+  talent_quota: z.number().min(1).optional().nullable(),
+  job_url: z.string().url().or(z.literal("")).optional().nullable(),
+  contact_name: z.string().optional().nullable(),
+  contact_email: z
+    .string()
+    .email("Email kontak tidak valid")
+    .or(z.literal(""))
+    .optional()
+    .nullable(),
+  contact_phone: z.string().optional().nullable(),
   medias: z
     .array(
       z.object({
@@ -69,7 +73,7 @@ export const useCreateJob = ({ mutationConfig }: UseCreateJobOptions = {}) => {
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getJobsQueryOptions().queryKey,
+        queryKey: ["jobs"],
       });
       onSuccess?.(...args);
     },

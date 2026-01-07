@@ -8,12 +8,9 @@ import {
   Briefcase,
   GraduationCap,
   Calendar,
-  DollarSign,
-  Users,
   Globe,
   Mail,
   Phone,
-  Building2,
   Loader2,
 } from "lucide-react";
 import { paths } from "@/config/paths";
@@ -22,14 +19,12 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { buildImageUrl } from "@/lib/utils";
 import {
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
   EDUCATION_LEVEL_LABELS,
-  EMPLOYEE_SIZE_LABELS,
   type JobStatus,
 } from "@/types/job";
 import { useJob } from "@/features/admin/jobs/api/get-job";
@@ -55,7 +50,7 @@ const getStatusBadgeVariant = (status: JobStatus) => {
     published: "default",
     draft: "secondary",
     closed: "destructive",
-    expired: "outline",
+    archived: "outline",
   };
   return variants[status];
 };
@@ -64,7 +59,7 @@ const STATUS_LABELS: Record<JobStatus, string> = {
   published: "Published",
   draft: "Draft",
   closed: "Closed",
-  expired: "Expired",
+  archived: "Archived",
 };
 
 export default function AdminJobShow() {
@@ -74,14 +69,6 @@ export default function AdminJobShow() {
 
   const { data: job, isLoading, error } = useJob({ id: jobId || "" });
   const deleteJobMutation = useDeleteJob();
-
-  const formatSalary = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const handleDelete = () => {
     if (!jobId) return;
@@ -181,7 +168,7 @@ export default function AdminJobShow() {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
-                  <span>{job.city?.name}</span>
+                  <span>{job.city?.name || "-"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <GraduationCap className="h-4 w-4" />
@@ -231,7 +218,6 @@ export default function AdminJobShow() {
                     >
                       <img
                         src={buildImageUrl(media.path)}
-                        alt="Media lowongan"
                         className="h-full w-full object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).style.display = "none";
@@ -248,97 +234,25 @@ export default function AdminJobShow() {
             <CardHeader>
               <CardTitle>Informasi Kontak</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span>{job.contact_name}</span>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Globe className="h-4 w-4" />
+                <a
+                  href={job.company?.website_url || undefined}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:underline text-primary"
+                >
+                  {job.company?.website_url || "Website tidak tersedia"}
+                </a>
               </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{job.contact_email}</span>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Mail className="h-4 w-4" />
+                <span>{job.contact_email || job.company?.email || "-"}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>{job.contact_phone}</span>
-              </div>
-              {job.job_url && (
-                <div className="flex items-center gap-3">
-                  <Globe className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    href={job.job_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline truncate"
-                  >
-                    {job.job_url}
-                  </a>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                Gaji
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl font-bold text-primary">
-                {formatSalary(job.salary_min)} - {formatSalary(job.salary_max)}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">per bulan</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                Perusahaan
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-3 mb-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={job.company?.logo} />
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    {job.company?.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="font-semibold truncate">{job.company?.name}</p>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {job.company?.business_sector}
-                  </p>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
-                {job.company?.description}
-              </p>
-              <div className="text-sm space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Ukuran</span>
-                  <span>
-                    {job.company?.employee_size
-                      ? EMPLOYEE_SIZE_LABELS[job.company.employee_size]
-                      : "-"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Website</span>
-                  <a
-                    href={job.company?.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline"
-                  >
-                    Kunjungi
-                  </a>
-                </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Phone className="h-4 w-4" />
+                <span>{job.contact_phone || job.company?.phone || "-"}</span>
               </div>
             </CardContent>
           </Card>

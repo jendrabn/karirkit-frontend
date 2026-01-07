@@ -1,18 +1,51 @@
 export const documentTypes = [
-  "ktp", "kk", "sim", "paspor", "npwp", "bpjs_kesehatan", "bpjs_ketenagakerjaan",
-  "ijazah", "transkrip", "kartu_pelajar", "kartu_mahasiswa", "pas_foto",
-  "cv", "surat_lamaran", "portfolio", "cover_letter", "skck",
-  "surat_keterangan_sehat", "surat_keterangan_kerja", "surat_pengalaman_kerja",
-  "surat_rekomendasi", "paklaring", "surat_pengunduran_diri", "kontrak_kerja",
-  "slip_gaji", "kartu_nama", "sertifikat", "sertifikat_pelatihan",
-  "sertifikat_bahasa", "sertifikat_profesi", "sertifikat_vaksin",
-  "surat_bebas_narkoba", "surat_domisili", "surat_keterangan_catatan_akademik",
-  "surat_keterangan_lulus", "kartu_keluarga_sejahtera", "hasil_medical_checkup",
-  "hasil_tes_psikologi", "hasil_tes_narkoba", "demo_reel", "karya_tulis",
-  "publikasi", "piagam", "lainnya"
+  "ktp",
+  "kk",
+  "sim",
+  "paspor",
+  "npwp",
+  "bpjs_kesehatan",
+  "bpjs_ketenagakerjaan",
+  "ijazah",
+  "transkrip",
+  "kartu_pelajar",
+  "kartu_mahasiswa",
+  "pas_foto",
+  "cv",
+  "surat_lamaran",
+  "portfolio",
+  "cover_letter",
+  "skck",
+  "surat_keterangan_sehat",
+  "surat_keterangan_kerja",
+  "surat_pengalaman_kerja",
+  "surat_rekomendasi",
+  "paklaring",
+  "surat_pengunduran_diri",
+  "kontrak_kerja",
+  "slip_gaji",
+  "kartu_nama",
+  "sertifikat",
+  "sertifikat_pelatihan",
+  "sertifikat_bahasa",
+  "sertifikat_profesi",
+  "sertifikat_vaksin",
+  "surat_bebas_narkoba",
+  "surat_domisili",
+  "surat_keterangan_catatan_akademik",
+  "surat_keterangan_lulus",
+  "kartu_keluarga_sejahtera",
+  "hasil_medical_checkup",
+  "hasil_tes_psikologi",
+  "hasil_tes_narkoba",
+  "demo_reel",
+  "karya_tulis",
+  "publikasi",
+  "piagam",
+  "lainnya",
 ] as const;
 
-export type DocumentType = typeof documentTypes[number];
+export type DocumentType = (typeof documentTypes)[number];
 export type DocumentCompressionLevel = "auto" | "light" | "medium" | "strong";
 
 export const documentTypeLabels: Record<DocumentType, string> = {
@@ -62,6 +95,8 @@ export const documentTypeLabels: Record<DocumentType, string> = {
   lainnya: "Lainnya",
 };
 
+import type { ListResponse } from "./api";
+
 export interface Document {
   id: string;
   user_id: string;
@@ -74,16 +109,7 @@ export interface Document {
   updated_at: string;
 }
 
-export interface DocumentPagination {
-  page: number;
-  per_page: number;
-  total_items: number;
-  total_pages: number;
-}
-
-export interface DocumentListResponse {
-  data: {
-    items: Document[];
-    pagination: DocumentPagination;
-  };
-}
+export type DocumentResponse = Document;
+export type DocumentBatchResponse = Document[];
+export type DocumentListResponse = ListResponse<Document>;
+export type DocumentPagination = ListResponse<Document>["pagination"];

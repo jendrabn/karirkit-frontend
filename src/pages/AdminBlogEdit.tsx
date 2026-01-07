@@ -2,10 +2,8 @@ import { useNavigate, useParams } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { MinimalSEO } from "@/components/MinimalSEO";
-import {
-  BlogForm,
-  type BlogFormData,
-} from "@/features/admin/blogs/components/BlogForm";
+import { BlogForm } from "@/features/admin/blogs/components/BlogForm";
+import { type BlogFormData } from "@/features/admin/blogs/api/create-blog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBlog } from "@/features/admin/blogs/api/get-blog";
@@ -131,8 +129,7 @@ const AdminBlogEdit = () => {
     image_caption: undefined,
     content: blogData.content,
     teaser: blogData.excerpt,
-    min_read: blogData.read_time,
-    views_count: blogData.views,
+    views: blogData.views,
     status: blogData.status,
     published_at: blogData.published_at,
     category: blogData.category
@@ -152,10 +149,11 @@ const AdminBlogEdit = () => {
       created_at: tag.created_at,
       updated_at: tag.updated_at,
     })),
-    author: blogData.user
+    user: blogData.user
       ? {
           id: blogData.user.id,
           name: blogData.user.name,
+          username: blogData.user.username || "",
           avatar: blogData.user.avatar,
         }
       : undefined,

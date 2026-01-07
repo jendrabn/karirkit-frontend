@@ -38,7 +38,6 @@ export const SOCIAL_PLATFORM_VALUES = [
 
   // Sosial
   "x",
-  "twitter",
   "instagram",
   "facebook",
   "threads",
@@ -87,7 +86,6 @@ export const SOCIAL_PLATFORM_LABELS: Record<SocialPlatform, string> = {
   tiktok: "TikTok",
   twitch: "Twitch",
   x: "X",
-  twitter: "Twitter",
   instagram: "Instagram",
   facebook: "Facebook",
   threads: "Threads",
