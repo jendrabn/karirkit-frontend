@@ -118,7 +118,7 @@ const experienceSchema = z.object({
 const skillSchema = z.object({
   name: z.string().min(1, "Nama keahlian wajib diisi"),
   level: z.enum(["beginner", "intermediate", "advanced", "expert"]),
-  skill_category: z.string(),
+  skill_category: z.any(),
 });
 
 const projectSchema = z.object({
@@ -2138,30 +2138,6 @@ export function CVForm({
                             {errors.projects?.[index]?.name?.message}
                           </FieldError>
                         </Field>
-                        <Field>
-                          <div className="flex items-center justify-between">
-                            <FieldLabel>Deskripsi</FieldLabel>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() =>
-                                handleOpenTemplateModal("project", index)
-                              }
-                            >
-                              <FileText className="h-4 w-4 mr-1" />
-                              Gunakan Template
-                            </Button>
-                          </div>
-                          <Textarea
-                            {...register(`projects.${index}.description`)}
-                            rows={3}
-                            placeholder="Jelaskan peran dan capaian proyek..."
-                          />
-                          <FieldError>
-                            {errors.projects?.[index]?.description?.message}
-                          </FieldError>
-                        </Field>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <Field>
                             <FieldLabel>Tahun *</FieldLabel>
@@ -2212,6 +2188,30 @@ export function CVForm({
                             </FieldError>
                           </Field>
                         </div>
+                        <Field>
+                          <div className="flex items-center justify-between">
+                            <FieldLabel>Deskripsi</FieldLabel>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                handleOpenTemplateModal("project", index)
+                              }
+                            >
+                              <FileText className="h-4 w-4 mr-1" />
+                              Gunakan Template
+                            </Button>
+                          </div>
+                          <Textarea
+                            {...register(`projects.${index}.description`)}
+                            rows={3}
+                            placeholder="Jelaskan peran dan capaian proyek..."
+                          />
+                          <FieldError>
+                            {errors.projects?.[index]?.description?.message}
+                          </FieldError>
+                        </Field>
                       </div>
                     </div>
                   ))}
