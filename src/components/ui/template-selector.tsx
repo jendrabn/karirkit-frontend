@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { TemplateGridModal } from "./template-grid-modal";
 import { type DocumentTemplate } from "@/types/template";
+import { buildImageUrl } from "@/lib/utils";
 
 interface TemplateSelectorProps {
   label: string;
@@ -31,7 +32,7 @@ export function TemplateSelector({
           onClick={() => setModalOpen(true)}
         >
           <img
-            src={selectedTemplate.preview}
+            src={buildImageUrl(selectedTemplate.preview)}
             alt={selectedTemplate.name}
             className="h-full w-full object-cover"
           />

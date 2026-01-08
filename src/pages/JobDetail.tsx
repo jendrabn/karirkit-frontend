@@ -29,13 +29,14 @@ import { Separator } from "@/components/ui/separator";
 import { ShareMenu } from "@/features/jobs/components/ShareMenu";
 import { buildImageUrl } from "@/lib/utils";
 import { paths } from "@/config/paths";
+import { useBookmarks } from "@/features/jobs/hooks/use-bookmarks";
 import {
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
   EDUCATION_LEVEL_LABELS,
   EMPLOYEE_SIZE_LABELS,
 } from "@/types/job";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import { useJob } from "@/features/jobs/api/get-job";
 import { dayjs } from "@/lib/date";
 
@@ -53,15 +54,20 @@ const formatSalary = (min: number, max: number): string => {
 export default function JobDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { data: job, isLoading, error } = useJob({ slug: slug || "" });
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { isBookmarked, toggleBookmark, isToggling } = useBookmarks();
+
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
 
   const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-    toast.success(isBookmarked ? "Bookmark dihapus" : "Lowongan disimpan");
+    if (job) {
+      toggleBookmark(job);
+    }
   };
+
+  // Check if saved via direct property or bookmarks list
+  const bookmarked = job?.is_saved || (job && isBookmarked(job.id));
 
   const openImagePreview = (index: number) => {
     setSelectedImageIndex(index);
@@ -183,13 +189,14 @@ export default function JobDetail() {
                             variant="outline"
                             size="sm"
                             onClick={handleBookmark}
+                            disabled={isToggling}
                           >
                             <Bookmark
                               className={`h-4 w-4 mr-2 ${
-                                isBookmarked ? "fill-primary text-primary" : ""
+                                bookmarked ? "fill-primary text-primary" : ""
                               }`}
                             />
-                            {isBookmarked ? "Tersimpan" : "Simpan"}
+                            {bookmarked ? "Tersimpan" : "Simpan"}
                           </Button>
                           <ShareMenu url={currentUrl} title={job.title} />
                         </div>

@@ -148,12 +148,18 @@ const formatSalaryRange = (
   max: number | undefined | null
 ) => {
   const formatNum = (n: number | undefined | null) => {
-    if (n === undefined || n === null) return "0";
-    if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
-    if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
+    if (n === undefined || n === null || n === 0) return "0";
+    if (n >= 1000000000) return `${(n / 1000000000).toFixed(1)} Miliar`;
+    if (n >= 1000000) return `${(n / 1000000).toFixed(1)} Juta`;
+    if (n >= 1000) return `${(n / 1000).toFixed(0)} Rb`;
     return n.toString();
   };
-  return `${formatNum(min)} - ${formatNum(max)}`;
+
+  if (!min && !max) return "-";
+  if (min && !max) return `> Rp ${formatNum(min)}`;
+  if (!min && max) return `< Rp ${formatNum(max)}`;
+  if (min === max) return `Rp ${formatNum(min)}`;
+  return `Rp ${formatNum(min)} - ${formatNum(max)}`;
 };
 
 export const ApplicationsList = () => {

@@ -1,106 +1,101 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import type { Job } from "@/types/job";
 import { toast } from "sonner";
-
-const STORAGE_KEY = "karirkit_bookmarked_jobs";
-
-// Global state to sync multiple instances of the hook
-let globalBookmarks: Job[] = (() => {
-  if (typeof window === "undefined") return [];
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    try {
-      return JSON.parse(stored);
-    } catch (e) {
-      console.error("Failed to parse bookmarks from localStorage", e);
-      return [];
-    }
-  }
-  return [];
-})();
-
-const listeners = new Set<(jobs: Job[]) => void>();
-
-const notifyListeners = () => {
-  listeners.forEach((listener) => listener([...globalBookmarks]));
-};
+import { useUser } from "@/lib/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSavedJobs } from "../api/get-saved-jobs";
+import { useToggleSavedJob } from "../api/toggle-saved-job";
+import { useMassDeleteSavedJobs } from "../api/mass-delete-saved-jobs";
 
 export function useBookmarks() {
-  const [bookmarks, setBookmarks] = useState<Job[]>(globalBookmarks);
+  const { data: user } = useUser();
 
-  useEffect(() => {
-    const listener = (newBookmarks: Job[]) => {
-      setBookmarks(newBookmarks);
-    };
-    listeners.add(listener);
+  const { data: savedJobsData, isLoading } = useSavedJobs({
+    queryConfig: {
+      enabled: !!user,
+    },
+  });
 
-    // Sync from other tabs/windows
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY && e.newValue) {
-        try {
-          globalBookmarks = JSON.parse(e.newValue);
-          notifyListeners();
-        } catch (err) {
-          console.error("Failed to sync bookmarks from another tab", err);
-        }
-      }
-    };
+  const queryClient = useQueryClient();
 
-    window.addEventListener("storage", handleStorageChange);
+  const toggleMutation = useToggleSavedJob({
+    mutationConfig: {
+      onSuccess: (response) => {
+        const isSaved = response.is_saved;
+        toast.success(
+          isSaved
+            ? "Lowongan berhasil disimpan"
+            : "Lowongan dihapus dari daftar simpan"
+        );
+        queryClient.invalidateQueries({ queryKey: ["jobs"] });
+        queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+      },
+      onError: () => {
+        toast.error("Gagal mengubah status penyimpanan lowongan");
+      },
+    },
+  });
 
-    return () => {
-      listeners.delete(listener);
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+  const massDeleteMutation = useMassDeleteSavedJobs({
+    mutationConfig: {
+      onSuccess: (response) => {
+        toast.success(
+          `${response.deleted_count} lowongan tersimpan berhasil dihapus`
+        );
+        queryClient.invalidateQueries({ queryKey: ["jobs"] });
+        queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+      },
+      onError: () => {
+        toast.error("Gagal menghapus lowongan tersimpan");
+      },
+    },
+  });
 
-  const saveBookmarks = (newBookmarks: Job[]) => {
-    globalBookmarks = newBookmarks;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(globalBookmarks));
-    notifyListeners();
-  };
+  const bookmarks = savedJobsData?.items || [];
 
   const isBookmarked = useCallback(
     (jobId: string) => {
-      return bookmarks.some((job) => job.id === jobId);
+      return bookmarks.some((job: Job) => job.id === jobId);
     },
     [bookmarks]
   );
 
-  const toggleBookmark = useCallback((job: Job) => {
-    const exists = globalBookmarks.some((item) => item.id === job.id);
-    let newBookmarks: Job[];
+  const toggleBookmark = useCallback(
+    (job: Job) => {
+      if (!user) {
+        toast.error("Silakan login terlebih dahulu untuk menyimpan lowongan");
+        return;
+      }
+      toggleMutation.mutate({ id: job.id });
+    },
+    [user, toggleMutation]
+  );
 
-    if (exists) {
-      newBookmarks = globalBookmarks.filter((item) => item.id !== job.id);
-      toast.success("Lowongan dihapus dari bookmark");
-    } else {
-      newBookmarks = [...globalBookmarks, job];
-      toast.success("Lowongan berhasil disimpan ke bookmark");
-    }
-
-    saveBookmarks(newBookmarks);
-  }, []);
-
-  const removeBookmark = useCallback((jobId: string) => {
-    const exists = globalBookmarks.some((item) => item.id === jobId);
-    if (exists) {
-      const newBookmarks = globalBookmarks.filter((item) => item.id !== jobId);
-      saveBookmarks(newBookmarks);
-      toast.success("Lowongan dihapus dari bookmark");
-    }
-  }, []);
+  const removeBookmark = useCallback(
+    (jobId: string) => {
+      if (!user) return;
+      const job = bookmarks.find((j: Job) => j.id === jobId);
+      if (job) {
+        toggleMutation.mutate({ id: job.id });
+      }
+    },
+    [user, bookmarks, toggleMutation]
+  );
 
   const clearBookmarks = useCallback(() => {
-    saveBookmarks([]);
-    toast.success("Semua bookmark berhasil dihapus");
-  }, []);
+    if (!user || bookmarks.length === 0) return;
+    const jobIds = bookmarks.map((j: Job) => j.id);
+    massDeleteMutation.mutate({ ids: jobIds });
+  }, [user, bookmarks, massDeleteMutation]);
 
   return {
     bookmarks,
+    isLoading,
     isBookmarked,
     toggleBookmark,
     removeBookmark,
     clearBookmarks,
+    isToggling: toggleMutation.isPending,
+    isClearing: massDeleteMutation.isPending,
   };
 }

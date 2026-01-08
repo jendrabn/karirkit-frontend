@@ -98,6 +98,7 @@ export interface Job {
   company: Company;
   job_role: JobRole;
   city: City | null;
+  is_saved: boolean;
 }
 
 export type JobResponse = Job;

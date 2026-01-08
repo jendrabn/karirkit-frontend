@@ -6,6 +6,7 @@ import { JobCard } from "@/features/jobs/components/JobCard";
 import { useBookmarks } from "@/features/jobs/hooks/use-bookmarks";
 import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
+import type { Job } from "@/types/job";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function SavedJobs() {
-  const { bookmarks, clearBookmarks } = useBookmarks();
+  const { bookmarks, clearBookmarks, isLoading } = useBookmarks();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -48,7 +49,9 @@ export default function SavedJobs() {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Hapus Semua Bookmark?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      Hapus Semua Lowongan Tersimpan?
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
                       Tindakan ini akan menghapus semua lowongan kerja dari
                       daftar simpan Anda. Tindakan ini tidak dapat dibatalkan.
@@ -68,7 +71,16 @@ export default function SavedJobs() {
             )}
           </div>
 
-          {bookmarks.length === 0 ? (
+          {isLoading ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-[200px] w-full bg-muted animate-pulse rounded-2xl"
+                />
+              ))}
+            </div>
+          ) : bookmarks.length === 0 ? (
             <div className="text-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed">
               <Briefcase className="h-16 w-16 mx-auto text-muted-foreground/30 mb-4" />
               <h3 className="text-xl font-semibold mb-2">
@@ -84,7 +96,7 @@ export default function SavedJobs() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-6">
-              {bookmarks.map((job) => (
+              {bookmarks.map((job: Job) => (
                 <JobCard key={job.id} job={job} />
               ))}
             </div>
