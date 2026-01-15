@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import { setFormErrors } from "@/hooks/use-form-errors";
 import type { ApplicationLetter } from "./get-application-letters";
 
 export const applicationLetterSchema = z.object({
@@ -31,31 +30,9 @@ export const applicationLetterSchema = z.object({
   language: z.enum(["en", "id"]),
 });
 
-export type ApplicationLetterFormData = z.infer<typeof applicationLetterSchema>;
-
-export type CreateApplicationLetterInput = {
-  name: string;
-  birth_place_date: string;
-  gender: "male" | "female";
-  marital_status: "single" | "married" | "widowed";
-  education: string;
-  phone: string;
-  email: string;
-  address: string;
-  subject: string;
-  applicant_city: string;
-  application_date: string;
-  receiver_title: string;
-  company_name: string;
-  company_city: string;
-  company_address: string;
-  opening_paragraph: string;
-  body_paragraph: string;
-  attachments?: string;
-  closing_paragraph: string;
-  signature?: string;
-  template_id: string;
-};
+export type CreateApplicationLetterInput = z.infer<
+  typeof applicationLetterSchema
+>;
 
 export type CreateApplicationLetterResponse = ApplicationLetter;
 
@@ -83,10 +60,7 @@ export const useCreateApplicationLetter = ({
       });
       onSuccess?.(data, ...args);
     },
-    onError: (error: any, ...args) => {
-      if (error?.response?.data?.errors) {
-        setFormErrors(error.response.data.errors);
-      }
+    onError: (error, ...args) => {
       onError?.(error, ...args);
     },
     ...restConfig,

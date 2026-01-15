@@ -103,6 +103,7 @@ const AdminTemplateEdit = () => {
         initialData={initialData}
         onSubmit={handleSubmit}
         isLoading={updateTemplateMutation.isPending}
+        error={updateTemplateMutation.error}
       />
     </DashboardLayout>
   );

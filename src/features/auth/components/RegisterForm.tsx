@@ -27,7 +27,7 @@ import {
   type RegisterInput,
 } from "@/lib/auth";
 import { toast } from "sonner";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { paths } from "@/config/paths";
 
 const RegisterForm = () => {
@@ -59,8 +59,7 @@ const RegisterForm = () => {
 
   const isSubmitting = registerMutation.isPending;
 
-  // Handle API validation errors
-  useFormErrors(form);
+  useServerValidation(registerMutation.error, form);
 
   return (
     <Card className="w-full max-w-md shadow-xl border-border/50">
@@ -86,7 +85,6 @@ const RegisterForm = () => {
           </div>
         </div>
 
-        {/* ✅ HTML FORM */}
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldSet disabled={isSubmitting}>
             <FieldGroup>

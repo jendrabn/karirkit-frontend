@@ -74,10 +74,7 @@ import {
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
-import {
-  UserFilterModal,
-  type FilterValues,
-} from "@/features/admin/users/components/UserFilterModal";
+import { UserFilterModal } from "@/features/admin/users/components/UserFilterModal";
 import {
   UserColumnToggle,
   type ColumnVisibility,
@@ -100,11 +97,11 @@ import { useMassDeleteUsers } from "../api/mass-delete-users";
 import { useUpdateUserStatus } from "../api/update-user-status";
 import { useUpdateUserDownloadLimit } from "../api/update-user-download-limit";
 import { useUpdateUserStorageLimit } from "../api/update-user-storage-limit";
-import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useAuth } from "@/contexts/AuthContext";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { toast } from "sonner";
+import { useUrlParams } from "@/hooks/use-url-params";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -149,11 +146,27 @@ const userStatusSchema = z
 export const UsersList = () => {
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
-  const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearch = useDebounce(searchQuery, 500);
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 10,
+    q: "",
+    sort_by: "created_at" as SortField,
+    sort_order: "desc" as "asc" | "desc",
+    role: "",
+    created_from: "",
+    created_to: "",
+  });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterValues>({});
 
   const [columnVisibilityState, setColumnVisibilityState] =
     useLocalStorage<ColumnVisibility>(
@@ -165,13 +178,6 @@ export const UsersList = () => {
     ...defaultColumnVisibility,
     ...columnVisibilityState,
   };
-
-  const [sortField, setSortField] = useState<SortField>("created_at");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
 
   const updateDownloadLimitMutation = useUpdateUserDownloadLimit({
     mutationConfig: {
@@ -304,14 +310,14 @@ export const UsersList = () => {
 
   const { data: usersData, isLoading } = useUsers({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: debouncedSearch,
-      sort_by: sortField,
-      sort_order: sortOrder,
-      role: filters.role,
-      created_from: filters.created_from?.toISOString(),
-      created_to: filters.created_to?.toISOString(),
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
+      role: (params.role as "user" | "admin") || undefined,
+      created_from: params.created_from || undefined,
+      created_to: params.created_to || undefined,
     },
   });
 
@@ -329,11 +335,14 @@ export const UsersList = () => {
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (params.sort_by === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setParams({ sort_by: field, sort_order: "asc" }, false);
     }
   };
 
@@ -362,7 +371,7 @@ export const UsersList = () => {
     },
   });
 
-  useFormErrors(statusForm);
+  useServerValidation(updateStatusMutation.error, statusForm);
 
   useEffect(() => {
     if (!userForStatus) return;
@@ -438,7 +447,7 @@ export const UsersList = () => {
   );
 
   const hasActiveFilters =
-    filters.role || filters.created_from || filters.created_to;
+    params.role || params.created_from || params.created_to;
 
   const users = usersData?.items || [];
   const pagination = usersData?.pagination || {
@@ -456,8 +465,9 @@ export const UsersList = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari nama, username, email, telepon..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -477,7 +487,9 @@ export const UsersList = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setFilters({})}
+              onClick={() =>
+                setParams({ role: "", created_from: "", created_to: "" }, true)
+              }
               className="text-muted-foreground"
             >
               Reset Filter
@@ -803,10 +815,9 @@ export const UsersList = () => {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Menampilkan</span>
               <Select
-                value={String(perPage)}
+                value={String(params.per_page)}
                 onValueChange={(val) => {
-                  setPerPage(Number(val));
-                  setCurrentPage(1);
+                  setParam("per_page", Number(val), true);
                 }}
               >
                 <SelectTrigger className="w-[70px] h-8">
@@ -827,8 +838,8 @@ export const UsersList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
+                onClick={() => setParam("page", 1, false)}
+                disabled={params.page === 1}
               >
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
@@ -836,22 +847,20 @@ export const UsersList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
+                onClick={() => setParam("page", params.page - 1, false)}
+                disabled={params.page === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="px-3 text-sm">
-                {currentPage} / {pagination.total_pages}
+                {params.page} / {pagination.total_pages}
               </span>
               <Button
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(pagination.total_pages, p + 1))
-                }
-                disabled={currentPage === pagination.total_pages}
+                onClick={() => setParam("page", params.page + 1, false)}
+                disabled={params.page === pagination.total_pages}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -859,8 +868,8 @@ export const UsersList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage(pagination.total_pages)}
-                disabled={currentPage === pagination.total_pages}
+                onClick={() => setParam("page", pagination.total_pages, false)}
+                disabled={params.page === pagination.total_pages}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
@@ -873,8 +882,19 @@ export const UsersList = () => {
       <UserFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
-        filters={filters}
-        onApply={setFilters}
+        filters={{
+          role: (params.role as any) || "",
+          created_from: params.created_from
+            ? new Date(params.created_from)
+            : undefined,
+          created_to: params.created_to
+            ? new Date(params.created_to)
+            : undefined,
+        }}
+        onApply={(newFilters) => {
+          setParams(newFilters as any, true);
+          setFilterModalOpen(false);
+        }}
       />
 
       <Dialog

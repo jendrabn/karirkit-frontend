@@ -22,7 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { useLogin, loginInputSchema, type LoginInput } from "@/lib/auth";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { paths } from "@/config/paths";
 import { toast } from "sonner";
 
@@ -89,7 +89,7 @@ const LoginForm = () => {
 
   const isSubmitting = loginMutation.isPending;
 
-  useFormErrors(form);
+  useServerValidation(loginMutation.error, form);
 
   return (
     <Card className="w-full max-w-md shadow-xl border-border/50">

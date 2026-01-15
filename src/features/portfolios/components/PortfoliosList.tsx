@@ -56,10 +56,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  PortfolioFilterModal,
-  type PortfolioFilterValues,
-} from "@/features/portfolios/components/PortfolioFilterModal";
+import { PortfolioFilterModal } from "@/features/portfolios/components/PortfolioFilterModal";
 import { usePortfolios } from "@/features/portfolios/api/get-portfolios";
 import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
 import { useMassDeletePortfolios } from "@/features/portfolios/api/mass-delete-portfolios";
@@ -68,6 +65,7 @@ import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
 import { env } from "@/config/env";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 type SortField = "created_at" | "updated_at" | "year" | "month" | "title";
 type SortOrder = "asc" | "desc";
@@ -94,11 +92,28 @@ const monthNames = [
 const PortfoliosList = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState("");
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 12,
+    q: "",
+    sort_by: "created_at" as SortField,
+    sort_order: "desc" as SortOrder,
+    project_type: "",
+    industry: "",
+    year: "",
+    month: "",
+  });
+
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState<PortfolioFilterValues>({});
-  const [sortField, setSortField] = useState<SortField>("created_at");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState<string | null>(
     null
@@ -106,22 +121,18 @@ const PortfoliosList = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [massDeleteDialogOpen, setMassDeleteDialogOpen] = useState(false);
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(12);
-
   // API calls
   const { data: portfoliosResponse, isLoading } = usePortfolios({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: searchQuery || undefined,
-      sort_by: sortField,
-      sort_order: sortOrder,
-      project_type: filters.project_type || undefined,
-      industry: filters.industry || undefined,
-      year: filters.year || undefined,
-      month: filters.month || undefined,
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
+      project_type: (params.project_type as any) || undefined,
+      industry: params.industry || undefined,
+      year: params.year ? Number(params.year) : undefined,
+      month: params.month ? Number(params.month) : undefined,
     },
   });
 
@@ -267,8 +278,9 @@ const PortfoliosList = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari judul, deskripsi, peran, industri..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -302,11 +314,10 @@ const PortfoliosList = () => {
           </div>
 
           <Select
-            value={`${sortField}-${sortOrder}`}
+            value={`${params.sort_by}-${params.sort_order}`}
             onValueChange={(value) => {
               const [field, order] = value.split("-") as [SortField, SortOrder];
-              setSortField(field);
-              setSortOrder(order);
+              setParams({ sort_by: field, sort_order: order }, false);
             }}
           >
             <SelectTrigger className="w-auto min-w-[180px]">
@@ -527,10 +538,9 @@ const PortfoliosList = () => {
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Menampilkan</span>
             <Select
-              value={perPage.toString()}
+              value={params.per_page.toString()}
               onValueChange={(value) => {
-                setPerPage(Number(value));
-                setCurrentPage(1);
+                setParam("per_page", Number(value), true);
               }}
             >
               <SelectTrigger className="w-[70px] h-8">
@@ -553,8 +563,8 @@ const PortfoliosList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(1)}
+              disabled={params.page === 1}
+              onClick={() => setParam("page", 1, false)}
             >
               <ChevronsLeft className="h-4 w-4" />
             </Button>
@@ -562,20 +572,20 @@ const PortfoliosList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={params.page === 1}
+              onClick={() => setParam("page", params.page - 1, false)}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="px-3 text-sm">
-              Halaman {currentPage} dari {totalPages || 1}
+              Halaman {params.page} dari {totalPages || 1}
             </span>
             <Button
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              disabled={currentPage === totalPages || totalPages === 0}
-              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={params.page === totalPages || totalPages === 0}
+              onClick={() => setParam("page", params.page + 1, false)}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -583,8 +593,8 @@ const PortfoliosList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              disabled={currentPage === totalPages || totalPages === 0}
-              onClick={() => setCurrentPage(totalPages)}
+              disabled={params.page === totalPages || totalPages === 0}
+              onClick={() => setParam("page", totalPages, false)}
             >
               <ChevronsRight className="h-4 w-4" />
             </Button>
@@ -596,8 +606,16 @@ const PortfoliosList = () => {
       <PortfolioFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
-        filters={filters}
-        onApplyFilters={setFilters}
+        filters={{
+          project_type: (params.project_type as any) || "",
+          industry: params.industry || "",
+          year: params.year ? Number(params.year) : undefined,
+          month: params.month ? Number(params.month) : undefined,
+        }}
+        onApplyFilters={(newFilters) => {
+          setParams(newFilters as any, true);
+          setFilterModalOpen(false);
+        }}
       />
 
       {/* Delete Confirmation */}

@@ -180,6 +180,7 @@ const AdminBlogEdit = () => {
         onSubmit={handleSubmit}
         onCancel={() => navigate(paths.admin.blogs.list.getHref())}
         isLoading={updateBlogMutation.isPending}
+        error={updateBlogMutation.error}
         categories={categories}
         tags={tags}
       />

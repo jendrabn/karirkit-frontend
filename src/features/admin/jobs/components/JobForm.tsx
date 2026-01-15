@@ -23,13 +23,14 @@ import { createJobInputSchema, type CreateJobInput } from "../api/create-job";
 import { updateJobInputSchema, type UpdateJobInput } from "../api/update-job";
 import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 import { JobMediasUpload } from "./JobMediasUpload";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 
 interface JobFormProps {
   initialData?: Job;
   onSubmit: (data: CreateJobInput | UpdateJobInput) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  error?: unknown;
 }
 
 export function JobForm({
@@ -37,6 +38,7 @@ export function JobForm({
   onSubmit,
   onCancel,
   isLoading,
+  error,
 }: JobFormProps) {
   const isEdit = !!initialData;
 
@@ -96,7 +98,9 @@ export function JobForm({
         },
   });
 
-  useFormErrors(form);
+  // Note: This form doesn't have direct access to mutation error
+  // If this form is used in a context with a mutation, pass the error prop
+  useServerValidation(error, form);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

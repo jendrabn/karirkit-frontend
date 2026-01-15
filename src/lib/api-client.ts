@@ -2,7 +2,6 @@ import Axios, { type InternalAxiosRequestConfig } from "axios";
 
 import { env } from "@/config/env";
 import { toast } from "sonner";
-import { setFormErrors } from "@/hooks/use-form-errors";
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
@@ -80,13 +79,6 @@ api.interceptors.response.use(
       } else if (typeof generalErrors === "string") {
         toast.error(generalErrors);
       }
-    }
-
-    // Handle form validation errors
-    if (error.response?.data?.errors) {
-      const formErrors = error.response.data.errors;
-      // Store form errors in a global variable for forms to access
-      setFormErrors(formErrors);
     }
 
     return Promise.reject(error);

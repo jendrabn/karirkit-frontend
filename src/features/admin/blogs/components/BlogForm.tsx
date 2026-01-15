@@ -38,7 +38,7 @@ import {
 import { toast } from "sonner";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { useUploadFile } from "@/lib/upload";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { blogSchema, type BlogFormData } from "../api/create-blog";
 import { QuillEditor } from "@/features/admin/blogs/components/QuillEditor";
 
@@ -50,6 +50,7 @@ interface BlogFormProps {
   isLoading?: boolean;
   categories: BlogCategory[];
   tags: BlogTag[];
+  error?: unknown;
 }
 
 export function BlogForm({
@@ -59,6 +60,7 @@ export function BlogForm({
   isLoading,
   categories,
   tags,
+  error,
 }: BlogFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(
     buildImageUrl(initialData?.image) || null
@@ -86,7 +88,9 @@ export function BlogForm({
   });
 
   // Handle form validation errors from API
-  useFormErrors(form as any);
+  // Note: This form doesn't have direct access to mutation error
+  // If this form is used in a context with a mutation, pass the error prop
+  useServerValidation(error, form as any);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;

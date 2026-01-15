@@ -32,7 +32,7 @@ import {
 import type { User } from "@/types/user";
 import { useUpdateUser } from "../api/update-user";
 import { useAuth } from "@/contexts/AuthContext";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { formatBytes } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -102,7 +102,7 @@ export const UserDetail = ({ user }: { user: User }) => {
     },
   });
 
-  useFormErrors(form);
+  useServerValidation(updateStatusMutation.error, form);
 
   useEffect(() => {
     form.reset({

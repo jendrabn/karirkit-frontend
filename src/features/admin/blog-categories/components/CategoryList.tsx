@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { dayjs } from "@/lib/date";
 import {
@@ -58,6 +59,7 @@ import type { BlogCategory } from "../api/get-blog-categories";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useUrlParams } from "@/hooks/use-url-params";
 import {
   CategoryColumnToggle,
   defaultCategoryColumnVisibility,
@@ -68,9 +70,22 @@ type SortField = "name" | "created_at" | "updated_at";
 type SortOrder = "asc" | "desc";
 
 export const CategoryList = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortField, setSortField] = useState<SortField>("name");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 10,
+    q: "",
+    sort_by: "name" as SortField,
+    sort_order: "desc" as SortOrder,
+  });
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -86,18 +101,14 @@ export const CategoryList = () => {
       defaultCategoryColumnVisibility
     );
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-
   // API calls
   const { data: categoriesResponse, isLoading } = useBlogCategories({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: searchQuery || undefined,
-      sort_by: sortField,
-      sort_order: sortOrder,
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
     },
   });
 
@@ -146,11 +157,14 @@ export const CategoryList = () => {
   const totalPages = pagination?.total_pages || 1;
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (params.sort_by === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setParams({ sort_by: field, sort_order: "asc" }, false);
     }
   };
 
@@ -222,8 +236,9 @@ export const CategoryList = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari nama atau slug..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -422,10 +437,9 @@ export const CategoryList = () => {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Menampilkan</span>
             <Select
-              value={perPage.toString()}
+              value={params.per_page.toString()}
               onValueChange={(value) => {
-                setPerPage(Number(value));
-                setCurrentPage(1);
+                setParam("per_page", Number(value), true);
               }}
             >
               <SelectTrigger className="w-[70px] h-8">
@@ -445,8 +459,8 @@ export const CategoryList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
+              onClick={() => setParam("page", 1, false)}
+              disabled={params.page === 1}
             >
               <ChevronsLeft className="h-4 w-4" />
             </Button>
@@ -454,20 +468,20 @@ export const CategoryList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+              onClick={() => setParam("page", params.page - 1, false)}
+              disabled={params.page === 1}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="px-3 text-sm">
-              {currentPage} / {totalPages || 1}
+              {params.page} / {totalPages || 1}
             </span>
             <Button
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages || totalPages === 0}
+              onClick={() => setParam("page", params.page + 1, false)}
+              disabled={params.page === totalPages || totalPages === 0}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -475,8 +489,8 @@ export const CategoryList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages || totalPages === 0}
+              onClick={() => setParam("page", totalPages, false)}
+              disabled={params.page === totalPages || totalPages === 0}
             >
               <ChevronsRight className="h-4 w-4" />
             </Button>
@@ -490,6 +504,7 @@ export const CategoryList = () => {
         onOpenChange={setModalOpen}
         category={editingCategory}
         onSubmit={handleSubmit}
+        error={editingCategory ? updateMutation.error : createMutation.error}
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
 

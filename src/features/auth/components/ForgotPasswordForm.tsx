@@ -25,7 +25,7 @@ import {
   type ForgotPasswordInput,
 } from "@/features/auth/api/forgot-password";
 import { toast } from "sonner";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 
 const ForgotPasswordForm = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -56,7 +56,7 @@ const ForgotPasswordForm = () => {
 
   const isSubmitting = forgotPasswordMutation.isPending;
 
-  useFormErrors(form);
+  useServerValidation(forgotPasswordMutation.error, form);
 
   return (
     <Card className="w-full max-w-md shadow-xl border-border/50">

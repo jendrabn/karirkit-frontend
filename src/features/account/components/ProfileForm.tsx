@@ -31,10 +31,11 @@ import {
 } from "@/features/account/api/update-profile";
 import { useAuth } from "@/contexts/AuthContext";
 import type { User } from "@/types/user";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { z } from "zod";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SOCIAL_PLATFORM_OPTIONS } from "@/types/social";
+import type { SocialLink } from "@/types/social";
 
 const genderOptions = [
   { value: "male", label: "Laki-laki" },
@@ -88,7 +89,7 @@ const ProfileForm = () => {
       location: user?.location || "",
       gender: (user?.gender as "male" | "female" | undefined) || undefined,
       birth_date: user?.birth_date || "",
-      social_links: (user?.social_links || []).map((link: any) => ({
+      social_links: (user?.social_links || []).map((link: SocialLink) => ({
         platform: link.platform,
         url: link.url,
         id: link.id,
@@ -104,7 +105,7 @@ const ProfileForm = () => {
     formState: { errors },
   } = form;
 
-  useFormErrors(form);
+  useServerValidation(updateProfileMutation.error, form);
 
   const socialLinks = useFieldArray({
     control,

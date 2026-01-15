@@ -29,19 +29,21 @@ import {
   type CreateTemplateInput,
 } from "../api/create-template";
 import { TEMPLATE_TYPE_OPTIONS } from "@/types/template";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { buildImageUrl } from "@/lib/utils";
 
 interface TemplateFormProps {
   initialData?: CreateTemplateInput;
   onSubmit: (data: CreateTemplateInput) => void;
   isLoading?: boolean;
+  error?: unknown;
 }
 
 export function TemplateForm({
   initialData,
   onSubmit,
   isLoading,
+  error,
 }: TemplateFormProps) {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -63,7 +65,9 @@ export function TemplateForm({
   });
 
   // Handle form validation errors from API
-  useFormErrors(form);
+  // Note: This form doesn't have direct access to mutation error
+  // If this form is used in a context with a mutation, pass the error prop
+  useServerValidation(error, form);
 
   const uploadFileValidation = useUploadFile({
     mutationConfig: {

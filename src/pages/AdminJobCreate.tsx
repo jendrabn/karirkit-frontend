@@ -38,6 +38,7 @@ export default function AdminJobCreate() {
           onSubmit={handleSubmit}
           onCancel={() => navigate("/admin/jobs")}
           isLoading={createJobMutation.isPending}
+          error={createJobMutation.error}
         />
       </div>
     </DashboardLayout>

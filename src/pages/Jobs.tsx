@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Briefcase, Loader2, Search } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -12,26 +11,72 @@ import {
   JobFilterSidebar,
 } from "@/features/jobs/components/JobFilterSidebar";
 import { JobPagination } from "@/features/jobs/components/JobPagination";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 export default function Jobs() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [appliedSearch, setAppliedSearch] = useState("");
-  const [filters, setFilters] = useState<JobFilterState>({});
-  const [currentPage, setCurrentPage] = useState(1);
-
   const perPage = 10;
 
-  // Prepare API params from UI state
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams<{
+    page: number;
+    q: string;
+    job_type: string;
+    work_system: string;
+    job_role_id: string;
+    city_id: string;
+    company_id: string;
+    experience_min: number | string;
+  }>({
+    page: 1,
+    q: "",
+    job_type: "",
+    work_system: "",
+    job_role_id: "",
+    city_id: "",
+    company_id: "",
+    experience_min: "",
+  });
+
+  // Convert URL params to filter state
+  const filters: JobFilterState = {
+    job_types: params.job_type
+      ? ([params.job_type] as JobFilterState["job_types"])
+      : undefined,
+    work_systems: params.work_system
+      ? ([params.work_system] as JobFilterState["work_systems"])
+      : undefined,
+    job_role_ids: params.job_role_id ? [params.job_role_id] : undefined,
+    city_ids: params.city_id ? [params.city_id] : undefined,
+    company_ids: params.company_id ? [params.company_id] : undefined,
+    experience_min: params.experience_min
+      ? Number(params.experience_min)
+      : undefined,
+  };
+
+  // Prepare API params from URL params
   const apiParams: JobFilters = {
-    page: currentPage,
+    page: params.page,
     per_page: perPage,
-    q: appliedSearch || undefined,
-    job_type: filters.job_types,
-    work_system: filters.work_systems,
-    job_role_id: filters.job_role_ids,
-    city_id: filters.city_ids,
-    company_id: filters.company_ids,
-    experience_min: filters.experience_min,
+    q: params.q || undefined,
+    job_type: params.job_type
+      ? ([params.job_type] as JobFilters["job_type"])
+      : undefined,
+    work_system: params.work_system
+      ? ([params.work_system] as JobFilters["work_system"])
+      : undefined,
+    job_role_id: params.job_role_id ? [params.job_role_id] : undefined,
+    city_id: params.city_id ? [params.city_id] : undefined,
+    company_id: params.company_id ? [params.company_id] : undefined,
+    experience_min: params.experience_min
+      ? Number(params.experience_min)
+      : undefined,
   };
 
   const { data: jobsData, isLoading: isLoadingJobs } = useJobs({
@@ -46,24 +91,48 @@ export default function Jobs() {
   const pagination = jobsData?.pagination;
   const totalPages = pagination?.total_pages || 0;
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setAppliedSearch(searchQuery);
-    setCurrentPage(1);
-  };
-
   const handleFilterChange = (newFilters: JobFilterState) => {
-    setFilters(newFilters);
-    setCurrentPage(1);
+    const updates: Record<string, string> = {};
+
+    // Convert array filters to single values for URL
+    if (newFilters.job_types?.length) {
+      updates.job_type = newFilters.job_types[0];
+    }
+    if (newFilters.work_systems?.length) {
+      updates.work_system = newFilters.work_systems[0];
+    }
+    if (newFilters.job_role_ids?.length) {
+      updates.job_role_id = newFilters.job_role_ids[0];
+    }
+    if (newFilters.city_ids?.length) {
+      updates.city_id = newFilters.city_ids[0];
+    }
+    if (newFilters.company_ids?.length) {
+      updates.company_id = newFilters.company_ids[0];
+    }
+    if (newFilters.experience_min !== undefined) {
+      updates.experience_min = String(newFilters.experience_min);
+    }
+
+    setParams(updates, true);
   };
 
   const handleClearFilters = () => {
-    setFilters({});
-    setCurrentPage(1);
+    setParams(
+      {
+        job_type: "",
+        work_system: "",
+        job_role_id: "",
+        city_id: "",
+        company_id: "",
+        experience_min: "",
+      },
+      true
+    );
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setParam("page", page, false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -122,14 +191,14 @@ export default function Jobs() {
                 terbaik di Indonesia
               </p>
               <div className="max-w-xl mx-auto pt-6">
-                <form onSubmit={handleSearch}>
+                <form onSubmit={handleSearchSubmit}>
                   <div className="relative">
                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10 pointer-events-none" />
                     <Input
                       placeholder="Cari posisi atau perusahaan..."
                       className="w-full pl-14 pr-5 h-14 text-base bg-background border-2 rounded-full focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all shadow-sm hover:shadow-md"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      value={searchInput}
+                      onChange={(e) => handleSearchInput(e.target.value)}
                     />
                   </div>
                 </form>
@@ -206,7 +275,7 @@ export default function Jobs() {
                 {!isLoadingJobs && jobs.length > 0 && totalPages > 1 && (
                   <div className="mt-8">
                     <JobPagination
-                      currentPage={currentPage}
+                      currentPage={params.page}
                       totalPages={totalPages}
                       onPageChange={handlePageChange}
                     />

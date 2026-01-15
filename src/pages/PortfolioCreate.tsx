@@ -6,15 +6,13 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { PortfolioForm } from "@/features/portfolios/components/PortfolioForm";
 import { useCreatePortfolio } from "@/features/portfolios/api/create-portfolio";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/MinimalSEO";
 
 const PortfolioCreate = () => {
   const navigate = useNavigate();
   const form = useForm();
-
-  useFormErrors(form);
 
   const createMutation = useCreatePortfolio({
     mutationConfig: {
@@ -24,6 +22,8 @@ const PortfolioCreate = () => {
       },
     },
   });
+
+  useServerValidation(createMutation.error, form);
 
   const handleSubmit = (data: any) => {
     createMutation.mutate(data);
@@ -51,6 +51,7 @@ const PortfolioCreate = () => {
       <PortfolioForm
         onSubmit={handleSubmit}
         isLoading={createMutation.isPending}
+        error={createMutation.error}
       />
     </DashboardLayout>
   );

@@ -190,7 +190,7 @@ export function CompaniesList({
                     </TableCell>
                   )}
                   {columnVisibility.slug && (
-                    <TableCell className="text-sm text-muted-foreground font-mono">
+                    <TableCell className="text-sm text-muted-foreground">
                       {company.slug}
                     </TableCell>
                   )}

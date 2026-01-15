@@ -66,11 +66,11 @@ import { cn, buildImageUrl } from "@/lib/utils";
 import { useTemplates } from "../api/get-templates";
 import { useDeleteTemplate } from "../api/delete-template";
 import { useMassDeleteTemplates } from "../api/mass-delete-templates";
-import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { toast } from "sonner";
+import { useUrlParams } from "@/hooks/use-url-params";
 import { getTemplateTypeLabel } from "@/types/template";
-import type { GetTemplatesParams } from "../api/get-templates";
+import type { TemplateType, Language } from "@/types/template";
 
 type SortField =
   | "created_at"
@@ -82,35 +82,45 @@ type SortField =
 
 export const TemplatesList = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearch = useDebounce(searchQuery, 500);
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 10,
+    q: "",
+    sort_by: "created_at" as SortField,
+    sort_order: "desc" as "asc" | "desc",
+    type: "",
+    language: "",
+    is_premium: undefined as boolean | undefined,
+  });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState<
-    Omit<
-      GetTemplatesParams,
-      "page" | "per_page" | "q" | "sort_by" | "sort_order"
-    >
-  >({});
   const [visibility, setVisibility] = useLocalStorage<ColumnVisibility>(
     "templates-table-columns",
     defaultColumnVisibility
   );
 
-  const [sortField, setSortField] = useState<SortField>("created_at");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-
   const { data: templatesData, isLoading } = useTemplates({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: debouncedSearch,
-      sort_by: sortField,
-      sort_order: sortOrder,
-      ...filters,
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
+      type: (params.type as TemplateType) || undefined,
+      language: (params.language as Language) || undefined,
+      is_premium:
+        params.is_premium !== undefined
+          ? (params.is_premium as any)
+          : undefined,
     },
   });
 
@@ -128,11 +138,14 @@ export const TemplatesList = () => {
   const [templateToDelete, setTemplateToDelete] = useState<string | null>(null);
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (params.sort_by === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setParams({ sort_by: field, sort_order: "asc" }, false);
     }
   };
 
@@ -197,7 +210,7 @@ export const TemplatesList = () => {
   );
 
   const hasActiveFilters =
-    filters.type || filters.language || filters.is_premium !== undefined;
+    params.type || params.language || params.is_premium !== undefined;
 
   const templates = templatesData?.items || [];
   const pagination = templatesData?.pagination || {
@@ -208,8 +221,8 @@ export const TemplatesList = () => {
   };
 
   const handleApplyFilters = (newFilters: any) => {
-    setFilters(newFilters);
-    setCurrentPage(1);
+    setParams(newFilters, true);
+    setFilterModalOpen(false);
   };
 
   return (
@@ -219,8 +232,9 @@ export const TemplatesList = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari nama template..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -240,7 +254,16 @@ export const TemplatesList = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setFilters({})}
+              onClick={() =>
+                setParams(
+                  {
+                    type: "" as any,
+                    language: "" as any,
+                    is_premium: undefined,
+                  },
+                  true
+                )
+              }
               className="text-muted-foreground"
             >
               Reset Filter
@@ -488,10 +511,9 @@ export const TemplatesList = () => {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Menampilkan</span>
               <Select
-                value={String(perPage)}
+                value={String(params.per_page)}
                 onValueChange={(val) => {
-                  setPerPage(Number(val));
-                  setCurrentPage(1);
+                  setParam("per_page", Number(val), true);
                 }}
               >
                 <SelectTrigger className="w-[70px] h-8">
@@ -512,8 +534,8 @@ export const TemplatesList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
+                onClick={() => setParam("page", 1, false)}
+                disabled={params.page === 1}
               >
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
@@ -521,22 +543,20 @@ export const TemplatesList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
+                onClick={() => setParam("page", params.page - 1, false)}
+                disabled={params.page === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="px-3 text-sm">
-                {currentPage} / {pagination.total_pages}
+                {params.page} / {pagination.total_pages}
               </span>
               <Button
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(pagination.total_pages, p + 1))
-                }
-                disabled={currentPage === pagination.total_pages}
+                onClick={() => setParam("page", params.page + 1, false)}
+                disabled={params.page === pagination.total_pages}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -544,8 +564,8 @@ export const TemplatesList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage(pagination.total_pages)}
-                disabled={currentPage === pagination.total_pages}
+                onClick={() => setParam("page", pagination.total_pages, false)}
+                disabled={params.page === pagination.total_pages}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
@@ -557,7 +577,12 @@ export const TemplatesList = () => {
       <TemplatesFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
-        filters={filters}
+        filters={{
+          type: (params.type as any) || "",
+          language: (params.language as any) || "",
+          is_premium:
+            params.is_premium !== undefined ? params.is_premium : undefined,
+        }}
         onApply={handleApplyFilters}
       />
 

@@ -65,7 +65,6 @@ import {
 } from "@/components/ui/tooltip";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { ApplicationLetterFilterModal } from "./ApplicationLetterFilterModal";
-import type { FilterValues } from "./ApplicationLetterFilterModal";
 import {
   ApplicationLetterColumnToggle,
   defaultColumnVisibility,
@@ -84,6 +83,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 type SortField =
   | "application_date"
@@ -95,9 +95,26 @@ type SortOrder = "asc" | "desc";
 
 export function ApplicationLetterList() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 10,
+    q: "",
+    sort_by: "application_date" as SortField,
+    sort_order: "desc" as SortOrder,
+    company_name: "",
+    dateFrom: "",
+  });
+
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterValues>({});
 
   // Use useLocalStorage for column visibility persistence
   const [storedVisibility, setStoredVisibility] =
@@ -110,28 +127,22 @@ export function ApplicationLetterList() {
   const columnVisibility = { ...defaultColumnVisibility, ...storedVisibility };
   const setColumnVisibility = setStoredVisibility;
 
-  const [sortField, setSortField] = useState<SortField>("application_date");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [letterToDelete, setLetterToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-
   // API calls
   const { data: lettersResponse, isLoading } = useApplicationLetters({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: searchQuery || undefined,
-      sort_by: sortField,
-      sort_order: sortOrder,
-      company_name: filters.company_name || undefined,
-      application_date: filters.dateFrom
-        ? dayjs(filters.dateFrom).format("YYYY-MM-DD")
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
+      company_name: params.company_name || undefined,
+      application_date: params.dateFrom
+        ? dayjs(params.dateFrom).format("YYYY-MM-DD")
         : undefined,
     },
   });
@@ -170,11 +181,14 @@ export function ApplicationLetterList() {
   const totalPages = pagination?.total_pages || 1;
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (params.sort_by === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setParams({ sort_by: field, sort_order: "asc" }, false);
     }
   };
 
@@ -261,8 +275,9 @@ export function ApplicationLetterList() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari nama, perusahaan, subjek, email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -602,10 +617,9 @@ export function ApplicationLetterList() {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Menampilkan</span>
               <Select
-                value={String(perPage)}
+                value={String(params.per_page)}
                 onValueChange={(value) => {
-                  setPerPage(Number(value));
-                  setCurrentPage(1);
+                  setParam("per_page", Number(value), true);
                 }}
               >
                 <SelectTrigger className="w-[70px] h-8">
@@ -626,8 +640,8 @@ export function ApplicationLetterList() {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
+                onClick={() => setParam("page", 1, false)}
+                disabled={params.page === 1}
               >
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
@@ -635,22 +649,20 @@ export function ApplicationLetterList() {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
+                onClick={() => setParam("page", params.page - 1, false)}
+                disabled={params.page === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="px-3 text-sm">
-                Halaman {currentPage} dari {totalPages}
+                Halaman {params.page} dari {totalPages}
               </span>
               <Button
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
+                onClick={() => setParam("page", params.page + 1, false)}
+                disabled={params.page === totalPages}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -658,8 +670,8 @@ export function ApplicationLetterList() {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
+                onClick={() => setParam("page", totalPages, false)}
+                disabled={params.page === totalPages}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
@@ -672,8 +684,14 @@ export function ApplicationLetterList() {
       <ApplicationLetterFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
-        filters={filters}
-        onApplyFilters={setFilters}
+        filters={{
+          company_name: params.company_name || "",
+          dateFrom: params.dateFrom ? new Date(params.dateFrom) : undefined,
+        }}
+        onApplyFilters={(newFilters) => {
+          setParams(newFilters as any, true);
+          setFilterModalOpen(false);
+        }}
       />
 
       {/* Delete Confirmation Dialog */}

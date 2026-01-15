@@ -145,6 +145,8 @@ export type GetCVsParams = {
   name?: string;
   email?: string;
   language?: "id" | "en";
+  dateFrom?: string;
+  dateTo?: string;
 };
 
 export const getCVs = (params?: GetCVsParams): Promise<CVsResponse> => {

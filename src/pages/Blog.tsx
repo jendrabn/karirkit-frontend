@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router";
+import { Link } from "react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -27,24 +27,36 @@ import { env } from "@/config/env";
 import { BlogSidebar } from "@/features/blogs/components/BlogSidebar";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 const Blog = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchQuery = searchParams.get("q") ?? "";
-  const selectedCategoryId = searchParams.get("category_id") ?? "all";
-  const selectedTagId = searchParams.get("tag_id");
   const perPage = 6;
-  const pageParam = Number(searchParams.get("page"));
-  const currentPage =
-    Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: perPage,
+    q: "",
+    category_id: "",
+    tag_id: "",
+  });
 
   // Build API params
   const apiParams: GetBlogsParams = {
-    page: currentPage,
-    per_page: perPage,
-    q: searchQuery || undefined,
-    category_id: selectedCategoryId !== "all" ? selectedCategoryId : undefined,
-    tag_id: selectedTagId || undefined,
+    page: params.page,
+    per_page: params.per_page,
+    q: params.q || undefined,
+    category_id:
+      params.category_id && params.category_id !== "all"
+        ? params.category_id
+        : undefined,
+    tag_id: params.tag_id || undefined,
     status: "published",
     sort_by: "published_at",
     sort_order: "desc",
@@ -61,34 +73,11 @@ const Blog = () => {
   const categories = categoriesData?.items || [];
   const tags = tagsData?.items || [];
 
-  const handleSearch = (value: string) => {
-    const nextParams = new URLSearchParams(searchParams);
-
-    if (value) {
-      nextParams.set("q", value);
-    } else {
-      nextParams.delete("q");
-    }
-
-    // Clear tag filter when search is performed to avoid conflicting filters
-    if (selectedTagId) {
-      nextParams.delete("tag_id");
-    }
-
-    nextParams.delete("page");
-    setSearchParams(nextParams);
-  };
+  const selectedCategoryId = params.category_id || "all";
+  const selectedTagId = params.tag_id;
 
   const handlePageChange = (page: number) => {
-    const nextParams = new URLSearchParams(searchParams);
-
-    if (page <= 1) {
-      nextParams.delete("page");
-    } else {
-      nextParams.set("page", String(page));
-    }
-
-    setSearchParams(nextParams);
+    setParam("page", page <= 1 ? 1 : page, false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -176,8 +165,9 @@ const Blog = () => {
                       <Input
                         placeholder="Cari artikel..."
                         className="w-full pl-14 pr-5 h-14 text-base bg-background border-2 rounded-full focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all"
-                        value={searchQuery}
-                        onChange={(e) => handleSearch(e.target.value)}
+                        value={searchInput}
+                        onChange={(e) => handleSearchInput(e.target.value)}
+                        onKeyDown={handleSearchSubmit}
                       />
                     </div>
                   </div>
@@ -328,7 +318,7 @@ const Blog = () => {
                             size="icon"
                             className="h-9 w-9"
                             onClick={() => handlePageChange(1)}
-                            disabled={currentPage === 1}
+                            disabled={params.page === 1}
                           >
                             <ChevronsLeft className="h-4 w-4" />
                           </Button>
@@ -336,20 +326,20 @@ const Blog = () => {
                             variant="outline"
                             size="icon"
                             className="h-9 w-9"
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
+                            onClick={() => handlePageChange(params.page - 1)}
+                            disabled={params.page === 1}
                           >
                             <ChevronLeft className="h-4 w-4" />
                           </Button>
                           <span className="px-4 text-sm text-muted-foreground">
-                            Halaman {currentPage} dari {totalPages}
+                            Halaman {params.page} dari {totalPages}
                           </span>
                           <Button
                             variant="outline"
                             size="icon"
                             className="h-9 w-9"
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
+                            onClick={() => handlePageChange(params.page + 1)}
+                            disabled={params.page === totalPages}
                           >
                             <ChevronRight className="h-4 w-4" />
                           </Button>
@@ -358,7 +348,7 @@ const Blog = () => {
                             size="icon"
                             className="h-9 w-9"
                             onClick={() => handlePageChange(totalPages)}
-                            disabled={currentPage === totalPages}
+                            disabled={params.page === totalPages}
                           >
                             <ChevronsRight className="h-4 w-4" />
                           </Button>
@@ -375,7 +365,7 @@ const Blog = () => {
                     tags={tags}
                     selectedCategoryId={selectedCategoryId}
                     selectedTagId={selectedTagId}
-                    searchQuery={searchQuery}
+                    searchQuery={params.q}
                   />
                 </aside>
               </div>

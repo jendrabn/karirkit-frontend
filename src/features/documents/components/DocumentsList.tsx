@@ -81,6 +81,7 @@ import { useDeleteDocument } from "@/features/documents/api/delete-document";
 import { useMassDeleteDocuments } from "@/features/documents/api/mass-delete-documents";
 import { useDownloadDocument } from "@/features/documents/api/download-document";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 type SortField = "uploaded_at" | "original_name" | "size" | "type";
 type SortOrder = "asc" | "desc";
@@ -112,12 +113,25 @@ const formatFileSize = (bytes: number) => {
 };
 
 export function DocumentsList() {
-  const [searchQuery, setSearchQuery] = useState("");
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 20,
+    q: "",
+    sort_by: "uploaded_at" as SortField,
+    sort_order: "desc" as SortOrder,
+    type: "",
+  });
+
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [filters, setFilters] = useState<DocumentFilterValues>({});
-  const [sortField, setSortField] = useState<SortField>("uploaded_at");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
@@ -128,20 +142,14 @@ export function DocumentsList() {
       defaultColumnVisibility
     );
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(20);
-
-  const effectiveQuery = searchQuery || filters.q || undefined;
-
   const { data: documentsResponse, isLoading } = useDocuments({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: effectiveQuery,
-      type: filters.type,
-      sort_by: sortField,
-      sort_order: sortOrder,
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      type: (params.type as DocumentType) || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
     },
   });
 
@@ -175,7 +183,7 @@ export function DocumentsList() {
   );
   const pagination = documentsResponse?.pagination;
   const totalPages = pagination?.total_pages || 1;
-  const displayPage = Math.min(currentPage, totalPages);
+  const displayPage = Math.min(params.page, totalPages);
 
   const activeSelectedIds = useMemo(
     () => selectedIds.filter((id) => documents.some((doc) => doc.id === id)),
@@ -208,14 +216,12 @@ export function DocumentsList() {
   };
 
   const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-    setCurrentPage(1);
-    setSelectedIds([]);
+    handleSearchInput(value);
   };
 
   const handleApplyFilters = (nextFilters: DocumentFilterValues) => {
-    setFilters(nextFilters);
-    setCurrentPage(1);
+    setParams(nextFilters as any, true);
+    setFilterModalOpen(false);
     setSelectedIds([]);
   };
 
@@ -275,11 +281,14 @@ export function DocumentsList() {
   };
 
   const handleSortField = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (params.sort_by === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setParams({ sort_by: field, sort_order: "asc" }, false);
     }
   };
 
@@ -291,8 +300,9 @@ export function DocumentsList() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari nama file..."
-            value={searchQuery}
+            value={searchInput}
             onChange={(e) => handleSearchChange(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -510,10 +520,9 @@ export function DocumentsList() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Menampilkan</span>
             <Select
-              value={perPage.toString()}
+              value={params.per_page.toString()}
               onValueChange={(value) => {
-                setPerPage(Number(value));
-                setCurrentPage(1);
+                setParam("per_page", Number(value), true);
                 setSelectedIds([]);
               }}
             >
@@ -537,7 +546,7 @@ export function DocumentsList() {
               size="icon"
               className="h-8 w-8"
               onClick={() => {
-                setCurrentPage(1);
+                setParam("page", 1, false);
                 setSelectedIds([]);
               }}
               disabled={displayPage === 1}
@@ -549,7 +558,7 @@ export function DocumentsList() {
               size="icon"
               className="h-8 w-8"
               onClick={() => {
-                setCurrentPage(Math.max(displayPage - 1, 1));
+                setParam("page", Math.max(displayPage - 1, 1), false);
                 setSelectedIds([]);
               }}
               disabled={displayPage === 1}
@@ -564,7 +573,7 @@ export function DocumentsList() {
               size="icon"
               className="h-8 w-8"
               onClick={() => {
-                setCurrentPage(Math.min(displayPage + 1, totalPages));
+                setParam("page", Math.min(displayPage + 1, totalPages), false);
                 setSelectedIds([]);
               }}
               disabled={displayPage === totalPages || totalPages === 0}
@@ -576,7 +585,7 @@ export function DocumentsList() {
               size="icon"
               className="h-8 w-8"
               onClick={() => {
-                setCurrentPage(totalPages);
+                setParam("page", totalPages, false);
                 setSelectedIds([]);
               }}
               disabled={displayPage === totalPages || totalPages === 0}
@@ -591,7 +600,10 @@ export function DocumentsList() {
       <DocumentFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
-        filters={filters}
+        filters={{
+          type: (params.type as any) || "",
+          q: params.q || "",
+        }}
         onApply={handleApplyFilters}
       />
 

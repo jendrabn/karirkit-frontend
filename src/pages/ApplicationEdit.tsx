@@ -104,6 +104,7 @@ export default function ApplicationEdit() {
         onSubmit={handleSubmit}
         onCancel={() => navigate("/applications")}
         isLoading={updateApplicationMutation.isPending}
+        error={updateApplicationMutation.error}
       />
     </DashboardLayout>
   );

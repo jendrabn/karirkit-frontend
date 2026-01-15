@@ -3,18 +3,16 @@ import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { ApplicationLetterForm } from "@/features/application-letters/components/ApplicationLetterForm";
-import { type ApplicationLetterFormData } from "@/features/application-letters/api/create-application-letter";
+import { type CreateApplicationLetterInput } from "@/features/application-letters/api/create-application-letter";
 import { useCreateApplicationLetter } from "@/features/application-letters/api/create-application-letter";
 import { toast } from "sonner";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/MinimalSEO"; // Import
 
 export default function ApplicationLetterCreate() {
   const navigate = useNavigate();
-  const form = useForm<ApplicationLetterFormData>();
-
-  useFormErrors(form);
+  const form = useForm<CreateApplicationLetterInput>();
 
   const createMutation = useCreateApplicationLetter({
     mutationConfig: {
@@ -25,7 +23,9 @@ export default function ApplicationLetterCreate() {
     },
   });
 
-  const handleSubmit = (data: ApplicationLetterFormData) => {
+  useServerValidation(createMutation.error, form);
+
+  const handleSubmit = (data: CreateApplicationLetterInput) => {
     createMutation.mutate(data);
   };
 
@@ -53,6 +53,7 @@ export default function ApplicationLetterCreate() {
         onSubmit={handleSubmit}
         onCancel={() => navigate("/application-letters")}
         isLoading={createMutation.isPending}
+        error={createMutation.error}
       />
     </DashboardLayout>
   );

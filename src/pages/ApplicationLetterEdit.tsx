@@ -7,7 +7,7 @@ import { type ApplicationLetterFormData } from "@/features/application-letters/a
 import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
 import { useUpdateApplicationLetter } from "@/features/application-letters/api/update-application-letter";
 import { toast } from "sonner";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { MinimalSEO } from "@/components/MinimalSEO";
@@ -16,8 +16,6 @@ export default function ApplicationLetterEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
   const form = useForm<ApplicationLetterFormData>();
-
-  useFormErrors(form);
 
   const { data: letterResponse, isLoading: isLetterLoading } =
     useApplicationLetter({
@@ -32,6 +30,8 @@ export default function ApplicationLetterEdit() {
       },
     },
   });
+
+  useServerValidation(updateMutation.error, form);
 
   const handleSubmit = (data: ApplicationLetterFormData) => {
     if (id) {
@@ -118,6 +118,7 @@ export default function ApplicationLetterEdit() {
         onSubmit={handleSubmit}
         onCancel={() => navigate("/application-letters")}
         isLoading={updateMutation.isPending}
+        error={updateMutation.error}
       />
     </DashboardLayout>
   );

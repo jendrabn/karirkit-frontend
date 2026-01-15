@@ -6,15 +6,13 @@ import { CVForm } from "@/features/cvs/components/CVForm";
 import { type CVFormData } from "@/features/cvs/api/create-cv";
 import { useCreateCV } from "@/features/cvs/api/create-cv";
 import { toast } from "sonner";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function CVCreate() {
   const navigate = useNavigate();
   const form = useForm<CVFormData>();
-
-  useFormErrors(form);
 
   const createMutation = useCreateCV({
     mutationConfig: {
@@ -24,6 +22,8 @@ export default function CVCreate() {
       },
     },
   });
+
+  useServerValidation(createMutation.error, form);
 
   const handleSubmit = (data: CVFormData) => {
     createMutation.mutate(data as any);
@@ -52,6 +52,7 @@ export default function CVCreate() {
         onSubmit={handleSubmit}
         onCancel={() => navigate("/cvs")}
         isLoading={createMutation.isPending}
+        error={createMutation.error}
       />
     </DashboardLayout>
   );

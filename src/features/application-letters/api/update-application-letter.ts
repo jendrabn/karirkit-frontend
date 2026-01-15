@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import { setFormErrors } from "@/hooks/use-form-errors";
 import type { ApplicationLetter } from "./get-application-letters";
 
 export type UpdateApplicationLetterInput = {
@@ -62,10 +61,7 @@ export const useUpdateApplicationLetter = ({
       });
       onSuccess?.(data, ...args);
     },
-    onError: (error: any, ...args) => {
-      if (error?.response?.data?.errors) {
-        setFormErrors(error.response.data.errors);
-      }
+    onError: (error, ...args) => {
       onError?.(error, ...args);
     },
     ...restConfig,

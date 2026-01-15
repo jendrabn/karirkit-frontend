@@ -41,7 +41,7 @@ import {
   LANGUAGE_OPTIONS,
 } from "@/types/applicationLetter";
 import { useTemplates } from "@/features/landing/api/get-templates";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import {
   applicationLetterSchema,
   type ApplicationLetterFormData,
@@ -52,6 +52,7 @@ interface ApplicationLetterFormProps {
   onSubmit: (data: ApplicationLetterFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  error?: unknown;
 }
 
 export function ApplicationLetterForm({
@@ -59,6 +60,7 @@ export function ApplicationLetterForm({
   onSubmit,
   onCancel,
   isLoading,
+  error,
 }: ApplicationLetterFormProps) {
   const [selectedTemplate, setSelectedTemplate] = useState(
     initialData?.template_id || ""
@@ -93,7 +95,9 @@ export function ApplicationLetterForm({
   });
 
   // Handle form validation errors from API
-  useFormErrors(form);
+  // Note: This form doesn't have direct access to mutation error
+  // If this form is used in a context with a mutation, pass the error prop
+  useServerValidation(error, form);
 
   // Fetch templates based on selected language
   const { data: templatesResponse, isLoading: isTemplatesLoading } =

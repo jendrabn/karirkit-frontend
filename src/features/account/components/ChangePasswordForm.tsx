@@ -11,7 +11,7 @@ import {
   type UpdatePasswordInput,
   updatePasswordInputSchema,
 } from "@/features/account/api/update-password";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -44,8 +44,8 @@ const ChangePasswordForm = () => {
     },
   });
 
-  // Use the useFormErrors hook to handle server validation errors
-  useFormErrors(form);
+  // Use the useServerValidation hook to handle server validation errors
+  useServerValidation(updatePasswordMutation.error, form);
 
   const onSubmit = (data: UpdatePasswordInput) => {
     updatePasswordMutation.mutate({

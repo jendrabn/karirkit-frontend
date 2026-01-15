@@ -45,6 +45,7 @@ const AdminUserCreate = () => {
       <UserForm
         onSubmit={handleSubmit}
         isLoading={createUserMutation.isPending}
+        error={createUserMutation.error}
       />
     </DashboardLayout>
   );

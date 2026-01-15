@@ -81,6 +81,7 @@ export default function AdminJobEdit() {
           onSubmit={handleSubmit}
           onCancel={() => navigate("/admin/jobs")}
           isLoading={updateJobMutation.isPending}
+          error={updateJobMutation.error}
         />
       </div>
     </DashboardLayout>

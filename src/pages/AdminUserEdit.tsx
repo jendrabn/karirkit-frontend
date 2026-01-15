@@ -87,6 +87,7 @@ const AdminUserEdit = () => {
         initialData={user}
         onSubmit={handleSubmit}
         isLoading={updateUserMutation.isPending}
+        error={updateUserMutation.error}
       />
     </DashboardLayout>
   );

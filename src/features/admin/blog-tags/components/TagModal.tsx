@@ -13,7 +13,7 @@ import {
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import type { BlogTag } from "../api/get-blog-tags";
 import { useEffect } from "react";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { tagSchema, type TagFormData } from "../api/create-blog-tag";
 
 interface TagModalProps {
@@ -21,6 +21,7 @@ interface TagModalProps {
   onOpenChange: (open: boolean) => void;
   tag?: BlogTag | null;
   onSubmit: (data: TagFormData) => void;
+  error?: unknown;
   isLoading?: boolean;
 }
 
@@ -29,6 +30,7 @@ export function TagModal({
   onOpenChange,
   tag,
   onSubmit,
+  error,
   isLoading,
 }: TagModalProps) {
   const form = useForm<TagFormData>({
@@ -38,7 +40,7 @@ export function TagModal({
     },
   });
 
-  useFormErrors(form);
+  useServerValidation(error, form);
 
   useEffect(() => {
     if (tag) {

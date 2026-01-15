@@ -14,7 +14,7 @@ import {
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import type { BlogCategory } from "../api/get-blog-categories";
 import { useEffect } from "react";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import {
   categorySchema,
   type CategoryFormData,
@@ -25,6 +25,7 @@ interface CategoryModalProps {
   onOpenChange: (open: boolean) => void;
   category?: BlogCategory | null;
   onSubmit: (data: CategoryFormData) => void;
+  error?: unknown;
   isLoading?: boolean;
 }
 
@@ -33,6 +34,7 @@ export function CategoryModal({
   onOpenChange,
   category,
   onSubmit,
+  error,
   isLoading,
 }: CategoryModalProps) {
   const form = useForm<CategoryFormData>({
@@ -43,7 +45,7 @@ export function CategoryModal({
     },
   });
 
-  useFormErrors(form);
+  useServerValidation(error, form);
 
   useEffect(() => {
     if (category) {

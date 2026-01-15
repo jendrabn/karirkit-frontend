@@ -90,41 +90,52 @@ import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
 import { useMassDeleteBlogs } from "@/features/admin/blogs/api/mass-delete-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 type SortField = "updated_at" | "published_at" | "views" | "title";
 type SortOrder = "asc" | "desc";
 
 export const BlogsList = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterValues>({});
 
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 10,
+    q: "",
+    sort_by: "updated_at" as SortField,
+    sort_order: "desc" as SortOrder,
+    status: "",
+    category_id: "",
+  });
+
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<ColumnVisibility>(
       "blogs-table-columns",
       defaultColumnVisibility
     );
-  const [sortField, setSortField] = useState<SortField | null>("updated_at");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-
   // Build API params
   const apiParams: GetBlogsParams = {
-    page: currentPage,
-    per_page: perPage,
-    q: searchQuery || undefined,
-    sort_order: sortOrder,
-    sort_by: sortField || undefined,
-    status: filters.status as "draft" | "published" | "archived" | undefined,
-    category_id: filters.category_id?.toString(),
+    page: params.page,
+    per_page: params.per_page,
+    q: params.q || undefined,
+    sort_order: params.sort_order,
+    sort_by: params.sort_by || undefined,
+    status: params.status as "draft" | "published" | "archived" | undefined,
+    category_id: params.category_id || undefined,
   };
 
   // Fetch blogs
@@ -146,11 +157,14 @@ export const BlogsList = () => {
   const totalItems = blogsData?.pagination.total_items || 0;
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (params.sort_by === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setParams({ sort_by: field, sort_order: "asc" }, false);
     }
   };
 
@@ -222,8 +236,9 @@ export const BlogsList = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari judul, excerpt..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -547,10 +562,9 @@ export const BlogsList = () => {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Menampilkan</span>
             <Select
-              value={perPage.toString()}
+              value={params.per_page.toString()}
               onValueChange={(value) => {
-                setPerPage(Number(value));
-                setCurrentPage(1);
+                setParam("per_page", Number(value), true);
               }}
             >
               <SelectTrigger className="w-[70px] h-8">
@@ -570,8 +584,8 @@ export const BlogsList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
+              onClick={() => setParam("page", 1, false)}
+              disabled={params.page === 1}
             >
               <ChevronsLeft className="h-4 w-4" />
             </Button>
@@ -579,20 +593,20 @@ export const BlogsList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+              onClick={() => setParam("page", params.page - 1, false)}
+              disabled={params.page === 1}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="px-3 text-sm">
-              {currentPage} / {totalPages || 1}
+              {params.page} / {totalPages || 1}
             </span>
             <Button
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages || totalPages === 0}
+              onClick={() => setParam("page", params.page + 1, false)}
+              disabled={params.page === totalPages || totalPages === 0}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -600,8 +614,8 @@ export const BlogsList = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages || totalPages === 0}
+              onClick={() => setParam("page", totalPages, false)}
+              disabled={params.page === totalPages || totalPages === 0}
             >
               <ChevronsRight className="h-4 w-4" />
             </Button>
@@ -613,8 +627,20 @@ export const BlogsList = () => {
       <BlogFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
-        filters={filters}
-        onApply={setFilters}
+        filters={{
+          status: params.status as FilterValues["status"],
+          category_id: params.category_id,
+        }}
+        onApply={(newFilters) => {
+          setParams(
+            {
+              status: newFilters.status || "",
+              category_id: newFilters.category_id || "",
+            },
+            true
+          );
+          setFilterModalOpen(false);
+        }}
         categories={
           categoriesData?.items.map((cat) => ({
             id: cat.id,

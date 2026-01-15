@@ -16,7 +16,7 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { AvatarUpload } from "./AvatarUpload";
 import { USER_ROLE_OPTIONS } from "@/types/user";
 import {
@@ -36,6 +36,7 @@ interface UserFormProps {
   onSubmit: (data: CreateUserInput | UpdateUserInput) => void;
   onCancel?: () => void;
   isLoading?: boolean;
+  error?: unknown;
 }
 
 type UserFormValues = CreateUserInput | UpdateUserInput;
@@ -45,6 +46,7 @@ export function UserForm({
   onSubmit,
   onCancel,
   isLoading,
+  error,
 }: UserFormProps) {
   const isEdit = !!initialData;
   const schema = isEdit ? updateUserInputSchema : createUserInputSchema;
@@ -65,7 +67,9 @@ export function UserForm({
     },
   });
 
-  useFormErrors(form);
+  // Note: This form doesn't have direct access to mutation error
+  // If this form is used in a context with a mutation, pass the error prop
+  useServerValidation(error, form);
 
   const handleSubmit = (data: UserFormValues) => {
     onSubmit(data);

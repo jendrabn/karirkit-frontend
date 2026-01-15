@@ -8,6 +8,7 @@ import { type Company } from "@/types/company";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useUrlParams } from "@/hooks/use-url-params";
 import { useCompanies } from "@/features/admin/companies/api/get-companies";
 import { useCreateCompany } from "@/features/admin/companies/api/create-company";
 import { useUpdateCompany } from "@/features/admin/companies/api/update-company";
@@ -27,9 +28,20 @@ import { paths } from "@/config/paths";
 
 export default function AdminCompanies() {
   const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 10,
+    q: "",
+  });
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [columnVisibility, setColumnVisibility] =
@@ -50,9 +62,9 @@ export default function AdminCompanies() {
 
   const { data: companiesData, isLoading } = useCompanies({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: searchQuery,
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
     },
   });
 
@@ -157,11 +169,9 @@ export default function AdminCompanies() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari perusahaan..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -206,12 +216,12 @@ export default function AdminCompanies() {
         }}
         onView={handleView}
         onDelete={handleDelete}
-        currentPage={currentPage}
-        perPage={perPage}
+        currentPage={params.page}
+        perPage={params.per_page}
         totalPages={totalPages}
         totalItems={pagination?.total_items || 0}
-        onPageChange={setCurrentPage}
-        onPerPageChange={setPerPage}
+        onPageChange={(page) => setParam("page", page, false)}
+        onPerPageChange={(perPage) => setParam("per_page", perPage, true)}
         columnVisibility={columnVisibility}
       />
 

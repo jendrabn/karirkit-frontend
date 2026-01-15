@@ -108,6 +108,7 @@ const AdminBlogCreate = () => {
         onSubmit={handleSubmit}
         onCancel={() => navigate(paths.admin.blogs.list.getHref())}
         isLoading={createBlogMutation.isPending}
+        error={createBlogMutation.error}
         categories={categories}
         tags={tags}
       />

@@ -39,7 +39,7 @@ import { CVParagraphTemplateModal } from "./CVParagraphTemplateModal";
 import { TemplateSelector } from "@/components/ui/template-selector";
 import { useTemplates } from "@/features/landing/api/get-templates";
 import { buildImageUrl } from "@/lib/utils";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import {
   type CV,
   DEGREE_OPTIONS,
@@ -60,6 +60,7 @@ interface CVFormProps {
   onSubmit: (data: CVFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  error?: unknown;
 }
 
 const currentYear = new Date().getFullYear();
@@ -70,6 +71,7 @@ export function CVForm({
   onSubmit,
   onCancel,
   isLoading,
+  error,
 }: CVFormProps) {
   const form = useForm<CVFormData>({
     resolver: zodResolver(cvSchema),
@@ -104,7 +106,9 @@ export function CVForm({
   } = form;
 
   // Handle form validation errors from API
-  useFormErrors(form);
+  // Note: This form doesn't have direct access to mutation error
+  // If this form is used in a context with a mutation, pass the error prop
+  useServerValidation(error, form);
 
   const { data: templatesData, isLoading: isTemplatesLoading } = useTemplates({
     params: { type: "cv", language: watch("language") },

@@ -8,7 +8,7 @@ import { useCV } from "@/features/cvs/api/get-cv";
 import { useUpdateCV } from "@/features/cvs/api/update-cv";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/MinimalSEO";
 
@@ -16,8 +16,6 @@ export default function CVEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const form = useForm<CVFormData>();
-
-  useFormErrors(form);
 
   const { data: cvResponse, isLoading: isCVLoading } = useCV({
     id: id!,
@@ -31,6 +29,8 @@ export default function CVEdit() {
       },
     },
   });
+
+  useServerValidation(updateMutation.error, form);
 
   const handleSubmit = (data: CVFormData) => {
     if (id) {
@@ -115,6 +115,7 @@ export default function CVEdit() {
         onSubmit={handleSubmit}
         onCancel={() => navigate("/cvs")}
         isLoading={updateMutation.isPending}
+        error={updateMutation.error}
       />
     </DashboardLayout>
   );

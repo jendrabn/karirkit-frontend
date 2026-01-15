@@ -47,6 +47,7 @@ export default function ApplicationCreate() {
         onSubmit={handleSubmit}
         onCancel={() => navigate("/applications")}
         isLoading={createApplicationMutation.isPending}
+        error={createApplicationMutation.error}
       />
     </DashboardLayout>
   );

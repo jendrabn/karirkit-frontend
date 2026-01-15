@@ -25,7 +25,7 @@ import {
   type ResetPasswordInput,
 } from "@/features/auth/api/reset-password";
 import { toast } from "sonner";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 
 const ResetPasswordForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -64,7 +64,7 @@ const ResetPasswordForm = () => {
 
   const isSubmitting = resetPasswordMutation.isPending;
 
-  useFormErrors(form);
+  useServerValidation(resetPasswordMutation.error, form);
 
   return (
     <Card className="w-full max-w-md shadow-xl border-border/50">

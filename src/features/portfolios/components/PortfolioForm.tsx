@@ -18,7 +18,7 @@ import { type Portfolio, projectTypeLabels } from "@/types/portfolio";
 import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import {
   portfolioSchema,
   type PortfolioFormData,
@@ -33,6 +33,7 @@ interface PortfolioFormProps {
     }
   ) => void;
   isLoading?: boolean;
+  error?: unknown;
 }
 
 const months = [
@@ -57,6 +58,7 @@ export function PortfolioForm({
   initialData,
   onSubmit,
   isLoading,
+  error,
 }: PortfolioFormProps) {
   const [newTool, setNewTool] = useState("");
   const [tools, setTools] = useState<string[]>(
@@ -88,7 +90,9 @@ export function PortfolioForm({
   });
 
   // Handle form validation errors from API
-  useFormErrors(form);
+  // Note: This form doesn't have direct access to mutation error
+  // If this form is used in a context with a mutation, pass the error prop
+  useServerValidation(error, form);
 
   const extraErrors = form.formState.errors as typeof form.formState.errors & {
     tools?: { message?: string };

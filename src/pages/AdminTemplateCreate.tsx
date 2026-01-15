@@ -50,6 +50,7 @@ const AdminTemplateCreate = () => {
       <TemplateForm
         onSubmit={handleSubmit}
         isLoading={createTemplateMutation.isPending}
+        error={createTemplateMutation.error}
       />
     </DashboardLayout>
   );

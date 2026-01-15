@@ -24,6 +24,8 @@ export type GetApplicationsParams = {
   date_from?: string;
   date_to?: string;
   location?: string;
+  company_name?: string;
+  position?: string;
 };
 
 export const getApplications = (

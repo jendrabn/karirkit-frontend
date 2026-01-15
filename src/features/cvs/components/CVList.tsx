@@ -71,7 +71,6 @@ import {
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { CVVisibilityModal } from "./CVVisibilityModal";
 import { CVFilterModal } from "@/features/cvs/components/CVFilterModal";
-import type { FilterValues } from "@/features/cvs/components/CVFilterModal";
 import {
   CVColumnToggle,
   defaultColumnVisibility,
@@ -87,23 +86,41 @@ import { DEGREE_OPTIONS } from "@/types/cv";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 type SortField = "updated_at" | "name" | "created_at";
 type SortOrder = "asc" | "desc";
 
 const CVList = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 10,
+    q: "",
+    sort_by: "updated_at" as SortField,
+    sort_order: "desc" as SortOrder,
+    name: "",
+    language: "",
+    dateFrom: "",
+    dateTo: "",
+  });
+
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterValues>({});
 
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<ColumnVisibility>(
       "cv-table-columns",
       defaultColumnVisibility
     );
-  const [sortField, setSortField] = useState<SortField>("updated_at");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [cvToDelete, setCvToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -111,19 +128,18 @@ const CVList = () => {
   const [visibilityModalOpen, setVisibilityModalOpen] = useState(false);
   const [cvToEditVisibility, setCvToEditVisibility] = useState<CV | null>(null);
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-
   // API calls
   const { data: cvsResponse, isLoading } = useCVs({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: searchQuery || undefined,
-      sort_by: sortField,
-      sort_order: sortOrder,
-      name: filters.name || undefined,
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
+      name: params.name || undefined,
+      language: (params.language as "id" | "en") || undefined,
+      dateFrom: params.dateFrom || undefined,
+      dateTo: params.dateTo || undefined,
     },
   });
 
@@ -163,11 +179,14 @@ const CVList = () => {
   const totalPages = pagination?.total_pages || 1;
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (params.sort_by === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setParams({ sort_by: field, sort_order: "asc" }, false);
     }
   };
 
@@ -251,8 +270,9 @@ const CVList = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari nama, headline, email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -715,10 +735,9 @@ const CVList = () => {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Menampilkan</span>
               <Select
-                value={String(perPage)}
+                value={params.per_page.toString()}
                 onValueChange={(value) => {
-                  setPerPage(Number(value));
-                  setCurrentPage(1);
+                  setParam("per_page", Number(value), true);
                 }}
               >
                 <SelectTrigger className="w-[70px] h-8">
@@ -739,8 +758,8 @@ const CVList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
+                onClick={() => setParam("page", 1, false)}
+                disabled={params.page === 1}
               >
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
@@ -748,22 +767,20 @@ const CVList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
+                onClick={() => setParam("page", params.page - 1, false)}
+                disabled={params.page === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="px-3 text-sm">
-                Halaman {currentPage} dari {totalPages || 1}
+                {params.page} / {totalPages}
               </span>
               <Button
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages || totalPages === 0}
+                onClick={() => setParam("page", params.page + 1, false)}
+                disabled={params.page === totalPages || totalPages === 0}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -771,8 +788,8 @@ const CVList = () => {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages || totalPages === 0}
+                onClick={() => setParam("page", totalPages, false)}
+                disabled={params.page === totalPages || totalPages === 0}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
@@ -787,14 +804,28 @@ const CVList = () => {
         onOpenChange={setVisibilityModalOpen}
         cv={cvToEditVisibility}
       />
+
       <CVFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
-        filters={filters}
-        onApplyFilters={setFilters}
+        filters={{
+          name: params.name || "",
+          language: (params.language as "id" | "en") || undefined,
+          dateFrom: params.dateFrom ? new Date(params.dateFrom) : undefined,
+          dateTo: params.dateTo ? new Date(params.dateTo) : undefined,
+        }}
+        onApplyFilters={(newFilters) => {
+          setParams(
+            {
+              ...newFilters,
+              dateFrom: newFilters.dateFrom?.toISOString(),
+              dateTo: newFilters.dateTo?.toISOString(),
+            } as any,
+            true
+          );
+        }}
       />
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -809,14 +840,14 @@ const CVList = () => {
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
             >
-              Hapus
+              {deleteMutation.isPending ? "Menghapus..." : "Hapus"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Bulk Delete Dialog */}
       <AlertDialog
         open={bulkDeleteDialogOpen}
         onOpenChange={setBulkDeleteDialogOpen}
@@ -825,8 +856,8 @@ const CVList = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Hapus {selectedIds.length} CV</AlertDialogTitle>
             <AlertDialogDescription>
-              Apakah Anda yakin ingin menghapus {selectedIds.length} CV yang
-              dipilih? Tindakan ini tidak dapat dibatalkan.
+              Apakah Anda yakin ingin menghapus CV yang dipilih? Tindakan ini
+              tidak dapat dibatalkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -850,7 +881,6 @@ const CVList = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Loading Overlay for Download */}
       <LoadingOverlay
         show={downloadMutation.isPending}
         message="Sedang mengunduh CV..."

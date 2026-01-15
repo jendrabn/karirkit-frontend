@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { PortfolioForm } from "@/features/portfolios/components/PortfolioForm";
 import { usePortfolio } from "@/features/portfolios/api/get-portfolio";
 import { useUpdatePortfolio } from "@/features/portfolios/api/update-portfolio";
-import { useFormErrors } from "@/hooks/use-form-errors";
+import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/MinimalSEO";
 
@@ -16,8 +16,6 @@ const PortfolioEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const form = useForm();
-
-  useFormErrors(form);
 
   const { data: portfolioResponse, isLoading } = usePortfolio({
     id: id!,
@@ -31,6 +29,8 @@ const PortfolioEdit = () => {
       },
     },
   });
+
+  useServerValidation(updateMutation.error, form);
 
   const handleSubmit = (data: any) => {
     if (id) {
@@ -117,6 +117,7 @@ const PortfolioEdit = () => {
         initialData={portfolio}
         onSubmit={handleSubmit}
         isLoading={updateMutation.isPending}
+        error={updateMutation.error}
       />
     </DashboardLayout>
   );

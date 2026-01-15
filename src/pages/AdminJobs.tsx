@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useUrlParams } from "@/hooks/use-url-params";
 import { useJobs } from "@/features/admin/jobs/api/get-jobs";
 import { useDeleteJob } from "@/features/admin/jobs/api/delete-job";
 import { useMassDeleteJobs } from "@/features/admin/jobs/api/mass-delete-jobs";
@@ -24,11 +25,22 @@ type SortOrder = "asc" | "desc";
 
 export default function AdminJobs() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-  const [sortField, setSortField] = useState<SortField>("created_at");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 10,
+    q: "",
+    sort: "created_at" as SortField,
+    sort_order: "desc" as SortOrder,
+  });
 
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<ColumnVisibility>(
@@ -43,11 +55,11 @@ export default function AdminJobs() {
 
   const { data: jobsData, isLoading } = useJobs({
     params: {
-      page: currentPage,
-      per_page: perPage,
-      q: searchQuery,
-      sort: sortField,
-      sort_order: sortOrder,
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      sort: params.sort,
+      sort_order: params.sort_order,
     },
   });
 
@@ -55,11 +67,14 @@ export default function AdminJobs() {
   const massDeleteMutation = useMassDeleteJobs();
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (params.sort === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setParams({ sort: field, sort_order: "asc" }, false);
     }
   };
 
@@ -126,11 +141,9 @@ export default function AdminJobs() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari judul, perusahaan..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
             className="pl-9"
           />
         </div>
@@ -165,14 +178,14 @@ export default function AdminJobs() {
         onSelectAll={handleSelectAll}
         onSelectOne={handleSelectOne}
         onDelete={handleDelete}
-        currentPage={currentPage}
-        perPage={perPage}
+        currentPage={params.page}
+        perPage={params.per_page}
         totalPages={totalPages}
         totalItems={pagination?.total_items || 0}
-        onPageChange={setCurrentPage}
-        onPerPageChange={setPerPage}
-        sortField={sortField}
-        sortOrder={sortOrder}
+        onPageChange={(page) => setParam("page", page, false)}
+        onPerPageChange={(perPage) => setParam("per_page", perPage, true)}
+        sortField={params.sort}
+        sortOrder={params.sort_order}
         onSort={handleSort}
         columnVisibility={columnVisibility}
       />
