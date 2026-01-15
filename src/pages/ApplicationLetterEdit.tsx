@@ -3,7 +3,7 @@ import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { ApplicationLetterForm } from "@/features/application-letters/components/ApplicationLetterForm";
-import { type ApplicationLetterFormData } from "@/features/application-letters/api/create-application-letter";
+import { type CreateApplicationLetterInput } from "@/features/application-letters/api/create-application-letter";
 import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
 import { useUpdateApplicationLetter } from "@/features/application-letters/api/update-application-letter";
 import { toast } from "sonner";
@@ -15,7 +15,7 @@ import { MinimalSEO } from "@/components/MinimalSEO";
 export default function ApplicationLetterEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const form = useForm<ApplicationLetterFormData>();
+  const form = useForm<CreateApplicationLetterInput>();
 
   const { data: letterResponse, isLoading: isLetterLoading } =
     useApplicationLetter({
@@ -33,7 +33,7 @@ export default function ApplicationLetterEdit() {
 
   useServerValidation(updateMutation.error, form);
 
-  const handleSubmit = (data: ApplicationLetterFormData) => {
+  const handleSubmit = (data: CreateApplicationLetterInput) => {
     if (id) {
       updateMutation.mutate({ id, data });
     }
@@ -114,7 +114,7 @@ export default function ApplicationLetterEdit() {
       />
 
       <ApplicationLetterForm
-        initialData={letter as any}
+        initialData={letter as CreateApplicationLetterInput}
         onSubmit={handleSubmit}
         onCancel={() => navigate("/application-letters")}
         isLoading={updateMutation.isPending}

@@ -44,12 +44,12 @@ import { useTemplates } from "@/features/landing/api/get-templates";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import {
   applicationLetterSchema,
-  type ApplicationLetterFormData,
+  type CreateApplicationLetterInput,
 } from "../api/create-application-letter";
 
 interface ApplicationLetterFormProps {
   initialData?: Partial<ApplicationLetter>;
-  onSubmit: (data: ApplicationLetterFormData) => void;
+  onSubmit: (data: CreateApplicationLetterInput) => void;
   onCancel: () => void;
   isLoading?: boolean;
   error?: unknown;
@@ -66,7 +66,7 @@ export function ApplicationLetterForm({
     initialData?.template_id || ""
   );
 
-  const form = useForm<ApplicationLetterFormData>({
+  const form = useForm<CreateApplicationLetterInput>({
     resolver: zodResolver(applicationLetterSchema),
     defaultValues: {
       template_id: initialData?.template_id || "",
