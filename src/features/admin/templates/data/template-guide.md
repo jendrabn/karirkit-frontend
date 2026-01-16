@@ -126,7 +126,9 @@ Hormat saya,
 - `{{email}}` - Email (objek link)
   - `{{email.url}}` - URL mailto
   - `{{email.label}}` - Teks email
-- `{{phone}}` - Nomor telepon
+- `{{phone}}` - Nomor telepon (objek link)
+  - `{{phone.url}}` - URL telepon/WA
+  - `{{phone.label}}` - Teks nomor telepon
 - `{{address}}` - Alamat
 - `{{about}}` - Deskripsi singkat tentang diri
 - `{{photo_path}}` - Path foto profil
@@ -184,6 +186,14 @@ Setiap item keterampilan memiliki:
 
 - `{{$skill.name}}` - Nama keterampilan
 - `{{$skill.level}}` - Tingkat keahlian
+- `{{$skill.category}}` - Kategori keterampilan
+
+#### Keterampilan per Kategori (skills_by_category) - Array
+
+Setiap item kategori memiliki:
+
+- `{{$skill_category.label}}` - Nama kategori
+- `{{$skill_category.skills}}` - Array daftar keterampilan
 
 #### Penghargaan (awards) - Array
 
@@ -201,6 +211,7 @@ Setiap item media sosial memiliki:
 - `{{$link.platform}}` - Platform (LinkedIn, GitHub, dll)
 - `{{$link.url}}` - URL lengkap
 - `{{$link.label}}` - Label yang ditampilkan
+- `{{$link.url_label}}` - Label URL (opsional)
 
 #### Organisasi (organizations) - Array
 
@@ -237,128 +248,472 @@ Setiap item proyek memiliki:
 
 ```js
 {
-  name: 'ADMIN USER CV',
-  headline: 'Project Manager',
-  email: { url: 'mailto:admin@example.com', label: 'admin@example.com' },
-  phone: '+1234567892',
-  address: '789 Pine Rd, Chicago, IL',
-  about: 'Experienced project manager with a track record of successful project delivery.',
-  photo_path: '/uploads/cvs/1767434687496-4cca49166743-3cffec91-4148-4854-b463-0d710a746dcc.png',
-  educations: [
-    {
-      degree: 'Doktor',
-      school_name: 'International Business University',
-      school_location: 'London, UK',
-      major: 'Strategic Management',
-      start_month: 'Sep',
-      start_year: 2020,
-      end_month: 'Jun',
-      end_year: 2024,
-      is_current: false,
-      gpa: 4,
-      description: 'Research in organizational leadership and innovation'
+    "name": "SELENA GOMEZ",
+    "headline": "Singer, Actress & Producer",
+    "email": {
+        "url": "mailto:selena.gomez@example.com",
+        "label": "selena.gomez@example.com"
     },
-    {
-      degree: 'Magister',
-      school_name: 'Business School',
-      school_location: 'New York, NY',
-      major: 'Business Administration',
-      start_month: 'Sep',
-      start_year: 2014,
-      end_month: 'Jun',
-      end_year: 2016,
-      is_current: false,
-      gpa: 3.7,
-      description: 'Focused on project management and leadership'
-    }
-  ],
-  certificates: [
-    {
-      title: 'PMP Certification',
-      issuer: 'Project Management Institute',
-      issue_month: 'Sep',
-      issue_year: 2019,
-      expiry_month: '',
-      expiry_year: null,
-      no_expiry: true,
-      credential_id: 'PMP-345678',
-      credential_url: 'https://www.pmi.org/certifications',
-      description: 'Project Management Professional certification'
-    }
-  ],
-  experiences: [
-    {
-      job_title: 'Project Manager',
-      company_name: 'Global Corp',
-      company_location: 'Chicago, IL',
-      job_type: 'Penuh Waktu',
-      start_month: 'Jan',
-      start_year: 2017,
-      end_month: 'Des',
-      end_year: 2020,
-      is_current: false,
-      description: 'Managed multiple projects with budgets over $1M',
-      description_points: [
-        'Managed multiple projects with budgets over $1M',
-        'Delivered cross-functional initiatives on time',
-        'Improved reporting cadence for executives'
-      ]
-    }
-  ],
-  skills: [
-    { name: 'Agile', level: 'Lanjutan' },
-    { name: 'Scrum', level: 'Lanjutan' },
-    { name: 'Project Management', level: 'Ahli' }
-  ],
-  awards: [
-    {
-      title: 'Project Manager of the Year',
-      issuer: 'Global Corp',
-      description: 'Recognized for successful project delivery',
-      year: 2019
-    }
-  ],
-  social_links: [
-    { platform: 'X', url: 'https://twitter.com/adminuser', label: 'X' },
-    {
-      platform: 'LinkedIn',
-      url: 'https://linkedin.com/in/adminuser',
-      label: 'LinkedIn'
-    }
-  ],
-  organizations: [
-    {
-      organization_name: 'Project Management Institute',
-      role_title: 'Member',
-      organization_type: 'Profesional',
-      location: 'Chicago, IL',
-      start_month: 'Mar',
-      start_year: 2018,
-      end_month: '',
-      end_year: null,
-      is_current: true,
-      description: 'Active member of PMI local chapter',
-      description_points: [
-        'Active member of PMI local chapter',
-        'Led community knowledge-sharing sessions'
-      ]
-    }
-  ],
-  projects: [
-    {
-      name: 'PMO Reporting Suite',
-      description: 'Launched KPI reporting suite for executive stakeholders.',
-      year: 2021,
-      repo_url: 'https://github.com/adminuser/pmo-reporting',
-      repo_label: 'Repositori',
-      live_url: 'https://reports.example.com',
-      live_label: 'Live Demo',
-      description_points: [
-        'Automated monthly reporting pipeline',
-        'Reduced manual reporting time by 60%'
-      ]
-    }
-  ]
+    "phone": {
+        "label": "+628987654321",
+        "url": "https://wa.me/628987654321"
+    },
+    "address": "Jl. Sunset Boulevard No. 21, Jakarta, Indonesia",
+    "about": "Penyanyi, aktris, dan produser internasional dengan pengalaman di industri musik, film, dan produksi konten kreatif berskala global.",
+    "photo_path": "",
+    "educations": [
+        {
+            "degree": "Semua Jenjang",
+            "school_name": "Film & Television Workshops",
+            "school_location": "New York, USA",
+            "major": "Film Production",
+            "start_month": "Mar",
+            "start_year": 2016,
+            "end_month": "Nov",
+            "end_year": 2017,
+            "is_current": false,
+            "gpa": "",
+            "description": "Workshop produksi film dan pengembangan storytelling."
+        },
+        {
+            "degree": "Semua Jenjang",
+            "school_name": "Private Vocal Coaching",
+            "school_location": "Los Angeles, USA",
+            "major": "Music Performance",
+            "start_month": "Jan",
+            "start_year": 2012,
+            "end_month": "Des",
+            "end_year": 2014,
+            "is_current": false,
+            "gpa": "",
+            "description": "Pelatihan vokal profesional untuk rekaman dan live performance."
+        },
+        {
+            "degree": "SMA/SMK",
+            "school_name": "Hollywood Arts High School",
+            "school_location": "Los Angeles, USA",
+            "major": "Performing Arts",
+            "start_month": "Jul",
+            "start_year": 2008,
+            "end_month": "Jun",
+            "end_year": 2011,
+            "is_current": false,
+            "gpa": 3.6,
+            "description": "Fokus pada seni pertunjukan, musik, dan akting."
+        }
+    ],
+    "certificates": [
+        {
+            "title": "Creative Producing Essentials",
+            "issuer": "Independent Film School",
+            "issue_month": "Apr",
+            "issue_year": 2018,
+            "expiry_month": "",
+            "expiry_year": "",
+            "no_expiry": true,
+            "credential_id": "PROD-SEL-003",
+            "credential_url": "https://example.com/producing",
+            "description": "Dasar produksi konten kreatif dan manajemen hiburan."
+        },
+        {
+            "title": "Professional Vocal Training",
+            "issuer": "Hollywood Vocal Academy",
+            "issue_month": "Jun",
+            "issue_year": 2015,
+            "expiry_month": "",
+            "expiry_year": "",
+            "no_expiry": true,
+            "credential_id": "VOC-SEL-001",
+            "credential_url": "https://example.com/vocal",
+            "description": "Pelatihan vokal profesional untuk performer musik."
+        },
+        {
+            "title": "Acting for Film & Television",
+            "issuer": "Los Angeles Acting Studio",
+            "issue_month": "Sep",
+            "issue_year": 2014,
+            "expiry_month": "",
+            "expiry_year": "",
+            "no_expiry": true,
+            "credential_id": "ACT-SEL-002",
+            "credential_url": "https://example.com/acting",
+            "description": "Pelatihan akting kamera dan pendalaman karakter."
+        }
+    ],
+    "experiences": [
+        {
+            "job_title": "Executive Producer",
+            "company_name": "July Moon Productions",
+            "company_location": "Los Angeles, USA",
+            "job_type": "Kontrak",
+            "start_month": "Jan",
+            "start_year": 2019,
+            "end_month": "",
+            "end_year": "",
+            "is_current": true,
+            "description": "Mengawasi pengembangan serial televisi\nTerlibat dalam pengambilan keputusan kreatif\nBerkolaborasi dengan penulis dan sutradara\nMenjaga kualitas produksi\nMendukung talenta kreatif baru",
+            "description_points": [
+                "Mengawasi pengembangan serial televisi",
+                "Terlibat dalam pengambilan keputusan kreatif",
+                "Berkolaborasi dengan penulis dan sutradara",
+                "Menjaga kualitas produksi",
+                "Mendukung talenta kreatif baru"
+            ]
+        },
+        {
+            "job_title": "Singer & Songwriter",
+            "company_name": "Interscope Records",
+            "company_location": "Los Angeles, USA",
+            "job_type": "Kontrak",
+            "start_month": "Jan",
+            "start_year": 2013,
+            "end_month": "",
+            "end_year": "",
+            "is_current": true,
+            "description": "Menulis dan merekam album musik studio\nBerkolaborasi dengan produser dan musisi internasional\nMelakukan tur dan penampilan live di berbagai negara\nMengelola proses kreatif dari konsep hingga rilis\nMembangun koneksi dengan penggemar secara global",
+            "description_points": [
+                "Menulis dan merekam album musik studio",
+                "Berkolaborasi dengan produser dan musisi internasional",
+                "Melakukan tur dan penampilan live di berbagai negara",
+                "Mengelola proses kreatif dari konsep hingga rilis",
+                "Membangun koneksi dengan penggemar secara global"
+            ]
+        },
+        {
+            "job_title": "Actress",
+            "company_name": "Walt Disney Studios",
+            "company_location": "Los Angeles, USA",
+            "job_type": "Kontrak",
+            "start_month": "Mar",
+            "start_year": 2007,
+            "end_month": "Des",
+            "end_year": 2012,
+            "is_current": false,
+            "description": "Membintangi serial televisi dan film layar lebar\nMengembangkan karakter sesuai kebutuhan cerita\nBekerja sama dengan sutradara dan kru produksi\nMengikuti jadwal syuting profesional\nMengembangkan kemampuan akting melalui pengalaman lapangan",
+            "description_points": [
+                "Membintangi serial televisi dan film layar lebar",
+                "Mengembangkan karakter sesuai kebutuhan cerita",
+                "Bekerja sama dengan sutradara dan kru produksi",
+                "Mengikuti jadwal syuting profesional",
+                "Mengembangkan kemampuan akting melalui pengalaman lapangan"
+            ]
+        }
+    ],
+    "skills": [
+        {
+            "name": "Brand Collaboration",
+            "level": "Ahli",
+            "category": "Manajemen Proyek"
+        },
+        {
+            "name": "Creative Leadership",
+            "level": "Lanjutan",
+            "category": "Manajemen Proyek"
+        },
+        {
+            "name": "Vocal Performance",
+            "level": "Ahli",
+            "category": "Penulisan Konten"
+        },
+        {
+            "name": "Music Interpretation",
+            "level": "Lanjutan",
+            "category": "Penulisan Konten"
+        },
+        {
+            "name": "Creative Storytelling",
+            "level": "Ahli",
+            "category": "Penulisan Konten"
+        },
+        {
+            "name": "Media Strategy",
+            "level": "Menengah",
+            "category": "Manajemen Proyek"
+        },
+        {
+            "name": "Content Production",
+            "level": "Lanjutan",
+            "category": "Manajemen Proyek"
+        },
+        {
+            "name": "Character Development",
+            "level": "Lanjutan",
+            "category": "Komunikasi"
+        },
+        {
+            "name": "Creative Direction",
+            "level": "Lanjutan",
+            "category": "Manajemen Proyek"
+        },
+        {
+            "name": "On-Camera Performance",
+            "level": "Ahli",
+            "category": "Komunikasi"
+        },
+        {
+            "name": "Songwriting",
+            "level": "Lanjutan",
+            "category": "Penulisan Konten"
+        },
+        {
+            "name": "Emotional Expression",
+            "level": "Ahli",
+            "category": "Komunikasi"
+        },
+        {
+            "name": "Lyric Composition",
+            "level": "Lanjutan",
+            "category": "Penulisan Konten"
+        },
+        {
+            "name": "Film Acting",
+            "level": "Ahli",
+            "category": "Komunikasi"
+        },
+        {
+            "name": "Script Interpretation",
+            "level": "Lanjutan",
+            "category": "Komunikasi"
+        }
+    ],
+    "skills_by_category": [
+        {
+            "label": "Manajemen Proyek",
+            "skills": [
+                {
+                    "name": "Brand Collaboration",
+                    "level": "Ahli"
+                },
+                {
+                    "name": "Creative Leadership",
+                    "level": "Lanjutan"
+                },
+                {
+                    "name": "Media Strategy",
+                    "level": "Menengah"
+                },
+                {
+                    "name": "Content Production",
+                    "level": "Lanjutan"
+                },
+                {
+                    "name": "Creative Direction",
+                    "level": "Lanjutan"
+                }
+            ]
+        },
+        {
+            "label": "Penulisan Konten",
+            "skills": [
+                {
+                    "name": "Vocal Performance",
+                    "level": "Ahli"
+                },
+                {
+                    "name": "Music Interpretation",
+                    "level": "Lanjutan"
+                },
+                {
+                    "name": "Creative Storytelling",
+                    "level": "Ahli"
+                },
+                {
+                    "name": "Songwriting",
+                    "level": "Lanjutan"
+                },
+                {
+                    "name": "Lyric Composition",
+                    "level": "Lanjutan"
+                }
+            ]
+        },
+        {
+            "label": "Komunikasi",
+            "skills": [
+                {
+                    "name": "Character Development",
+                    "level": "Lanjutan"
+                },
+                {
+                    "name": "On-Camera Performance",
+                    "level": "Ahli"
+                },
+                {
+                    "name": "Emotional Expression",
+                    "level": "Ahli"
+                },
+                {
+                    "name": "Film Acting",
+                    "level": "Ahli"
+                },
+                {
+                    "name": "Script Interpretation",
+                    "level": "Lanjutan"
+                }
+            ]
+        }
+    ],
+    "awards": [
+        {
+            "title": "MTV Video Music Award",
+            "issuer": "MTV",
+            "description": "Penghargaan untuk karya video musik terbaik.",
+            "year": 2021
+        },
+        {
+            "title": "Billboard Women in Music",
+            "issuer": "Billboard",
+            "description": "Pengakuan atas pengaruh dan pencapaian di dunia musik.",
+            "year": 2020
+        },
+        {
+            "title": "American Music Award",
+            "issuer": "American Music Awards",
+            "description": "Penghargaan atas kontribusi di industri musik internasional.",
+            "year": 2017
+        }
+    ],
+    "social_links": [
+        {
+            "platform": "YouTube",
+            "url": "https://youtube.com/selenagomez",
+            "label": "YouTube",
+            "url_label": "youtube.com/selenagomez"
+        },
+        {
+            "platform": "Instagram",
+            "url": "https://instagram.com/selenagomez",
+            "label": "Instagram",
+            "url_label": "instagram.com/selenagomez"
+        },
+        {
+            "platform": "Website",
+            "url": "https://selenagomez.com",
+            "label": "Website",
+            "url_label": "selenagomez.com"
+        },
+        {
+            "platform": "LinkedIn",
+            "url": "https://linkedin.com/in/selenagomez",
+            "label": "LinkedIn",
+            "url_label": "linkedin.com/in/selenagomez"
+        },
+        {
+            "platform": "X",
+            "url": "https://x.com/selenagomez",
+            "label": "X",
+            "url_label": "x.com/selenagomez"
+        }
+    ],
+    "organizations": [
+        {
+            "organization_name": "Rare Impact Fund",
+            "role_title": "Founder",
+            "organization_type": "Profesional",
+            "location": "Los Angeles, USA",
+            "start_month": "Jul",
+            "start_year": 2020,
+            "end_month": "",
+            "end_year": "",
+            "is_current": true,
+            "description": "Menginisiasi gerakan kesehatan mental global\nMenggalang dana sosial internasional\nBerkolaborasi dengan organisasi nonprofit\nMeningkatkan kesadaran publik\nMenciptakan dampak sosial berkelanjutan",
+            "description_points": [
+                "Menginisiasi gerakan kesehatan mental global",
+                "Menggalang dana sosial internasional",
+                "Berkolaborasi dengan organisasi nonprofit",
+                "Meningkatkan kesadaran publik",
+                "Menciptakan dampak sosial berkelanjutan"
+            ]
+        },
+        {
+            "organization_name": "Women in Music",
+            "role_title": "Member",
+            "organization_type": "Komunitas",
+            "location": "Los Angeles, USA",
+            "start_month": "Jan",
+            "start_year": 2016,
+            "end_month": "",
+            "end_year": "",
+            "is_current": true,
+            "description": "Mendukung pemberdayaan perempuan di industri musik\nMenghadiri diskusi komunitas\nBerbagi pengalaman profesional\nMendorong kesetaraan gender\nMendukung talenta perempuan baru",
+            "description_points": [
+                "Mendukung pemberdayaan perempuan di industri musik",
+                "Menghadiri diskusi komunitas",
+                "Berbagi pengalaman profesional",
+                "Mendorong kesetaraan gender",
+                "Mendukung talenta perempuan baru"
+            ]
+        },
+        {
+            "organization_name": "UNICEF",
+            "role_title": "Ambassador",
+            "organization_type": "Profesional",
+            "location": "Global",
+            "start_month": "Sep",
+            "start_year": 2009,
+            "end_month": "Des",
+            "end_year": 2018,
+            "is_current": false,
+            "description": "Mendukung kampanye kemanusiaan global\nBerpartisipasi dalam kegiatan sosial internasional\nMeningkatkan kesadaran isu anak\nMewakili organisasi dalam acara publik\nMendukung program pendidikan dan kesehatan",
+            "description_points": [
+                "Mendukung kampanye kemanusiaan global",
+                "Berpartisipasi dalam kegiatan sosial internasional",
+                "Meningkatkan kesadaran isu anak",
+                "Mewakili organisasi dalam acara publik",
+                "Mendukung program pendidikan dan kesehatan"
+            ]
+        }
+    ],
+    "projects": [
+        {
+            "name": "Television Series Production",
+            "description": "Terlibat sebagai produser eksekutif serial televisi\nMengawasi alur cerita\nBekerja sama dengan tim produksi\nMenjaga kualitas konten\nMengelola kolaborasi kreatif",
+            "year": 2022,
+            "repo_url": "",
+            "repo_label": "",
+            "live_url": "https://hulu.com",
+            "live_label": "Live Demo",
+            "description_points": [
+                "Terlibat sebagai produser eksekutif serial televisi",
+                "Mengawasi alur cerita",
+                "Bekerja sama dengan tim produksi",
+                "Menjaga kualitas konten",
+                "Mengelola kolaborasi kreatif"
+            ]
+        },
+        {
+            "name": "Music Album Production",
+            "description": "Mengembangkan konsep album musik\nBerkolaborasi dengan produser global\nMengelola proses rekaman\nMengatur visual dan tema album\nMerilis karya ke pasar internasional",
+            "year": 2021,
+            "repo_url": "",
+            "repo_label": "",
+            "live_url": "https://selenagomez.com",
+            "live_label": "Live Demo",
+            "description_points": [
+                "Mengembangkan konsep album musik",
+                "Berkolaborasi dengan produser global",
+                "Mengelola proses rekaman",
+                "Mengatur visual dan tema album",
+                "Merilis karya ke pasar internasional"
+            ]
+        },
+        {
+            "name": "Rare Beauty",
+            "description": "Mengembangkan brand kecantikan dengan nilai inklusivitas\nMengawasi pengembangan produk\nMengelola kampanye pemasaran global\nMengintegrasikan misi sosial\nMembangun identitas brand yang kuat",
+            "year": 2020,
+            "repo_url": "",
+            "repo_label": "",
+            "live_url": "https://rarebeauty.com",
+            "live_label": "Live Demo",
+            "description_points": [
+                "Mengembangkan brand kecantikan dengan nilai inklusivitas",
+                "Mengawasi pengembangan produk",
+                "Mengelola kampanye pemasaran global",
+                "Mengintegrasikan misi sosial",
+                "Membangun identitas brand yang kuat"
+            ]
+        }
+    ]
 }
 ```
 
@@ -370,7 +725,7 @@ Setiap item proyek memiliki:
 {{name}}
 {{headline}}
 
-{{email.label}} | {{phone}} | {{address}}
+{{email.label}} | {{phone.label}} | {{address}}
 
 {{FOR link IN social_links}}
 {{$link.platform}}: {{LINK $link}}
@@ -431,6 +786,17 @@ KETERAMPILAN
 
 ---
 
+KETERAMPILAN PER KATEGORI
+
+{{FOR skill_category IN skills_by_category}}
+{{$skill_category.label}}
+{{FOR skill IN $skill_category.skills}}
+- {{$skill}}
+{{END-FOR skill}}
+{{END-FOR skill_category}}
+
+---
+
 PENGHARGAAN
 
 {{FOR award IN awards}}
@@ -467,8 +833,8 @@ ORGANISASI
 
 ```
 Nama: {{name}}
-Email: {{email}}
-Telepon: {{phone}}
+Email: {{email.label}}
+Telepon: {{phone.label}}
 ```
 
 ### 2. Loop/Perulangan (FOR)
@@ -637,7 +1003,7 @@ IPK/GPA: {{$education.gpa}}
 |                              {{name}}                                |
 |                            {{headline}}                              |
 |                                                                      |
-|              {{email.label}} | {{phone}} | {{address}}              |
+|              {{email.label}} | {{phone.label}} | {{address}}              |
 +----------------------------------------------------------------------+
 
 PENGALAMAN KERJA
