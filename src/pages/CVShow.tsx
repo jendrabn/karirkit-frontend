@@ -27,6 +27,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -93,8 +94,13 @@ export default function CVShow() {
           noIndex={true}
         />
         <PageHeader title="Detail CV" showBackButton backButtonUrl="/cvs" />
-        <div className="flex justify-center items-center h-full min-h-[50vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <span className="text-sm font-medium text-muted-foreground">
+              Memuat data...
+            </span>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -644,6 +650,11 @@ export default function CVShow() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <LoadingOverlay
+        show={downloadMutation.isPending}
+        message="Sedang mengunduh CV..."
+      />
     </DashboardLayout>
   );
 }
