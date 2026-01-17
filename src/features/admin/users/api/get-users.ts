@@ -14,12 +14,24 @@ export type GetUsersParams = {
     | "created_at"
     | "updated_at"
     | "name"
-    | "username"
     | "email"
-    | "role";
+    | "role"
+    | "status"
+    | "document_storage_used"
+    | "download_total_count";
   role?: "user" | "admin";
-  created_from?: string;
-  created_to?: string;
+  status?: "active" | "suspended" | "banned";
+  gender?: "male" | "female";
+  email_verified?: "true" | "false";
+  suspended?: "true" | "false";
+  created_at_from?: string;
+  created_at_to?: string;
+  daily_download_limit_from?: number;
+  daily_download_limit_to?: number;
+  document_storage_used_from?: number;
+  document_storage_used_to?: number;
+  download_total_count_from?: number;
+  download_total_count_to?: number;
 };
 
 export const getUsers = (

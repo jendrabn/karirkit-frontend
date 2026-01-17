@@ -24,6 +24,7 @@ import {
   Loader2,
   Globe,
   Lock,
+  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,12 +84,12 @@ import { useDownloadCV } from "@/features/cvs/api/download-cv";
 import { useMassDeleteCVs } from "@/features/cvs/api/mass-delete-cvs";
 import type { CV } from "@/features/cvs/api/get-cvs";
 import { DEGREE_OPTIONS } from "@/types/cv";
-import { cn } from "@/lib/utils";
+import { buildImageUrl, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 
-type SortField = "updated_at" | "name" | "created_at";
+type SortField = "updated_at" | "name" | "created_at" | "views" | "headline";
 type SortOrder = "asc" | "desc";
 
 const CVList = () => {
@@ -108,10 +109,16 @@ const CVList = () => {
     q: "",
     sort_by: "updated_at" as SortField,
     sort_order: "desc" as SortOrder,
-    name: "",
     language: "",
-    dateFrom: "",
-    dateTo: "",
+    visibility: "",
+    views_from: "",
+    views_to: "",
+    educations_degree: "",
+    experiences_job_type: "",
+    experiences_is_current: "",
+    skills_level: "",
+    skills_skill_category: "",
+    organizations_organization_type: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -136,10 +143,17 @@ const CVList = () => {
       q: params.q || undefined,
       sort_by: params.sort_by,
       sort_order: params.sort_order,
-      name: params.name || undefined,
       language: (params.language as "id" | "en") || undefined,
-      dateFrom: params.dateFrom || undefined,
-      dateTo: params.dateTo || undefined,
+      visibility: (params.visibility as any) || undefined,
+      views_from: params.views_from ? Number(params.views_from) : undefined,
+      views_to: params.views_to ? Number(params.views_to) : undefined,
+      educations_degree: params.educations_degree || undefined,
+      experiences_job_type: params.experiences_job_type || undefined,
+      experiences_is_current: (params.experiences_is_current as any) || undefined,
+      skills_level: params.skills_level || undefined,
+      skills_skill_category: params.skills_skill_category || undefined,
+      organizations_organization_type:
+        params.organizations_organization_type || undefined,
     },
   });
 
@@ -232,6 +246,34 @@ const CVList = () => {
     });
   };
 
+  const getCvPublicUrl = (slug?: string | null) => {
+    if (!slug) return null;
+    return `${window.location.origin}/cv/${slug}`;
+  };
+
+  const handleShare = async (cv: CV) => {
+    const url = getCvPublicUrl(cv.slug);
+    if (!url) {
+      toast.error("Slug CV belum tersedia");
+      return;
+    }
+
+    if (!navigator.share) {
+      toast.error("Fitur share tidak didukung di browser ini");
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: cv.name,
+        text: cv.headline || undefined,
+        url,
+      });
+    } catch (error) {
+      toast.error("Gagal membagikan CV");
+    }
+  };
+
   // Helper to get latest experience
   const getLatestExperience = (cv: CV) => {
     if (!cv.experiences || cv.experiences.length === 0) return null;
@@ -269,7 +311,7 @@ const CVList = () => {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari nama, headline, email..."
+            placeholder="Cari nama, headline, email, telepon, alamat..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -323,8 +365,10 @@ const CVList = () => {
                     />
                   </TableHead>
                   {columnVisibility.headline && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Headline / Posisi
+                    <TableHead>
+                      <SortableHeader field="headline">
+                        Headline / Posisi
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.latest_experience && (
@@ -353,8 +397,8 @@ const CVList = () => {
                     </TableHead>
                   )}
                   {columnVisibility.views && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Views
+                    <TableHead>
+                      <SortableHeader field="views">Views</SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.name && (
@@ -569,7 +613,12 @@ const CVList = () => {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Avatar className="h-7 w-7">
-                                <AvatarImage src={cv.photo} />
+                                {cv.photo ? (
+                                  <AvatarImage
+                                    src={buildImageUrl(cv.photo)}
+                                    className="object-cover"
+                                  />
+                                ) : null}
                                 <AvatarFallback className="bg-primary/10 text-primary text-xs">
                                   {cv.name.charAt(0)}
                                 </AvatarFallback>
@@ -606,7 +655,10 @@ const CVList = () => {
                         {columnVisibility.photo && (
                           <TableCell>
                             <Avatar className="h-8 w-8">
-                              <AvatarImage src={cv.photo} />
+                              <AvatarImage
+                                src={cv.photo}
+                                className="object-cover"
+                              />
                               <AvatarFallback className="bg-primary/10 text-primary">
                                 <User className="h-4 w-4" />
                               </AvatarFallback>
@@ -695,6 +747,12 @@ const CVList = () => {
                               >
                                 <Globe className="h-4 w-4 mr-2" />
                                 Atur Visibilitas
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleShare(cv)}
+                              >
+                                <Share2 className="h-4 w-4 mr-2" />
+                                Share CV
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
@@ -809,17 +867,32 @@ const CVList = () => {
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{
-          name: params.name || "",
           language: (params.language as "id" | "en") || undefined,
-          dateFrom: params.dateFrom ? new Date(params.dateFrom) : undefined,
-          dateTo: params.dateTo ? new Date(params.dateTo) : undefined,
+          visibility: (params.visibility as any) || undefined,
+          views_from: params.views_from || "",
+          views_to: params.views_to || "",
+          educations_degree: params.educations_degree || "",
+          experiences_job_type: params.experiences_job_type || "",
+          experiences_is_current: (params.experiences_is_current as any) || undefined,
+          skills_level: params.skills_level || "",
+          skills_skill_category: params.skills_skill_category || "",
+          organizations_organization_type:
+            params.organizations_organization_type || "",
         }}
         onApplyFilters={(newFilters) => {
           setParams(
             {
-              ...newFilters,
-              dateFrom: newFilters.dateFrom?.toISOString(),
-              dateTo: newFilters.dateTo?.toISOString(),
+              language: newFilters.language || "",
+              visibility: newFilters.visibility || "",
+              views_from: newFilters.views_from || "",
+              views_to: newFilters.views_to || "",
+              educations_degree: newFilters.educations_degree || "",
+              experiences_job_type: newFilters.experiences_job_type || "",
+              experiences_is_current: newFilters.experiences_is_current || "",
+              skills_level: newFilters.skills_level || "",
+              skills_skill_category: newFilters.skills_skill_category || "",
+              organizations_organization_type:
+                newFilters.organizations_organization_type || "",
             } as any,
             true
           );

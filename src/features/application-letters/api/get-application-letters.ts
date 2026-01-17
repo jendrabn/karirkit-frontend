@@ -59,9 +59,18 @@ export type GetApplicationLettersParams = {
     | "updated_at"
     | "application_date"
     | "company_name"
-    | "subject";
+    | "name";
+  gender?: "male" | "female";
+  marital_status?: "single" | "married" | "widowed";
+  language?: "en" | "id";
   company_name?: string;
-  application_date?: string;
+  company_city?: string;
+  applicant_city?: string;
+  template_id?: string;
+  application_date_from?: string;
+  application_date_to?: string;
+  created_at_from?: string;
+  created_at_to?: string;
 };
 
 export const getApplicationLetters = (

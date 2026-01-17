@@ -83,7 +83,12 @@ import { useDownloadDocument } from "@/features/documents/api/download-document"
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 
-type SortField = "uploaded_at" | "original_name" | "size" | "type";
+type SortField =
+  | "created_at"
+  | "updated_at"
+  | "original_name"
+  | "size"
+  | "type";
 type SortOrder = "asc" | "desc";
 
 type SortableHeaderProps = {
@@ -125,9 +130,10 @@ export function DocumentsList() {
     page: 1,
     per_page: 20,
     q: "",
-    sort_by: "uploaded_at" as SortField,
+    sort_by: "created_at" as SortField,
     sort_order: "desc" as SortOrder,
     type: "",
+    mime_type: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -148,6 +154,7 @@ export function DocumentsList() {
       per_page: params.per_page,
       q: params.q || undefined,
       type: (params.type as DocumentType) || undefined,
+      mime_type: params.mime_type || undefined,
       sort_by: params.sort_by,
       sort_order: params.sort_order,
     },
@@ -220,7 +227,14 @@ export function DocumentsList() {
   };
 
   const handleApplyFilters = (nextFilters: DocumentFilterValues) => {
-    setParams(nextFilters as any, true);
+    setParams(
+      {
+        q: nextFilters.q || "",
+        type: nextFilters.type || "",
+        mime_type: nextFilters.mime_type || "",
+      } as any,
+      true
+    );
     setFilterModalOpen(false);
     setSelectedIds([]);
   };
@@ -299,7 +313,7 @@ export function DocumentsList() {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari nama file..."
+            placeholder="Cari nama file, tipe, mime..."
             value={searchInput}
             onChange={(e) => handleSearchChange(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -377,7 +391,7 @@ export function DocumentsList() {
                 {columnVisibility.uploaded_at && (
                   <TableHead>
                     <SortableHeader
-                      field="uploaded_at"
+                      field="created_at"
                       onSort={handleSortField}
                     >
                       Tanggal Upload
@@ -603,6 +617,7 @@ export function DocumentsList() {
         filters={{
           type: (params.type as any) || "",
           q: params.q || "",
+          mime_type: params.mime_type || "",
         }}
         onApply={handleApplyFilters}
       />

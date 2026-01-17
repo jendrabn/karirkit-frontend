@@ -64,6 +64,7 @@ export function BlogCard({ blog }: BlogCardProps) {
               src={
                 blog.user?.avatar ? buildImageUrl(blog.user.avatar) : undefined
               }
+              className="object-cover"
               alt={blog.user?.name}
             />
             <AvatarFallback className="text-xs">

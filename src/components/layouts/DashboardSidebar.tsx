@@ -157,7 +157,10 @@ export function DashboardSidebar() {
                     isCollapsed ? "h-8 w-8" : "h-10 w-10"
                   )}
                 >
-                  <AvatarImage src={buildImageUrl(user.avatar)} />
+                  <AvatarImage
+                    src={buildImageUrl(user.avatar)}
+                    className="object-cover"
+                  />
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     {user.name.charAt(0)}
                   </AvatarFallback>

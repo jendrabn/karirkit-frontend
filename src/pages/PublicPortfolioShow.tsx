@@ -317,6 +317,7 @@ export default function PublicPortfolioShow() {
                         <AvatarImage
                           src={buildImageUrl(user.avatar)}
                           alt={user.name}
+                          className="object-cover"
                         />
                         <AvatarFallback className="bg-primary text-primary-foreground text-xl">
                           {user.name.charAt(0)}

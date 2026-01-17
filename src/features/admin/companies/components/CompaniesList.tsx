@@ -10,6 +10,7 @@ import {
   ChevronsRight,
   Eye,
   Loader2,
+  ArrowUpDown,
 } from "lucide-react";
 import {
   Table,
@@ -50,6 +51,21 @@ interface CompaniesListProps {
   onEdit: (company: Company) => void;
   onView: (company: Company) => void;
   onDelete: (id: string) => void;
+  sortField:
+    | "created_at"
+    | "updated_at"
+    | "name"
+    | "employee_size"
+    | "job_count";
+  sortOrder: "asc" | "desc";
+  onSort: (
+    field:
+      | "created_at"
+      | "updated_at"
+      | "name"
+      | "employee_size"
+      | "job_count"
+  ) => void;
   currentPage: number;
   perPage: number;
   totalPages: number;
@@ -68,6 +84,9 @@ export function CompaniesList({
   onEdit,
   onView,
   onDelete,
+  sortField,
+  sortOrder,
+  onSort,
   currentPage,
   perPage,
   totalPages,
@@ -76,6 +95,40 @@ export function CompaniesList({
   onPerPageChange,
   columnVisibility,
 }: CompaniesListProps) {
+  const SortableHeader = ({
+    field,
+    children,
+  }: {
+    field:
+      | "created_at"
+      | "updated_at"
+      | "name"
+      | "employee_size"
+      | "job_count";
+    children: React.ReactNode;
+  }) => (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
+      onClick={() => onSort(field)}
+    >
+      {children}
+      <ArrowUpDown
+        className={cn(
+          "ml-1.5 h-3.5 w-3.5 transition-opacity",
+          sortField === field ? "opacity-100" : "opacity-30"
+        )}
+        style={{
+          transform:
+            sortField === field && sortOrder === "desc"
+              ? "rotate(180deg)"
+              : "none",
+        }}
+      />
+    </Button>
+  );
+
   return (
     <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
@@ -92,8 +145,8 @@ export function CompaniesList({
                 />
               </TableHead>
               {columnVisibility.name && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Nama Perusahaan
+                <TableHead>
+                  <SortableHeader field="name">Nama Perusahaan</SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.slug && (
@@ -107,13 +160,13 @@ export function CompaniesList({
                 </TableHead>
               )}
               {columnVisibility.size && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Ukuran
+                <TableHead>
+                  <SortableHeader field="employee_size">Ukuran</SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.jobCount && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Lowongan
+                <TableHead>
+                  <SortableHeader field="job_count">Lowongan</SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.website_url && (
@@ -127,13 +180,13 @@ export function CompaniesList({
                 </TableHead>
               )}
               {columnVisibility.created_at && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Dibuat
+                <TableHead>
+                  <SortableHeader field="created_at">Dibuat</SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.updated_at && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Diperbarui
+                <TableHead>
+                  <SortableHeader field="updated_at">Diperbarui</SortableHeader>
                 </TableHead>
               )}
               <TableHead className="w-[60px]"></TableHead>
@@ -180,6 +233,7 @@ export function CompaniesList({
                         <Avatar className="h-8 w-8">
                           <AvatarImage
                             src={buildImageUrl(company.logo) || undefined}
+                            className="object-cover"
                           />
                           <AvatarFallback className="bg-primary/10 text-primary text-xs">
                             {company.name.charAt(0)}

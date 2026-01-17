@@ -52,11 +52,24 @@ export type GetPortfoliosParams = {
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "created_at" | "updated_at" | "year" | "month" | "title";
+  sort_by?:
+    | "created_at"
+    | "updated_at"
+    | "year"
+    | "month"
+    | "title"
+    | "industry";
   project_type?: "work" | "freelance" | "personal" | "academic";
   industry?: string;
   year?: number;
   month?: number;
+  year_from?: number;
+  year_to?: number;
+  month_from?: number;
+  month_to?: number;
+  created_at_from?: string;
+  created_at_to?: string;
+  tools_name?: string;
 };
 
 export const getPortfolios = (

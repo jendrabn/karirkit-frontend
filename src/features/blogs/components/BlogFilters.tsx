@@ -43,7 +43,7 @@ export function BlogFilters({
   const handleSortChange = (value: string) => {
     const [sort_by, sort_order] = value.split("-") as [
       GetBlogsParams["sort_by"],
-      "asc" | "desc"
+      "asc" | "desc",
     ];
     onFiltersChange({ ...filters, sort_by, sort_order, page: 1 });
   };
@@ -187,7 +187,7 @@ export function BlogFilters({
                 Reset
               </Button>
               <Button className="flex-1" onClick={handleApplyFilters}>
-                Terapkan Filter
+                Terapkan
               </Button>
             </div>
           </div>

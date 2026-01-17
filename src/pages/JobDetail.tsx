@@ -167,7 +167,7 @@ export default function JobDetail() {
                       <AvatarImage
                         src={buildImageUrl(job.company?.logo)}
                         alt={job.company?.name}
-                        className="object-contain"
+                        className="object-cover"
                       />
                       <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold text-xl">
                         {job.company?.name?.substring(0, 2).toUpperCase() ||
@@ -405,7 +405,7 @@ export default function JobDetail() {
                       <AvatarImage
                         src={buildImageUrl(job.company?.logo)}
                         alt={job.company?.name}
-                        className="object-contain"
+                        className="object-cover"
                       />
                       <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold">
                         {job.company?.name?.substring(0, 2).toUpperCase() ||

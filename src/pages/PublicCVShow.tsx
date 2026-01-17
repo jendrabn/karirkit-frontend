@@ -87,6 +87,31 @@ export default function PublicCVShow() {
     return `${start} - ${getLabel(endMonth, MONTH_OPTIONS)} ${endYear}`;
   };
 
+  const skillCategoryLabels = SKILL_CATEGORY_LABELS[cv.language || "id"];
+  const groupedSkills = cv.skills.reduce(
+    (acc, skill) => {
+      if (!acc.map[skill.skill_category]) {
+        acc.map[skill.skill_category] = {
+          label:
+            skillCategoryLabels[
+              skill.skill_category as keyof typeof skillCategoryLabels
+            ] || skill.skill_category,
+          items: [],
+        };
+        acc.order.push(skill.skill_category);
+      }
+      acc.map[skill.skill_category].items.push(skill);
+      return acc;
+    },
+    {
+      map: {} as Record<
+        string,
+        { label: string; items: typeof cv.skills }
+      >,
+      order: [] as string[],
+    }
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <MinimalSEO
@@ -99,7 +124,10 @@ export default function PublicCVShow() {
         <Card className="p-6">
           <div className="flex flex-col md:flex-row gap-6">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={buildImageUrl(cv.photo)} />
+              <AvatarImage
+                src={buildImageUrl(cv.photo)}
+                className="object-cover"
+              />
               <AvatarFallback className="text-2xl bg-primary/10 text-primary">
                 {cv.name.charAt(0)}
               </AvatarFallback>
@@ -351,25 +379,30 @@ export default function PublicCVShow() {
                   <Star className="h-5 w-5 text-primary" />
                   <h3 className="text-lg font-semibold">Keahlian</h3>
                 </div>
-                <div className="space-y-3">
-                  {cv.skills.map((skill, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center"
-                    >
-                      <div>
-                        <div className="font-medium">{skill.name}</div>
-                        <div className="text-xs text-muted-foreground capitalize">
-                          {SKILL_CATEGORY_LABELS[cv.language || "id"][
-                            skill.skill_category as keyof (typeof SKILL_CATEGORY_LABELS)["id"]
-                          ] || skill.skill_category}
+                <div className="space-y-4">
+                  {groupedSkills.order.map((categoryKey) => {
+                    const group = groupedSkills.map[categoryKey];
+                    const skillList = group.items
+                      .map(
+                        (skill) =>
+                          `${skill.name} (${getLabel(
+                            skill.level,
+                            SKILL_LEVEL_OPTIONS
+                          )})`
+                      )
+                      .join(", ");
+
+                    return (
+                      <div key={categoryKey} className="space-y-1">
+                        <div className="text-sm font-semibold">
+                          {group.label}
                         </div>
+                        <p className="text-sm text-muted-foreground">
+                          {skillList}
+                        </p>
                       </div>
-                      <Badge variant="outline">
-                        {getLabel(skill.level, SKILL_LEVEL_OPTIONS)}
-                      </Badge>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </Card>
             )}

@@ -139,7 +139,10 @@ export const UserDetail = ({ user }: { user: User }) => {
       <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6">
         <div className="flex flex-col md:flex-row items-center gap-6">
           <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-            <AvatarImage src={user.avatar || undefined} />
+            <AvatarImage
+              src={user.avatar || undefined}
+              className="object-cover"
+            />
 
             <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
               {user.name.charAt(0)}

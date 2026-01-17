@@ -25,6 +25,7 @@ import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 export interface DocumentFilterValues {
   q?: string;
   type?: DocumentType;
+  mime_type?: string;
 }
 
 interface DocumentFilterModalProps {
@@ -57,18 +58,16 @@ export function DocumentFilterModal({
 
   const handleReset = () => {
     setLocalFilters({});
-    onApply({});
-    onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="!max-w-3xl">
         <DialogHeader>
           <DialogTitle>Filter Dokumen</DialogTitle>
         </DialogHeader>
 
-        <FieldSet className="py-4">
+        <FieldSet className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
           <Field>
             <FieldLabel htmlFor="q">Cari</FieldLabel>
             <Input
@@ -105,6 +104,21 @@ export function DocumentFilterModal({
               </SelectContent>
             </Select>
           </Field>
+
+          <Field>
+            <FieldLabel>MIME Type</FieldLabel>
+            <Input
+              placeholder="Contoh: application/pdf"
+              value={localFilters.mime_type || ""}
+              onChange={(e) =>
+                setLocalFilters((prev) => ({
+                  ...prev,
+                  mime_type: e.target.value,
+                }))
+              }
+            />
+          </Field>
+
         </FieldSet>
 
         <DialogFooter className="flex gap-2">

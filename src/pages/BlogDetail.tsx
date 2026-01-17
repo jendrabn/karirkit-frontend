@@ -241,6 +241,7 @@ const BlogDetail = () => {
                                 ? buildImageUrl(blog.user.avatar)
                                 : undefined
                             }
+                            className="object-cover"
                             alt={blog.user.name}
                           />
                           <AvatarFallback>

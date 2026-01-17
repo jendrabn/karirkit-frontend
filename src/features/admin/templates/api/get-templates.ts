@@ -22,6 +22,10 @@ export interface GetTemplatesParams {
   type?: TemplateType;
   language?: Language;
   is_premium?: boolean;
+  created_at_from?: string;
+  created_at_to?: string;
+  updated_at_from?: string;
+  updated_at_to?: string;
 }
 
 export const getTemplates = (

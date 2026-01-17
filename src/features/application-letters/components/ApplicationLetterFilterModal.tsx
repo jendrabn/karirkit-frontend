@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { dayjs } from "@/lib/date";
 import { CalendarIcon } from "lucide-react";
 import {
@@ -32,6 +32,10 @@ export interface FilterValues {
   dateTo?: Date;
   language?: Language;
   company_name?: string;
+  company_city?: string;
+  applicant_city?: string;
+  gender?: "male" | "female";
+  marital_status?: "single" | "married" | "widowed";
 }
 
 interface ApplicationLetterFilterModalProps {
@@ -49,6 +53,10 @@ export function ApplicationLetterFilterModal({
 }: ApplicationLetterFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<FilterValues>(filters);
 
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters, open]);
+
   const handleApply = () => {
     onApplyFilters(localFilters);
     onOpenChange(false);
@@ -60,14 +68,14 @@ export function ApplicationLetterFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 gap-0">
+      <DialogContent className="!max-w-3xl p-0 gap-0">
         <div className="flex flex-col max-h-[85vh]">
           <DialogHeader className="px-6 pt-6 pb-4">
             <DialogTitle>Filter Surat Lamaran</DialogTitle>
           </DialogHeader>
 
           <div className="overflow-y-auto px-6 py-2">
-            <FieldSet>
+            <FieldSet className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Date Range */}
               <Field>
                 <FieldLabel>Tanggal Lamaran</FieldLabel>
@@ -131,11 +139,12 @@ export function ApplicationLetterFilterModal({
               <Field>
                 <FieldLabel>Bahasa</FieldLabel>
                 <Select
-                  value={localFilters.language || ""}
+                  value={localFilters.language || "all"}
                   onValueChange={(value) =>
                     setLocalFilters({
                       ...localFilters,
-                      language: value as Language,
+                      language:
+                        value === "all" ? undefined : (value as Language),
                     })
                   }
                 >
@@ -143,6 +152,7 @@ export function ApplicationLetterFilterModal({
                     <SelectValue placeholder="Pilih bahasa" />
                   </SelectTrigger>
                   <SelectContent className="z-50">
+                    <SelectItem value="all">Semua</SelectItem>
                     {LANGUAGE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -166,6 +176,87 @@ export function ApplicationLetterFilterModal({
                   }
                 />
               </Field>
+
+              <Field>
+                <FieldLabel>Kota Perusahaan</FieldLabel>
+                <Input
+                  placeholder="Contoh: Jakarta, Bandung"
+                  value={localFilters.company_city || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      company_city: e.target.value,
+                    })
+                  }
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel>Kota Pelamar</FieldLabel>
+                <Input
+                  placeholder="Contoh: Surabaya, Medan"
+                  value={localFilters.applicant_city || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      applicant_city: e.target.value,
+                    })
+                  }
+                />
+              </Field>
+
+
+              <Field>
+                <FieldLabel>Gender</FieldLabel>
+                <Select
+                  value={localFilters.gender || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      gender:
+                        value === "all"
+                          ? undefined
+                          : (value as FilterValues["gender"]),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Semua Gender" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">Semua</SelectItem>
+                    <SelectItem value="male">Laki-laki</SelectItem>
+                    <SelectItem value="female">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel>Status Pernikahan</FieldLabel>
+                <Select
+                  value={localFilters.marital_status || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      marital_status:
+                        value === "all"
+                          ? undefined
+                          : (value as FilterValues["marital_status"]),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Semua Status" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">Semua</SelectItem>
+                    <SelectItem value="single">Single</SelectItem>
+                    <SelectItem value="married">Married</SelectItem>
+                    <SelectItem value="widowed">Widowed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+
             </FieldSet>
           </div>
 
@@ -173,7 +264,7 @@ export function ApplicationLetterFilterModal({
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button onClick={handleApply}>Terapkan Filter</Button>
+            <Button onClick={handleApply}>Terapkan</Button>
           </DialogFooter>
         </div>
       </DialogContent>

@@ -244,6 +244,7 @@ const AdminBlogShow = () => {
                           ? buildImageUrl(blog.user.avatar)
                           : undefined
                       }
+                      className="object-cover"
                     />
                     <AvatarFallback className="bg-primary/10 text-primary">
                       {blog.user.name.charAt(0)}

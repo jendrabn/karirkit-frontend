@@ -131,7 +131,11 @@ export default function PublicPortfolios() {
                 <div className="relative">
                   <div className="absolute -inset-1 bg-linear-to-r from-primary to-primary/50 rounded-full blur-lg opacity-50" />
                   <Avatar className="relative h-36 w-36 lg:h-44 lg:w-44 ring-4 ring-background shadow-2xl">
-                    <AvatarImage src={buildImageUrl(user.avatar)} alt={user.name} />
+                    <AvatarImage
+                      src={buildImageUrl(user.avatar)}
+                      alt={user.name}
+                      className="object-cover"
+                    />
                     <AvatarFallback className="text-5xl lg:text-6xl bg-primary text-primary-foreground">
                       {user.name.charAt(0)}
                     </AvatarFallback>

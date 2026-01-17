@@ -65,7 +65,10 @@ export const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar || undefined} />
+                        <AvatarImage
+                          src={user.avatar || undefined}
+                          className="object-cover"
+                        />
                         <AvatarFallback className="bg-primary/10 text-primary text-xs">
                           {user.name.charAt(0)}
                         </AvatarFallback>

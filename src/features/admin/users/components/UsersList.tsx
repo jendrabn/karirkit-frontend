@@ -108,11 +108,13 @@ import { useForm } from "react-hook-form";
 
 type SortField =
   | "name"
-  | "username"
   | "email"
   | "role"
+  | "status"
   | "created_at"
-  | "updated_at";
+  | "updated_at"
+  | "document_storage_used"
+  | "download_total_count";
 
 const getStatusBadgeVariant = (status: User["status"]) => {
   switch (status) {
@@ -162,8 +164,18 @@ export const UsersList = () => {
     sort_by: "created_at" as SortField,
     sort_order: "desc" as "asc" | "desc",
     role: "",
-    created_from: "",
-    created_to: "",
+    status: "",
+    gender: "",
+    email_verified: "",
+    suspended: "",
+    created_at_from: "",
+    created_at_to: "",
+    daily_download_limit_from: "",
+    daily_download_limit_to: "",
+    document_storage_used_from: "",
+    document_storage_used_to: "",
+    download_total_count_from: "",
+    download_total_count_to: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -316,8 +328,30 @@ export const UsersList = () => {
       sort_by: params.sort_by,
       sort_order: params.sort_order,
       role: (params.role as "user" | "admin") || undefined,
-      created_from: params.created_from || undefined,
-      created_to: params.created_to || undefined,
+      status: (params.status as any) || undefined,
+      gender: (params.gender as any) || undefined,
+      email_verified: (params.email_verified as any) || undefined,
+      suspended: (params.suspended as any) || undefined,
+      created_at_from: params.created_at_from || undefined,
+      created_at_to: params.created_at_to || undefined,
+      daily_download_limit_from: params.daily_download_limit_from
+        ? Number(params.daily_download_limit_from)
+        : undefined,
+      daily_download_limit_to: params.daily_download_limit_to
+        ? Number(params.daily_download_limit_to)
+        : undefined,
+      document_storage_used_from: params.document_storage_used_from
+        ? Number(params.document_storage_used_from)
+        : undefined,
+      document_storage_used_to: params.document_storage_used_to
+        ? Number(params.document_storage_used_to)
+        : undefined,
+      download_total_count_from: params.download_total_count_from
+        ? Number(params.download_total_count_from)
+        : undefined,
+      download_total_count_to: params.download_total_count_to
+        ? Number(params.download_total_count_to)
+        : undefined,
     },
   });
 
@@ -447,7 +481,19 @@ export const UsersList = () => {
   );
 
   const hasActiveFilters =
-    params.role || params.created_from || params.created_to;
+    params.role ||
+    params.status ||
+    params.gender ||
+    params.email_verified ||
+    params.suspended ||
+    params.created_at_from ||
+    params.created_at_to ||
+    params.daily_download_limit_from ||
+    params.daily_download_limit_to ||
+    params.document_storage_used_from ||
+    params.document_storage_used_to ||
+    params.download_total_count_from ||
+    params.download_total_count_to;
 
   const users = usersData?.items || [];
   const pagination = usersData?.pagination || {
@@ -464,7 +510,7 @@ export const UsersList = () => {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari nama, username, email, telepon..."
+            placeholder="Cari nama, username, email, telepon, lokasi..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -488,7 +534,24 @@ export const UsersList = () => {
               variant="ghost"
               size="sm"
               onClick={() =>
-                setParams({ role: "", created_from: "", created_to: "" }, true)
+                setParams(
+                  {
+                    role: "",
+                    status: "",
+                    gender: "",
+                    email_verified: "",
+                    suspended: "",
+                    created_at_from: "",
+                    created_at_to: "",
+                    daily_download_limit_from: "",
+                    daily_download_limit_to: "",
+                    document_storage_used_from: "",
+                    document_storage_used_to: "",
+                    download_total_count_from: "",
+                    download_total_count_to: "",
+                  },
+                  true
+                )
               }
               className="text-muted-foreground"
             >
@@ -534,8 +597,8 @@ export const UsersList = () => {
                   </TableHead>
                 )}
                 {columnVisibility.username && (
-                  <TableHead>
-                    <SortableHeader field="username">Username</SortableHeader>
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Username
                   </TableHead>
                 )}
                 {columnVisibility.email && (
@@ -549,8 +612,8 @@ export const UsersList = () => {
                   </TableHead>
                 )}
                 {columnVisibility.status && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Status
+                  <TableHead>
+                    <SortableHeader field="status">Status</SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.phone && (
@@ -569,8 +632,10 @@ export const UsersList = () => {
                   </TableHead>
                 )}
                 {columnVisibility.total_downloads && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Total Unduhan
+                  <TableHead>
+                    <SortableHeader field="download_total_count">
+                      Total Unduhan
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.created_at && (
@@ -884,15 +949,42 @@ export const UsersList = () => {
         onOpenChange={setFilterModalOpen}
         filters={{
           role: (params.role as any) || "",
-          created_from: params.created_from
-            ? new Date(params.created_from)
-            : undefined,
-          created_to: params.created_to
-            ? new Date(params.created_to)
-            : undefined,
+          status: (params.status as any) || "",
+          gender: (params.gender as any) || "",
+          email_verified: (params.email_verified as any) || "",
+          suspended: (params.suspended as any) || "",
+          created_at_from: params.created_at_from || "",
+          created_at_to: params.created_at_to || "",
+          daily_download_limit_from: params.daily_download_limit_from || "",
+          daily_download_limit_to: params.daily_download_limit_to || "",
+          document_storage_used_from: params.document_storage_used_from || "",
+          document_storage_used_to: params.document_storage_used_to || "",
+          download_total_count_from: params.download_total_count_from || "",
+          download_total_count_to: params.download_total_count_to || "",
         }}
         onApply={(newFilters) => {
-          setParams(newFilters as any, true);
+          setParams(
+            {
+              role: newFilters.role || "",
+              status: newFilters.status || "",
+              gender: newFilters.gender || "",
+              email_verified: newFilters.email_verified || "",
+              suspended: newFilters.suspended || "",
+              created_at_from: newFilters.created_at_from || "",
+              created_at_to: newFilters.created_at_to || "",
+              daily_download_limit_from:
+                newFilters.daily_download_limit_from || "",
+              daily_download_limit_to: newFilters.daily_download_limit_to || "",
+              document_storage_used_from:
+                newFilters.document_storage_used_from || "",
+              document_storage_used_to:
+                newFilters.document_storage_used_to || "",
+              download_total_count_from:
+                newFilters.download_total_count_from || "",
+              download_total_count_to: newFilters.download_total_count_to || "",
+            } as any,
+            true
+          );
           setFilterModalOpen(false);
         }}
       />

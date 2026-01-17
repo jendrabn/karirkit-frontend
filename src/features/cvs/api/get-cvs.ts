@@ -141,12 +141,22 @@ export type GetCVsParams = {
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "created_at" | "updated_at" | "name";
-  name?: string;
-  email?: string;
+  sort_by?: "created_at" | "updated_at" | "name" | "views" | "headline";
+  visibility?: "private" | "public";
   language?: "id" | "en";
-  dateFrom?: string;
-  dateTo?: string;
+  template_id?: string;
+  created_at_from?: string;
+  created_at_to?: string;
+  updated_at_from?: string;
+  updated_at_to?: string;
+  views_from?: number;
+  views_to?: number;
+  educations_degree?: string;
+  experiences_job_type?: string;
+  experiences_is_current?: "true" | "false";
+  skills_level?: string;
+  skills_skill_category?: string;
+  organizations_organization_type?: string;
 };
 
 export const getCVs = (params?: GetCVsParams): Promise<CVsResponse> => {

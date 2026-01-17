@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, Trash2 } from "lucide-react";
+import { Search, Plus, Trash2, Filter } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { CompanyFormModal } from "@/features/admin/companies/components/CompanyF
 import { CompanyDeleteDialog } from "@/features/admin/companies/components/CompanyDeleteDialog";
 import { CompanyBulkDeleteDialog } from "@/features/admin/companies/components/CompanyBulkDeleteDialog";
 import { CompanyDetailModal } from "@/features/admin/companies/components/CompanyDetailModal";
+import { CompanyFilterModal } from "@/features/admin/companies/components/CompanyFilterModal";
 import {
   CompanyColumnToggle,
   type ColumnVisibility,
@@ -33,6 +34,7 @@ export default function AdminCompanies() {
   const {
     params,
     setParam,
+    setParams,
     searchInput,
     handleSearchInput,
     handleSearchSubmit,
@@ -40,6 +42,19 @@ export default function AdminCompanies() {
     page: 1,
     per_page: 10,
     q: "",
+    sort_by: "created_at" as
+      | "created_at"
+      | "updated_at"
+      | "name"
+      | "employee_size"
+      | "job_count",
+    sort_order: "desc" as "asc" | "desc",
+    employee_size: "",
+    business_sector: "",
+    job_count_from: "",
+    job_count_to: "",
+    created_at_from: "",
+    created_at_to: "",
   });
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -53,6 +68,7 @@ export default function AdminCompanies() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<string | null>(null);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
@@ -65,6 +81,16 @@ export default function AdminCompanies() {
       page: params.page,
       per_page: params.per_page,
       q: params.q || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
+      employee_size: (params.employee_size as any) || undefined,
+      business_sector: params.business_sector || undefined,
+      job_count_from: params.job_count_from
+        ? Number(params.job_count_from)
+        : undefined,
+      job_count_to: params.job_count_to ? Number(params.job_count_to) : undefined,
+      created_at_from: params.created_at_from || undefined,
+      created_at_to: params.created_at_to || undefined,
     },
   });
 
@@ -151,6 +177,25 @@ export default function AdminCompanies() {
   const pagination = companiesData?.pagination;
   const totalPages = pagination?.total_pages || 1;
 
+  const handleSort = (
+    field:
+      | "created_at"
+      | "updated_at"
+      | "name"
+      | "employee_size"
+      | "job_count"
+  ) => {
+    if (params.sort_by === field) {
+      setParam(
+        "sort_order",
+        params.sort_order === "asc" ? "desc" : "asc",
+        false
+      );
+    } else {
+      setParams({ sort_by: field, sort_order: "asc" }, false);
+    }
+  };
+
   return (
     <DashboardLayout
       breadcrumbItems={[
@@ -168,7 +213,7 @@ export default function AdminCompanies() {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari perusahaan..."
+            placeholder="Cari nama, slug, sektor, website..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -187,6 +232,14 @@ export default function AdminCompanies() {
               Hapus ({selectedIds.length})
             </Button>
           )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setFilterModalOpen(true)}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Filter
+          </Button>
           <CompanyColumnToggle
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
@@ -216,6 +269,9 @@ export default function AdminCompanies() {
         }}
         onView={handleView}
         onDelete={handleDelete}
+        sortField={params.sort_by}
+        sortOrder={params.sort_order}
+        onSort={handleSort}
         currentPage={params.page}
         perPage={params.per_page}
         totalPages={totalPages}
@@ -223,6 +279,33 @@ export default function AdminCompanies() {
         onPageChange={(page) => setParam("page", page, false)}
         onPerPageChange={(perPage) => setParam("per_page", perPage, true)}
         columnVisibility={columnVisibility}
+      />
+
+      <CompanyFilterModal
+        open={filterModalOpen}
+        onOpenChange={setFilterModalOpen}
+        filters={{
+          employee_size: (params.employee_size as any) || undefined,
+          business_sector: params.business_sector || "",
+          job_count_from: params.job_count_from || "",
+          job_count_to: params.job_count_to || "",
+          created_at_from: params.created_at_from || "",
+          created_at_to: params.created_at_to || "",
+        }}
+        onApply={(newFilters) => {
+          setParams(
+            {
+              employee_size: newFilters.employee_size || "",
+              business_sector: newFilters.business_sector || "",
+              job_count_from: newFilters.job_count_from || "",
+              job_count_to: newFilters.job_count_to || "",
+              created_at_from: newFilters.created_at_from || "",
+              created_at_to: newFilters.created_at_to || "",
+            },
+            true
+          );
+          setFilterModalOpen(false);
+        }}
       />
 
       <CompanyFormModal

@@ -8,9 +8,13 @@ export interface GetCompaniesParams {
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "created_at" | "updated_at" | "name";
+  sort_by?: "created_at" | "updated_at" | "name" | "employee_size" | "job_count";
   business_sector?: string;
   employee_size?: EmployeeSize;
+  job_count_from?: number;
+  job_count_to?: number;
+  created_at_from?: string;
+  created_at_to?: string;
 }
 
 export const getCompanies = (

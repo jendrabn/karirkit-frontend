@@ -100,6 +100,10 @@ export const TemplatesList = () => {
     type: "",
     language: "",
     is_premium: undefined as boolean | undefined,
+    created_at_from: "",
+    created_at_to: "",
+    updated_at_from: "",
+    updated_at_to: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -121,6 +125,10 @@ export const TemplatesList = () => {
         params.is_premium !== undefined
           ? (params.is_premium as any)
           : undefined,
+      created_at_from: params.created_at_from || undefined,
+      created_at_to: params.created_at_to || undefined,
+      updated_at_from: params.updated_at_from || undefined,
+      updated_at_to: params.updated_at_to || undefined,
     },
   });
 
@@ -210,7 +218,13 @@ export const TemplatesList = () => {
   );
 
   const hasActiveFilters =
-    params.type || params.language || params.is_premium !== undefined;
+    params.type ||
+    params.language ||
+    params.is_premium !== undefined ||
+    params.created_at_from ||
+    params.created_at_to ||
+    params.updated_at_from ||
+    params.updated_at_to;
 
   const templates = templatesData?.items || [];
   const pagination = templatesData?.pagination || {
@@ -221,7 +235,19 @@ export const TemplatesList = () => {
   };
 
   const handleApplyFilters = (newFilters: any) => {
-    setParams(newFilters, true);
+    setParams(
+      {
+        type: newFilters.type || "",
+        language: newFilters.language || "",
+        is_premium:
+          newFilters.is_premium === undefined ? undefined : newFilters.is_premium,
+        created_at_from: newFilters.created_at_from || "",
+        created_at_to: newFilters.created_at_to || "",
+        updated_at_from: newFilters.updated_at_from || "",
+        updated_at_to: newFilters.updated_at_to || "",
+      },
+      true
+    );
     setFilterModalOpen(false);
   };
 
@@ -231,7 +257,7 @@ export const TemplatesList = () => {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari nama template..."
+            placeholder="Cari nama, tipe, bahasa, path..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -260,6 +286,10 @@ export const TemplatesList = () => {
                     type: "" as any,
                     language: "" as any,
                     is_premium: undefined,
+                    created_at_from: "",
+                    created_at_to: "",
+                    updated_at_from: "",
+                    updated_at_to: "",
                   },
                   true
                 )
@@ -582,6 +612,10 @@ export const TemplatesList = () => {
           language: (params.language as any) || "",
           is_premium:
             params.is_premium !== undefined ? params.is_premium : undefined,
+          created_at_from: params.created_at_from || "",
+          created_at_to: params.created_at_to || "",
+          updated_at_from: params.updated_at_from || "",
+          updated_at_to: params.updated_at_to || "",
         }}
         onApply={handleApplyFilters}
       />

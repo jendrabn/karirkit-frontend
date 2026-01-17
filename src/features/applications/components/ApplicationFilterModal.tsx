@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import {
   Select,
@@ -84,14 +85,14 @@ export function ApplicationFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 gap-0">
+      <DialogContent className="!max-w-3xl p-0 gap-0">
         <div className="flex flex-col max-h-[85vh]">
           <DialogHeader className="px-6 pt-6 pb-4">
             <DialogTitle>Filter Lamaran</DialogTitle>
           </DialogHeader>
 
           <div className="overflow-y-auto px-6 py-2">
-            <FieldSet>
+            <FieldSet className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Date Range */}
               <Field>
                 <FieldLabel>Tanggal Lamaran</FieldLabel>
@@ -248,6 +249,164 @@ export function ApplicationFilterModal({
                   </SelectContent>
                 </Select>
               </Field>
+
+              <Field>
+                <FieldLabel>Nama Perusahaan (Exact)</FieldLabel>
+                <Input
+                  placeholder="Contoh: PT Aktuaria Nusantara"
+                  value={localFilters.company_name || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      company_name: e.target.value || undefined,
+                    })
+                  }
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel>Sumber Lowongan</FieldLabel>
+                <Input
+                  placeholder="Contoh: LinkedIn, Glints"
+                  value={localFilters.job_source || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      job_source: e.target.value || undefined,
+                    })
+                  }
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel>Lokasi</FieldLabel>
+                <Input
+                  placeholder="Contoh: Jakarta, Bandung"
+                  value={localFilters.location || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      location: e.target.value || undefined,
+                    })
+                  }
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel>Rentang Gaji</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={
+                      localFilters.salary_from !== undefined
+                        ? String(localFilters.salary_from)
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        salary_from: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={
+                      localFilters.salary_to !== undefined
+                        ? String(localFilters.salary_to)
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        salary_to: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Follow Up Date</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="date"
+                    value={localFilters.follow_up_date_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        follow_up_date_from: e.target.value || undefined,
+                      })
+                    }
+                  />
+                  <Input
+                    type="date"
+                    value={localFilters.follow_up_date_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        follow_up_date_to: e.target.value || undefined,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Follow Up Tersedia</FieldLabel>
+                <Select
+                  value={localFilters.follow_up_date_has || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      follow_up_date_has:
+                        value === "all"
+                          ? undefined
+                          : (value as "true" | "false"),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Semua" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">Semua</SelectItem>
+                    <SelectItem value="true">Ada</SelectItem>
+                    <SelectItem value="false">Tidak Ada</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel>Follow Up Overdue</FieldLabel>
+                <Select
+                  value={localFilters.follow_up_overdue || "all"}
+                  onValueChange={(value) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      follow_up_overdue:
+                        value === "all"
+                          ? undefined
+                          : (value as "true" | "false"),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Semua" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">Semua</SelectItem>
+                    <SelectItem value="true">Overdue</SelectItem>
+                    <SelectItem value="false">Tidak</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
             </FieldSet>
           </div>
 
@@ -255,7 +414,7 @@ export function ApplicationFilterModal({
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button onClick={handleApply}>Terapkan Filter</Button>
+            <Button onClick={handleApply}>Terapkan</Button>
           </DialogFooter>
         </div>
       </DialogContent>

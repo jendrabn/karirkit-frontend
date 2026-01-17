@@ -574,7 +574,7 @@ export function JobFilterSidebar(props: JobFilterSidebarProps) {
             </div>
             <div className="pt-4 border-t mt-auto">
               <Button className="w-full" onClick={() => setIsOpen(false)}>
-                Terapkan Filter ({filterCount})
+                Terapkan ({filterCount})
               </Button>
             </div>
           </DialogContent>

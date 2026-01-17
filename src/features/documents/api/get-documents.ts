@@ -18,7 +18,12 @@ export type GetDocumentsParams = {
   per_page?: number;
   q?: string;
   type?: DocumentType;
-  sort_by?: "uploaded_at" | "original_name" | "size" | "type";
+  mime_type?: string;
+  size_from?: number;
+  size_to?: number;
+  created_at_from?: string;
+  created_at_to?: string;
+  sort_by?: "created_at" | "updated_at" | "original_name" | "size" | "type";
   sort_order?: "asc" | "desc";
 };
 

@@ -11,20 +11,32 @@ import type {
 
 export interface GetJobsParams {
   q?: string;
+  page?: number;
+  per_page?: number;
+  sort_by?:
+    | "created_at"
+    | "updated_at"
+    | "title"
+    | "company_name"
+    | "status"
+    | "salary_max"
+    | "expiration_date";
+  sort_order?: "asc" | "desc";
+  status?: JobStatus;
+  job_type?: JobType | string;
+  work_system?: WorkSystem | string;
+  education_level?: EducationLevel;
   company_id?: string;
   job_role_id?: string;
   city_id?: string;
-  province_id?: string;
-  job_type?: JobType;
-  work_system?: WorkSystem;
-  education_level?: EducationLevel;
-  experience_min?: number;
-  salary_min?: number;
-  status?: JobStatus;
-  page?: number;
-  per_page?: number;
-  sort?: "created_at" | "salary_min" | "experience_min";
-  sort_order?: "asc" | "desc";
+  salary_from?: number;
+  salary_to?: number;
+  years_of_experience_from?: number;
+  years_of_experience_to?: number;
+  expiration_date_from?: string;
+  expiration_date_to?: string;
+  created_at_from?: string;
+  created_at_to?: string;
 }
 
 export const getJobs = (params?: GetJobsParams): Promise<JobListResponse> => {

@@ -19,6 +19,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,9 +46,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
@@ -65,6 +63,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { BlogStatusModal } from "@/features/admin/blogs/components/BlogStatusModal";
 import {
   BlogFilterModal,
   type FilterValues,
@@ -75,6 +74,7 @@ import {
   defaultColumnVisibility,
 } from "@/features/admin/blogs/components/BlogColumnToggle";
 import {
+  type Blog,
   type BlogStatus,
   BLOG_STATUS_OPTIONS,
   getStatusBadgeVariant,
@@ -88,11 +88,18 @@ import {
 } from "@/features/admin/blogs/api/get-blogs";
 import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
 import { useMassDeleteBlogs } from "@/features/admin/blogs/api/mass-delete-blogs";
+import { useUpdateBlog } from "@/features/admin/blogs/api/update-blog";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 
-type SortField = "updated_at" | "published_at" | "views" | "title";
+type SortField =
+  | "created_at"
+  | "updated_at"
+  | "published_at"
+  | "views"
+  | "title"
+  | "read_time";
 type SortOrder = "asc" | "desc";
 
 export const BlogsList = () => {
@@ -114,6 +121,16 @@ export const BlogsList = () => {
     sort_order: "desc" as SortOrder,
     status: "",
     category_id: "",
+    user_id: "",
+    tag_id: "",
+    published_at_from: "",
+    published_at_to: "",
+    created_at_from: "",
+    created_at_to: "",
+    read_time_from: "",
+    read_time_to: "",
+    views_from: "",
+    views_to: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -126,6 +143,11 @@ export const BlogsList = () => {
   const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [blogToUpdateStatus, setBlogToUpdateStatus] = useState<Blog | null>(
+    null
+  );
+  const [nextStatus, setNextStatus] = useState<BlogStatus>("draft");
 
   // Build API params
   const apiParams: GetBlogsParams = {
@@ -136,12 +158,33 @@ export const BlogsList = () => {
     sort_by: params.sort_by || undefined,
     status: params.status as "draft" | "published" | "archived" | undefined,
     category_id: params.category_id || undefined,
+    user_id: params.user_id || undefined,
+    tag_id: params.tag_id || undefined,
+    published_at_from: params.published_at_from || undefined,
+    published_at_to: params.published_at_to || undefined,
+    created_at_from: params.created_at_from || undefined,
+    created_at_to: params.created_at_to || undefined,
+    read_time_from: params.read_time_from
+      ? Number(params.read_time_from)
+      : undefined,
+    read_time_to: params.read_time_to ? Number(params.read_time_to) : undefined,
+    views_from: params.views_from ? Number(params.views_from) : undefined,
+    views_to: params.views_to ? Number(params.views_to) : undefined,
   };
 
   // Fetch blogs
   const { data: blogsData, isLoading } = useBlogs({ params: apiParams });
   const { data: categoriesData } = useBlogCategories();
   const deleteBlogMutation = useDeleteBlog();
+  const updateBlogMutation = useUpdateBlog({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Status blog berhasil diperbarui");
+        setStatusDialogOpen(false);
+        setBlogToUpdateStatus(null);
+      },
+    },
+  });
   const massDeleteBlogsMutation = useMassDeleteBlogs({
     mutationConfig: {
       onSuccess: () => {
@@ -204,10 +247,28 @@ export const BlogsList = () => {
     massDeleteBlogsMutation.mutate({ ids: selectedIds });
   };
 
-  // Note: Status change would require update API - simplified for now
-  const handleStatusChange = async (_id: string, _newStatus: BlogStatus) => {
-    // TODO: Implement status change using updateBlog mutation
-    toast.info("Fitur perubahan status akan segera tersedia");
+  const handleOpenStatusDialog = (blog: Blog) => {
+    setBlogToUpdateStatus(blog);
+    setNextStatus(blog.status);
+    setStatusDialogOpen(true);
+  };
+
+  const handleUpdateStatus = async () => {
+    if (!blogToUpdateStatus) return;
+
+    updateBlogMutation.mutate({
+      id: blogToUpdateStatus.id,
+      data: {
+        title: blogToUpdateStatus.title,
+        excerpt: blogToUpdateStatus.excerpt || "",
+        content: blogToUpdateStatus.content,
+        featured_image: blogToUpdateStatus.featured_image || "",
+        status: nextStatus,
+        category_id: blogToUpdateStatus.category_id,
+        author_id: blogToUpdateStatus.user_id,
+        tag_ids: blogToUpdateStatus.tags?.map((tag) => tag.id) || [],
+      },
+    });
   };
 
   const SortableHeader = ({
@@ -235,7 +296,7 @@ export const BlogsList = () => {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari judul, excerpt..."
+            placeholder="Cari judul, slug, excerpt, content, penulis..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -317,8 +378,10 @@ export const BlogsList = () => {
                     </TableHead>
                   )}
                   {columnVisibility.min_read && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Waktu Baca
+                    <TableHead>
+                      <SortableHeader field="read_time">
+                        Waktu Baca
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.published_at && (
@@ -339,8 +402,8 @@ export const BlogsList = () => {
                     </TableHead>
                   )}
                   {columnVisibility.created_at && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Dibuat
+                    <TableHead>
+                      <SortableHeader field="created_at">Dibuat</SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.updated_at && (
@@ -509,41 +572,29 @@ export const BlogsList = () => {
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                toast.info(
-                                  "Fitur duplikat akan segera tersedia"
-                                )
-                              }
-                            >
-                              <Copy className="h-4 w-4 mr-2" />
-                              Duplikat
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuSub>
-                              <DropdownMenuSubTrigger>
-                                Ubah Status
-                              </DropdownMenuSubTrigger>
-                              <DropdownMenuSubContent>
-                                {BLOG_STATUS_OPTIONS.map((opt) => (
-                                  <DropdownMenuItem
-                                    key={opt.value}
-                                    onClick={() =>
-                                      handleStatusChange(blog.id, opt.value)
-                                    }
-                                    disabled={blog.status === opt.value}
-                                  >
-                                    {opt.label}
-                                  </DropdownMenuItem>
-                                ))}
-                              </DropdownMenuSubContent>
-                            </DropdownMenuSub>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleDelete(blog.id)}
-                              className="text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
+                      <DropdownMenuItem
+                        onClick={() =>
+                          toast.info(
+                            "Fitur duplikat akan segera tersedia"
+                          )
+                        }
+                      >
+                        <Copy className="h-4 w-4 mr-2" />
+                        Duplikat
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleOpenStatusDialog(blog)}
+                      >
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Ubah Status
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(blog.id)}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
                               Hapus
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -630,12 +681,32 @@ export const BlogsList = () => {
         filters={{
           status: params.status as FilterValues["status"],
           category_id: params.category_id,
+          user_id: params.user_id || "",
+          tag_id: params.tag_id || "",
+          published_at_from: params.published_at_from || "",
+          published_at_to: params.published_at_to || "",
+          created_at_from: params.created_at_from || "",
+          created_at_to: params.created_at_to || "",
+          read_time_from: params.read_time_from || "",
+          read_time_to: params.read_time_to || "",
+          views_from: params.views_from || "",
+          views_to: params.views_to || "",
         }}
         onApply={(newFilters) => {
           setParams(
             {
               status: newFilters.status || "",
               category_id: newFilters.category_id || "",
+              user_id: newFilters.user_id || "",
+              tag_id: newFilters.tag_id || "",
+              published_at_from: newFilters.published_at_from || "",
+              published_at_to: newFilters.published_at_to || "",
+              created_at_from: newFilters.created_at_from || "",
+              created_at_to: newFilters.created_at_to || "",
+              read_time_from: newFilters.read_time_from || "",
+              read_time_to: newFilters.read_time_to || "",
+              views_from: newFilters.views_from || "",
+              views_to: newFilters.views_to || "",
             },
             true
           );
@@ -704,6 +775,19 @@ export const BlogsList = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <BlogStatusModal
+        open={statusDialogOpen}
+        blog={blogToUpdateStatus}
+        status={nextStatus}
+        onStatusChange={setNextStatus}
+        onClose={() => {
+          setStatusDialogOpen(false);
+          setBlogToUpdateStatus(null);
+        }}
+        onSave={handleUpdateStatus}
+        isSaving={updateBlogMutation.isPending}
+      />
     </>
   );
 };

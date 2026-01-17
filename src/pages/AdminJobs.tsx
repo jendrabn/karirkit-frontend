@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Search, Plus, Trash2 } from "lucide-react";
+import { Search, Plus, Trash2, Filter } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -14,13 +14,21 @@ import { useMassDeleteJobs } from "@/features/admin/jobs/api/mass-delete-jobs";
 import { JobsList } from "@/features/admin/jobs/components/JobsList";
 import { JobDeleteDialog } from "@/features/admin/jobs/components/JobDeleteDialog";
 import { JobBulkDeleteDialog } from "@/features/admin/jobs/components/JobBulkDeleteDialog";
+import { JobFilterModal } from "@/features/admin/jobs/components/JobFilterModal";
 import {
   JobColumnToggle,
   type ColumnVisibility,
   defaultColumnVisibility,
 } from "@/features/admin/jobs/components/JobColumnToggle";
 
-type SortField = "created_at" | "salary_min" | "experience_min";
+type SortField =
+  | "created_at"
+  | "updated_at"
+  | "title"
+  | "company_name"
+  | "status"
+  | "salary_max"
+  | "expiration_date";
 type SortOrder = "asc" | "desc";
 
 export default function AdminJobs() {
@@ -38,8 +46,23 @@ export default function AdminJobs() {
     page: 1,
     per_page: 10,
     q: "",
-    sort: "created_at" as SortField,
+    sort_by: "created_at" as SortField,
     sort_order: "desc" as SortOrder,
+    status: "",
+    job_type: "",
+    work_system: "",
+    education_level: "",
+    company_id: "",
+    job_role_id: "",
+    city_id: "",
+    salary_from: "",
+    salary_to: "",
+    years_of_experience_from: "",
+    years_of_experience_to: "",
+    expiration_date_from: "",
+    expiration_date_to: "",
+    created_at_from: "",
+    created_at_to: "",
   });
 
   const [columnVisibility, setColumnVisibility] =
@@ -52,14 +75,34 @@ export default function AdminJobs() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<string | null>(null);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const { data: jobsData, isLoading } = useJobs({
     params: {
       page: params.page,
       per_page: params.per_page,
       q: params.q || undefined,
-      sort: params.sort,
+      sort_by: params.sort_by,
       sort_order: params.sort_order,
+      status: (params.status as any) || undefined,
+      job_type: params.job_type || undefined,
+      work_system: params.work_system || undefined,
+      education_level: (params.education_level as any) || undefined,
+      company_id: params.company_id || undefined,
+      job_role_id: params.job_role_id || undefined,
+      city_id: params.city_id || undefined,
+      salary_from: params.salary_from ? Number(params.salary_from) : undefined,
+      salary_to: params.salary_to ? Number(params.salary_to) : undefined,
+      years_of_experience_from: params.years_of_experience_from
+        ? Number(params.years_of_experience_from)
+        : undefined,
+      years_of_experience_to: params.years_of_experience_to
+        ? Number(params.years_of_experience_to)
+        : undefined,
+      expiration_date_from: params.expiration_date_from || undefined,
+      expiration_date_to: params.expiration_date_to || undefined,
+      created_at_from: params.created_at_from || undefined,
+      created_at_to: params.created_at_to || undefined,
     },
   });
 
@@ -67,14 +110,14 @@ export default function AdminJobs() {
   const massDeleteMutation = useMassDeleteJobs();
 
   const handleSort = (field: SortField) => {
-    if (params.sort === field) {
+    if (params.sort_by === field) {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
         false
       );
     } else {
-      setParams({ sort: field, sort_order: "asc" }, false);
+      setParams({ sort_by: field, sort_order: "asc" }, false);
     }
   };
 
@@ -140,7 +183,7 @@ export default function AdminJobs() {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari judul, perusahaan..."
+            placeholder="Cari judul, perusahaan, role, kota, kontak..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -160,6 +203,14 @@ export default function AdminJobs() {
               Hapus ({selectedIds.length})
             </Button>
           )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setFilterModalOpen(true)}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Filter
+          </Button>
           <JobColumnToggle
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
@@ -184,10 +235,56 @@ export default function AdminJobs() {
         totalItems={pagination?.total_items || 0}
         onPageChange={(page) => setParam("page", page, false)}
         onPerPageChange={(perPage) => setParam("per_page", perPage, true)}
-        sortField={params.sort}
+        sortField={params.sort_by}
         sortOrder={params.sort_order}
         onSort={handleSort}
         columnVisibility={columnVisibility}
+      />
+
+      <JobFilterModal
+        open={filterModalOpen}
+        onOpenChange={setFilterModalOpen}
+        filters={{
+          status: (params.status as any) || undefined,
+          job_type: params.job_type || "",
+          work_system: params.work_system || "",
+          education_level: (params.education_level as any) || undefined,
+          company_id: params.company_id || "",
+          job_role_id: params.job_role_id || "",
+          city_id: params.city_id || "",
+          salary_from: params.salary_from || "",
+          salary_to: params.salary_to || "",
+          years_of_experience_from: params.years_of_experience_from || "",
+          years_of_experience_to: params.years_of_experience_to || "",
+          expiration_date_from: params.expiration_date_from || "",
+          expiration_date_to: params.expiration_date_to || "",
+          created_at_from: params.created_at_from || "",
+          created_at_to: params.created_at_to || "",
+        }}
+        onApply={(newFilters) => {
+          setParams(
+            {
+              status: newFilters.status || "",
+              job_type: newFilters.job_type || "",
+              work_system: newFilters.work_system || "",
+              education_level: newFilters.education_level || "",
+              company_id: newFilters.company_id || "",
+              job_role_id: newFilters.job_role_id || "",
+              city_id: newFilters.city_id || "",
+              salary_from: newFilters.salary_from || "",
+              salary_to: newFilters.salary_to || "",
+              years_of_experience_from:
+                newFilters.years_of_experience_from || "",
+              years_of_experience_to: newFilters.years_of_experience_to || "",
+              expiration_date_from: newFilters.expiration_date_from || "",
+              expiration_date_to: newFilters.expiration_date_to || "",
+              created_at_from: newFilters.created_at_from || "",
+              created_at_to: newFilters.created_at_to || "",
+            },
+            true
+          );
+          setFilterModalOpen(false);
+        }}
       />
 
       <JobDeleteDialog

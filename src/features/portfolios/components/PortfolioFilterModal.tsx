@@ -23,6 +23,11 @@ export interface PortfolioFilterValues {
   industry?: string;
   year?: number;
   month?: number;
+  year_from?: number;
+  year_to?: number;
+  month_from?: number;
+  month_to?: number;
+  tools_name?: string;
 }
 
 interface PortfolioFilterModalProps {
@@ -70,13 +75,13 @@ export function PortfolioFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 gap-0">
+      <DialogContent className="!max-w-3xl p-0 gap-0">
         <div className="flex flex-col max-h-[85vh]">
           <DialogHeader className="px-6 pt-6 pb-4">
             <DialogTitle>Filter Portfolio</DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto px-6 py-2">
-            <FieldSet>
+            <FieldSet className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>Tipe Proyek</FieldLabel>
                 <Select
@@ -171,13 +176,91 @@ export function PortfolioFilterModal({
                   </Select>
                 </Field>
               </div>
+
+              <Field>
+                <FieldLabel>Rentang Tahun</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.year_from?.toString() || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        year_from: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.year_to?.toString() || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        year_to: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Rentang Bulan</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.month_from?.toString() || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        month_from: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.month_to?.toString() || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        month_to: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Tools</FieldLabel>
+                <Input
+                  placeholder="Contoh: Reporting, Process Safety"
+                  value={localFilters.tools_name || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      tools_name: e.target.value || undefined,
+                    })
+                  }
+                />
+              </Field>
             </FieldSet>
           </div>
           <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button onClick={handleApply}>Terapkan Filter</Button>
+            <Button onClick={handleApply}>Terapkan</Button>
           </DialogFooter>
         </div>
       </DialogContent>

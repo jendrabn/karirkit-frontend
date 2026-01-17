@@ -11,7 +11,11 @@ export type GetBlogCategoriesParams = {
   per_page?: number;
   q?: string;
   sort_order?: "asc" | "desc";
-  sort_by?: "created_at" | "updated_at" | "name";
+  sort_by?: "created_at" | "updated_at" | "name" | "blog_count";
+  blog_count_from?: number;
+  blog_count_to?: number;
+  created_at_from?: string;
+  created_at_to?: string;
 };
 
 export const getBlogCategories = (

@@ -88,7 +88,7 @@ import { useUrlParams } from "@/hooks/use-url-params";
 type SortField =
   | "application_date"
   | "company_name"
-  | "subject"
+  | "name"
   | "created_at"
   | "updated_at";
 type SortOrder = "asc" | "desc";
@@ -111,7 +111,13 @@ export function ApplicationLetterList() {
     sort_by: "application_date" as SortField,
     sort_order: "desc" as SortOrder,
     company_name: "",
-    dateFrom: "",
+    company_city: "",
+    applicant_city: "",
+    gender: "",
+    marital_status: "",
+    language: "",
+    application_date_from: "",
+    application_date_to: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -141,9 +147,13 @@ export function ApplicationLetterList() {
       sort_by: params.sort_by,
       sort_order: params.sort_order,
       company_name: params.company_name || undefined,
-      application_date: params.dateFrom
-        ? dayjs(params.dateFrom).format("YYYY-MM-DD")
-        : undefined,
+      company_city: params.company_city || undefined,
+      applicant_city: params.applicant_city || undefined,
+      gender: (params.gender as any) || undefined,
+      marital_status: (params.marital_status as any) || undefined,
+      language: (params.language as any) || undefined,
+      application_date_from: params.application_date_from || undefined,
+      application_date_to: params.application_date_to || undefined,
     },
   });
 
@@ -274,7 +284,7 @@ export function ApplicationLetterList() {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari nama, perusahaan, subjek, email..."
+            placeholder="Cari nama, email, telepon, perusahaan, kota..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -332,8 +342,8 @@ export function ApplicationLetterList() {
                     />
                   </TableHead>
                   {columnVisibility.subject && (
-                    <TableHead>
-                      <SortableHeader field="subject">Subjek</SortableHeader>
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Subjek
                     </TableHead>
                   )}
                   {columnVisibility.company_name && (
@@ -356,8 +366,8 @@ export function ApplicationLetterList() {
                     </TableHead>
                   )}
                   {columnVisibility.name && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Nama Pelamar
+                    <TableHead>
+                      <SortableHeader field="name">Nama Pelamar</SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.education && (
@@ -401,13 +411,15 @@ export function ApplicationLetterList() {
                     </TableHead>
                   )}
                   {columnVisibility.created_at && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Dibuat
+                    <TableHead>
+                      <SortableHeader field="created_at">Dibuat</SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.updated_at && (
-                    <TableHead className="uppercase text-xs font-medium tracking-wide">
-                      Diperbarui
+                    <TableHead>
+                      <SortableHeader field="updated_at">
+                        Diperbarui
+                      </SortableHeader>
                     </TableHead>
                   )}
                   <TableHead className="w-[60px]"></TableHead>
@@ -686,10 +698,36 @@ export function ApplicationLetterList() {
         onOpenChange={setFilterModalOpen}
         filters={{
           company_name: params.company_name || "",
-          dateFrom: params.dateFrom ? new Date(params.dateFrom) : undefined,
+          company_city: params.company_city || "",
+          applicant_city: params.applicant_city || "",
+          gender: (params.gender as any) || undefined,
+          marital_status: (params.marital_status as any) || undefined,
+          language: (params.language as any) || undefined,
+          dateFrom: params.application_date_from
+            ? new Date(params.application_date_from)
+            : undefined,
+          dateTo: params.application_date_to
+            ? new Date(params.application_date_to)
+            : undefined,
         }}
         onApplyFilters={(newFilters) => {
-          setParams(newFilters as any, true);
+          setParams(
+            {
+              company_name: newFilters.company_name || "",
+              company_city: newFilters.company_city || "",
+              applicant_city: newFilters.applicant_city || "",
+              gender: newFilters.gender || "",
+              marital_status: newFilters.marital_status || "",
+              language: newFilters.language || "",
+              application_date_from: newFilters.dateFrom
+                ? dayjs(newFilters.dateFrom).format("YYYY-MM-DD")
+                : "",
+              application_date_to: newFilters.dateTo
+                ? dayjs(newFilters.dateTo).format("YYYY-MM-DD")
+                : "",
+            } as any,
+            true
+          );
           setFilterModalOpen(false);
         }}
       />

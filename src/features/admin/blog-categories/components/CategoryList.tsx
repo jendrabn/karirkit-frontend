@@ -14,6 +14,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { CategoryModal } from "./CategoryModal";
+import {
+  CategoryFilterModal,
+  type CategoryFilterValues,
+} from "./CategoryFilterModal";
 import { useBlogCategories } from "../api/get-blog-categories";
 import { useDeleteBlogCategory } from "../api/delete-blog-category";
 import { useCreateBlogCategory } from "../api/create-blog-category";
@@ -66,7 +71,7 @@ import {
   type CategoryColumnVisibility,
 } from "./CategoryColumnToggle";
 
-type SortField = "name" | "created_at" | "updated_at";
+type SortField = "name" | "created_at" | "updated_at" | "blog_count";
 type SortOrder = "asc" | "desc";
 
 export const CategoryList = () => {
@@ -84,6 +89,10 @@ export const CategoryList = () => {
     q: "",
     sort_by: "name" as SortField,
     sort_order: "desc" as SortOrder,
+    blog_count_from: "",
+    blog_count_to: "",
+    created_at_from: "",
+    created_at_to: "",
   });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -94,6 +103,7 @@ export const CategoryList = () => {
   const [editingCategory, setEditingCategory] = useState<BlogCategory | null>(
     null
   );
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<CategoryColumnVisibility>(
@@ -109,6 +119,14 @@ export const CategoryList = () => {
       q: params.q || undefined,
       sort_by: params.sort_by,
       sort_order: params.sort_order,
+      blog_count_from: params.blog_count_from
+        ? Number(params.blog_count_from)
+        : undefined,
+      blog_count_to: params.blog_count_to
+        ? Number(params.blog_count_to)
+        : undefined,
+      created_at_from: params.created_at_from || undefined,
+      created_at_to: params.created_at_to || undefined,
     },
   });
 
@@ -235,7 +253,7 @@ export const CategoryList = () => {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari nama atau slug..."
+            placeholder="Cari nama, slug, deskripsi..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -254,6 +272,14 @@ export const CategoryList = () => {
               Hapus ({selectedIds.length})
             </Button>
           )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setFilterModalOpen(true)}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Filter
+          </Button>
           <CategoryColumnToggle
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
@@ -291,8 +317,8 @@ export const CategoryList = () => {
                   </TableHead>
                 )}
                 {columnVisibility.blog_count && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Blog
+                  <TableHead>
+                    <SortableHeader field="blog_count">Blog</SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.description && (
@@ -506,6 +532,29 @@ export const CategoryList = () => {
         onSubmit={handleSubmit}
         error={editingCategory ? updateMutation.error : createMutation.error}
         isLoading={createMutation.isPending || updateMutation.isPending}
+      />
+
+      <CategoryFilterModal
+        open={filterModalOpen}
+        onOpenChange={setFilterModalOpen}
+        filters={{
+          blog_count_from: params.blog_count_from || "",
+          blog_count_to: params.blog_count_to || "",
+          created_at_from: params.created_at_from || "",
+          created_at_to: params.created_at_to || "",
+        }}
+        onApply={(newFilters: CategoryFilterValues) => {
+          setParams(
+            {
+              blog_count_from: newFilters.blog_count_from || "",
+              blog_count_to: newFilters.blog_count_to || "",
+              created_at_from: newFilters.created_at_from || "",
+              created_at_to: newFilters.created_at_to || "",
+            },
+            true
+          );
+          setFilterModalOpen(false);
+        }}
       />
 
       {/* Delete Dialog */}

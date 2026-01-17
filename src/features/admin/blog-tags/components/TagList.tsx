@@ -13,6 +13,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Loader2,
+  Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { TagModal } from "./TagModal";
+import { TagFilterModal, type TagFilterValues } from "./TagFilterModal";
 import { useBlogTags } from "../api/get-blog-tags";
 import { useDeleteBlogTag } from "../api/delete-blog-tag";
 import { useCreateBlogTag } from "../api/create-blog-tag";
@@ -65,7 +67,7 @@ import {
 } from "./TagColumnToggle";
 import { cn } from "@/lib/utils";
 
-type SortField = "name" | "created_at" | "updated_at";
+type SortField = "name" | "created_at" | "updated_at" | "blog_count";
 type SortOrder = "asc" | "desc";
 
 export const TagList = () => {
@@ -83,6 +85,10 @@ export const TagList = () => {
     q: "",
     sort_by: "name" as SortField,
     sort_order: "desc" as SortOrder,
+    blog_count_from: "",
+    blog_count_to: "",
+    created_at_from: "",
+    created_at_to: "",
   });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -91,6 +97,7 @@ export const TagList = () => {
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTag, setEditingTag] = useState<BlogTag | null>(null);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<TagColumnVisibility>(
@@ -105,6 +112,14 @@ export const TagList = () => {
       q: params.q || undefined,
       sort_by: params.sort_by || undefined,
       sort_order: params.sort_order,
+      blog_count_from: params.blog_count_from
+        ? Number(params.blog_count_from)
+        : undefined,
+      blog_count_to: params.blog_count_to
+        ? Number(params.blog_count_to)
+        : undefined,
+      created_at_from: params.created_at_from || undefined,
+      created_at_to: params.created_at_to || undefined,
     },
   });
 
@@ -255,6 +270,14 @@ export const TagList = () => {
               Hapus ({selectedIds.length})
             </Button>
           )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setFilterModalOpen(true)}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Filter
+          </Button>
           <TagColumnToggle
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
@@ -291,8 +314,8 @@ export const TagList = () => {
                   </TableHead>
                 )}
                 {columnVisibility.blog_count && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Blog
+                  <TableHead>
+                    <SortableHeader field="blog_count">Blog</SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.created_at && (
@@ -485,6 +508,29 @@ export const TagList = () => {
         onSubmit={handleSubmit}
         error={editingTag ? updateMutation.error : createMutation.error}
         isLoading={createMutation.isPending || updateMutation.isPending}
+      />
+
+      <TagFilterModal
+        open={filterModalOpen}
+        onOpenChange={setFilterModalOpen}
+        filters={{
+          blog_count_from: params.blog_count_from || "",
+          blog_count_to: params.blog_count_to || "",
+          created_at_from: params.created_at_from || "",
+          created_at_to: params.created_at_to || "",
+        }}
+        onApply={(newFilters: TagFilterValues) => {
+          setParams(
+            {
+              blog_count_from: newFilters.blog_count_from || "",
+              blog_count_to: newFilters.blog_count_to || "",
+              created_at_from: newFilters.created_at_from || "",
+              created_at_to: newFilters.created_at_to || "",
+            },
+            true
+          );
+          setFilterModalOpen(false);
+        }}
       />
 
       {/* Delete Dialog */}

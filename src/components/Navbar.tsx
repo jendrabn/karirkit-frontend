@@ -163,6 +163,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                       <AvatarImage
                         src={buildImageUrl(user.avatar)}
                         alt={user.name}
+                        className="object-cover"
                       />
                       <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
@@ -300,6 +301,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                           <AvatarImage
                             src={buildImageUrl(user.avatar)}
                             alt={user.name}
+                            className="object-cover"
                           />
                           <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                         </Avatar>

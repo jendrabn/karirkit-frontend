@@ -178,7 +178,10 @@ const ProfileForm = () => {
               <div className="flex flex-col items-center gap-4">
                 <div className="relative">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src={buildImageUrl(avatarPreview)} />
+                    <AvatarImage
+                      src={buildImageUrl(avatarPreview)}
+                      className="object-cover"
+                    />
                     <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
                       {user?.name?.charAt(0) || "U"}
                     </AvatarFallback>

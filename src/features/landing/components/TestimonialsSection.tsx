@@ -251,6 +251,7 @@ export function TestimonialsSection() {
                         <AvatarImage
                           src={testimonial.image}
                           alt={testimonial.name}
+                          className="object-cover"
                         />
                         <AvatarFallback>
                           {testimonial.name

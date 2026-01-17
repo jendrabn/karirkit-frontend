@@ -220,7 +220,10 @@ export default function CVShow() {
       <Card className="p-6 mb-6">
         <div className="flex flex-col md:flex-row gap-6">
           <Avatar className="h-24 w-24">
-            <AvatarImage src={buildImageUrl(cv.photo)} />
+            <AvatarImage
+              src={buildImageUrl(cv.photo)}
+              className="object-cover"
+            />
             <AvatarFallback className="text-2xl bg-primary/10 text-primary">
               {cv.name.charAt(0)}
             </AvatarFallback>

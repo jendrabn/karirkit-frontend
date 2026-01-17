@@ -183,7 +183,17 @@ export const ApplicationsList = () => {
     result_status: "",
     job_type: "",
     work_system: "",
-    position: "",
+    date_from: "",
+    date_to: "",
+    follow_up_date_from: "",
+    follow_up_date_to: "",
+    follow_up_date_has: "",
+    follow_up_overdue: "",
+    location: "",
+    company_name: "",
+    job_source: "",
+    salary_from: "",
+    salary_to: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -206,7 +216,17 @@ export const ApplicationsList = () => {
     result_status: (params.result_status as any) || undefined,
     job_type: (params.job_type as any) || undefined,
     work_system: (params.work_system as any) || undefined,
-    position: params.position || undefined,
+    date_from: params.date_from || undefined,
+    date_to: params.date_to || undefined,
+    follow_up_date_from: params.follow_up_date_from || undefined,
+    follow_up_date_to: params.follow_up_date_to || undefined,
+    follow_up_date_has: (params.follow_up_date_has as any) || undefined,
+    follow_up_overdue: (params.follow_up_overdue as any) || undefined,
+    location: params.location || undefined,
+    company_name: params.company_name || undefined,
+    job_source: params.job_source || undefined,
+    salary_from: params.salary_from ? Number(params.salary_from) : undefined,
+    salary_to: params.salary_to ? Number(params.salary_to) : undefined,
     ...(activeStatFilter === "active" ? { result_status: "pending" } : {}),
     ...(activeStatFilter === "rejected" ? { result_status: "failed" } : {}),
     ...(activeStatFilter === "offer" ? { status: "offering" } : {}),
@@ -479,7 +499,7 @@ export const ApplicationsList = () => {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari perusahaan, posisi, sumber, lokasi..."
+            placeholder="Cari perusahaan, posisi, lokasi, sumber, kontak..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -555,13 +575,13 @@ export const ApplicationsList = () => {
                   </TableHead>
                 )}
                 {columnVisibility.status && (
-                  <TableHead>
-                    <SortableHeader field="status">Status</SortableHeader>
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Status
                   </TableHead>
                 )}
                 {columnVisibility.result_status && (
-                  <TableHead>
-                    <SortableHeader field="result_status">Hasil</SortableHeader>
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Hasil
                   </TableHead>
                 )}
                 {columnVisibility.date && (
@@ -590,13 +610,17 @@ export const ApplicationsList = () => {
                   </TableHead>
                 )}
                 {columnVisibility.salary_range && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Rentang Gaji
+                  <TableHead>
+                    <SortableHeader field="salary_max">
+                      Rentang Gaji
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.follow_up_date && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Follow Up
+                  <TableHead>
+                    <SortableHeader field="follow_up_date">
+                      Follow Up
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.contact_name && (
@@ -615,13 +639,15 @@ export const ApplicationsList = () => {
                   </TableHead>
                 )}
                 {columnVisibility.created_at && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Dibuat
+                  <TableHead>
+                    <SortableHeader field="created_at">Dibuat</SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.updated_at && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Diperbarui
+                  <TableHead>
+                    <SortableHeader field="updated_at">
+                      Diperbarui
+                    </SortableHeader>
                   </TableHead>
                 )}
                 <TableHead className="w-[60px]"></TableHead>
@@ -901,10 +927,45 @@ export const ApplicationsList = () => {
           result_status: (params.result_status as any) || "",
           job_type: (params.job_type as any) || "",
           work_system: (params.work_system as any) || "",
-          position: params.position || "",
+          date_from: params.date_from || "",
+          date_to: params.date_to || "",
+          follow_up_date_from: params.follow_up_date_from || "",
+          follow_up_date_to: params.follow_up_date_to || "",
+          follow_up_date_has: (params.follow_up_date_has as any) || "",
+          follow_up_overdue: (params.follow_up_overdue as any) || "",
+          location: params.location || "",
+          company_name: params.company_name || "",
+          job_source: params.job_source || "",
+          salary_from: params.salary_from ? Number(params.salary_from) : undefined,
+          salary_to: params.salary_to ? Number(params.salary_to) : undefined,
         }}
         onApplyFilters={(newFilters) => {
-          setParams(newFilters as any, true);
+          setParams(
+            {
+              status: newFilters.status || "",
+              result_status: newFilters.result_status || "",
+              job_type: newFilters.job_type || "",
+              work_system: newFilters.work_system || "",
+              date_from: newFilters.date_from || "",
+              date_to: newFilters.date_to || "",
+              follow_up_date_from: newFilters.follow_up_date_from || "",
+              follow_up_date_to: newFilters.follow_up_date_to || "",
+              follow_up_date_has: newFilters.follow_up_date_has || "",
+              follow_up_overdue: newFilters.follow_up_overdue || "",
+              location: newFilters.location || "",
+              company_name: newFilters.company_name || "",
+              job_source: newFilters.job_source || "",
+              salary_from:
+                newFilters.salary_from !== undefined
+                  ? String(newFilters.salary_from)
+                  : "",
+              salary_to:
+                newFilters.salary_to !== undefined
+                  ? String(newFilters.salary_to)
+                  : "",
+            } as any,
+            true
+          );
           setFilterModalOpen(false);
         }}
       />

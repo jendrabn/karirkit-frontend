@@ -1,8 +1,5 @@
-import { useState } from "react";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -10,14 +7,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -25,16 +16,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import type { BlogStatus, BlogCategory } from "@/types/blog";
 import { BLOG_STATUS_OPTIONS } from "@/types/blog";
 
 export interface FilterValues {
-  title?: string;
   category_id?: string;
   status?: BlogStatus;
-  dateFrom?: Date;
-  dateTo?: Date;
+  user_id?: string;
+  tag_id?: string;
+  published_at_from?: string;
+  published_at_to?: string;
+  created_at_from?: string;
+  created_at_to?: string;
+  read_time_from?: string;
+  read_time_to?: string;
+  views_from?: string;
+  views_to?: string;
 }
 
 interface BlogFilterModalProps {
@@ -54,6 +51,10 @@ export function BlogFilterModal({
 }: BlogFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<FilterValues>(filters);
 
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters, open]);
+
   const handleApply = () => {
     onApply(localFilters);
     onOpenChange(false);
@@ -61,31 +62,18 @@ export function BlogFilterModal({
 
   const handleReset = () => {
     setLocalFilters({});
-    onApply({});
-    onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 gap-0">
+      <DialogContent className="!max-w-3xl p-0 gap-0">
         <div className="flex flex-col max-h-[85vh]">
           <DialogHeader className="px-6 pt-6 pb-4">
             <DialogTitle>Filter Blog</DialogTitle>
           </DialogHeader>
 
           <div className="overflow-y-auto px-6 py-2">
-            <FieldSet>
-              <Field>
-                <FieldLabel>Judul</FieldLabel>
-                <Input
-                  placeholder="Cari judul..."
-                  value={localFilters.title || ""}
-                  onChange={(e) =>
-                    setLocalFilters({ ...localFilters, title: e.target.value })
-                  }
-                />
-              </Field>
-
+            <FieldSet className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>Kategori</FieldLabel>
                 <Select
@@ -137,80 +125,148 @@ export function BlogFilterModal({
                 </Select>
               </Field>
 
-              <div className="grid grid-cols-2 gap-4">
-                <Field>
-                  <FieldLabel>Tanggal Dari</FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal px-3",
-                          !localFilters.dateFrom && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                        <span className="truncate">
-                          {localFilters.dateFrom
-                            ? format(localFilters.dateFrom, "dd/MM/yyyy")
-                            : "Pilih tanggal"}
-                        </span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={localFilters.dateFrom}
-                        onSelect={(date) =>
-                          setLocalFilters({ ...localFilters, dateFrom: date })
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </Field>
+              <Field>
+                <FieldLabel>User ID</FieldLabel>
+                <Input
+                  placeholder="Masukkan user ID"
+                  value={localFilters.user_id || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      user_id: e.target.value,
+                    })
+                  }
+                />
+              </Field>
 
-                <Field>
-                  <FieldLabel>Tanggal Sampai</FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal px-3",
-                          !localFilters.dateTo && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                        <span className="truncate">
-                          {localFilters.dateTo
-                            ? format(localFilters.dateTo, "dd/MM/yyyy")
-                            : "Pilih tanggal"}
-                        </span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="end">
-                      <Calendar
-                        mode="single"
-                        selected={localFilters.dateTo}
-                        onSelect={(date) =>
-                          setLocalFilters({ ...localFilters, dateTo: date })
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </Field>
-              </div>
+              <Field>
+                <FieldLabel>Tag ID</FieldLabel>
+                <Input
+                  placeholder="Contoh: id1,id2"
+                  value={localFilters.tag_id || ""}
+                  onChange={(e) =>
+                    setLocalFilters({
+                      ...localFilters,
+                      tag_id: e.target.value,
+                    })
+                  }
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel>Published At</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="date"
+                    value={localFilters.published_at_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        published_at_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="date"
+                    value={localFilters.published_at_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        published_at_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Dibuat</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="date"
+                    value={localFilters.created_at_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        created_at_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="date"
+                    value={localFilters.created_at_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        created_at_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Read Time</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.read_time_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        read_time_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.read_time_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        read_time_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Views</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.views_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        views_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.views_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        views_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
             </FieldSet>
           </div>
 
           <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
-            <DialogClose asChild>
-              <Button variant="outline" onClick={handleReset}>
-                Reset
-              </Button>
-            </DialogClose>
+            <Button variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
             <Button onClick={handleApply}>Terapkan</Button>
           </DialogFooter>
         </div>

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { toast } from "sonner";
+import { Copy } from "lucide-react";
 import {
   cvVisibilitySchema,
   type UpdateCvVisibilityInput as FormValues,
@@ -87,6 +88,27 @@ export function CVVisibilityModal({
     });
   };
 
+  const handleCopyUrl = async () => {
+    const slug = watch("slug");
+    if (!slug) {
+      toast.error("Slug belum diisi");
+      return;
+    }
+
+    const url = `${window.location.origin}/cv/${slug}`;
+    if (!navigator.clipboard) {
+      toast.error("Clipboard tidak didukung di browser ini");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("URL CV berhasil disalin");
+    } catch (error) {
+      toast.error("Gagal menyalin URL CV");
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -98,9 +120,20 @@ export function CVVisibilityModal({
             <FieldLabel>Slug (URL) *</FieldLabel>
             <Input {...register("slug")} placeholder="slug-url-cv-anda" />
             <FieldError>{errors.slug?.message}</FieldError>
-            <p className="text-xs text-muted-foreground mt-1">
-              URL: {window.location.origin}/cv/{watch("slug")}
-            </p>
+            <div className="mt-2 flex items-center gap-2">
+              <p className="text-xs text-muted-foreground break-all">
+                URL: {window.location.origin}/cv/{watch("slug")}
+              </p>
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                className="h-7 w-7 shrink-0"
+                onClick={handleCopyUrl}
+              >
+                <Copy className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </Field>
 
           <Field>

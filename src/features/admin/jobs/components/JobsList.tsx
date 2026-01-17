@@ -167,13 +167,15 @@ export function JobsList({
                 />
               </TableHead>
               {columnVisibility.title && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Judul
+                <TableHead>
+                  <SortableHeader field="title">Judul</SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.company && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Perusahaan
+                <TableHead>
+                  <SortableHeader field="company_name">
+                    Perusahaan
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.role && (
@@ -198,17 +200,19 @@ export function JobsList({
               )}
               {columnVisibility.salary && (
                 <TableHead>
-                  <SortableHeader field="salary_min">Gaji</SortableHeader>
+                  <SortableHeader field="salary_max">Gaji</SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.status && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Status
+                <TableHead>
+                  <SortableHeader field="status">Status</SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.expiration_date && (
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Tanggal Expired
+                <TableHead>
+                  <SortableHeader field="expiration_date">
+                    Tanggal Expired
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.education_level && (
@@ -283,7 +287,10 @@ export function JobsList({
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={job.company?.logo || undefined} />
+                          <AvatarImage
+                            src={job.company?.logo || undefined}
+                            className="object-cover"
+                          />
                           <AvatarFallback className="bg-primary/10 text-primary text-xs">
                             {job.company?.name.charAt(0)}
                           </AvatarFallback>

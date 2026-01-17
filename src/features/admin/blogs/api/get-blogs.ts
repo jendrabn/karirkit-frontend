@@ -15,12 +15,19 @@ export type GetBlogsParams = {
     | "published_at"
     | "title"
     | "views"
-    | "status";
+    | "read_time";
   status?: "draft" | "published" | "archived";
   category_id?: string;
-  author_id?: string;
-  published_from?: string;
-  published_to?: string;
+  user_id?: string;
+  tag_id?: string;
+  published_at_from?: string;
+  published_at_to?: string;
+  created_at_from?: string;
+  created_at_to?: string;
+  read_time_from?: number;
+  read_time_to?: number;
+  views_from?: number;
+  views_to?: number;
 };
 
 export const getBlogs = (

@@ -15,17 +15,23 @@ export type GetApplicationsParams = {
     | "updated_at"
     | "company_name"
     | "position"
-    | "status"
-    | "result_status";
+    | "follow_up_date"
+    | "salary_max";
   status?: string;
   result_status?: string;
   job_type?: string;
   work_system?: string;
   date_from?: string;
   date_to?: string;
+  follow_up_date_from?: string;
+  follow_up_date_to?: string;
+  follow_up_date_has?: "true" | "false";
+  follow_up_overdue?: "true" | "false";
   location?: string;
   company_name?: string;
-  position?: string;
+  job_source?: string;
+  salary_from?: number;
+  salary_to?: number;
 };
 
 export const getApplications = (

@@ -26,6 +26,7 @@ import {
   Check,
   Loader2,
   FileStack,
+  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,7 +68,13 @@ import { env } from "@/config/env";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUrlParams } from "@/hooks/use-url-params";
 
-type SortField = "created_at" | "updated_at" | "year" | "month" | "title";
+type SortField =
+  | "created_at"
+  | "updated_at"
+  | "year"
+  | "month"
+  | "title"
+  | "industry";
 type SortOrder = "asc" | "desc";
 
 const getProjectTypeBadgeVariant = (_type: string) => {
@@ -111,6 +118,11 @@ const PortfoliosList = () => {
     industry: "",
     year: "",
     month: "",
+    year_from: "",
+    year_to: "",
+    month_from: "",
+    month_to: "",
+    tools_name: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -133,6 +145,11 @@ const PortfoliosList = () => {
       industry: params.industry || undefined,
       year: params.year ? Number(params.year) : undefined,
       month: params.month ? Number(params.month) : undefined,
+      year_from: params.year_from ? Number(params.year_from) : undefined,
+      year_to: params.year_to ? Number(params.year_to) : undefined,
+      month_from: params.month_from ? Number(params.month_from) : undefined,
+      month_to: params.month_to ? Number(params.month_to) : undefined,
+      tools_name: params.tools_name || undefined,
     },
   });
 
@@ -202,6 +219,29 @@ const PortfoliosList = () => {
     setCopied(true);
     toast.success("Link portfolio berhasil disalin");
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async (portfolio: (typeof portfolios)[number]) => {
+    const shareUrl =
+      env.APP_URL + paths.publicPortfolio.detail.getHref(username, portfolio.id);
+
+    if (!navigator.share) {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Link portfolio berhasil disalin");
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: portfolio.title,
+        text: `Lihat portfolio ${portfolio.title}`,
+        url: shareUrl,
+      });
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        toast.error("Gagal membagikan portfolio");
+      }
+    }
   };
 
   return (
@@ -277,7 +317,7 @@ const PortfoliosList = () => {
         <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari judul, deskripsi, peran, industri..."
+            placeholder="Cari judul, deskripsi, peran, industri, tools..."
             value={searchInput}
             onChange={(e) => handleSearchInput(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -337,6 +377,8 @@ const PortfoliosList = () => {
               <SelectItem value="month-asc">Bulan (Terlama)</SelectItem>
               <SelectItem value="title-asc">Judul (A-Z)</SelectItem>
               <SelectItem value="title-desc">Judul (Z-A)</SelectItem>
+              <SelectItem value="industry-asc">Industri (A-Z)</SelectItem>
+              <SelectItem value="industry-desc">Industri (Z-A)</SelectItem>
             </SelectContent>
           </Select>
 
@@ -426,6 +468,10 @@ const PortfoliosList = () => {
                       >
                         <Pencil className="h-4 w-4 mr-2" />
                         Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleShare(portfolio)}>
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Bagikan
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -611,9 +657,41 @@ const PortfoliosList = () => {
           industry: params.industry || "",
           year: params.year ? Number(params.year) : undefined,
           month: params.month ? Number(params.month) : undefined,
+          year_from: params.year_from ? Number(params.year_from) : undefined,
+          year_to: params.year_to ? Number(params.year_to) : undefined,
+          month_from: params.month_from ? Number(params.month_from) : undefined,
+          month_to: params.month_to ? Number(params.month_to) : undefined,
+          tools_name: params.tools_name || "",
         }}
         onApplyFilters={(newFilters) => {
-          setParams(newFilters as any, true);
+          setParams(
+            {
+              project_type: newFilters.project_type || "",
+              industry: newFilters.industry || "",
+              year:
+                newFilters.year !== undefined ? String(newFilters.year) : "",
+              month:
+                newFilters.month !== undefined ? String(newFilters.month) : "",
+              year_from:
+                newFilters.year_from !== undefined
+                  ? String(newFilters.year_from)
+                  : "",
+              year_to:
+                newFilters.year_to !== undefined
+                  ? String(newFilters.year_to)
+                  : "",
+              month_from:
+                newFilters.month_from !== undefined
+                  ? String(newFilters.month_from)
+                  : "",
+              month_to:
+                newFilters.month_to !== undefined
+                  ? String(newFilters.month_to)
+                  : "",
+              tools_name: newFilters.tools_name || "",
+            } as any,
+            true
+          );
           setFilterModalOpen(false);
         }}
       />
