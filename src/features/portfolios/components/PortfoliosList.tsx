@@ -221,6 +221,25 @@ const PortfoliosList = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleShareLink = async () => {
+    if (!navigator.share) {
+      handleCopyLink();
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: "Portfolio Publik",
+        text: "Lihat portfolio publik saya",
+        url: publicPortfolioUrl,
+      });
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        toast.error("Gagal membagikan link portfolio");
+      }
+    }
+  };
+
   const handleShare = async (portfolio: (typeof portfolios)[number]) => {
     const shareUrl =
       env.APP_URL + paths.publicPortfolio.detail.getHref(username, portfolio.id);
@@ -277,6 +296,15 @@ const PortfoliosList = () => {
                 Salin Link
               </>
             )}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleShareLink}
+            className="gap-2"
+          >
+            <Share2 className="h-4 w-4" />
+            Bagikan
           </Button>
           <Button
             variant="outline"

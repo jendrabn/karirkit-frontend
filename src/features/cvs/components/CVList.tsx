@@ -149,7 +149,8 @@ const CVList = () => {
       views_to: params.views_to ? Number(params.views_to) : undefined,
       educations_degree: params.educations_degree || undefined,
       experiences_job_type: params.experiences_job_type || undefined,
-      experiences_is_current: (params.experiences_is_current as any) || undefined,
+      experiences_is_current:
+        (params.experiences_is_current as any) || undefined,
       skills_level: params.skills_level || undefined,
       skills_skill_category: params.skills_skill_category || undefined,
       organizations_organization_type:
@@ -748,11 +749,9 @@ const CVList = () => {
                                 <Globe className="h-4 w-4 mr-2" />
                                 Atur Visibilitas
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleShare(cv)}
-                              >
+                              <DropdownMenuItem onClick={() => handleShare(cv)}>
                                 <Share2 className="h-4 w-4 mr-2" />
-                                Share CV
+                                Bagikan
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
@@ -873,7 +872,8 @@ const CVList = () => {
           views_to: params.views_to || "",
           educations_degree: params.educations_degree || "",
           experiences_job_type: params.experiences_job_type || "",
-          experiences_is_current: (params.experiences_is_current as any) || undefined,
+          experiences_is_current:
+            (params.experiences_is_current as any) || undefined,
           skills_level: params.skills_level || "",
           skills_skill_category: params.skills_skill_category || "",
           organizations_organization_type:

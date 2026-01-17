@@ -1,4 +1,5 @@
 import type { ListResponse } from "./api";
+import type { SocialPlatform } from "./social";
 import { JOB_TYPE_LABELS } from "./job";
 
 export type DegreeType =
@@ -218,7 +219,7 @@ export interface CvAward {
 }
 
 export interface CvSocialLink {
-  platform: string;
+  platform: SocialPlatform;
   url: string;
 }
 
@@ -248,7 +249,7 @@ export type CvVisibility = "private" | "public";
 export interface CV {
   id: string;
   user_id: string;
-  slug: string;
+  slug?: string;
   name: string;
   headline: string;
   email: string;

@@ -10,6 +10,9 @@ import {
   Pencil,
   Trash2,
   Loader2,
+  Copy,
+  Check,
+  Share2,
 } from "lucide-react";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -32,6 +35,9 @@ import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { env } from "@/config/env";
+import { paths } from "@/config/paths";
+import { useAuth } from "@/contexts/AuthContext";
 
 const monthNames = [
   "Januari",
@@ -51,8 +57,10 @@ const monthNames = [
 export default function PortfolioShow() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const { data: portfolioResponse, isLoading } = usePortfolio({
     id: id!,
@@ -99,6 +107,7 @@ export default function PortfolioShow() {
   }
 
   const portfolio = portfolioResponse;
+  const username = user?.username;
 
   if (!portfolio) {
     return (
@@ -138,6 +147,46 @@ export default function PortfolioShow() {
     );
   };
 
+  const publicPortfolioUrl = username
+    ? env.APP_URL + paths.publicPortfolio.detail.getHref(username, portfolio.id)
+    : "";
+
+  const handleCopyLink = () => {
+    if (!publicPortfolioUrl) {
+      toast.error("Link portfolio belum tersedia");
+      return;
+    }
+
+    navigator.clipboard.writeText(publicPortfolioUrl);
+    setCopied(true);
+    toast.success("Link portfolio berhasil disalin");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (!publicPortfolioUrl) {
+      toast.error("Link portfolio belum tersedia");
+      return;
+    }
+
+    if (!navigator.share) {
+      handleCopyLink();
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: portfolio.title,
+        text: `Lihat portfolio ${portfolio.title}`,
+        url: publicPortfolioUrl,
+      });
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        toast.error("Gagal membagikan portfolio");
+      }
+    }
+  };
+
   return (
     <DashboardLayout
       breadcrumbItems={[
@@ -158,6 +207,33 @@ export default function PortfolioShow() {
         backButtonUrl="/portfolios"
       >
         <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleCopyLink}
+            className="gap-2"
+          >
+            {copied ? (
+              <>
+                <Check className="h-4 w-4" />
+                Tersalin
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4" />
+                Salin Link
+              </>
+            )}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleShare}
+            className="gap-2"
+          >
+            <Share2 className="h-4 w-4" />
+            Bagikan
+          </Button>
           <Button
             size="sm"
             variant="outline"
