@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import {
   documentTypes,
   documentTypeLabels,
@@ -70,12 +71,12 @@ export function DocumentUploadModal({
 
   const hasFiles = selectedFiles.length > 0;
   const isImageFile = selectedFiles.some((file) =>
-    file.type.startsWith("image/")
+    file.type.startsWith("image/"),
   );
   const isPdfFile = selectedFiles.some(
     (file) =>
       file.type === "application/pdf" ||
-      file.name.toLowerCase().endsWith(".pdf")
+      file.name.toLowerCase().endsWith(".pdf"),
   );
   const isCompressibleFile = isImageFile || isPdfFile;
 
@@ -137,7 +138,7 @@ export function DocumentUploadModal({
 
     if (hasInvalidType) {
       toast.error(
-        "Tipe file tidak didukung. Gunakan JPG, JPEG, PNG, GIF, WEBP, SVG, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, atau RTF."
+        "Tipe file tidak didukung. Gunakan JPG, JPEG, PNG, GIF, WEBP, SVG, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, atau RTF.",
       );
     }
 
@@ -323,23 +324,19 @@ export function DocumentUploadModal({
                 <FieldLabel>
                   Tipe Dokumen <span className="text-destructive">*</span>
                 </FieldLabel>
-                <Select
+                <Combobox
+                  options={documentTypes.map((type) => ({
+                    value: type,
+                    label: documentTypeLabels[type],
+                  }))}
                   value={selectedType}
                   onValueChange={(value) =>
                     setSelectedType(value as DocumentType)
                   }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih tipe dokumen" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {documentTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {documentTypeLabels[type]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="Pilih tipe dokumen"
+                  searchPlaceholder="Cari tipe dokumen..."
+                  emptyText="Tipe dokumen tidak ditemukan"
+                />
               </Field>
 
               <Field>

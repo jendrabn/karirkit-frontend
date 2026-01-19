@@ -26,6 +26,7 @@ import {
 } from "@/features/auth/api/forgot-password";
 import { toast } from "sonner";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 
 const ForgotPasswordForm = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -85,11 +86,13 @@ const ForgotPasswordForm = () => {
 
       <CardContent className="space-y-6">
         {!submitted ? (
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
             <FieldSet disabled={isSubmitting}>
               <FieldGroup>
                 <Field>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <FieldLabel htmlFor="email">
+                    Email <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="email"
                     type="email"

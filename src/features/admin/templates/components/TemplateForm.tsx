@@ -30,6 +30,7 @@ import {
 } from "../api/create-template";
 import { TEMPLATE_TYPE_OPTIONS } from "@/types/template";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import { buildImageUrl } from "@/lib/utils";
 
 interface TemplateFormProps {
@@ -129,7 +130,7 @@ export function TemplateForm({
     uploadFileValidation.isPending || uploadPreviewValidation.isPending;
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
       <FieldSet disabled={isLoading || isUploading} className="space-y-8 mb-6">
         {/* ================= Informasi Template ================= */}
         <Card>
@@ -153,7 +154,9 @@ export function TemplateForm({
                 name="type"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Tipe Template *</FieldLabel>
+                    <FieldLabel>
+                      Tipe Template <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -181,7 +184,9 @@ export function TemplateForm({
                 name="language"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Bahasa *</FieldLabel>
+                    <FieldLabel>
+                      Bahasa <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -204,7 +209,9 @@ export function TemplateForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
-                <FieldLabel>Nama Template *</FieldLabel>
+                <FieldLabel>
+                  Nama Template <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   {...form.register("name")}
                   placeholder="Contoh: Simple Professional CV"
@@ -253,7 +260,9 @@ export function TemplateForm({
               name="preview"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel>Preview Image *</FieldLabel>
+                  <FieldLabel>
+                    Preview Image <span className="text-destructive">*</span>
+                  </FieldLabel>
 
                   <div className="flex items-start gap-4">
                     {field.value && (
@@ -315,7 +324,10 @@ export function TemplateForm({
               name="path"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel>File Template (.docx) *</FieldLabel>
+                  <FieldLabel>
+                    File Template (.docx){" "}
+                    <span className="text-destructive">*</span>
+                  </FieldLabel>
 
                   <div className="flex items-center gap-4">
                     {field.value && (

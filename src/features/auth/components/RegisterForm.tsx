@@ -28,6 +28,7 @@ import {
 } from "@/lib/auth";
 import { toast } from "sonner";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import { paths } from "@/config/paths";
 
 const RegisterForm = () => {
@@ -85,11 +86,13 @@ const RegisterForm = () => {
           </div>
         </div>
 
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
           <FieldSet disabled={isSubmitting}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="name">Nama Lengkap</FieldLabel>
+                <FieldLabel htmlFor="name">
+                  Nama Lengkap <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   id="name"
                   placeholder="Masukkan nama lengkap"
@@ -100,7 +103,9 @@ const RegisterForm = () => {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="username">Username</FieldLabel>
+                <FieldLabel htmlFor="username">
+                  Username <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   id="username"
                   placeholder="Masukkan username"
@@ -113,7 +118,9 @@ const RegisterForm = () => {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email">
+                  Email <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   id="email"
                   type="email"
@@ -125,7 +132,9 @@ const RegisterForm = () => {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password">
+                  Password <span className="text-destructive">*</span>
+                </FieldLabel>
                 <div className="relative">
                   <Input
                     id="password"
@@ -153,7 +162,8 @@ const RegisterForm = () => {
 
               <Field>
                 <FieldLabel htmlFor="confirm_password">
-                  Konfirmasi Password
+                  Konfirmasi Password{" "}
+                  <span className="text-destructive">*</span>
                 </FieldLabel>
                 <div className="relative">
                   <Input

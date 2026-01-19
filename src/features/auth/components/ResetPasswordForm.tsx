@@ -26,6 +26,7 @@ import {
 } from "@/features/auth/api/reset-password";
 import { toast } from "sonner";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 
 const ResetPasswordForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -92,11 +93,13 @@ const ResetPasswordForm = () => {
 
       <CardContent className="space-y-6">
         {!success ? (
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
             <FieldSet disabled={isSubmitting}>
               <FieldGroup>
                 <Field>
-                  <FieldLabel htmlFor="password">Password Baru</FieldLabel>
+                  <FieldLabel htmlFor="password">
+                    Password Baru <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <div className="relative">
                     <Input
                       id="password"
@@ -124,7 +127,8 @@ const ResetPasswordForm = () => {
 
                 <Field>
                   <FieldLabel htmlFor="confirmPassword">
-                    Konfirmasi Password
+                    Konfirmasi Password{" "}
+                    <span className="text-destructive">*</span>
                   </FieldLabel>
                   <div className="relative">
                     <Input

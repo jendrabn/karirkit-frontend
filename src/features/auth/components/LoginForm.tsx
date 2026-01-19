@@ -23,6 +23,7 @@ import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { useLogin, loginInputSchema, type LoginInput } from "@/lib/auth";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import { paths } from "@/config/paths";
 import { toast } from "sonner";
 
@@ -51,7 +52,7 @@ const LoginForm = () => {
       sessionStorage.setItem("otp_expires_at", data.expires_at.toString());
       sessionStorage.setItem(
         "otp_resend_available_at",
-        data.resend_available_at.toString()
+        data.resend_available_at.toString(),
       );
 
       navigate(paths.auth.verifyOtp.getHref());
@@ -112,12 +113,13 @@ const LoginForm = () => {
           </div>
         </div>
 
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
           <FieldSet disabled={isSubmitting}>
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="identifier">
-                  Email atau Username
+                  Email atau Username{" "}
+                  <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Input
                   id="identifier"
@@ -132,7 +134,9 @@ const LoginForm = () => {
 
               <Field>
                 <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password">
+                    Password <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Link
                     to="/auth/forgot-password"
                     className="text-sm text-primary hover:underline"

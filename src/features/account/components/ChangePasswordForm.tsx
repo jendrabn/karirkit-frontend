@@ -12,6 +12,7 @@ import {
   updatePasswordInputSchema,
 } from "@/features/account/api/update-password";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -56,7 +57,7 @@ const ChangePasswordForm = () => {
   const isLoading = updatePasswordMutation.isPending;
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
       <FieldSet disabled={isLoading} className="space-y-6 mb-6">
         <Card>
           <CardHeader>
@@ -66,7 +67,7 @@ const ChangePasswordForm = () => {
             {/* Current Password */}
             <Field>
               <FieldLabel htmlFor="current_password">
-                Password Saat Ini
+                Password Saat Ini <span className="text-destructive">*</span>
               </FieldLabel>
               <div className="relative">
                 <Input
@@ -94,7 +95,9 @@ const ChangePasswordForm = () => {
 
             {/* New Password */}
             <Field>
-              <FieldLabel htmlFor="new_password">Password Baru</FieldLabel>
+              <FieldLabel htmlFor="new_password">
+                Password Baru <span className="text-destructive">*</span>
+              </FieldLabel>
               <div className="relative">
                 <Input
                   id="new_password"
@@ -122,7 +125,8 @@ const ChangePasswordForm = () => {
             {/* Confirm Password */}
             <Field>
               <FieldLabel htmlFor="confirm_password">
-                Konfirmasi Password Baru
+                Konfirmasi Password Baru{" "}
+                <span className="text-destructive">*</span>
               </FieldLabel>
               <div className="relative">
                 <Input

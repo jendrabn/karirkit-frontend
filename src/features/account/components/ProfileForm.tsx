@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Camera, Loader2, Share2, Trash2 } from "lucide-react";
+import { Share2, Trash2 } from "lucide-react";
+import { PhotoUpload } from "@/components/form/PhotoUpload";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,9 +21,7 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { useUploadFile, type UploadData } from "@/lib/upload";
 import { dayjs } from "@/lib/date";
-import { buildImageUrl } from "@/lib/utils";
 import {
   updateProfileInputSchema,
   useUpdateProfile,
@@ -32,6 +29,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import type { User } from "@/types/user";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import { z } from "zod";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SOCIAL_PLATFORM_OPTIONS } from "@/types/social";
@@ -46,23 +44,7 @@ type ProfileFormData = z.infer<typeof updateProfileInputSchema>;
 
 const ProfileForm = () => {
   const { user } = useAuth();
-  const [avatarPreview, setAvatarPreview] = useState(
-    buildImageUrl(user?.avatar) || ""
-  );
-
-  const uploadMutation = useUploadFile({
-    mutationConfig: {
-      onSuccess: (data: UploadData) => {
-        form.setValue("avatar", data.path);
-        setAvatarPreview(buildImageUrl(data.path));
-        toast.success("Foto berhasil diupload, silakan klik Simpan Perubahan");
-      },
-      onError: (error: Error) => {
-        toast.error("Gagal mengupload avatar");
-        console.error("Upload error:", error);
-      },
-    },
-  });
+  /* Removed unused state/hooks */
 
   const updateProfileMutation = useUpdateProfile({
     mutationConfig: {
@@ -112,47 +94,11 @@ const ProfileForm = () => {
     name: "social_links",
   });
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      toast.error("File harus berupa gambar");
-      return;
-    }
-
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Ukuran file maksimal 2MB");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setAvatarPreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    uploadMutation.mutate(file);
-  };
+  /* Removed unused manual upload handlers */
 
   const onSubmit = (data: ProfileFormData) => {
-    // Validasi data menggunakan schema Zod
-    const result = updateProfileInputSchema.safeParse(data);
-    if (!result.success) {
-      // Set error ke form berdasarkan error Zod
-      result.error.issues.forEach((issue) => {
-        const path = issue.path.join(".") as keyof ProfileFormData;
-        form.setError(path, {
-          type: "manual",
-          message: issue.message,
-        });
-      });
-      return;
-    }
-
     // Pastikan tipe gender sesuai dengan yang diharapkan oleh API
-    const submitData = result.data;
-    updateProfileMutation.mutate({ data: submitData });
+    updateProfileMutation.mutate({ data });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -168,7 +114,10 @@ const ProfileForm = () => {
         <CardTitle>Informasi Profil</CardTitle>
       </CardHeader>
       <CardContent className="pt-4">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleSubmit(onSubmit, displayFormErrors)}
+          className="space-y-6"
+        >
           <FieldSet disabled={updateProfileMutation.isPending}>
             <FieldDescription>
               Perbarui informasi profil dan kontak Anda di sini.
@@ -176,41 +125,25 @@ const ProfileForm = () => {
 
             <FieldGroup className="grid gap-6 lg:grid-cols-[auto,1fr]">
               <div className="flex flex-col items-center gap-4">
-                <div className="relative">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage
-                      src={buildImageUrl(avatarPreview)}
-                      className="object-cover"
+                <Controller
+                  control={control}
+                  name="avatar"
+                  render={({ field }) => (
+                    <PhotoUpload
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      name={user?.name || "U"}
                     />
-                    <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-                      {user?.name?.charAt(0) || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <label
-                    htmlFor="avatar-upload"
-                    className="absolute bottom-0 right-0 p-1.5 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
-                  >
-                    {uploadMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Camera className="h-4 w-4" />
-                    )}
-                  </label>
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAvatarUpload}
-                    disabled={uploadMutation.isPending}
-                  />
-                </div>
+                  )}
+                />
                 <FieldError>{errors.avatar?.message}</FieldError>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
-                  <FieldLabel htmlFor="name">Nama Lengkap</FieldLabel>
+                  <FieldLabel htmlFor="name">
+                    Nama Lengkap <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="name"
                     {...register("name")}
@@ -220,7 +153,9 @@ const ProfileForm = () => {
                   <FieldError>{errors.name?.message}</FieldError>
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="username">Username</FieldLabel>
+                  <FieldLabel htmlFor="username">
+                    Username <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="username"
                     {...register("username")}
@@ -230,7 +165,9 @@ const ProfileForm = () => {
                   <FieldError>{errors.username?.message}</FieldError>
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <FieldLabel htmlFor="email">
+                    Email <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="email"
                     type="email"

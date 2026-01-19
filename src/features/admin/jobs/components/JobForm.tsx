@@ -24,6 +24,7 @@ import { updateJobInputSchema, type UpdateJobInput } from "../api/update-job";
 import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 import { JobMediasUpload } from "./JobMediasUpload";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 
 interface JobFormProps {
   initialData?: Job;
@@ -103,7 +104,10 @@ export function JobForm({
   useServerValidation(error, form);
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}
+      className="space-y-6"
+    >
       <FieldSet disabled={isLoading} className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* ================= Informasi Dasar ================= */}
@@ -114,7 +118,9 @@ export function JobForm({
 
             <CardContent className="space-y-4">
               <Field>
-                <FieldLabel>Judul Lowongan *</FieldLabel>
+                <FieldLabel>
+                  Judul Lowongan <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   placeholder="Contoh: Senior Frontend Developer"
                   {...form.register("title")}
@@ -127,7 +133,9 @@ export function JobForm({
                 name="company_id"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Perusahaan *</FieldLabel>
+                    <FieldLabel>
+                      Perusahaan <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Combobox
                       options={
                         companiesData?.map((c) => ({
@@ -153,7 +161,9 @@ export function JobForm({
                 name="job_role_id"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Role Pekerjaan *</FieldLabel>
+                    <FieldLabel>
+                      Role Pekerjaan <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Combobox
                       options={
                         rolesData?.map((r) => ({
@@ -179,7 +189,9 @@ export function JobForm({
                 name="city_id"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Kota *</FieldLabel>
+                    <FieldLabel>
+                      Kota <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Combobox
                       options={
                         citiesData?.map((c) => ({
@@ -206,7 +218,10 @@ export function JobForm({
                   name="job_type"
                   render={({ field }) => (
                     <Field>
-                      <FieldLabel>Tipe Pekerjaan *</FieldLabel>
+                      <FieldLabel>
+                        Tipe Pekerjaan{" "}
+                        <span className="text-destructive">*</span>
+                      </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value ?? undefined}
@@ -234,7 +249,9 @@ export function JobForm({
                   name="work_system"
                   render={({ field }) => (
                     <Field>
-                      <FieldLabel>Sistem Kerja *</FieldLabel>
+                      <FieldLabel>
+                        Sistem Kerja <span className="text-destructive">*</span>
+                      </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value ?? undefined}
@@ -263,7 +280,10 @@ export function JobForm({
                 name="education_level"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Pendidikan Minimal *</FieldLabel>
+                    <FieldLabel>
+                      Pendidikan Minimal{" "}
+                      <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih pendidikan minimal" />
@@ -274,7 +294,7 @@ export function JobForm({
                             <SelectItem key={v} value={v}>
                               {l}
                             </SelectItem>
-                          )
+                          ),
                         )}
                       </SelectContent>
                     </Select>
@@ -287,7 +307,10 @@ export function JobForm({
 
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Pengalaman Minimal (Tahun) *</FieldLabel>
+                  <FieldLabel>
+                    Pengalaman Minimal (Tahun){" "}
+                    <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     type="number"
                     min={0}
@@ -328,7 +351,9 @@ export function JobForm({
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Gaji Minimum *</FieldLabel>
+                  <FieldLabel>
+                    Gaji Minimum <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     type="number"
                     min={0}
@@ -341,7 +366,9 @@ export function JobForm({
                 </Field>
 
                 <Field>
-                  <FieldLabel>Gaji Maksimum *</FieldLabel>
+                  <FieldLabel>
+                    Gaji Maksimum <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     type="number"
                     min={0}
@@ -355,7 +382,9 @@ export function JobForm({
               </div>
 
               <Field>
-                <FieldLabel>Kuota Talenta *</FieldLabel>
+                <FieldLabel>
+                  Kuota Talenta <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   type="number"
                   min={1}
@@ -379,7 +408,9 @@ export function JobForm({
               </Field>
 
               <Field>
-                <FieldLabel>Nama Kontak *</FieldLabel>
+                <FieldLabel>
+                  Nama Kontak <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   placeholder="Nama HR atau Recruiter"
                   {...form.register("contact_name")}
@@ -390,7 +421,9 @@ export function JobForm({
               </Field>
 
               <Field>
-                <FieldLabel>Email Kontak *</FieldLabel>
+                <FieldLabel>
+                  Email Kontak <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   type="email"
                   placeholder="hr@company.com"
@@ -402,7 +435,9 @@ export function JobForm({
               </Field>
 
               <Field>
-                <FieldLabel>Telepon Kontak *</FieldLabel>
+                <FieldLabel>
+                  Telepon Kontak <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   placeholder="+62 812 3456 7890"
                   {...form.register("contact_phone")}
@@ -417,7 +452,10 @@ export function JobForm({
                 name="status"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Status Lowongan *</FieldLabel>
+                    <FieldLabel>
+                      Status Lowongan{" "}
+                      <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value || undefined}
@@ -481,7 +519,10 @@ export function JobForm({
               name="description"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel>Deskripsi Pekerjaan *</FieldLabel>
+                  <FieldLabel>
+                    Deskripsi Pekerjaan{" "}
+                    <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <QuillEditor
                     key="description-editor"
                     value={field.value || ""}
@@ -500,7 +541,9 @@ export function JobForm({
               name="requirements"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel>Persyaratan *</FieldLabel>
+                  <FieldLabel>
+                    Persyaratan <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <QuillEditor
                     key="requirements-editor"
                     value={field.value || ""}
@@ -531,8 +574,8 @@ export function JobForm({
           {isLoading
             ? "Menyimpan..."
             : isEdit
-            ? "Simpan Perubahan"
-            : "Terbitkan Lowongan"}
+              ? "Simpan Perubahan"
+              : "Terbitkan Lowongan"}
         </Button>
       </div>
     </form>

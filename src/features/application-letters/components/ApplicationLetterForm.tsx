@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
@@ -42,6 +42,7 @@ import {
 } from "@/types/applicationLetter";
 import { useTemplates } from "@/features/landing/api/get-templates";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import {
   applicationLetterSchema,
   type CreateApplicationLetterInput,
@@ -63,7 +64,7 @@ export function ApplicationLetterForm({
   error,
 }: ApplicationLetterFormProps) {
   const [selectedTemplate, setSelectedTemplate] = useState(
-    initialData?.template_id || ""
+    initialData?.template_id || "",
   );
 
   const form = useForm<CreateApplicationLetterInput>({
@@ -114,14 +115,6 @@ export function ApplicationLetterForm({
       previewImage: buildImageUrl(t.preview),
     })) || [];
 
-  // Set default template when data is loaded
-  useEffect(() => {
-    if (!form.getValues("template_id") && templates.length > 0) {
-      const defaultTemplateId = templates[0].id;
-      setSelectedTemplate(defaultTemplateId);
-    }
-  }, [templates, form]);
-
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [activeParagraphType, setActiveParagraphType] =
     useState<ParagraphType | null>(null);
@@ -152,7 +145,10 @@ export function ApplicationLetterForm({
 
   return (
     <>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}
+        className="space-y-6"
+      >
         <FieldSet>
           {/* Template Selection */}
           <Card>
@@ -167,7 +163,9 @@ export function ApplicationLetterForm({
                     name="language"
                     render={({ field }) => (
                       <Field>
-                        <FieldLabel htmlFor={field.name}>Bahasa *</FieldLabel>
+                        <FieldLabel htmlFor={field.name}>
+                          Bahasa <span className="text-destructive">*</span>
+                        </FieldLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -202,19 +200,24 @@ export function ApplicationLetterForm({
                       </div>
                     </div>
                   ) : (
-                    <TemplateSelector
-                      label="Pilih Template"
-                      templates={templates}
-                      value={selectedTemplate}
-                      onChange={(value: string) => {
-                        setSelectedTemplate(value);
-                        form.setValue("template_id", value);
-                      }}
-                    />
+                    <Field>
+                      <FieldLabel>
+                        Pilih Template{" "}
+                        <span className="text-destructive">*</span>
+                      </FieldLabel>
+                      <TemplateSelector
+                        templates={templates}
+                        value={selectedTemplate}
+                        onChange={(value: string) => {
+                          setSelectedTemplate(value);
+                          form.setValue("template_id", value);
+                        }}
+                      />
+                      <FieldError>
+                        {form.formState.errors.template_id?.message}
+                      </FieldError>
+                    </Field>
                   )}
-                  <FieldError>
-                    {form.formState.errors.template_id?.message}
-                  </FieldError>
                 </div>
               </div>
             </CardContent>
@@ -228,14 +231,17 @@ export function ApplicationLetterForm({
             <CardContent className="pt-4">
               <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel htmlFor="name">Nama Lengkap *</FieldLabel>
+                  <FieldLabel htmlFor="name">
+                    Nama Lengkap <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input id="name" {...form.register("name")} />
                   <FieldError>{form.formState.errors.name?.message}</FieldError>
                 </Field>
 
                 <Field>
                   <FieldLabel htmlFor="birth_place_date">
-                    Tempat, Tanggal Lahir *
+                    Tempat, Tanggal Lahir{" "}
+                    <span className="text-destructive">*</span>
                   </FieldLabel>
                   <Input
                     id="birth_place_date"
@@ -253,7 +259,8 @@ export function ApplicationLetterForm({
                   render={({ field }) => (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
-                        Jenis Kelamin *
+                        Jenis Kelamin{" "}
+                        <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -283,7 +290,8 @@ export function ApplicationLetterForm({
                   render={({ field }) => (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
-                        Status Pernikahan *
+                        Status Pernikahan{" "}
+                        <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -309,7 +317,8 @@ export function ApplicationLetterForm({
 
                 <Field>
                   <FieldLabel htmlFor="education">
-                    Pendidikan Terakhir *
+                    Pendidikan Terakhir{" "}
+                    <span className="text-destructive">*</span>
                   </FieldLabel>
                   <Input
                     id="education"
@@ -322,7 +331,9 @@ export function ApplicationLetterForm({
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="phone">Nomor Telepon *</FieldLabel>
+                  <FieldLabel htmlFor="phone">
+                    Nomor Telepon <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="phone"
                     {...form.register("phone")}
@@ -334,7 +345,9 @@ export function ApplicationLetterForm({
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="email">Email *</FieldLabel>
+                  <FieldLabel htmlFor="email">
+                    Email <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input type="email" id="email" {...form.register("email")} />
                   <FieldError>
                     {form.formState.errors.email?.message}
@@ -343,7 +356,7 @@ export function ApplicationLetterForm({
 
                 <Field>
                   <FieldLabel htmlFor="applicant_city">
-                    Kota Pelamar *
+                    Kota Pelamar <span className="text-destructive">*</span>
                   </FieldLabel>
                   <Input
                     id="applicant_city"
@@ -357,7 +370,9 @@ export function ApplicationLetterForm({
 
                 <div className="md:col-span-2">
                   <Field>
-                    <FieldLabel htmlFor="address">Alamat Lengkap *</FieldLabel>
+                    <FieldLabel htmlFor="address">
+                      Alamat Lengkap <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Textarea
                       id="address"
                       {...form.register("address")}
@@ -381,7 +396,7 @@ export function ApplicationLetterForm({
               <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel htmlFor="receiver_title">
-                    Jabatan Penerima *
+                    Jabatan Penerima <span className="text-destructive">*</span>
                   </FieldLabel>
                   <Input
                     id="receiver_title"
@@ -395,7 +410,7 @@ export function ApplicationLetterForm({
 
                 <Field>
                   <FieldLabel htmlFor="company_name">
-                    Nama Perusahaan *
+                    Nama Perusahaan <span className="text-destructive">*</span>
                   </FieldLabel>
                   <Input id="company_name" {...form.register("company_name")} />
                   <FieldError>
@@ -405,7 +420,7 @@ export function ApplicationLetterForm({
 
                 <Field>
                   <FieldLabel htmlFor="company_city">
-                    Kota Perusahaan *
+                    Kota Perusahaan <span className="text-destructive">*</span>
                   </FieldLabel>
                   <Input
                     id="company_city"
@@ -423,7 +438,8 @@ export function ApplicationLetterForm({
                   render={({ field }) => (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
-                        Tanggal Lamaran *
+                        Tanggal Lamaran{" "}
+                        <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -432,7 +448,7 @@ export function ApplicationLetterForm({
                             variant="outline"
                             className={cn(
                               "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              !field.value && "text-muted-foreground",
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -452,7 +468,7 @@ export function ApplicationLetterForm({
                             }
                             onSelect={(date) =>
                               field.onChange(
-                                date ? dayjs(date).format("YYYY-MM-DD") : ""
+                                date ? dayjs(date).format("YYYY-MM-DD") : "",
                               )
                             }
                             className="pointer-events-auto"
@@ -469,7 +485,8 @@ export function ApplicationLetterForm({
                 <div className="md:col-span-2">
                   <Field>
                     <FieldLabel htmlFor="company_address">
-                      Alamat Perusahaan *
+                      Alamat Perusahaan{" "}
+                      <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Textarea
                       id="company_address"
@@ -494,7 +511,9 @@ export function ApplicationLetterForm({
               <FieldGroup className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                   <Field>
-                    <FieldLabel htmlFor="subject">Subjek Surat *</FieldLabel>
+                    <FieldLabel htmlFor="subject">
+                      Subjek Surat <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Input
                       id="subject"
                       {...form.register("subject")}
@@ -509,7 +528,8 @@ export function ApplicationLetterForm({
                 <Field>
                   <div className="flex items-center justify-between">
                     <FieldLabel htmlFor="opening_paragraph">
-                      Paragraf Pembuka *
+                      Paragraf Pembuka{" "}
+                      <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Button
                       type="button"
@@ -535,7 +555,7 @@ export function ApplicationLetterForm({
                 <Field>
                   <div className="flex items-center justify-between">
                     <FieldLabel htmlFor="body_paragraph">
-                      Paragraf Isi *
+                      Paragraf Isi <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Button
                       type="button"
@@ -576,7 +596,8 @@ export function ApplicationLetterForm({
                 <Field>
                   <div className="flex items-center justify-between">
                     <FieldLabel htmlFor="closing_paragraph">
-                      Paragraf Penutup *
+                      Paragraf Penutup{" "}
+                      <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Button
                       type="button"
@@ -600,7 +621,6 @@ export function ApplicationLetterForm({
                 </Field>
 
                 <div className="space-y-3">
-                  <FieldLabel>Tanda Tangan</FieldLabel>
                   <SignatureUpload
                     value={form.watch("signature") || ""}
                     onChange={(value) => form.setValue("signature", value)}

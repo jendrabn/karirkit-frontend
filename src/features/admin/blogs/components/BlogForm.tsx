@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { useUploadFile } from "@/lib/upload";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import { blogSchema, type BlogFormData } from "../api/create-blog";
 import { QuillEditor } from "@/features/admin/blogs/components/QuillEditor";
 
@@ -63,11 +64,11 @@ export function BlogForm({
   error,
 }: BlogFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(
-    buildImageUrl(initialData?.image) || null
+    buildImageUrl(initialData?.image) || null,
   );
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>(
-    initialData?.tags?.map((t) => t.id.toString()) || []
+    initialData?.tags?.map((t) => t.id.toString()) || [],
   );
   const [tagPopoverOpen, setTagPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -145,11 +146,11 @@ export function BlogForm({
   };
 
   const selectedTagObjects = tags.filter((tag) =>
-    selectedTags.includes(tag.id.toString())
+    selectedTags.includes(tag.id.toString()),
   );
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit) as any}>
+    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors) as any}>
       <FieldSet
         disabled={isLoading || isUploadingImage}
         className="space-y-8 mb-6"
@@ -163,7 +164,9 @@ export function BlogForm({
           <CardContent className="space-y-6 pt-4">
             {/* Judul */}
             <Field>
-              <FieldLabel>Judul *</FieldLabel>
+              <FieldLabel>
+                Judul <span className="text-destructive">*</span>
+              </FieldLabel>
               <Input
                 {...form.register("title", {
                   onChange: handleTitleChange,
@@ -208,7 +211,9 @@ export function BlogForm({
                 name="status"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Status *</FieldLabel>
+                    <FieldLabel>
+                      Status <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih status blog" />
@@ -273,7 +278,7 @@ export function BlogForm({
                                 "mr-2 h-4 w-4",
                                 selectedTags.includes(tag.id.toString())
                                   ? "opacity-100"
-                                  : "opacity-0"
+                                  : "opacity-0",
                               )}
                             />
                             {tag.name}
@@ -395,7 +400,9 @@ export function BlogForm({
               name="content"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel>Konten *</FieldLabel>
+                  <FieldLabel>
+                    Konten <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <QuillEditor
                     value={field.value || ""}
                     onChange={field.onChange}

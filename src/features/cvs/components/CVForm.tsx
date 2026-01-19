@@ -34,12 +34,13 @@ import {
   FieldSet,
   FieldDescription,
 } from "@/components/ui/field";
-import { PhotoUpload } from "./PhotoUpload";
+import { PhotoUpload } from "@/components/form/PhotoUpload";
 import { CVParagraphTemplateModal } from "./CVParagraphTemplateModal";
 import { TemplateSelector } from "@/components/ui/template-selector";
 import { useTemplates } from "@/features/landing/api/get-templates";
 import { buildImageUrl } from "@/lib/utils";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import {
   type CV,
   DEGREE_OPTIONS,
@@ -120,20 +121,12 @@ export function CVForm({
       previewImage: buildImageUrl(t.preview),
     })) || [];
 
-  const [selectedTemplate, setSelectedTemplate] = useState(
-    initialData?.template_id || ""
-  );
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [activeParagraphType, setActiveParagraphType] =
     useState<CVParagraphType | null>(null);
   const [activeParagraphIndex, setActiveParagraphIndex] = useState<
     number | null
   >(null);
-
-  // Set default template when data is loaded
-  if (!selectedTemplate && apiTemplates.length > 0) {
-    setSelectedTemplate(apiTemplates[0].id);
-  }
 
   const educations = useFieldArray({ control, name: "educations" });
   const certificates = useFieldArray({ control, name: "certificates" });
@@ -204,7 +197,7 @@ export function CVForm({
     <>
       <form
         onSubmit={handleSubmit(onSubmit, (errors) => {
-          console.log("CV Validation Errors:", errors);
+          displayFormErrors(errors);
         })}
       >
         <FieldSet disabled={isLoading} className="space-y-6 mb-6">
@@ -217,7 +210,9 @@ export function CVForm({
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="md:col-span-1">
                   <Field>
-                    <FieldLabel>Bahasa *</FieldLabel>
+                    <FieldLabel>
+                      Bahasa <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       value={watch("language")}
                       onValueChange={(v) =>
@@ -247,21 +242,18 @@ export function CVForm({
                       </div>
                     </div>
                   ) : (
-                    <>
+                    <Field>
+                      <FieldLabel>
+                        Pilih Template{" "}
+                        <span className="text-destructive">*</span>
+                      </FieldLabel>
                       <TemplateSelector
-                        label="Pilih Template"
                         templates={apiTemplates}
-                        value={selectedTemplate}
-                        onChange={(value) => {
-                          setSelectedTemplate(value);
-                          setValue("template_id", value);
-                          setSelectedTemplate(value);
-                        }}
+                        value={watch("template_id")}
+                        onChange={(v) => setValue("template_id", v)}
                       />
-                      <FieldError className="mt-2">
-                        {errors.template_id?.message}
-                      </FieldError>
-                    </>
+                      <FieldError>{errors.template_id?.message}</FieldError>
+                    </Field>
                   )}
                 </div>
               </div>
@@ -279,6 +271,7 @@ export function CVForm({
                   <PhotoUpload
                     value={photoValue || ""}
                     onChange={(value) => setValue("photo", value)}
+                    name={watch("name")}
                     quality={75}
                     webp={false}
                     format="jpg,png"
@@ -289,7 +282,9 @@ export function CVForm({
                 </div>
 
                 <Field>
-                  <FieldLabel htmlFor="name">Nama Lengkap *</FieldLabel>
+                  <FieldLabel htmlFor="name">
+                    Nama Lengkap <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="name"
                     {...register("name")}
@@ -300,7 +295,9 @@ export function CVForm({
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="headline">Headline *</FieldLabel>
+                  <FieldLabel htmlFor="headline">
+                    Headline <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="headline"
                     {...register("headline")}
@@ -311,7 +308,9 @@ export function CVForm({
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="email">Email *</FieldLabel>
+                  <FieldLabel htmlFor="email">
+                    Email <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="email"
                     type="email"
@@ -323,7 +322,9 @@ export function CVForm({
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="phone">Nomor Telepon *</FieldLabel>
+                  <FieldLabel htmlFor="phone">
+                    Nomor Telepon <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="phone"
                     {...register("phone")}
@@ -334,7 +335,9 @@ export function CVForm({
                 </Field>
 
                 <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="address">Alamat *</FieldLabel>
+                  <FieldLabel htmlFor="address">
+                    Alamat <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     id="address"
                     {...register("address")}
@@ -430,7 +433,10 @@ export function CVForm({
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <Field>
-                            <FieldLabel>Jenjang *</FieldLabel>
+                            <FieldLabel>
+                              Jenjang{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <input
                               type="hidden"
                               {...register(`educations.${index}.degree`)}
@@ -450,7 +456,7 @@ export function CVForm({
                                     | "master"
                                     | "doctorate"
                                     | "any",
-                                  { shouldDirty: true, shouldValidate: true }
+                                  { shouldDirty: true, shouldValidate: true },
                                 )
                               }
                             >
@@ -470,13 +476,16 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Nama Sekolah/Universitas *</FieldLabel>
+                            <FieldLabel>
+                              Nama Sekolah/Universitas{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(`educations.${index}.school_name`)}
                               placeholder="Universitas Indonesia"
                               className={cn(
                                 errors.educations?.[index]?.school_name &&
-                                  "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -484,15 +493,17 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Lokasi *</FieldLabel>
+                            <FieldLabel>
+                              Lokasi <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(
-                                `educations.${index}.school_location`
+                                `educations.${index}.school_location`,
                               )}
                               placeholder="Depok, Jawa Barat"
                               className={cn(
                                 errors.educations?.[index]?.school_location &&
-                                  "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -519,12 +530,12 @@ export function CVForm({
                             <FieldLabel>Bulan Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`educations.${index}.start_month`) || 1
+                                watch(`educations.${index}.start_month`) || 1,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `educations.${index}.start_month`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                             >
@@ -551,12 +562,12 @@ export function CVForm({
                             <Select
                               value={String(
                                 watch(`educations.${index}.start_year`) ||
-                                  currentYear
+                                  currentYear,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `educations.${index}.start_year`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                             >
@@ -579,12 +590,12 @@ export function CVForm({
                             <FieldLabel>Bulan Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`educations.${index}.end_month`) || 0
+                                watch(`educations.${index}.end_month`) || 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `educations.${index}.end_month`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                               disabled={watch(`educations.${index}.is_current`)}
@@ -612,12 +623,12 @@ export function CVForm({
                             <FieldLabel>Tahun Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`educations.${index}.end_year`) || 0
+                                watch(`educations.${index}.end_year`) || 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `educations.${index}.end_year`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                               disabled={watch(`educations.${index}.is_current`)}
@@ -760,13 +771,16 @@ export function CVForm({
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <Field>
-                            <FieldLabel>Jabatan *</FieldLabel>
+                            <FieldLabel>
+                              Jabatan{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(`experiences.${index}.job_title`)}
                               placeholder="Senior Software Engineer"
                               className={cn(
                                 errors.experiences?.[index]?.job_title &&
-                                  "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -774,13 +788,16 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Nama Perusahaan *</FieldLabel>
+                            <FieldLabel>
+                              Nama Perusahaan{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(`experiences.${index}.company_name`)}
                               placeholder="PT Teknologi Maju"
                               className={cn(
                                 errors.experiences?.[index]?.company_name &&
-                                  "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -791,15 +808,17 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Lokasi *</FieldLabel>
+                            <FieldLabel>
+                              Lokasi <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(
-                                `experiences.${index}.company_location`
+                                `experiences.${index}.company_location`,
                               )}
                               placeholder="Jakarta Selatan"
                               className={cn(
                                 errors.experiences?.[index]?.company_location &&
-                                  "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -810,7 +829,10 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Tipe Pekerjaan *</FieldLabel>
+                            <FieldLabel>
+                              Tipe Pekerjaan{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Select
                               value={watch(`experiences.${index}.job_type`)}
                               onValueChange={(v) =>
@@ -821,7 +843,7 @@ export function CVForm({
                                     | "part_time"
                                     | "contract"
                                     | "internship"
-                                    | "freelance"
+                                    | "freelance",
                                 )
                               }
                             >
@@ -847,12 +869,12 @@ export function CVForm({
                             <FieldLabel>Bulan Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`experiences.${index}.start_month`) || 1
+                                watch(`experiences.${index}.start_month`) || 1,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `experiences.${index}.start_month`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                             >
@@ -882,12 +904,12 @@ export function CVForm({
                             <Select
                               value={String(
                                 watch(`experiences.${index}.start_year`) ||
-                                  currentYear
+                                  currentYear,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `experiences.${index}.start_year`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                             >
@@ -911,16 +933,16 @@ export function CVForm({
                             <FieldLabel>Bulan Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`experiences.${index}.end_month`) || 0
+                                watch(`experiences.${index}.end_month`) || 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `experiences.${index}.end_month`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                               disabled={watch(
-                                `experiences.${index}.is_current`
+                                `experiences.${index}.is_current`,
                               )}
                             >
                               <SelectTrigger>
@@ -946,16 +968,16 @@ export function CVForm({
                             <FieldLabel>Tahun Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`experiences.${index}.end_year`) || 0
+                                watch(`experiences.${index}.end_year`) || 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `experiences.${index}.end_year`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                               disabled={watch(
-                                `experiences.${index}.is_current`
+                                `experiences.${index}.is_current`,
                               )}
                             >
                               <SelectTrigger>
@@ -1079,7 +1101,7 @@ export function CVForm({
                           onValueChange={(v) =>
                             setValue(
                               `skills.${index}.skill_category`,
-                              v as SkillCategory
+                              v as SkillCategory,
                             )
                           }
                         >
@@ -1088,7 +1110,7 @@ export function CVForm({
                           </SelectTrigger>
                           <SelectContent className="max-h-[300px]">
                             {Object.entries(
-                              SKILL_CATEGORY_LABELS[watch("language") || "id"]
+                              SKILL_CATEGORY_LABELS[watch("language") || "id"],
                             ).map(([key, label]) => (
                               <SelectItem key={key} value={key}>
                                 {label}
@@ -1102,7 +1124,8 @@ export function CVForm({
                           placeholder="Contoh: React.js, Python, Manajemen Proyek"
                           {...register(`skills.${index}.name`)}
                           className={cn(
-                            errors.skills?.[index]?.name && "border-destructive"
+                            errors.skills?.[index]?.name &&
+                              "border-destructive",
                           )}
                         />
                         <FieldError>
@@ -1119,7 +1142,7 @@ export function CVForm({
                                 | "beginner"
                                 | "intermediate"
                                 | "advanced"
-                                | "expert"
+                                | "expert",
                             )
                           }
                         >
@@ -1213,13 +1236,15 @@ export function CVForm({
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <Field>
-                            <FieldLabel>Judul *</FieldLabel>
+                            <FieldLabel>
+                              Judul <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(`certificates.${index}.title`)}
                               placeholder="AWS Certified Solutions Architect"
                               className={cn(
                                 errors.certificates?.[index]?.title &&
-                                  "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -1227,13 +1252,16 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Penerbit *</FieldLabel>
+                            <FieldLabel>
+                              Penerbit{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(`certificates.${index}.issuer`)}
                               placeholder="Amazon Web Services"
                               className={cn(
                                 errors.certificates?.[index]?.issuer &&
-                                  "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -1247,12 +1275,12 @@ export function CVForm({
                             <FieldLabel>Bulan Terbit</FieldLabel>
                             <Select
                               value={String(
-                                watch(`certificates.${index}.issue_month`) || 1
+                                watch(`certificates.${index}.issue_month`) || 1,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `certificates.${index}.issue_month`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                             >
@@ -1282,12 +1310,12 @@ export function CVForm({
                             <Select
                               value={String(
                                 watch(`certificates.${index}.issue_year`) ||
-                                  currentYear
+                                  currentYear,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `certificates.${index}.issue_year`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                             >
@@ -1314,16 +1342,17 @@ export function CVForm({
                             <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
                             <Select
                               value={String(
-                                watch(`certificates.${index}.expiry_month`) || 0
+                                watch(`certificates.${index}.expiry_month`) ||
+                                  0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `certificates.${index}.expiry_month`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                               disabled={watch(
-                                `certificates.${index}.no_expiry`
+                                `certificates.${index}.no_expiry`,
                               )}
                             >
                               <SelectTrigger>
@@ -1352,16 +1381,16 @@ export function CVForm({
                             <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
                             <Select
                               value={String(
-                                watch(`certificates.${index}.expiry_year`) || 0
+                                watch(`certificates.${index}.expiry_year`) || 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `certificates.${index}.expiry_year`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                               disabled={watch(
-                                `certificates.${index}.no_expiry`
+                                `certificates.${index}.no_expiry`,
                               )}
                             >
                               <SelectTrigger>
@@ -1398,11 +1427,11 @@ export function CVForm({
                               if (v) {
                                 setValue(
                                   `certificates.${index}.expiry_month`,
-                                  0
+                                  0,
                                 );
                                 setValue(
                                   `certificates.${index}.expiry_year`,
-                                  0
+                                  0,
                                 );
                               }
                             }}
@@ -1420,7 +1449,7 @@ export function CVForm({
                             <FieldLabel>ID Kredensial</FieldLabel>
                             <Input
                               {...register(
-                                `certificates.${index}.credential_id`
+                                `certificates.${index}.credential_id`,
                               )}
                               placeholder="AWS-12345678"
                             />
@@ -1435,7 +1464,7 @@ export function CVForm({
                             <FieldLabel>URL Kredensial</FieldLabel>
                             <Input
                               {...register(
-                                `certificates.${index}.credential_url`
+                                `certificates.${index}.credential_url`,
                               )}
                               placeholder="https://aws.amazon.com/verify..."
                             />
@@ -1520,13 +1549,15 @@ export function CVForm({
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <Field>
-                          <FieldLabel>Judul *</FieldLabel>
+                          <FieldLabel>
+                            Judul <span className="text-destructive">*</span>
+                          </FieldLabel>
                           <Input
                             {...register(`awards.${index}.title`)}
                             placeholder="Employee of the Year"
                             className={cn(
                               errors.awards?.[index]?.title &&
-                                "border-destructive"
+                                "border-destructive",
                             )}
                           />
                           <FieldError>
@@ -1534,13 +1565,15 @@ export function CVForm({
                           </FieldError>
                         </Field>
                         <Field>
-                          <FieldLabel>Pemberi *</FieldLabel>
+                          <FieldLabel>
+                            Pemberi <span className="text-destructive">*</span>
+                          </FieldLabel>
                           <Input
                             {...register(`awards.${index}.issuer`)}
                             placeholder="PT Teknologi Maju"
                             className={cn(
                               errors.awards?.[index]?.issuer &&
-                                "border-destructive"
+                                "border-destructive",
                             )}
                           />
                           <FieldError>
@@ -1551,7 +1584,7 @@ export function CVForm({
                           <FieldLabel>Tahun</FieldLabel>
                           <Select
                             value={String(
-                              watch(`awards.${index}.year`) || currentYear
+                              watch(`awards.${index}.year`) || currentYear,
                             )}
                             onValueChange={(v) =>
                               setValue(`awards.${index}.year`, parseInt(v))
@@ -1651,15 +1684,18 @@ export function CVForm({
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <Field>
-                            <FieldLabel>Nama Organisasi *</FieldLabel>
+                            <FieldLabel>
+                              Nama Organisasi{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(
-                                `organizations.${index}.organization_name`
+                                `organizations.${index}.organization_name`,
                               )}
                               placeholder="Himpunan Mahasiswa Informatika"
                               className={cn(
                                 errors.organizations?.[index]
-                                  ?.organization_name && "border-destructive"
+                                  ?.organization_name && "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -1670,13 +1706,16 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Jabatan *</FieldLabel>
+                            <FieldLabel>
+                              Jabatan{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Input
                               {...register(`organizations.${index}.role_title`)}
                               placeholder="Ketua Umum"
                               className={cn(
                                 errors.organizations?.[index]?.role_title &&
-                                  "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                             <FieldError>
@@ -1687,10 +1726,13 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Tipe Organisasi *</FieldLabel>
+                            <FieldLabel>
+                              Tipe Organisasi{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Select
                               value={watch(
-                                `organizations.${index}.organization_type`
+                                `organizations.${index}.organization_type`,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -1699,7 +1741,7 @@ export function CVForm({
                                     | "student"
                                     | "professional"
                                     | "volunteer"
-                                    | "community"
+                                    | "community",
                                 )
                               }
                             >
@@ -1738,12 +1780,13 @@ export function CVForm({
                             <FieldLabel>Bulan Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`organizations.${index}.start_month`) || 1
+                                watch(`organizations.${index}.start_month`) ||
+                                  1,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `organizations.${index}.start_month`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                             >
@@ -1773,12 +1816,12 @@ export function CVForm({
                             <Select
                               value={String(
                                 watch(`organizations.${index}.start_year`) ||
-                                  currentYear
+                                  currentYear,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `organizations.${index}.start_year`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                             >
@@ -1804,16 +1847,16 @@ export function CVForm({
                             <FieldLabel>Bulan Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`organizations.${index}.end_month`) || 0
+                                watch(`organizations.${index}.end_month`) || 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `organizations.${index}.end_month`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                               disabled={watch(
-                                `organizations.${index}.is_current`
+                                `organizations.${index}.is_current`,
                               )}
                             >
                               <SelectTrigger>
@@ -1842,16 +1885,16 @@ export function CVForm({
                             <FieldLabel>Tahun Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`organizations.${index}.end_year`) || 0
+                                watch(`organizations.${index}.end_year`) || 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
                                   `organizations.${index}.end_year`,
-                                  parseInt(v)
+                                  parseInt(v),
                                 )
                               }
                               disabled={watch(
-                                `organizations.${index}.is_current`
+                                `organizations.${index}.is_current`,
                               )}
                             >
                               <SelectTrigger>
@@ -1883,7 +1926,7 @@ export function CVForm({
                             onCheckedChange={(v) => {
                               setValue(
                                 `organizations.${index}.is_current`,
-                                !!v
+                                !!v,
                               );
                               if (v) {
                                 setValue(`organizations.${index}.end_month`, 0);
@@ -1992,13 +2035,16 @@ export function CVForm({
                       </div>
                       <div className="space-y-4">
                         <Field>
-                          <FieldLabel>Nama Proyek *</FieldLabel>
+                          <FieldLabel>
+                            Nama Proyek{" "}
+                            <span className="text-destructive">*</span>
+                          </FieldLabel>
                           <Input
                             {...register(`projects.${index}.name`)}
                             placeholder="Nama proyek"
                             className={cn(
                               errors.projects?.[index]?.name &&
-                                "border-destructive"
+                                "border-destructive",
                             )}
                           />
                           <FieldError>
@@ -2007,15 +2053,17 @@ export function CVForm({
                         </Field>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <Field>
-                            <FieldLabel>Tahun *</FieldLabel>
+                            <FieldLabel>
+                              Tahun <span className="text-destructive">*</span>
+                            </FieldLabel>
                             <Select
                               value={String(
-                                watch(`projects.${index}.year`) ?? currentYear
+                                watch(`projects.${index}.year`) ?? currentYear,
                               )}
                               onValueChange={(value) =>
                                 setValue(
                                   `projects.${index}.year`,
-                                  parseInt(value)
+                                  parseInt(value),
                                 )
                               }
                             >
@@ -2130,7 +2178,7 @@ export function CVForm({
                               <SelectTrigger
                                 className={cn(
                                   errors.social_links?.[index]?.platform &&
-                                    "border-destructive"
+                                    "border-destructive",
                                 )}
                               >
                                 <SelectValue placeholder="Platform" />
@@ -2158,7 +2206,7 @@ export function CVForm({
                           {...register(`social_links.${index}.url`)}
                           className={cn(
                             errors.social_links?.[index]?.url &&
-                              "border-destructive"
+                              "border-destructive",
                           )}
                         />
                         <FieldError>

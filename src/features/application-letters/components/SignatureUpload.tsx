@@ -41,7 +41,7 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
     (
       e:
         | React.MouseEvent<HTMLCanvasElement>
-        | React.TouchEvent<HTMLCanvasElement>
+        | React.TouchEvent<HTMLCanvasElement>,
     ) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -61,14 +61,14 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
       ctx.beginPath();
       ctx.moveTo(x, y);
     },
-    []
+    [],
   );
 
   const draw = useCallback(
     (
       e:
         | React.MouseEvent<HTMLCanvasElement>
-        | React.TouchEvent<HTMLCanvasElement>
+        | React.TouchEvent<HTMLCanvasElement>,
     ) => {
       if (!isDrawing) return;
 
@@ -92,7 +92,7 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
       ctx.lineTo(x, y);
       ctx.stroke();
     },
-    [isDrawing]
+    [isDrawing],
   );
 
   const stopDrawing = useCallback(() => {
@@ -151,7 +151,7 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
   };
 
   return (
-    <Field className="space-y-2">
+    <Field className="space-y-2 w-fit">
       <FieldLabel>Tanda Tangan (Opsional)</FieldLabel>
 
       {value ? (
@@ -176,17 +176,17 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
           type="button"
           variant="outline"
           onClick={() => setIsModalOpen(true)}
-          className="w-full h-20 border-dashed"
+          className="w-fit min-w-[200px] h-32 border-dashed flex-col gap-2 hover:bg-muted/50"
         >
-          <div className="flex flex-col items-center gap-1">
-            <Pen className="h-5 w-5" />
-            <span className="text-sm">Tambah Tanda Tangan</span>
-          </div>
+          <Pen className="h-8 w-8 text-muted-foreground" />
+          <span className="text-sm font-medium text-muted-foreground">
+            Tambah Tanda Tangan
+          </span>
         </Button>
       )}
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md p-0 gap-0">
+        <DialogContent className="!max-w-xl p-0 gap-0">
           <div className="flex flex-col max-h-[85vh]">
             <DialogHeader className="px-6 pt-6 pb-4">
               <DialogTitle>Tanda Tangan</DialogTitle>

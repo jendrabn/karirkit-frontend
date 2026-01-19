@@ -17,7 +17,8 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { useServerValidation } from "@/hooks/use-server-validation";
-import { AvatarUpload } from "./AvatarUpload";
+import { displayFormErrors } from "@/lib/form-errors";
+import { PhotoUpload } from "@/components/form/PhotoUpload";
 import { USER_ROLE_OPTIONS } from "@/types/user";
 import {
   DEFAULT_DOCUMENT_STORAGE_LIMIT,
@@ -76,7 +77,7 @@ export function UserForm({
   };
 
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)}>
+    <form onSubmit={form.handleSubmit(handleSubmit, displayFormErrors)}>
       <FieldSet disabled={isLoading} className="space-y-6 mb-6">
         <Card>
           <CardHeader>
@@ -88,23 +89,23 @@ export function UserForm({
               name="avatar"
               render={({ field }) => (
                 <div className="flex justify-center mb-6">
-                  <Field>
-                    <AvatarUpload
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                      name={form.watch("name")}
-                    />
-                    <FieldError>
-                      {form.formState.errors.avatar?.message}
-                    </FieldError>
-                  </Field>
+                  <PhotoUpload
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    name={form.watch("name")}
+                  />
+                  <FieldError>
+                    {form.formState.errors.avatar?.message}
+                  </FieldError>
                 </div>
               )}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
-                <FieldLabel>Nama Lengkap *</FieldLabel>
+                <FieldLabel>
+                  Nama Lengkap <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   placeholder="Masukkan nama lengkap"
                   {...form.register("name")}
@@ -113,7 +114,9 @@ export function UserForm({
               </Field>
 
               <Field>
-                <FieldLabel>Username *</FieldLabel>
+                <FieldLabel>
+                  Username <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   placeholder="Masukkan username"
                   {...form.register("username")}
@@ -124,7 +127,9 @@ export function UserForm({
               </Field>
 
               <Field>
-                <FieldLabel>Email *</FieldLabel>
+                <FieldLabel>
+                  Email <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   type="email"
                   placeholder="Masukkan email"
@@ -135,7 +140,9 @@ export function UserForm({
 
               {!isEdit && (
                 <Field>
-                  <FieldLabel>Password *</FieldLabel>
+                  <FieldLabel>
+                    Password <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     type="password"
                     placeholder="Masukkan password"
@@ -161,7 +168,9 @@ export function UserForm({
                 name="role"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Role *</FieldLabel>
+                    <FieldLabel>
+                      Role <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih role" />

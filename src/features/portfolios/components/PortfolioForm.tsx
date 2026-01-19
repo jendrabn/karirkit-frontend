@@ -19,6 +19,7 @@ import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 import {
   portfolioSchema,
   type PortfolioFormData,
@@ -30,7 +31,7 @@ interface PortfolioFormProps {
     data: PortfolioFormData & {
       tools: string[];
       medias: { path: string; caption: string }[];
-    }
+    },
   ) => void;
   isLoading?: boolean;
   error?: unknown;
@@ -62,14 +63,14 @@ export function PortfolioForm({
 }: PortfolioFormProps) {
   const [newTool, setNewTool] = useState("");
   const [tools, setTools] = useState<string[]>(
-    initialData?.tools?.map((t) => t.name) || []
+    initialData?.tools?.map((t) => t.name) || [],
   );
   const [cover, setCover] = useState(initialData?.cover || "");
   const [medias, setMedias] = useState<{ path: string; caption: string }[]>(
     initialData?.medias?.map((m) => ({
       path: m.path,
       caption: m.caption || "",
-    })) || []
+    })) || [],
   );
 
   const form = useForm<PortfolioFormData>({
@@ -120,7 +121,7 @@ export function PortfolioForm({
   };
 
   return (
-    <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+    <form onSubmit={form.handleSubmit(handleFormSubmit, displayFormErrors)}>
       <FieldSet disabled={isLoading} className="space-y-8 mb-6">
         {/* ================= Informasi Dasar ================= */}
         <Card>
@@ -133,7 +134,9 @@ export function PortfolioForm({
               {/* Judul Proyek */}
               <div className="md:col-span-2">
                 <Field>
-                  <FieldLabel>Judul Proyek</FieldLabel>
+                  <FieldLabel>
+                    Judul Proyek <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     {...form.register("title")}
                     placeholder="Contoh: Sistem Manajemen Inventori Berbasis Web"
@@ -147,7 +150,10 @@ export function PortfolioForm({
               {/* Deskripsi Singkat */}
               <div className="md:col-span-2">
                 <Field>
-                  <FieldLabel>Deskripsi Singkat</FieldLabel>
+                  <FieldLabel>
+                    Deskripsi Singkat{" "}
+                    <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Input
                     {...form.register("sort_description")}
                     placeholder="Ringkasan singkat proyek (1 kalimat)"
@@ -161,7 +167,9 @@ export function PortfolioForm({
               {/* Deskripsi */}
               <div className="md:col-span-2">
                 <Field>
-                  <FieldLabel>Deskripsi</FieldLabel>
+                  <FieldLabel>
+                    Deskripsi <span className="text-destructive">*</span>
+                  </FieldLabel>
                   <Textarea
                     {...form.register("description")}
                     rows={5}
@@ -175,7 +183,9 @@ export function PortfolioForm({
 
               {/* Role */}
               <Field>
-                <FieldLabel>Role / Posisi</FieldLabel>
+                <FieldLabel>
+                  Role / Posisi <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   {...form.register("role_title")}
                   placeholder="Contoh: Frontend Developer"
@@ -193,7 +203,7 @@ export function PortfolioForm({
                   onValueChange={(value) =>
                     form.setValue(
                       "project_type",
-                      value as PortfolioFormData["project_type"]
+                      value as PortfolioFormData["project_type"],
                     )
                   }
                 >
@@ -215,7 +225,9 @@ export function PortfolioForm({
 
               {/* Industri */}
               <Field>
-                <FieldLabel>Industri</FieldLabel>
+                <FieldLabel>
+                  Industri <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   {...form.register("industry")}
                   placeholder="Contoh: Teknologi Informasi, Fintech, E-commerce"
@@ -227,7 +239,9 @@ export function PortfolioForm({
 
               {/* Bulan */}
               <Field>
-                <FieldLabel>Bulan</FieldLabel>
+                <FieldLabel>
+                  Bulan <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Select
                   value={String(form.watch("month"))}
                   onValueChange={(value) =>
@@ -250,7 +264,9 @@ export function PortfolioForm({
 
               {/* Tahun */}
               <Field>
-                <FieldLabel>Tahun</FieldLabel>
+                <FieldLabel>
+                  Tahun <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Select
                   value={String(form.watch("year"))}
                   onValueChange={(value) =>

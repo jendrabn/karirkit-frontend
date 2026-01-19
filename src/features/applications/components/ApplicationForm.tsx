@@ -33,6 +33,7 @@ import {
 } from "../api/create-application";
 import type { UpdateApplicationInput } from "../api/update-application";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { displayFormErrors } from "@/lib/form-errors";
 
 interface ApplicationFormProps {
   initialData?: UpdateApplicationInput;
@@ -94,7 +95,7 @@ export function ApplicationForm({
   useServerValidation(error, form as any);
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit) as any}>
+    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors) as any}>
       <FieldSet disabled={isLoading} className="space-y-8 mb-6">
         {/* ================= Informasi Perusahaan ================= */}
         <Card>
@@ -104,7 +105,9 @@ export function ApplicationForm({
           <CardContent className="pt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
-                <FieldLabel>Nama Perusahaan *</FieldLabel>
+                <FieldLabel>
+                  Nama Perusahaan <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   {...form.register("company_name")}
                   placeholder="Contoh: PT Teknologi Nusantara"
@@ -126,7 +129,9 @@ export function ApplicationForm({
               </Field>
 
               <Field>
-                <FieldLabel>Posisi Dilamar *</FieldLabel>
+                <FieldLabel>
+                  Posisi Dilamar <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   {...form.register("position")}
                   placeholder="Contoh: Frontend Developer"
@@ -268,14 +273,17 @@ export function ApplicationForm({
                 name="date"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Tanggal Lamaran *</FieldLabel>
+                    <FieldLabel>
+                      Tanggal Lamaran
+                      <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="mr-2 size-4" />
@@ -294,7 +302,7 @@ export function ApplicationForm({
                           }
                           onSelect={(date) =>
                             field.onChange(
-                              date ? dayjs(date).format("YYYY-MM-DD") : ""
+                              date ? dayjs(date).format("YYYY-MM-DD") : "",
                             )
                           }
                         />
@@ -429,7 +437,7 @@ export function ApplicationForm({
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="mr-2 size-4" />
@@ -448,7 +456,7 @@ export function ApplicationForm({
                           }
                           onSelect={(date) =>
                             field.onChange(
-                              date ? dayjs(date).format("YYYY-MM-DD") : null
+                              date ? dayjs(date).format("YYYY-MM-DD") : null,
                             )
                           }
                         />
