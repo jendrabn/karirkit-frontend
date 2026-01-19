@@ -34,7 +34,7 @@ import {
   FieldSet,
   FieldDescription,
 } from "@/components/ui/field";
-import { PhotoUpload } from "@/components/form/PhotoUpload";
+import { PhotoUpload } from "@/components/PhotoUpload";
 import { CVParagraphTemplateModal } from "./CVParagraphTemplateModal";
 import { TemplateSelector } from "@/components/ui/template-selector";
 import { useTemplates } from "@/features/landing/api/get-templates";

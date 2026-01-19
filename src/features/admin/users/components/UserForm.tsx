@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/field";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
-import { PhotoUpload } from "@/components/form/PhotoUpload";
+import { PhotoUpload } from "@/components/PhotoUpload";
 import { USER_ROLE_OPTIONS } from "@/types/user";
 import {
   DEFAULT_DOCUMENT_STORAGE_LIMIT,
@@ -84,24 +84,23 @@ export function UserForm({
             <CardTitle>{isEdit ? "Edit User" : "Tambah User"}</CardTitle>
           </CardHeader>
           <CardContent className="pt-4 space-y-6">
-            <Controller
-              control={form.control}
-              name="avatar"
-              render={({ field }) => (
-                <div className="flex justify-center mb-6">
-                  <PhotoUpload
-                    value={field.value || ""}
-                    onChange={field.onChange}
-                    name={form.watch("name")}
-                  />
-                  <FieldError>
-                    {form.formState.errors.avatar?.message}
-                  </FieldError>
-                </div>
-              )}
-            />
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Controller
+                control={form.control}
+                name="avatar"
+                render={({ field }) => (
+                  <div className="md:col-span-2">
+                    <PhotoUpload
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      name={form.watch("name")}
+                    />
+                    <FieldError className="mt-2">
+                      {form.formState.errors.avatar?.message}
+                    </FieldError>
+                  </div>
+                )}
+              />
               <Field>
                 <FieldLabel>
                   Nama Lengkap <span className="text-destructive">*</span>

@@ -1,7 +1,7 @@
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Share2, Trash2 } from "lucide-react";
-import { PhotoUpload } from "@/components/form/PhotoUpload";
+import { PhotoUpload } from "@/components/PhotoUpload";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

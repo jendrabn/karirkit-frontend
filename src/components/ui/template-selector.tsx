@@ -60,14 +60,16 @@ export function TemplateSelector({
         </div>
       )}
 
-      <Button
-        type="button"
-        variant="link"
-        className="h-auto p-0 text-sm"
-        onClick={() => setModalOpen(true)}
-      >
-        {selectedTemplate ? "Lihat semua template" : ""}
-      </Button>
+      {selectedTemplate && (
+        <Button
+          type="button"
+          variant="link"
+          className="h-auto p-0 text-sm"
+          onClick={() => setModalOpen(true)}
+        >
+          Lihat semua template
+        </Button>
+      )}
 
       <TemplateGridModal
         open={modalOpen}
