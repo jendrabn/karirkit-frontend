@@ -109,7 +109,7 @@ export const TemplatesList = () => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [visibility, setVisibility] = useLocalStorage<ColumnVisibility>(
     "templates-table-columns",
-    defaultColumnVisibility
+    defaultColumnVisibility,
   );
 
   const { data: templatesData, isLoading } = useTemplates({
@@ -150,7 +150,7 @@ export const TemplatesList = () => {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
-        false
+        false,
       );
     } else {
       setParams({ sort_by: field, sort_order: "asc" }, false);
@@ -191,7 +191,7 @@ export const TemplatesList = () => {
 
   const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
@@ -240,13 +240,15 @@ export const TemplatesList = () => {
         type: newFilters.type || "",
         language: newFilters.language || "",
         is_premium:
-          newFilters.is_premium === undefined ? undefined : newFilters.is_premium,
+          newFilters.is_premium === undefined
+            ? undefined
+            : newFilters.is_premium,
         created_at_from: newFilters.created_at_from || "",
         created_at_to: newFilters.created_at_to || "",
         updated_at_from: newFilters.updated_at_from || "",
         updated_at_to: newFilters.updated_at_to || "",
       },
-      true
+      true,
     );
     setFilterModalOpen(false);
   };
@@ -291,7 +293,7 @@ export const TemplatesList = () => {
                     updated_at_from: "",
                     updated_at_to: "",
                   },
-                  true
+                  true,
                 )
               }
               className="text-muted-foreground"
@@ -412,7 +414,7 @@ export const TemplatesList = () => {
                     key={template.id}
                     className={cn(
                       index % 2 === 0 ? "bg-background" : "bg-muted/20",
-                      selectedIds.includes(template.id) && "bg-primary/5"
+                      selectedIds.includes(template.id) && "bg-primary/5",
                     )}
                   >
                     <TableCell>
@@ -425,11 +427,17 @@ export const TemplatesList = () => {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {template.preview ? (
-                            <img
-                              src={buildImageUrl(template.preview)}
-                              alt={template.name}
-                              className="w-16 h-20 object-cover rounded border"
-                            />
+                            <a
+                              href={buildImageUrl(template.preview)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <img
+                                src={buildImageUrl(template.preview)}
+                                alt={template.name}
+                                className="w-16 h-20 object-cover rounded border hover:opacity-80 transition-opacity"
+                              />
+                            </a>
                           ) : (
                             <div className="w-16 h-20 bg-muted rounded border flex items-center justify-center text-xs text-muted-foreground">
                               No Image
@@ -475,14 +483,14 @@ export const TemplatesList = () => {
                     {visibility.created_at && (
                       <TableCell className="whitespace-nowrap text-muted-foreground">
                         {dayjs(template.created_at).format(
-                          "DD MMM YYYY, HH:mm"
+                          "DD MMM YYYY, HH:mm",
                         )}
                       </TableCell>
                     )}
                     {visibility.updated_at && (
                       <TableCell className="whitespace-nowrap text-muted-foreground">
                         {dayjs(template.updated_at).format(
-                          "DD MMM YYYY, HH:mm"
+                          "DD MMM YYYY, HH:mm",
                         )}
                       </TableCell>
                     )}

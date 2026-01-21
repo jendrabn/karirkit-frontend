@@ -1,33 +1,35 @@
-# robots.txt untuk KarirKit
+# robots.txt for KarirKit
+# https://karirkit.id/
 
-# Allow all crawlers
 User-agent: *
 
+# =========================
 # Allow public pages
+# =========================
 Allow: /
-Allow: /blog
+Allow: /blog/
 Allow: /blog/*
 Allow: /u/*
 
-# Disallow protected/private pages
+# =========================
+# Disallow private & protected pages
+# =========================
 Disallow: /admin/
-Disallow: /admin/*
-Disallow: /dashboard
-Disallow: /profile
-Disallow: /change-password
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /change-password/
 Disallow: /auth/
-Disallow: /auth/*
 Disallow: /applications/
-Disallow: /applications/*
 Disallow: /application-letters/
-Disallow: /application-letters/*
 Disallow: /cvs/
-Disallow: /cvs/*
 Disallow: /portfolios/
-Disallow: /portfolios/*
 
-# Disallow API endpoints if any
+# =========================
+# Disallow API endpoints
+# =========================
 Disallow: /api/
 
-# Sitemap location
+# =========================
+# Sitemap
+# =========================
 Sitemap: https://karirkit.id/sitemap.xml

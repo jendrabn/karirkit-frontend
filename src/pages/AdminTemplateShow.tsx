@@ -134,11 +134,17 @@ const AdminTemplateShow = () => {
           </CardHeader>
           <CardContent>
             {template.preview ? (
-              <img
-                src={buildImageUrl(template.preview)}
-                alt={template.name}
-                className="w-full aspect-[3/4] object-cover rounded-lg border"
-              />
+              <a
+                href={buildImageUrl(template.preview)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={buildImageUrl(template.preview)}
+                  alt={template.name}
+                  className="w-full aspect-[3/4] object-cover rounded-lg border hover:opacity-80 transition-opacity"
+                />
+              </a>
             ) : (
               <div className="w-full aspect-[3/4] bg-muted rounded-lg border flex items-center justify-center">
                 <span className="text-muted-foreground">No Preview</span>

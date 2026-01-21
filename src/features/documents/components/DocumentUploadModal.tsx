@@ -150,17 +150,20 @@ export function DocumentUploadModal({
       return;
     }
 
-    setSelectedFiles(validFiles);
-    setCompression("");
-    if (validFiles.length <= 1) {
-      setMergeFiles(false);
-    }
+    setSelectedFiles((prev) => {
+      const next = [...prev, ...validFiles];
+      if (next.length <= 1) {
+        setMergeFiles(false);
+      }
+      return next;
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files && e.target.files.length > 0) {
       handleFiles(e.target.files);
+      e.target.value = "";
     }
   };
 
@@ -221,7 +224,7 @@ export function DocumentUploadModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="!max-w-xl p-0 gap-0">
+      <DialogContent className="!max-w-2xl p-0 gap-0">
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -262,7 +265,7 @@ export function DocumentUploadModal({
                   />
 
                   {hasFiles ? (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {selectedFiles.map((file, index) => {
                         return (
                           <div
@@ -293,6 +296,14 @@ export function DocumentUploadModal({
                           </div>
                         );
                       })}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => inputRef.current?.click()}
+                      >
+                        Tambah file
+                      </Button>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -340,7 +351,7 @@ export function DocumentUploadModal({
               </Field>
 
               <Field>
-                <FieldLabel>Nama Dokumen (Opsional)</FieldLabel>
+                <FieldLabel>Nama Dokumen</FieldLabel>
                 <Input
                   placeholder="Nama dokumen"
                   value={customName}
@@ -371,7 +382,7 @@ export function DocumentUploadModal({
 
               {isCompressibleFile && (
                 <Field>
-                  <FieldLabel>Kompresi File (Opsional)</FieldLabel>
+                  <FieldLabel>Kompresi File</FieldLabel>
                   <Select
                     value={compression}
                     onValueChange={(value) =>
