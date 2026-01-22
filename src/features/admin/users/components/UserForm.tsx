@@ -68,8 +68,6 @@ export function UserForm({
     },
   });
 
-  // Note: This form doesn't have direct access to mutation error
-  // If this form is used in a context with a mutation, pass the error prop
   useServerValidation(error, form);
 
   const handleSubmit = (data: UserFormValues) => {

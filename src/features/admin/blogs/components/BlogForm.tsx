@@ -89,8 +89,7 @@ export function BlogForm({
   });
 
   // Handle form validation errors from API
-  // Note: This form doesn't have direct access to mutation error
-  // If this form is used in a context with a mutation, pass the error prop
+
   useServerValidation(error, form as any);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

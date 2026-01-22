@@ -91,8 +91,7 @@ export function PortfolioForm({
   });
 
   // Handle form validation errors from API
-  // Note: This form doesn't have direct access to mutation error
-  // If this form is used in a context with a mutation, pass the error prop
+
   useServerValidation(error, form);
 
   const extraErrors = form.formState.errors as typeof form.formState.errors & {

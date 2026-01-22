@@ -14,7 +14,7 @@ export type CategoryFormData = z.infer<typeof categorySchema>;
 export type CreateBlogCategoryInput = CategoryFormData;
 
 export const createBlogCategory = (
-  data: CreateBlogCategoryInput
+  data: CreateBlogCategoryInput,
 ): Promise<BlogCategory> => {
   return api.post("/admin/blog-categories", data);
 };
