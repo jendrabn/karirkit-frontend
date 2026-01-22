@@ -13,7 +13,6 @@ import {
   FileStack,
   MoreVertical,
   Loader2,
-  ArrowUpDown,
 } from "lucide-react";
 import { getFileIcon } from "@/features/documents/utils/file-icons";
 import { Button } from "@/components/ui/button";
@@ -82,6 +81,7 @@ import { useMassDeleteDocuments } from "@/features/documents/api/mass-delete-doc
 import { useDownloadDocument } from "@/features/documents/api/download-document";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { SortableHeader } from "@/components/SortableHeader";
 
 type SortField =
   | "created_at"
@@ -90,24 +90,6 @@ type SortField =
   | "size"
   | "type";
 type SortOrder = "asc" | "desc";
-
-type SortableHeaderProps = {
-  field: SortField;
-  children: React.ReactNode;
-  onSort: (field: SortField) => void;
-};
-
-const SortableHeader = ({ field, children, onSort }: SortableHeaderProps) => (
-  <Button
-    variant="ghost"
-    size="sm"
-    className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-    onClick={() => onSort(field)}
-  >
-    {children}
-    <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-  </Button>
-);
 
 const formatFileSize = (bytes: number) => {
   if (bytes === 0) return "0 Bytes";

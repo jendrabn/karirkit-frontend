@@ -11,7 +11,6 @@ import {
   ChevronsRight,
   Eye,
   Loader2,
-  ArrowUpDown,
 } from "lucide-react";
 import {
   Table,
@@ -39,6 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SortableHeader } from "@/components/SortableHeader";
 import {
   type Job,
   type JobStatus,
@@ -123,35 +123,6 @@ export function JobsList({
     return `${min}+ tahun`;
   };
 
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: string;
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => onSort(field)}
-    >
-      {children}
-      <ArrowUpDown
-        className={cn(
-          "ml-1.5 h-3.5 w-3.5 transition-opacity",
-          sortField === field ? "opacity-100" : "opacity-30"
-        )}
-        style={{
-          transform:
-            sortField === field && sortOrder === "desc"
-              ? "rotate(180deg)"
-              : "none",
-        }}
-      />
-    </Button>
-  );
-
   return (
     <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
@@ -168,12 +139,24 @@ export function JobsList({
               </TableHead>
               {columnVisibility.title && (
                 <TableHead>
-                  <SortableHeader field="title">Judul</SortableHeader>
+                  <SortableHeader
+                    field="title"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Judul
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.company && (
                 <TableHead>
-                  <SortableHeader field="company_name">
+                  <SortableHeader
+                    field="company_name"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
                     Perusahaan
                   </SortableHeader>
                 </TableHead>
@@ -200,17 +183,36 @@ export function JobsList({
               )}
               {columnVisibility.salary && (
                 <TableHead>
-                  <SortableHeader field="salary_max">Gaji</SortableHeader>
+                  <SortableHeader
+                    field="salary_max"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Gaji
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.status && (
                 <TableHead>
-                  <SortableHeader field="status">Status</SortableHeader>
+                  <SortableHeader
+                    field="status"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Status
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.expiration_date && (
                 <TableHead>
-                  <SortableHeader field="expiration_date">
+                  <SortableHeader
+                    field="expiration_date"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
                     Tanggal Expired
                   </SortableHeader>
                 </TableHead>
@@ -232,12 +234,26 @@ export function JobsList({
               )}
               {columnVisibility.created_at && (
                 <TableHead>
-                  <SortableHeader field="created_at">Dibuat</SortableHeader>
+                  <SortableHeader
+                    field="created_at"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Dibuat
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.updated_at && (
                 <TableHead>
-                  <SortableHeader field="updated_at">Diperbarui</SortableHeader>
+                  <SortableHeader
+                    field="updated_at"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Diperbarui
+                  </SortableHeader>
                 </TableHead>
               )}
               <TableHead className="w-[60px]"></TableHead>

@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { dayjs } from "@/lib/date";
 import {
   Search,
   Plus,
-  ArrowUpDown,
   Pencil,
   Trash2,
   MoreVertical,
@@ -65,6 +63,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { SortableHeader } from "@/components/SortableHeader";
 import {
   CategoryColumnToggle,
   defaultCategoryColumnVisibility,
@@ -101,14 +100,14 @@ export const CategoryList = () => {
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<BlogCategory | null>(
-    null
+    null,
   );
   const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<CategoryColumnVisibility>(
       "admin-blog-category-columns",
-      defaultCategoryColumnVisibility
+      defaultCategoryColumnVisibility,
     );
 
   // API calls
@@ -179,7 +178,7 @@ export const CategoryList = () => {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
-        false
+        false,
       );
     } else {
       setParams({ sort_by: field, sort_order: "asc" }, false);
@@ -207,7 +206,7 @@ export const CategoryList = () => {
 
   const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
@@ -227,24 +226,6 @@ export const CategoryList = () => {
       createMutation.mutate(data);
     }
   };
-
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => handleSort(field)}
-    >
-      {children}
-      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-    </Button>
-  );
 
   return (
     <>
@@ -308,7 +289,9 @@ export const CategoryList = () => {
                 </TableHead>
                 {columnVisibility.name && (
                   <TableHead>
-                    <SortableHeader field="name">Nama</SortableHeader>
+                    <SortableHeader field="name" onSort={handleSort}>
+                      Nama
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.slug && (
@@ -318,7 +301,9 @@ export const CategoryList = () => {
                 )}
                 {columnVisibility.blog_count && (
                   <TableHead>
-                    <SortableHeader field="blog_count">Blog</SortableHeader>
+                    <SortableHeader field="blog_count" onSort={handleSort}>
+                      Blog
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.description && (
@@ -328,12 +313,14 @@ export const CategoryList = () => {
                 )}
                 {columnVisibility.created_at && (
                   <TableHead>
-                    <SortableHeader field="created_at">Dibuat</SortableHeader>
+                    <SortableHeader field="created_at" onSort={handleSort}>
+                      Dibuat
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.updated_at && (
                   <TableHead>
-                    <SortableHeader field="updated_at">
+                    <SortableHeader field="updated_at" onSort={handleSort}>
                       Diperbarui
                     </SortableHeader>
                   </TableHead>
@@ -376,7 +363,7 @@ export const CategoryList = () => {
                     key={category.id}
                     className={cn(
                       index % 2 === 0 ? "bg-background" : "bg-muted/20",
-                      selectedIds.includes(category.id) && "bg-primary/5"
+                      selectedIds.includes(category.id) && "bg-primary/5",
                     )}
                   >
                     <TableCell>
@@ -409,7 +396,7 @@ export const CategoryList = () => {
                       <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
                         {category.created_at
                           ? dayjs(category.created_at).format(
-                              "DD MMM YYYY, HH:mm"
+                              "DD MMM YYYY, HH:mm",
                             )
                           : "-"}
                       </TableCell>
@@ -418,7 +405,7 @@ export const CategoryList = () => {
                       <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
                         {category.updated_at
                           ? dayjs(category.updated_at).format(
-                              "DD MMM YYYY, HH:mm"
+                              "DD MMM YYYY, HH:mm",
                             )
                           : "-"}
                       </TableCell>
@@ -551,7 +538,7 @@ export const CategoryList = () => {
               created_at_from: newFilters.created_at_from || "",
               created_at_to: newFilters.created_at_to || "",
             },
-            true
+            true,
           );
           setFilterModalOpen(false);
         }}

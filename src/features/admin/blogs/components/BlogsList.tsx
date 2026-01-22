@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { dayjs } from "@/lib/date";
@@ -7,7 +5,6 @@ import {
   Search,
   Filter,
   Plus,
-  ArrowUpDown,
   Eye,
   Pencil,
   Copy,
@@ -92,6 +89,7 @@ import { useUpdateBlog } from "@/features/admin/blogs/api/update-blog";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { SortableHeader } from "@/components/SortableHeader";
 
 type SortField =
   | "created_at"
@@ -137,7 +135,7 @@ export const BlogsList = () => {
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<ColumnVisibility>(
       "blogs-table-columns",
-      defaultColumnVisibility
+      defaultColumnVisibility,
     );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
@@ -145,7 +143,7 @@ export const BlogsList = () => {
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [blogToUpdateStatus, setBlogToUpdateStatus] = useState<Blog | null>(
-    null
+    null,
   );
   const [nextStatus, setNextStatus] = useState<BlogStatus>("draft");
 
@@ -204,7 +202,7 @@ export const BlogsList = () => {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
-        false
+        false,
       );
     } else {
       setParams({ sort_by: field, sort_order: "asc" }, false);
@@ -239,7 +237,7 @@ export const BlogsList = () => {
 
   const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
@@ -270,24 +268,6 @@ export const BlogsList = () => {
       },
     });
   };
-
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => handleSort(field)}
-    >
-      {children}
-      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-    </Button>
-  );
 
   return (
     <>
@@ -354,7 +334,9 @@ export const BlogsList = () => {
                   </TableHead>
                   {columnVisibility.title && (
                     <TableHead>
-                      <SortableHeader field="title">Judul</SortableHeader>
+                      <SortableHeader field="title" onSort={handleSort}>
+                        Judul
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.category && (
@@ -374,19 +356,21 @@ export const BlogsList = () => {
                   )}
                   {columnVisibility.views_count && (
                     <TableHead>
-                      <SortableHeader field="views">Views</SortableHeader>
+                      <SortableHeader field="views" onSort={handleSort}>
+                        Views
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.min_read && (
                     <TableHead>
-                      <SortableHeader field="read_time">
+                      <SortableHeader field="read_time" onSort={handleSort}>
                         Waktu Baca
                       </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.published_at && (
                     <TableHead>
-                      <SortableHeader field="published_at">
+                      <SortableHeader field="published_at" onSort={handleSort}>
                         Tanggal Publish
                       </SortableHeader>
                     </TableHead>
@@ -403,12 +387,14 @@ export const BlogsList = () => {
                   )}
                   {columnVisibility.created_at && (
                     <TableHead>
-                      <SortableHeader field="created_at">Dibuat</SortableHeader>
+                      <SortableHeader field="created_at" onSort={handleSort}>
+                        Dibuat
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.updated_at && (
                     <TableHead>
-                      <SortableHeader field="updated_at">
+                      <SortableHeader field="updated_at" onSort={handleSort}>
                         Diperbarui
                       </SortableHeader>
                     </TableHead>
@@ -447,7 +433,7 @@ export const BlogsList = () => {
                       key={blog.id}
                       className={cn(
                         index % 2 === 0 ? "bg-background" : "bg-muted/20",
-                        selectedIds.includes(blog.id) && "bg-primary/5"
+                        selectedIds.includes(blog.id) && "bg-primary/5",
                       )}
                     >
                       <TableCell>
@@ -495,7 +481,7 @@ export const BlogsList = () => {
                           <Badge variant={getStatusBadgeVariant(blog.status)}>
                             {
                               BLOG_STATUS_OPTIONS.find(
-                                (s) => s.value === blog.status
+                                (s) => s.value === blog.status,
                               )?.label
                             }
                           </Badge>
@@ -515,7 +501,7 @@ export const BlogsList = () => {
                         <TableCell className="text-muted-foreground whitespace-nowrap">
                           {blog.published_at
                             ? dayjs(blog.published_at).format(
-                                "DD MMM YYYY, HH:mm"
+                                "DD MMM YYYY, HH:mm",
                               )
                             : "-"}
                         </TableCell>
@@ -555,7 +541,7 @@ export const BlogsList = () => {
                             <DropdownMenuItem
                               onClick={() =>
                                 navigate(
-                                  paths.admin.blogs.detail.getHref(blog.id)
+                                  paths.admin.blogs.detail.getHref(blog.id),
                                 )
                               }
                             >
@@ -565,36 +551,36 @@ export const BlogsList = () => {
                             <DropdownMenuItem
                               onClick={() =>
                                 navigate(
-                                  paths.admin.blogs.edit.getHref(blog.id)
+                                  paths.admin.blogs.edit.getHref(blog.id),
                                 )
                               }
                             >
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          toast.info(
-                            "Fitur duplikat akan segera tersedia"
-                          )
-                        }
-                      >
-                        <Copy className="h-4 w-4 mr-2" />
-                        Duplikat
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleOpenStatusDialog(blog)}
-                      >
-                        <CheckCircle2 className="h-4 w-4 mr-2" />
-                        Ubah Status
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleDelete(blog.id)}
-                        className="text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
+                            <DropdownMenuItem
+                              onClick={() =>
+                                toast.info(
+                                  "Fitur duplikat akan segera tersedia",
+                                )
+                              }
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Duplikat
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleOpenStatusDialog(blog)}
+                            >
+                              <CheckCircle2 className="h-4 w-4 mr-2" />
+                              Ubah Status
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(blog.id)}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
                               Hapus
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -708,7 +694,7 @@ export const BlogsList = () => {
               views_from: newFilters.views_from || "",
               views_to: newFilters.views_to || "",
             },
-            true
+            true,
           );
           setFilterModalOpen(false);
         }}

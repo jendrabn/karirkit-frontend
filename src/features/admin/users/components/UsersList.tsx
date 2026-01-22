@@ -5,7 +5,6 @@ import {
   Search,
   Filter,
   Plus,
-  ArrowUpDown,
   Eye,
   Pencil,
   Trash2,
@@ -105,6 +104,7 @@ import { useUrlParams } from "@/hooks/use-url-params";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { SortableHeader } from "@/components/SortableHeader";
 
 type SortField =
   | "name"
@@ -462,24 +462,6 @@ export const UsersList = () => {
     });
   };
 
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => handleSort(field)}
-    >
-      {children}
-      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-    </Button>
-  );
-
   const hasActiveFilters =
     params.role ||
     params.status ||
@@ -593,7 +575,9 @@ export const UsersList = () => {
                 </TableHead>
                 {columnVisibility.name && (
                   <TableHead>
-                    <SortableHeader field="name">Nama</SortableHeader>
+                    <SortableHeader field="name" onSort={handleSort}>
+                      Nama
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.username && (
@@ -603,17 +587,23 @@ export const UsersList = () => {
                 )}
                 {columnVisibility.email && (
                   <TableHead>
-                    <SortableHeader field="email">Email</SortableHeader>
+                    <SortableHeader field="email" onSort={handleSort}>
+                      Email
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.role && (
                   <TableHead>
-                    <SortableHeader field="role">Role</SortableHeader>
+                    <SortableHeader field="role" onSort={handleSort}>
+                      Role
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.status && (
                   <TableHead>
-                    <SortableHeader field="status">Status</SortableHeader>
+                    <SortableHeader field="status" onSort={handleSort}>
+                      Status
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.phone && (
@@ -633,19 +623,24 @@ export const UsersList = () => {
                 )}
                 {columnVisibility.total_downloads && (
                   <TableHead>
-                    <SortableHeader field="download_total_count">
+                    <SortableHeader
+                      field="download_total_count"
+                      onSort={handleSort}
+                    >
                       Total Unduhan
                     </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.created_at && (
                   <TableHead>
-                    <SortableHeader field="created_at">Dibuat</SortableHeader>
+                    <SortableHeader field="created_at" onSort={handleSort}>
+                      Dibuat
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.updated_at && (
                   <TableHead>
-                    <SortableHeader field="updated_at">
+                    <SortableHeader field="updated_at" onSort={handleSort}>
                       Diperbarui
                     </SortableHeader>
                   </TableHead>

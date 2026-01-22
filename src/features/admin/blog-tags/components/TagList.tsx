@@ -3,7 +3,6 @@ import { dayjs } from "@/lib/date";
 import {
   Search,
   Plus,
-  ArrowUpDown,
   Pencil,
   Trash2,
   MoreVertical,
@@ -66,6 +65,7 @@ import {
   type TagColumnVisibility,
 } from "./TagColumnToggle";
 import { cn } from "@/lib/utils";
+import { SortableHeader } from "@/components/SortableHeader";
 
 type SortField = "name" | "created_at" | "updated_at" | "blog_count";
 type SortOrder = "asc" | "desc";
@@ -102,7 +102,7 @@ export const TagList = () => {
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<TagColumnVisibility>(
       "admin-blog-tag-columns",
-      defaultTagColumnVisibility
+      defaultTagColumnVisibility,
     );
 
   const { data: tagsData, isLoading } = useBlogTags({
@@ -177,7 +177,7 @@ export const TagList = () => {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
-        false
+        false,
       );
     } else {
       setParams({ sort_by: field, sort_order: "asc" }, false);
@@ -205,7 +205,7 @@ export const TagList = () => {
 
   const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
@@ -225,24 +225,6 @@ export const TagList = () => {
       createMutation.mutate(data);
     }
   };
-
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => handleSort(field)}
-    >
-      {children}
-      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-    </Button>
-  );
 
   return (
     <>
@@ -305,7 +287,9 @@ export const TagList = () => {
                 </TableHead>
                 {columnVisibility.name && (
                   <TableHead>
-                    <SortableHeader field="name">Nama Tag</SortableHeader>
+                    <SortableHeader field="name" onSort={handleSort}>
+                      Nama Tag
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.slug && (
@@ -315,17 +299,21 @@ export const TagList = () => {
                 )}
                 {columnVisibility.blog_count && (
                   <TableHead>
-                    <SortableHeader field="blog_count">Blog</SortableHeader>
+                    <SortableHeader field="blog_count" onSort={handleSort}>
+                      Blog
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.created_at && (
                   <TableHead>
-                    <SortableHeader field="created_at">Dibuat</SortableHeader>
+                    <SortableHeader field="created_at" onSort={handleSort}>
+                      Dibuat
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.updated_at && (
                   <TableHead>
-                    <SortableHeader field="updated_at">
+                    <SortableHeader field="updated_at" onSort={handleSort}>
                       Diperbarui
                     </SortableHeader>
                   </TableHead>
@@ -364,7 +352,7 @@ export const TagList = () => {
                     key={tag.id}
                     className={cn(
                       index % 2 === 0 ? "bg-background" : "bg-muted/20",
-                      selectedIds.includes(tag.id) && "bg-primary/5"
+                      selectedIds.includes(tag.id) && "bg-primary/5",
                     )}
                   >
                     <TableCell>
@@ -527,7 +515,7 @@ export const TagList = () => {
               created_at_from: newFilters.created_at_from || "",
               created_at_to: newFilters.created_at_to || "",
             },
-            true
+            true,
           );
           setFilterModalOpen(false);
         }}

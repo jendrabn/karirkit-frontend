@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { paths } from "@/config/paths";
@@ -7,7 +6,6 @@ import {
   Search,
   Filter,
   Plus,
-  ArrowUpDown,
   Eye,
   Pencil,
   Copy,
@@ -84,6 +82,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { SortableHeader } from "@/components/SortableHeader";
 
 type SortField =
   | "application_date"
@@ -126,7 +125,7 @@ export function ApplicationLetterList() {
   const [storedVisibility, setStoredVisibility] =
     useLocalStorage<ColumnVisibility>(
       "application-letters-columns",
-      defaultColumnVisibility
+      defaultColumnVisibility,
     );
 
   // Merge stored visibility with defaults to handle new columns that might be missing in storage
@@ -195,7 +194,7 @@ export function ApplicationLetterList() {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
-        false
+        false,
       );
     } else {
       setParams({ sort_by: field, sort_order: "asc" }, false);
@@ -241,7 +240,7 @@ export function ApplicationLetterList() {
 
   const handleDownload = (
     letter: ApplicationLetter,
-    format: "docx" | "pdf"
+    format: "docx" | "pdf",
   ) => {
     // Toast removed, using LoadingOverlay instead
     downloadMutation.mutate({
@@ -254,28 +253,10 @@ export function ApplicationLetterList() {
 
   const getLabel = (
     value: string,
-    options: { value: string; label: string }[]
+    options: { value: string; label: string }[],
   ) => {
     return options.find((opt) => opt.value === value)?.label || value;
   };
-
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => handleSort(field)}
-    >
-      {children}
-      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-    </Button>
-  );
 
   return (
     <>
@@ -348,14 +329,20 @@ export function ApplicationLetterList() {
                   )}
                   {columnVisibility.company_name && (
                     <TableHead>
-                      <SortableHeader field="company_name">
+                      <SortableHeader
+                        field="company_name"
+                        onSort={handleSort}
+                      >
                         Perusahaan
                       </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.application_date && (
                     <TableHead>
-                      <SortableHeader field="application_date">
+                      <SortableHeader
+                        field="application_date"
+                        onSort={handleSort}
+                      >
                         Tanggal
                       </SortableHeader>
                     </TableHead>
@@ -367,7 +354,9 @@ export function ApplicationLetterList() {
                   )}
                   {columnVisibility.name && (
                     <TableHead>
-                      <SortableHeader field="name">Nama Pelamar</SortableHeader>
+                      <SortableHeader field="name" onSort={handleSort}>
+                        Nama Pelamar
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.education && (
@@ -412,12 +401,14 @@ export function ApplicationLetterList() {
                   )}
                   {columnVisibility.created_at && (
                     <TableHead>
-                      <SortableHeader field="created_at">Dibuat</SortableHeader>
+                      <SortableHeader field="created_at" onSort={handleSort}>
+                        Dibuat
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.updated_at && (
                     <TableHead>
-                      <SortableHeader field="updated_at">
+                      <SortableHeader field="updated_at" onSort={handleSort}>
                         Diperbarui
                       </SortableHeader>
                     </TableHead>
@@ -460,7 +451,7 @@ export function ApplicationLetterList() {
                       key={letter.id}
                       className={cn(
                         index % 2 === 0 ? "bg-background" : "bg-muted/20",
-                        selectedIds.includes(letter.id) && "bg-primary/5"
+                        selectedIds.includes(letter.id) && "bg-primary/5",
                       )}
                     >
                       <TableCell>
@@ -526,7 +517,7 @@ export function ApplicationLetterList() {
                         <TableCell>
                           {getLabel(
                             letter.marital_status,
-                            MARITAL_STATUS_OPTIONS
+                            MARITAL_STATUS_OPTIONS,
                           )}
                         </TableCell>
                       )}
@@ -541,14 +532,14 @@ export function ApplicationLetterList() {
                       {columnVisibility.created_at && (
                         <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
                           {dayjs(letter.created_at).format(
-                            "DD MMM YYYY, HH:mm"
+                            "DD MMM YYYY, HH:mm",
                           )}
                         </TableCell>
                       )}
                       {columnVisibility.updated_at && (
                         <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
                           {dayjs(letter.updated_at).format(
-                            "DD MMM YYYY, HH:mm"
+                            "DD MMM YYYY, HH:mm",
                           )}
                         </TableCell>
                       )}
@@ -578,7 +569,7 @@ export function ApplicationLetterList() {
                             <DropdownMenuItem
                               onClick={() =>
                                 navigate(
-                                  `/application-letters/${letter.id}/edit`
+                                  `/application-letters/${letter.id}/edit`,
                                 )
                               }
                             >
@@ -726,7 +717,7 @@ export function ApplicationLetterList() {
                 ? dayjs(newFilters.dateTo).format("YYYY-MM-DD")
                 : "",
             } as any,
-            true
+            true,
           );
           setFilterModalOpen(false);
         }}

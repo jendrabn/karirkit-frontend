@@ -10,7 +10,6 @@ import {
   ChevronsRight,
   Eye,
   Loader2,
-  ArrowUpDown,
 } from "lucide-react";
 import {
   Table,
@@ -41,6 +40,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { type Company, EMPLOYEE_SIZE_LABELS } from "@/types/company";
 import { cn, buildImageUrl } from "@/lib/utils";
 import { type ColumnVisibility } from "./CompanyColumnToggle";
+import { SortableHeader } from "@/components/SortableHeader";
 
 interface CompaniesListProps {
   companies: Company[];
@@ -95,40 +95,6 @@ export function CompaniesList({
   onPerPageChange,
   columnVisibility,
 }: CompaniesListProps) {
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field:
-      | "created_at"
-      | "updated_at"
-      | "name"
-      | "employee_size"
-      | "job_count";
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => onSort(field)}
-    >
-      {children}
-      <ArrowUpDown
-        className={cn(
-          "ml-1.5 h-3.5 w-3.5 transition-opacity",
-          sortField === field ? "opacity-100" : "opacity-30"
-        )}
-        style={{
-          transform:
-            sortField === field && sortOrder === "desc"
-              ? "rotate(180deg)"
-              : "none",
-        }}
-      />
-    </Button>
-  );
-
   return (
     <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
@@ -146,7 +112,14 @@ export function CompaniesList({
               </TableHead>
               {columnVisibility.name && (
                 <TableHead>
-                  <SortableHeader field="name">Nama Perusahaan</SortableHeader>
+                  <SortableHeader
+                    field="name"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Nama Perusahaan
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.slug && (
@@ -161,12 +134,26 @@ export function CompaniesList({
               )}
               {columnVisibility.size && (
                 <TableHead>
-                  <SortableHeader field="employee_size">Ukuran</SortableHeader>
+                  <SortableHeader
+                    field="employee_size"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Ukuran
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.jobCount && (
                 <TableHead>
-                  <SortableHeader field="job_count">Lowongan</SortableHeader>
+                  <SortableHeader
+                    field="job_count"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Lowongan
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.website_url && (
@@ -181,12 +168,26 @@ export function CompaniesList({
               )}
               {columnVisibility.created_at && (
                 <TableHead>
-                  <SortableHeader field="created_at">Dibuat</SortableHeader>
+                  <SortableHeader
+                    field="created_at"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Dibuat
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.updated_at && (
                 <TableHead>
-                  <SortableHeader field="updated_at">Diperbarui</SortableHeader>
+                  <SortableHeader
+                    field="updated_at"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Diperbarui
+                  </SortableHeader>
                 </TableHead>
               )}
               <TableHead className="w-[60px]"></TableHead>

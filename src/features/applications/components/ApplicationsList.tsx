@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { paths } from "@/config/paths";
@@ -8,7 +6,6 @@ import {
   Search,
   Filter,
   Plus,
-  ArrowUpDown,
   Trash2,
   MoreVertical,
   Eye,
@@ -77,6 +74,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { SortableHeader } from "@/components/SortableHeader";
 import {
   type Application,
   type JobType,
@@ -145,7 +143,7 @@ const getStatusBadgeVariant = (status: ApplicationStatus) => {
 
 const formatSalaryRange = (
   min: number | undefined | null,
-  max: number | undefined | null
+  max: number | undefined | null,
 ) => {
   const formatNum = (n: number | undefined | null) => {
     if (n === undefined || n === null || n === 0) return "0";
@@ -200,7 +198,7 @@ export const ApplicationsList = () => {
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<ColumnVisibility>(
       "applications-table-columns",
-      defaultColumnVisibility
+      defaultColumnVisibility,
     );
 
   const [activeStatFilter, setActiveStatFilter] = useState<string | null>(null);
@@ -273,7 +271,7 @@ export const ApplicationsList = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [massDeleteDialogOpen, setMassDeleteDialogOpen] = useState(false);
   const [applicationToDelete, setApplicationToDelete] = useState<string | null>(
-    null
+    null,
   );
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -290,7 +288,7 @@ export const ApplicationsList = () => {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
-        false
+        false,
       );
     } else {
       setParams({ sort_by: field, sort_order: "asc" }, false);
@@ -340,24 +338,6 @@ export const ApplicationsList = () => {
       setSelectedIds((prev) => prev.filter((i) => i !== id));
     }
   };
-
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: GetApplicationsParams["sort_by"];
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => handleSort(field)}
-    >
-      {children}
-      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-    </Button>
-  );
 
   const EditableCell = ({
     app,
@@ -447,7 +427,7 @@ export const ApplicationsList = () => {
           value={value as string}
           onChange={(e) =>
             setValue(
-              type === "number" ? Number(e.target.value) : e.target.value
+              type === "number" ? Number(e.target.value) : e.target.value,
             )
           }
           onBlur={handleBlur}
@@ -564,14 +544,16 @@ export const ApplicationsList = () => {
                 </TableHead>
                 {columnVisibility.company_name && (
                   <TableHead>
-                    <SortableHeader field="company_name">
+                    <SortableHeader field="company_name" onSort={handleSort}>
                       Perusahaan
                     </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.position && (
                   <TableHead>
-                    <SortableHeader field="position">Posisi</SortableHeader>
+                    <SortableHeader field="position" onSort={handleSort}>
+                      Posisi
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.status && (
@@ -586,7 +568,9 @@ export const ApplicationsList = () => {
                 )}
                 {columnVisibility.date && (
                   <TableHead>
-                    <SortableHeader field="date">Tanggal Lamar</SortableHeader>
+                    <SortableHeader field="date" onSort={handleSort}>
+                      Tanggal Lamar
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.job_source && (
@@ -611,14 +595,14 @@ export const ApplicationsList = () => {
                 )}
                 {columnVisibility.salary_range && (
                   <TableHead>
-                    <SortableHeader field="salary_max">
+                    <SortableHeader field="salary_max" onSort={handleSort}>
                       Rentang Gaji
                     </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.follow_up_date && (
                   <TableHead>
-                    <SortableHeader field="follow_up_date">
+                    <SortableHeader field="follow_up_date" onSort={handleSort}>
                       Follow Up
                     </SortableHeader>
                   </TableHead>
@@ -640,12 +624,14 @@ export const ApplicationsList = () => {
                 )}
                 {columnVisibility.created_at && (
                   <TableHead>
-                    <SortableHeader field="created_at">Dibuat</SortableHeader>
+                    <SortableHeader field="created_at" onSort={handleSort}>
+                      Dibuat
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {columnVisibility.updated_at && (
                   <TableHead>
-                    <SortableHeader field="updated_at">
+                    <SortableHeader field="updated_at" onSort={handleSort}>
                       Diperbarui
                     </SortableHeader>
                   </TableHead>
@@ -688,7 +674,7 @@ export const ApplicationsList = () => {
                     key={app.id}
                     className={cn(
                       index % 2 === 1 && "bg-muted/30",
-                      selectedIds.includes(app.id) && "bg-primary/5"
+                      selectedIds.includes(app.id) && "bg-primary/5",
                     )}
                   >
                     <TableCell>
@@ -936,7 +922,9 @@ export const ApplicationsList = () => {
           location: params.location || "",
           company_name: params.company_name || "",
           job_source: params.job_source || "",
-          salary_from: params.salary_from ? Number(params.salary_from) : undefined,
+          salary_from: params.salary_from
+            ? Number(params.salary_from)
+            : undefined,
           salary_to: params.salary_to ? Number(params.salary_to) : undefined,
         }}
         onApplyFilters={(newFilters) => {
@@ -964,7 +952,7 @@ export const ApplicationsList = () => {
                   ? String(newFilters.salary_to)
                   : "",
             } as any,
-            true
+            true,
           );
           setFilterModalOpen(false);
         }}

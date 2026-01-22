@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { paths } from "@/config/paths";
@@ -8,7 +6,6 @@ import {
   Search,
   Filter,
   Plus,
-  ArrowUpDown,
   Eye,
   Pencil,
   Copy,
@@ -88,6 +85,7 @@ import { buildImageUrl, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { SortableHeader } from "@/components/SortableHeader";
 
 type SortField = "updated_at" | "name" | "created_at" | "views" | "headline";
 type SortOrder = "asc" | "desc";
@@ -126,7 +124,7 @@ const CVList = () => {
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<ColumnVisibility>(
       "cv-table-columns",
-      defaultColumnVisibility
+      defaultColumnVisibility,
     );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [cvToDelete, setCvToDelete] = useState<string | null>(null);
@@ -144,13 +142,13 @@ const CVList = () => {
       sort_by: params.sort_by,
       sort_order: params.sort_order,
       language: (params.language as "id" | "en") || undefined,
-      visibility: (params.visibility as any) || undefined,
+          visibility: (params.visibility as "private" | "public") || undefined,
       views_from: params.views_from ? Number(params.views_from) : undefined,
       views_to: params.views_to ? Number(params.views_to) : undefined,
       educations_degree: params.educations_degree || undefined,
       experiences_job_type: params.experiences_job_type || undefined,
       experiences_is_current:
-        (params.experiences_is_current as any) || undefined,
+        (params.experiences_is_current as "true" | "false") || undefined,
       skills_level: params.skills_level || undefined,
       skills_skill_category: params.skills_skill_category || undefined,
       organizations_organization_type:
@@ -198,7 +196,7 @@ const CVList = () => {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
-        false
+        false,
       );
     } else {
       setParams({ sort_by: field, sort_order: "asc" }, false);
@@ -226,7 +224,7 @@ const CVList = () => {
 
   const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
@@ -271,6 +269,7 @@ const CVList = () => {
         url,
       });
     } catch (error) {
+      console.log(error);
       toast.error("Gagal membagikan CV");
     }
   };
@@ -286,24 +285,6 @@ const CVList = () => {
     if (!cv.educations || cv.educations.length === 0) return null;
     return cv.educations[0];
   };
-
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => handleSort(field)}
-    >
-      {children}
-      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-    </Button>
-  );
 
   return (
     <>
@@ -367,7 +348,7 @@ const CVList = () => {
                   </TableHead>
                   {columnVisibility.headline && (
                     <TableHead>
-                      <SortableHeader field="headline">
+                      <SortableHeader field="headline" onSort={handleSort}>
                         Headline / Posisi
                       </SortableHeader>
                     </TableHead>
@@ -399,12 +380,16 @@ const CVList = () => {
                   )}
                   {columnVisibility.views && (
                     <TableHead>
-                      <SortableHeader field="views">Views</SortableHeader>
+                      <SortableHeader field="views" onSort={handleSort}>
+                        Views
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.name && (
                     <TableHead>
-                      <SortableHeader field="name">Nama</SortableHeader>
+                      <SortableHeader field="name" onSort={handleSort}>
+                        Nama
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.email && (
@@ -459,12 +444,14 @@ const CVList = () => {
                   )}
                   {columnVisibility.created_at && (
                     <TableHead>
-                      <SortableHeader field="created_at">Dibuat</SortableHeader>
+                      <SortableHeader field="created_at" onSort={handleSort}>
+                        Dibuat
+                      </SortableHeader>
                     </TableHead>
                   )}
                   {columnVisibility.updated_at && (
                     <TableHead>
-                      <SortableHeader field="updated_at">
+                      <SortableHeader field="updated_at" onSort={handleSort}>
                         Diperbarui
                       </SortableHeader>
                     </TableHead>
@@ -507,7 +494,7 @@ const CVList = () => {
                         key={cv.id}
                         className={cn(
                           index % 2 === 0 ? "bg-background" : "bg-muted/20",
-                          selectedIds.includes(cv.id) && "bg-primary/5"
+                          selectedIds.includes(cv.id) && "bg-primary/5",
                         )}
                       >
                         <TableCell>
@@ -554,7 +541,7 @@ const CVList = () => {
                               <div className="text-sm">
                                 <p className="font-medium truncate max-w-[150px]">
                                   {DEGREE_OPTIONS.find(
-                                    (d) => d.value === latestEdu.degree
+                                    (d) => d.value === latestEdu.degree,
                                   )?.label || latestEdu.degree}
                                 </p>
                                 <p className="text-muted-foreground text-xs truncate max-w-[150px]">
@@ -867,13 +854,13 @@ const CVList = () => {
         onOpenChange={setFilterModalOpen}
         filters={{
           language: (params.language as "id" | "en") || undefined,
-          visibility: (params.visibility as any) || undefined,
+      visibility: (params.visibility as "private" | "public") || undefined,
           views_from: params.views_from || "",
           views_to: params.views_to || "",
           educations_degree: params.educations_degree || "",
           experiences_job_type: params.experiences_job_type || "",
           experiences_is_current:
-            (params.experiences_is_current as any) || undefined,
+            (params.experiences_is_current as "true" | "false") || undefined,
           skills_level: params.skills_level || "",
           skills_skill_category: params.skills_skill_category || "",
           organizations_organization_type:
@@ -893,8 +880,8 @@ const CVList = () => {
               skills_skill_category: newFilters.skills_skill_category || "",
               organizations_organization_type:
                 newFilters.organizations_organization_type || "",
-            } as any,
-            true
+            },
+            true,
           );
         }}
       />

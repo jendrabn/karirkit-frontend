@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/static-components */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { dayjs } from "@/lib/date";
@@ -7,7 +5,6 @@ import {
   Search,
   Filter,
   Plus,
-  ArrowUpDown,
   Eye,
   Pencil,
   Trash2,
@@ -71,6 +68,7 @@ import { toast } from "sonner";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { getTemplateTypeLabel } from "@/types/template";
 import type { TemplateType, Language } from "@/types/template";
+import { SortableHeader } from "@/components/SortableHeader";
 
 type SortField =
   | "created_at"
@@ -199,24 +197,6 @@ export const TemplatesList = () => {
     massDeleteMutation.mutate(selectedIds);
   };
 
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => handleSort(field)}
-    >
-      {children}
-      <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
-    </Button>
-  );
-
   const hasActiveFilters =
     params.type ||
     params.language ||
@@ -341,22 +321,30 @@ export const TemplatesList = () => {
                 )}
                 {visibility.name && (
                   <TableHead>
-                    <SortableHeader field="name">Nama</SortableHeader>
+                    <SortableHeader field="name" onSort={handleSort}>
+                      Nama
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {visibility.type && (
                   <TableHead>
-                    <SortableHeader field="type">Tipe</SortableHeader>
+                    <SortableHeader field="type" onSort={handleSort}>
+                      Tipe
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {visibility.language && (
                   <TableHead>
-                    <SortableHeader field="language">Bahasa</SortableHeader>
+                    <SortableHeader field="language" onSort={handleSort}>
+                      Bahasa
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {visibility.is_premium && (
                   <TableHead className="uppercase text-xs font-medium tracking-wider">
-                    <SortableHeader field="is_premium">Premium</SortableHeader>
+                    <SortableHeader field="is_premium" onSort={handleSort}>
+                      Premium
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {visibility.path && (
@@ -366,12 +354,14 @@ export const TemplatesList = () => {
                 )}
                 {visibility.created_at && (
                   <TableHead>
-                    <SortableHeader field="created_at">Dibuat</SortableHeader>
+                    <SortableHeader field="created_at" onSort={handleSort}>
+                      Dibuat
+                    </SortableHeader>
                   </TableHead>
                 )}
                 {visibility.updated_at && (
                   <TableHead>
-                    <SortableHeader field="updated_at">
+                    <SortableHeader field="updated_at" onSort={handleSort}>
                       Diperbarui
                     </SortableHeader>
                   </TableHead>

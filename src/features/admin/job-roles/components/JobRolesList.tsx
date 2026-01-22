@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/static-components */
 import { dayjs } from "@/lib/date";
 import {
   MoreVertical,
@@ -10,7 +9,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Loader2,
-  ArrowUpDown,
 } from "lucide-react";
 import {
   Table,
@@ -40,6 +38,7 @@ import { Badge } from "@/components/ui/badge";
 import { type JobRole } from "@/types/jobRole";
 import { cn } from "@/lib/utils";
 import { type ColumnVisibility } from "./JobRoleColumnToggle";
+import { SortableHeader } from "@/components/SortableHeader";
 
 interface JobRolesListProps {
   roles: JobRole[];
@@ -80,35 +79,6 @@ export function JobRolesList({
   onSort,
   columnVisibility,
 }: JobRolesListProps) {
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: "created_at" | "updated_at" | "name" | "job_count";
-    children: React.ReactNode;
-  }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-3 h-8 data-[state=open]:bg-accent uppercase text-xs font-medium tracking-wide text-muted-foreground hover:text-foreground"
-      onClick={() => onSort(field)}
-    >
-      {children}
-      <ArrowUpDown
-        className={cn(
-          "ml-1.5 h-3.5 w-3.5 transition-opacity",
-          sortField === field ? "opacity-100" : "opacity-30"
-        )}
-        style={{
-          transform:
-            sortField === field && sortOrder === "desc"
-              ? "rotate(180deg)"
-              : "none",
-        }}
-      />
-    </Button>
-  );
-
   return (
     <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
@@ -125,23 +95,51 @@ export function JobRolesList({
               </TableHead>
               {columnVisibility.name && (
                 <TableHead>
-                  <SortableHeader field="name">Nama Role</SortableHeader>
+                  <SortableHeader
+                    field="name"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Nama Role
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.slug && <TableHead>Slug</TableHead>}
               {columnVisibility.jobCount && (
                 <TableHead>
-                  <SortableHeader field="job_count">Lowongan</SortableHeader>
+                  <SortableHeader
+                    field="job_count"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Lowongan
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.created_at && (
                 <TableHead>
-                  <SortableHeader field="created_at">Dibuat</SortableHeader>
+                  <SortableHeader
+                    field="created_at"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Dibuat
+                  </SortableHeader>
                 </TableHead>
               )}
               {columnVisibility.updated_at && (
                 <TableHead>
-                  <SortableHeader field="updated_at">Diperbarui</SortableHeader>
+                  <SortableHeader
+                    field="updated_at"
+                    onSort={onSort}
+                    activeField={sortField}
+                    sortOrder={sortOrder}
+                  >
+                    Diperbarui
+                  </SortableHeader>
                 </TableHead>
               )}
               <TableHead className="w-[60px]"></TableHead>
