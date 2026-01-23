@@ -19,6 +19,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useSearchParams } from "react-router";
+import { cn } from "@/lib/utils";
 import {
   useResetPassword,
   resetPasswordInputSchema,
@@ -105,7 +106,7 @@ const ResetPasswordForm = () => {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Minimal 8 karakter"
-                      className="h-12 pr-12"
+                      className={cn("h-12 pr-12", form.formState.errors.password && "border-destructive")}
                       {...form.register("password")}
                     />
                     <button
@@ -135,7 +136,7 @@ const ResetPasswordForm = () => {
                       id="confirmPassword"
                       type={showPassword ? "text" : "password"}
                       placeholder="Masukkan kembali password baru"
-                      className="h-12 pr-12"
+                      className={cn("h-12 pr-12", form.formState.errors.confirmPassword && "border-destructive")}
                       {...form.register("confirmPassword")}
                     />
                     <button

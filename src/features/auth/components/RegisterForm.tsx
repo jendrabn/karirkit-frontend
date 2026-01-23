@@ -19,6 +19,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "./GoogleLoginButton";
 import {
@@ -96,7 +97,7 @@ const RegisterForm = () => {
                 <Input
                   id="name"
                   placeholder="Masukkan nama lengkap"
-                  className="h-12"
+                  className={cn("h-12", form.formState.errors.name && "border-destructive")}
                   {...form.register("name")}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
@@ -109,7 +110,7 @@ const RegisterForm = () => {
                 <Input
                   id="username"
                   placeholder="Masukkan username"
-                  className="h-12"
+                  className={cn("h-12", form.formState.errors.username && "border-destructive")}
                   {...form.register("username")}
                 />
                 <FieldError>
@@ -125,7 +126,7 @@ const RegisterForm = () => {
                   id="email"
                   type="email"
                   placeholder="nama@email.com"
-                  className="h-12"
+                  className={cn("h-12", form.formState.errors.email && "border-destructive")}
                   {...form.register("email")}
                 />
                 <FieldError>{form.formState.errors.email?.message}</FieldError>
@@ -140,7 +141,7 @@ const RegisterForm = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Minimal 8 karakter"
-                    className="h-12 pr-12"
+                    className={cn("h-12 pr-12", form.formState.errors.password && "border-destructive")}
                     {...form.register("password")}
                   />
                   <button
@@ -170,7 +171,7 @@ const RegisterForm = () => {
                     id="confirm_password"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Masukkan ulang password"
-                    className="h-12 pr-12"
+                    className={cn("h-12 pr-12", form.formState.errors.confirm_password && "border-destructive")}
                     {...form.register("confirm_password")}
                   />
                   <button

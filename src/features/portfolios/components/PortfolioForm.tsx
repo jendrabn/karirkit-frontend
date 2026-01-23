@@ -19,6 +19,7 @@ import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { cn } from "@/lib/utils";
 import { displayFormErrors } from "@/lib/form-errors";
 import {
   portfolioSchema,
@@ -146,6 +147,7 @@ export function PortfolioForm({
                   <Input
                     {...form.register("title")}
                     placeholder="Contoh: Sistem Manajemen Inventori Berbasis Web"
+                    className={cn(form.formState.errors.title && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.title?.message}
@@ -163,6 +165,7 @@ export function PortfolioForm({
                   <Input
                     {...form.register("sort_description")}
                     placeholder="Ringkasan singkat proyek (1 kalimat)"
+                    className={cn(form.formState.errors.sort_description && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.sort_description?.message}
@@ -180,6 +183,7 @@ export function PortfolioForm({
                     {...form.register("description")}
                     rows={5}
                     placeholder="Jelaskan tujuan proyek, peran Anda, teknologi yang digunakan, dan hasil yang dicapai"
+                    className={cn(form.formState.errors.description && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.description?.message}
@@ -195,6 +199,7 @@ export function PortfolioForm({
                 <Input
                   {...form.register("role_title")}
                   placeholder="Contoh: Frontend Developer"
+                  className={cn(form.formState.errors.role_title && "border-destructive")}
                 />
                 <FieldError>
                   {form.formState.errors.role_title?.message}
@@ -213,7 +218,7 @@ export function PortfolioForm({
                     )
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={cn(form.formState.errors.project_type && "border-destructive")}>
                     <SelectValue placeholder="Pilih tipe proyek" />
                   </SelectTrigger>
                   <SelectContent>
@@ -237,6 +242,7 @@ export function PortfolioForm({
                 <Input
                   {...form.register("industry")}
                   placeholder="Contoh: Teknologi Informasi, Fintech, E-commerce"
+                  className={cn(form.formState.errors.industry && "border-destructive")}
                 />
                 <FieldError>
                   {form.formState.errors.industry?.message}
@@ -254,7 +260,7 @@ export function PortfolioForm({
                     form.setValue("month", parseInt(value))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={cn(form.formState.errors.month && "border-destructive")}>
                     <SelectValue placeholder="Pilih bulan" />
                   </SelectTrigger>
                   <SelectContent>
@@ -279,7 +285,7 @@ export function PortfolioForm({
                     form.setValue("year", parseInt(value))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={cn(form.formState.errors.year && "border-destructive")}>
                     <SelectValue placeholder="Pilih tahun" />
                   </SelectTrigger>
                   <SelectContent>
@@ -310,6 +316,7 @@ export function PortfolioForm({
                   {...form.register("live_url")}
                   type="url"
                   placeholder="https://aplikasi-anda.com"
+                  className={cn(form.formState.errors.live_url && "border-destructive")}
                 />
                 <FieldError>
                   {form.formState.errors.live_url?.message}
@@ -322,6 +329,7 @@ export function PortfolioForm({
                   {...form.register("repo_url")}
                   type="url"
                   placeholder="https://github.com/username/nama-project"
+                  className={cn(form.formState.errors.repo_url && "border-destructive")}
                 />
                 <FieldError>
                   {form.formState.errors.repo_url?.message}

@@ -19,6 +19,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { useLogin, loginInputSchema, type LoginInput } from "@/lib/auth";
@@ -124,7 +125,7 @@ const LoginForm = () => {
                 <Input
                   id="identifier"
                   placeholder="nama@email.com atau username"
-                  className="h-12"
+                  className={cn("h-12", form.formState.errors.identifier && "border-destructive")}
                   {...form.register("identifier")}
                 />
                 <FieldError>
@@ -150,7 +151,7 @@ const LoginForm = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Masukkan password"
-                    className="h-12 pr-12"
+                    className={cn("h-12 pr-12", form.formState.errors.password && "border-destructive")}
                     {...form.register("password")}
                   />
                   <button

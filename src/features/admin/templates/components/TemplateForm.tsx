@@ -32,7 +32,7 @@ import {
 import { TEMPLATE_TYPE_OPTIONS } from "@/types/template";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
-import { buildImageUrl } from "@/lib/utils";
+import { buildImageUrl, cn } from "@/lib/utils";
 
 interface TemplateFormProps {
   initialData?: CreateTemplateInput;
@@ -165,7 +165,7 @@ export function TemplateForm({
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className={cn(form.formState.errors.type && "border-destructive")}>
                         <SelectValue placeholder="Pilih jenis template (CV / Surat Lamaran)" />
                       </SelectTrigger>
                       <SelectContent>
@@ -195,7 +195,7 @@ export function TemplateForm({
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className={cn(form.formState.errors.language && "border-destructive")}>
                         <SelectValue placeholder="Pilih bahasa template" />
                       </SelectTrigger>
                       <SelectContent>
@@ -219,6 +219,7 @@ export function TemplateForm({
                 <Input
                   {...form.register("name")}
                   placeholder="Contoh: Simple Professional CV"
+                  className={cn(form.formState.errors.name && "border-destructive")}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>

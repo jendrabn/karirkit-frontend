@@ -15,6 +15,7 @@ import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const ChangePasswordForm = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -75,6 +76,7 @@ const ChangePasswordForm = () => {
                   type={showCurrentPassword ? "text" : "password"}
                   {...form.register("current_password")}
                   placeholder="Masukkan password saat ini"
+                  className={cn(form.formState.errors.current_password && "border-destructive")}
                 />
                 <button
                   type="button"
@@ -104,6 +106,7 @@ const ChangePasswordForm = () => {
                   type={showNewPassword ? "text" : "password"}
                   {...form.register("new_password")}
                   placeholder="Masukkan password baru"
+                  className={cn(form.formState.errors.new_password && "border-destructive")}
                 />
                 <button
                   type="button"
@@ -134,6 +137,7 @@ const ChangePasswordForm = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   {...form.register("confirm_password")}
                   placeholder="Ulangi password baru"
+                  className={cn(form.formState.errors.confirm_password && "border-destructive")}
                 />
                 <button
                   type="button"

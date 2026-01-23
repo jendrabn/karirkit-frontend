@@ -2,6 +2,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Share2, Trash2 } from "lucide-react";
 import { PhotoUpload } from "@/components/PhotoUpload";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -149,6 +150,7 @@ const ProfileForm = () => {
                     {...register("name")}
                     placeholder="Masukkan nama lengkap"
                     onKeyDown={handleKeyDown}
+                    className={cn(errors.name && "border-destructive")}
                   />
                   <FieldError>{errors.name?.message}</FieldError>
                 </Field>
@@ -161,6 +163,7 @@ const ProfileForm = () => {
                     {...register("username")}
                     placeholder="Masukkan username"
                     onKeyDown={handleKeyDown}
+                    className={cn(errors.username && "border-destructive")}
                   />
                   <FieldError>{errors.username?.message}</FieldError>
                 </Field>
@@ -174,6 +177,7 @@ const ProfileForm = () => {
                     {...register("email")}
                     placeholder="Masukkan email"
                     onKeyDown={handleKeyDown}
+                    className={cn(errors.email && "border-destructive")}
                   />
                   <FieldError>{errors.email?.message}</FieldError>
                 </Field>
@@ -184,6 +188,7 @@ const ProfileForm = () => {
                     {...register("phone")}
                     placeholder="Masukkan nomor telepon"
                     onKeyDown={handleKeyDown}
+                    className={cn(errors.phone && "border-destructive")}
                   />
                   <FieldError>{errors.phone?.message}</FieldError>
                 </Field>
@@ -194,6 +199,7 @@ const ProfileForm = () => {
                     {...register("location")}
                     placeholder="Kota, negara"
                     onKeyDown={handleKeyDown}
+                    className={cn(errors.location && "border-destructive")}
                   />
                   <FieldError>{errors.location?.message}</FieldError>
                 </Field>
@@ -210,9 +216,10 @@ const ProfileForm = () => {
                         }
                       >
                         <SelectTrigger
-                          className={
-                            !field.value ? "text-muted-foreground" : undefined
-                          }
+                          className={cn(
+                            !field.value ? "text-muted-foreground" : undefined,
+                            errors.gender && "border-destructive",
+                          )}
                         >
                           <SelectValue placeholder="Pilih gender" />
                         </SelectTrigger>
@@ -234,6 +241,7 @@ const ProfileForm = () => {
                     id="birth_date"
                     type="date"
                     {...register("birth_date")}
+                    className={cn(errors.birth_date && "border-destructive")}
                   />
                   <FieldDescription>Format: YYYY-MM-DD</FieldDescription>
                   <FieldError>{errors.birth_date?.message}</FieldError>
@@ -248,6 +256,7 @@ const ProfileForm = () => {
                   {...register("headline")}
                   placeholder="Contoh: Product Designer & Frontend Developer"
                   onKeyDown={handleKeyDown}
+                  className={cn(errors.headline && "border-destructive")}
                 />
                 <FieldError>{errors.headline?.message}</FieldError>
               </Field>
@@ -257,6 +266,7 @@ const ProfileForm = () => {
                   {...register("bio")}
                   rows={4}
                   placeholder="Ceritakan tentang latar belakang profesional Anda..."
+                  className={cn(errors.bio && "border-destructive")}
                 />
                 <FieldError>{errors.bio?.message}</FieldError>
               </Field>
@@ -347,6 +357,7 @@ const ProfileForm = () => {
                         <Input
                           placeholder="https://example.com/username"
                           {...register(`social_links.${index}.url`)}
+                          className={cn(errors.social_links?.[index]?.url && "border-destructive")}
                         />
                         <FieldError>
                           {errors.social_links?.[index]?.url?.message}

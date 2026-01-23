@@ -37,6 +37,7 @@ import {
 } from "../api/update-user";
 import type { User } from "@/types/user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface UserFormProps {
   initialData?: User;
@@ -114,6 +115,7 @@ export function UserForm({
                 <Input
                   placeholder="Masukkan nama lengkap"
                   {...form.register("name")}
+                  className={cn(form.formState.errors.name && "border-destructive")}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>
@@ -125,6 +127,7 @@ export function UserForm({
                 <Input
                   placeholder="Masukkan username"
                   {...form.register("username")}
+                  className={cn(form.formState.errors.username && "border-destructive")}
                 />
                 <FieldError>
                   {form.formState.errors.username?.message}
@@ -139,6 +142,7 @@ export function UserForm({
                   type="email"
                   placeholder="Masukkan email"
                   {...form.register("email")}
+                  className={cn(form.formState.errors.email && "border-destructive")}
                 />
                 <FieldError>{form.formState.errors.email?.message}</FieldError>
               </Field>
@@ -152,6 +156,7 @@ export function UserForm({
                     type="password"
                     placeholder="Masukkan password"
                     {...form.register("password")}
+                    className={cn((form.formState.errors as FieldErrors<CreateUserInput>).password && "border-destructive")}
                   />
                   <FieldError>
                     {!isEdit
@@ -167,6 +172,7 @@ export function UserForm({
                 <Input
                   placeholder="Masukkan nomor telepon"
                   {...form.register("phone")}
+                  className={cn(form.formState.errors.phone && "border-destructive")}
                 />
                 <FieldError>{form.formState.errors.phone?.message}</FieldError>
               </Field>
@@ -179,9 +185,9 @@ export function UserForm({
                     <FieldLabel>
                       Role <span className="text-destructive">*</span>
                     </FieldLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih role" />
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger className={cn(form.formState.errors.role && "border-destructive")}>
+                          <SelectValue placeholder="Pilih role" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
                         {USER_ROLE_OPTIONS.map((opt) => (
@@ -206,6 +212,7 @@ export function UserForm({
                   max={1000}
                   placeholder="10"
                   {...form.register("daily_download_limit")}
+                  className={cn(form.formState.errors.daily_download_limit && "border-destructive")}
                 />
                 <FieldError>
                   {form.formState.errors.daily_download_limit?.message}
@@ -219,6 +226,7 @@ export function UserForm({
                   min={0}
                   placeholder="104857600"
                   {...form.register("document_storage_limit")}
+                  className={cn(form.formState.errors.document_storage_limit && "border-destructive")}
                 />
                 <FieldDescription>
                   Nilai dalam byte (1 MB = 1.048.576 byte)

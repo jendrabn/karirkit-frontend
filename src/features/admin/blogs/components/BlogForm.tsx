@@ -171,6 +171,7 @@ export function BlogForm({
                   onChange: handleTitleChange,
                 })}
                 placeholder="Contoh: 7 Tips Lolos Interview Frontend Developer"
+                className={cn(form.formState.errors.title && "border-destructive")}
               />
               <FieldError>{form.formState.errors.title?.message}</FieldError>
             </Field>
@@ -187,7 +188,7 @@ export function BlogForm({
                       value={field.value || ""}
                       onValueChange={(v) => field.onChange(v)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className={cn(form.formState.errors.category_id && "border-destructive")}>
                         <SelectValue placeholder="Pilih kategori blog" />
                       </SelectTrigger>
                       <SelectContent>
@@ -214,7 +215,7 @@ export function BlogForm({
                       Status <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
+                      <SelectTrigger className={cn(form.formState.errors.status && "border-destructive")}>
                         <SelectValue placeholder="Pilih status blog" />
                       </SelectTrigger>
                       <SelectContent>
@@ -316,6 +317,7 @@ export function BlogForm({
                 {...form.register("excerpt")}
                 placeholder="Ringkasan singkat yang muncul di halaman listing blog"
                 rows={3}
+                className={cn(form.formState.errors.excerpt && "border-destructive")}
               />
               <FieldError>{form.formState.errors.excerpt?.message}</FieldError>
             </Field>

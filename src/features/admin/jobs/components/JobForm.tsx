@@ -25,6 +25,7 @@ import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 import { JobMediasUpload } from "./JobMediasUpload";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
+import { cn } from "@/lib/utils";
 
 interface JobFormProps {
   initialData?: Job;
@@ -122,6 +123,7 @@ export function JobForm({
                 <Input
                   placeholder="Contoh: Senior Frontend Developer"
                   {...form.register("title")}
+                  className={cn(form.formState.errors.title && "border-destructive")}
                 />
                 <FieldError>{form.formState.errors.title?.message}</FieldError>
               </Field>

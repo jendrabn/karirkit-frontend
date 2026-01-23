@@ -19,6 +19,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router";
+import { cn } from "@/lib/utils";
 import {
   useForgotPassword,
   forgotPasswordInputSchema,
@@ -97,7 +98,7 @@ const ForgotPasswordForm = () => {
                     id="email"
                     type="email"
                     placeholder="nama@email.com"
-                    className="h-12"
+                    className={cn("h-12", form.formState.errors.email && "border-destructive")}
                     {...form.register("email")}
                   />
                   <FieldError>

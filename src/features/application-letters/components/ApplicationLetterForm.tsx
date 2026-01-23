@@ -181,8 +181,8 @@ export function ApplicationLetterForm({
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
-                          <SelectTrigger id={field.name}>
-                            <SelectValue />
+                        <SelectTrigger id={field.name} className={cn(form.formState.errors.language && "border-destructive")}>
+                          <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="z-50">
                             {LANGUAGE_OPTIONS.map((option) => (
@@ -245,7 +245,7 @@ export function ApplicationLetterForm({
                   <FieldLabel htmlFor="name">
                     Nama Lengkap <span className="text-destructive">*</span>
                   </FieldLabel>
-                  <Input id="name" {...form.register("name")} />
+                  <Input id="name" {...form.register("name")} className={cn(form.formState.errors.name && "border-destructive")} />
                   <FieldError>{form.formState.errors.name?.message}</FieldError>
                 </Field>
 
@@ -258,6 +258,7 @@ export function ApplicationLetterForm({
                     id="birth_place_date"
                     {...form.register("birth_place_date")}
                     placeholder="Jakarta, 15 Mei 1995"
+                    className={cn(form.formState.errors.birth_place_date && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.birth_place_date?.message}
@@ -304,11 +305,11 @@ export function ApplicationLetterForm({
                         Status Pernikahan{" "}
                         <span className="text-destructive">*</span>
                       </FieldLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger id={field.name}>
+                       <Select
+                         onValueChange={field.onChange}
+                         defaultValue={field.value}
+                       >
+                        <SelectTrigger id={field.name} className={cn(form.formState.errors.marital_status && "border-destructive")}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="z-50">
@@ -335,6 +336,7 @@ export function ApplicationLetterForm({
                     id="education"
                     {...form.register("education")}
                     placeholder="S1 Teknik Informatika"
+                    className={cn(form.formState.errors.education && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.education?.message}
@@ -349,6 +351,7 @@ export function ApplicationLetterForm({
                     id="phone"
                     {...form.register("phone")}
                     placeholder="081234567890"
+                    className={cn(form.formState.errors.phone && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.phone?.message}
@@ -359,7 +362,7 @@ export function ApplicationLetterForm({
                   <FieldLabel htmlFor="email">
                     Email <span className="text-destructive">*</span>
                   </FieldLabel>
-                  <Input type="email" id="email" {...form.register("email")} />
+                  <Input type="email" id="email" {...form.register("email")} className={cn(form.formState.errors.email && "border-destructive")} />
                   <FieldError>
                     {form.formState.errors.email?.message}
                   </FieldError>
@@ -373,6 +376,7 @@ export function ApplicationLetterForm({
                     id="applicant_city"
                     {...form.register("applicant_city")}
                     placeholder="Jakarta"
+                    className={cn(form.formState.errors.applicant_city && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.applicant_city?.message}
@@ -413,6 +417,7 @@ export function ApplicationLetterForm({
                     id="receiver_title"
                     {...form.register("receiver_title")}
                     placeholder="HRD Manager"
+                    className={cn(form.formState.errors.receiver_title && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.receiver_title?.message}
@@ -423,7 +428,7 @@ export function ApplicationLetterForm({
                   <FieldLabel htmlFor="company_name">
                     Nama Perusahaan <span className="text-destructive">*</span>
                   </FieldLabel>
-                  <Input id="company_name" {...form.register("company_name")} />
+                  <Input id="company_name" {...form.register("company_name")} className={cn(form.formState.errors.company_name && "border-destructive")} />
                   <FieldError>
                     {form.formState.errors.company_name?.message}
                   </FieldError>
@@ -437,6 +442,7 @@ export function ApplicationLetterForm({
                     id="company_city"
                     {...form.register("company_city")}
                     placeholder="Jakarta"
+                    className={cn(form.formState.errors.company_city && "border-destructive")}
                   />
                   <FieldError>
                     {form.formState.errors.company_city?.message}
@@ -529,6 +535,7 @@ export function ApplicationLetterForm({
                       id="subject"
                       {...form.register("subject")}
                       placeholder="Lamaran Posisi Software Engineer"
+                      className={cn(form.formState.errors.subject && "border-destructive")}
                     />
                     <FieldError>
                       {form.formState.errors.subject?.message}
@@ -595,6 +602,7 @@ export function ApplicationLetterForm({
                     id="attachments"
                     {...form.register("attachments")}
                     placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
+                    className={cn(form.formState.errors.attachments && "border-destructive")}
                   />
                   <FieldDescription>
                     Pisahkan setiap item lampiran dengan tanda koma (,)
