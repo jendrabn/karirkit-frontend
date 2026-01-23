@@ -71,7 +71,7 @@ export function JobForm({
           contact_phone: initialData.contact_phone,
           medias:
             initialData.medias?.map((media) => ({ path: media.path })) || [],
-          status: initialData.status as any,
+          status: initialData.status,
           expiration_date: initialData.expiration_date,
         }
       : {

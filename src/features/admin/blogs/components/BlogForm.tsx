@@ -90,7 +90,7 @@ export function BlogForm({
 
   // Handle form validation errors from API
 
-  useServerValidation(error, form as any);
+  useServerValidation(error, form);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
@@ -149,7 +149,7 @@ export function BlogForm({
   );
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors) as any}>
+    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
       <FieldSet
         disabled={isLoading || isUploadingImage}
         className="space-y-8 mb-6"

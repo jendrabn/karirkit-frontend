@@ -27,22 +27,23 @@ export function useUrlParams<T extends Params>(
 
   // Parse params from URL
   const params = useMemo(() => {
-    const parsed = { ...defaults } as any;
+    const parsed = { ...defaults } as T;
 
     searchParams.forEach((value, key) => {
       if (key in defaults) {
-        const defaultValue = defaults[key];
+        const typedKey = key as keyof T;
+        const defaultValue = defaults[typedKey];
 
         // Type casting based on default value type
         if (typeof defaultValue === "number") {
           const num = Number(value);
           if (!isNaN(num)) {
-            parsed[key] = num;
+            parsed[typedKey] = num as T[typeof typedKey];
           }
         } else if (typeof defaultValue === "boolean") {
-          parsed[key] = value === "true";
+          parsed[typedKey] = (value === "true") as T[typeof typedKey];
         } else {
-          parsed[key] = value;
+          parsed[typedKey] = value as T[typeof typedKey];
         }
       }
     });

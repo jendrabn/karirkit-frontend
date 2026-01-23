@@ -36,12 +36,12 @@ const TemplateGuide = () => {
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                pre: ({ node, ...props }) => (
+                pre: ({ ...props }) => (
                   <div className="overflow-auto w-full my-4 rounded-lg">
                     <pre {...props} />
                   </div>
                 ),
-                table: ({ node, ...props }) => (
+                table: ({ ...props }) => (
                   <div className="overflow-auto w-full my-4">
                     <table {...props} />
                   </div>

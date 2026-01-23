@@ -69,10 +69,8 @@ import {
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { CVVisibilityModal } from "./CVVisibilityModal";
 import { CVFilterModal } from "@/features/cvs/components/CVFilterModal";
-import {
-  CVColumnToggle,
-  defaultColumnVisibility,
-} from "@/features/cvs/components/CVColumnToggle";
+import { CVColumnToggle } from "@/features/cvs/components/CVColumnToggle";
+import { defaultColumnVisibility } from "@/features/cvs/types/cv-column-toggle.constants";
 import type { ColumnVisibility } from "@/features/cvs/components/CVColumnToggle";
 import { useCVs } from "@/features/cvs/api/get-cvs";
 import { useDeleteCV } from "@/features/cvs/api/delete-cv";

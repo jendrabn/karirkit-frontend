@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
 import { CalendarIcon, FileText } from "lucide-react";
@@ -100,11 +99,26 @@ export function ApplicationLetterForm({
   useServerValidation(error, form);
 
   // Fetch templates based on selected language
+  const languageValue = useWatch({ control: form.control, name: "language" });
+  const openingParagraphValue = useWatch({
+    control: form.control,
+    name: "opening_paragraph",
+  });
+  const bodyParagraphValue = useWatch({
+    control: form.control,
+    name: "body_paragraph",
+  });
+  const closingParagraphValue = useWatch({
+    control: form.control,
+    name: "closing_paragraph",
+  });
+  const signatureValue = useWatch({ control: form.control, name: "signature" });
+
   const { data: templatesResponse, isLoading: isTemplatesLoading } =
     useTemplates({
       params: {
         type: "application_letter",
-        language: form.watch("language"),
+        language: languageValue,
       },
     });
 
@@ -134,11 +148,9 @@ export function ApplicationLetterForm({
   };
 
   const getCurrentParagraphValue = () => {
-    if (activeParagraphType === "opening")
-      return form.watch("opening_paragraph");
-    if (activeParagraphType === "body") return form.watch("body_paragraph");
-    if (activeParagraphType === "closing")
-      return form.watch("closing_paragraph");
+    if (activeParagraphType === "opening") return openingParagraphValue || "";
+    if (activeParagraphType === "body") return bodyParagraphValue || "";
+    if (activeParagraphType === "closing") return closingParagraphValue || "";
     return "";
   };
 
@@ -621,7 +633,7 @@ export function ApplicationLetterForm({
 
                 <div className="space-y-3">
                   <SignatureUpload
-                    value={form.watch("signature") || ""}
+                    value={signatureValue || ""}
                     onChange={(value) => form.setValue("signature", value)}
                   />
                   <FieldError>
@@ -663,7 +675,7 @@ export function ApplicationLetterForm({
         paragraphType={activeParagraphType}
         currentValue={getCurrentParagraphValue()}
         onSelectTemplate={handleSelectTemplate}
-        language={form.watch("language")}
+        language={languageValue}
       />
     </>
   );

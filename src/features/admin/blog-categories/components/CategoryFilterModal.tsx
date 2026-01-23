@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -33,9 +33,12 @@ export function CategoryFilterModal({
   const [localFilters, setLocalFilters] =
     useState<CategoryFilterValues>(filters);
 
-  useEffect(() => {
-    setLocalFilters(filters);
-  }, [filters, open]);
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setLocalFilters(filters);
+    }
+    onOpenChange(nextOpen);
+  };
 
   const handleApply = () => {
     onApply(localFilters);
@@ -47,7 +50,7 @@ export function CategoryFilterModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="!max-w-3xl p-0 gap-0">
         <div className="flex flex-col max-h-[85vh]">
           <DialogHeader className="px-6 pt-6 pb-4">

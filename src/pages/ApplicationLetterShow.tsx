@@ -31,6 +31,19 @@ import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
 import { MinimalSEO } from "@/components/MinimalSEO";
 
+const InfoItem = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) => (
+  <div className="space-y-1">
+    <p className="text-sm text-muted-foreground">{label}</p>
+    <p className="font-medium">{value || "-"}</p>
+  </div>
+);
+
 export default function ApplicationLetterShow() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -64,19 +77,6 @@ export default function ApplicationLetterShow() {
       deleteMutation.mutate(id);
     }
   };
-
-  const InfoItem = ({
-    label,
-    value,
-  }: {
-    label: string;
-    value: string | number;
-  }) => (
-    <div className="space-y-1">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="font-medium">{value || "-"}</p>
-    </div>
-  );
 
   if (isLoading) {
     return (

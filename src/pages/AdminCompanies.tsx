@@ -4,14 +4,20 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { type Company } from "@/types/company";
+import { type Company, type EmployeeSize } from "@/types/company";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { useCompanies } from "@/features/admin/companies/api/get-companies";
-import { useCreateCompany } from "@/features/admin/companies/api/create-company";
-import { useUpdateCompany } from "@/features/admin/companies/api/update-company";
+import {
+  useCreateCompany,
+  type CreateCompanyInput,
+} from "@/features/admin/companies/api/create-company";
+import {
+  useUpdateCompany,
+  type UpdateCompanyInput,
+} from "@/features/admin/companies/api/update-company";
 import { useDeleteCompany } from "@/features/admin/companies/api/delete-company";
 import { useMassDeleteCompanies } from "@/features/admin/companies/api/mass-delete-companies";
 import { CompaniesList } from "@/features/admin/companies/components/CompaniesList";
@@ -23,8 +29,8 @@ import { CompanyFilterModal } from "@/features/admin/companies/components/Compan
 import {
   CompanyColumnToggle,
   type ColumnVisibility,
-  defaultColumnVisibility,
 } from "@/features/admin/companies/components/CompanyColumnToggle";
+import { defaultColumnVisibility } from "@/features/admin/companies/types/company-column-toggle.constants";
 import { paths } from "@/config/paths";
 
 export default function AdminCompanies() {
@@ -83,7 +89,9 @@ export default function AdminCompanies() {
       q: params.q || undefined,
       sort_by: params.sort_by,
       sort_order: params.sort_order,
-      employee_size: (params.employee_size as any) || undefined,
+      employee_size: params.employee_size
+        ? (params.employee_size as EmployeeSize)
+        : undefined,
       business_sector: params.business_sector || undefined,
       job_count_from: params.job_count_from
         ? Number(params.job_count_from)
@@ -99,7 +107,7 @@ export default function AdminCompanies() {
   const deleteCompanyMutation = useDeleteCompany();
   const massDeleteMutation = useMassDeleteCompanies();
 
-  const handleCreate = (data: any) => {
+  const handleCreate = (data: CreateCompanyInput) => {
     createCompanyMutation.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -109,7 +117,7 @@ export default function AdminCompanies() {
     });
   };
 
-  const handleUpdate = (data: any) => {
+  const handleUpdate = (data: UpdateCompanyInput) => {
     if (!editingCompany) return;
     updateCompanyMutation.mutate(
       { id: editingCompany.id, data },
@@ -285,7 +293,9 @@ export default function AdminCompanies() {
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{
-          employee_size: (params.employee_size as any) || undefined,
+          employee_size: params.employee_size
+            ? (params.employee_size as EmployeeSize)
+            : undefined,
           business_sector: params.business_sector || "",
           job_count_from: params.job_count_from || "",
           job_count_to: params.job_count_to || "",

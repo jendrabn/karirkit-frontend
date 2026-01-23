@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { Camera, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -23,24 +23,13 @@ export function PhotoUpload({
   webp,
   format,
 }: PhotoUploadProps) {
-  const [preview, setPreview] = useState<string>(
-    value ? buildImageUrl(value) : "",
-  );
+  const preview = value ? buildImageUrl(value) : "";
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (value) {
-      setPreview(buildImageUrl(value));
-    } else {
-      setPreview("");
-    }
-  }, [value]);
 
   const uploadMutation = useUploadFile({
     mutationConfig: {
       onSuccess: (data) => {
         onChange(data.path);
-        setPreview(buildImageUrl(data.path));
         toast.success("Foto berhasil diunggah");
       },
       onError: () => {

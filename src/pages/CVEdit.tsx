@@ -5,7 +5,8 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { CVForm } from "@/features/cvs/components/CVForm";
 import { type CVFormData } from "@/features/cvs/api/create-cv";
 import { useCV } from "@/features/cvs/api/get-cv";
-import { useUpdateCV } from "@/features/cvs/api/update-cv";
+import { useUpdateCV, type UpdateCVInput } from "@/features/cvs/api/update-cv";
+import type { CV } from "@/types/cv";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useServerValidation } from "@/hooks/use-server-validation";
@@ -34,7 +35,7 @@ export default function CVEdit() {
 
   const handleSubmit = (data: CVFormData) => {
     if (id) {
-      updateMutation.mutate({ id, data: data as any });
+      updateMutation.mutate({ id, data: data as UpdateCVInput });
     }
   };
 
@@ -65,7 +66,7 @@ export default function CVEdit() {
     );
   }
 
-  const cv = cvResponse;
+  const cv = cvResponse as CV | undefined;
 
   if (!cv) {
     return (
@@ -111,7 +112,7 @@ export default function CVEdit() {
         backButtonUrl="/cvs"
       />
       <CVForm
-        initialData={cv as any}
+        initialData={cv}
         onSubmit={handleSubmit}
         onCancel={() => navigate("/cvs")}
         isLoading={updateMutation.isPending}

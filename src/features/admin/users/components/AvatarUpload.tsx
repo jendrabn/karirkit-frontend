@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Camera, Loader2, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, buildImageUrl } from "@/lib/utils";
@@ -18,20 +18,14 @@ export function AvatarUpload({
   className,
   name,
 }: AvatarUploadProps) {
-  const [preview, setPreview] = useState<string | null>(value || null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Sync preview with value if value changes externally and we don't have a local preview overriding it
-  // Or just rely on value if preview is null?
-  // Let's keep it simple: if value changes, update preview.
-  useEffect(() => {
-    setPreview(value || null);
-  }, [value]);
 
   const uploadFileMutation = useUploadFile({
     mutationConfig: {
       onSuccess: (data) => {
         onChange(data.path);
+        setLocalPreview(null);
         // We update preview again with the path to ensure it's in sync with what's saved
         // although FileReader already showed it.
         // But FileReader result is base64, data.path is relative path.
@@ -43,7 +37,7 @@ export function AvatarUpload({
       onError: () => {
         toast.error("Gagal mengupload avatar");
         // Revert to original value
-        setPreview(value || null);
+        setLocalPreview(null);
       },
     },
   });
@@ -67,7 +61,7 @@ export function AvatarUpload({
     // Set preview immediately
     const reader = new FileReader();
     reader.onloadend = () => {
-      setPreview(reader.result as string);
+      setLocalPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
 
@@ -76,10 +70,13 @@ export function AvatarUpload({
   };
 
   const isLoading = uploadFileMutation.isPending;
+  const preview = localPreview ?? value ?? null;
   const imageSrc =
     preview?.startsWith("data:") || preview?.startsWith("http")
       ? preview
-      : buildImageUrl(preview);
+      : preview
+        ? buildImageUrl(preview)
+        : "";
 
   return (
     <div className={cn("flex flex-col items-center gap-4", className)}>

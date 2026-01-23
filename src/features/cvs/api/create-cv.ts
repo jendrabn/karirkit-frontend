@@ -17,17 +17,22 @@ import type {
 } from "./get-cvs";
 
 export const educationSchema = z.object({
-  degree: z.enum([
-    "middle_school",
-    "high_school",
-    "associate_d1",
-    "associate_d2",
-    "associate_d3",
-    "bachelor",
-    "master",
-    "doctorate",
-    "any",
-  ]),
+  degree: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z
+      .enum([
+        "middle_school",
+        "high_school",
+        "associate_d1",
+        "associate_d2",
+        "associate_d3",
+        "bachelor",
+        "master",
+        "doctorate",
+        "any",
+      ])
+      .default("any")
+  ),
   school_name: z.string().min(1, "Nama sekolah/universitas wajib diisi"),
   school_location: z.string().min(1, "Lokasi wajib diisi"),
   major: z.string().optional(),
@@ -138,7 +143,8 @@ export const cvSchema = z.object({
   language: z.enum(["en", "id"]).optional(),
 });
 
-export type CVFormData = z.infer<typeof cvSchema>;
+export type CVFormInput = z.input<typeof cvSchema>;
+export type CVFormData = z.output<typeof cvSchema>;
 
 export const normalizeProjects = (projects?: Project[]) =>
   (projects || []).map((project) => ({

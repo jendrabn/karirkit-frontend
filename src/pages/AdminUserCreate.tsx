@@ -2,9 +2,12 @@ import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { UserForm } from "@/features/admin/users/components/UserForm";
-import { useCreateUser } from "@/features/admin/users/api/create-user";
+import {
+  useCreateUser,
+  type CreateUserInput,
+} from "@/features/admin/users/api/create-user";
 import { toast } from "sonner";
-import type { CreateUserInput } from "@/features/admin/users/api/create-user";
+import type { UpdateUserInput } from "@/features/admin/users/api/update-user";
 import { MinimalSEO } from "@/components/MinimalSEO";
 import { paths } from "@/config/paths";
 
@@ -19,9 +22,10 @@ const AdminUserCreate = () => {
     },
   });
 
-  const handleSubmit = (data: any) => {
-    // data is CreateUserInput | UpdateUserInput, but here we know it is Create
-    createUserMutation.mutate(data as CreateUserInput);
+  const handleSubmit = (data: CreateUserInput | UpdateUserInput) => {
+    if ("password" in data) {
+      createUserMutation.mutate(data);
+    }
   };
 
   return (

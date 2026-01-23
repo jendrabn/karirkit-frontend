@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,25 +27,6 @@ export interface ColumnVisibility {
   updated_at: boolean;
   created_at: boolean;
 }
-
-export const defaultColumnVisibility: ColumnVisibility = {
-  company_name: true,
-  position: true,
-  status: true,
-  result_status: true,
-  date: true,
-  job_source: true,
-  location: true,
-  follow_up_date: false,
-  job_type: false,
-  work_system: false,
-  salary_range: false,
-  contact_name: false,
-  contact_email: false,
-  contact_phone: false,
-  created_at: true,
-  updated_at: false,
-};
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
   company_name: "Perusahaan",

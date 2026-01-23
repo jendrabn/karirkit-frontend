@@ -1,6 +1,6 @@
 import type { ListResponse } from "./api";
 import type { SocialPlatform } from "./social";
-import { JOB_TYPE_LABELS } from "./job";
+import { JOB_TYPE_LABELS, type JobType } from "./job";
 
 export type DegreeType =
   | "middle_school"
@@ -52,7 +52,7 @@ export interface CvExperience {
   job_title: string;
   company_name: string;
   company_location: string;
-  job_type: any; // Simplified to avoid circular dependency or keep it flexible
+  job_type: JobType;
   start_month: number;
   start_year: number;
   end_month: number | null;

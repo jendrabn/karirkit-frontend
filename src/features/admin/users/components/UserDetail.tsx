@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { dayjs } from "@/lib/date";
@@ -114,7 +114,10 @@ export const UserDetail = ({ user }: { user: User }) => {
     });
   }, [form, user]);
 
-  const statusValue = form.watch("status");
+  const statusValue = useWatch({
+    control: form.control,
+    name: "status",
+  });
   const showSuspendedUntil = statusValue === "suspended";
 
   const handleStatusSubmit = form.handleSubmit((data) => {
@@ -284,7 +287,7 @@ export const UserDetail = ({ user }: { user: User }) => {
             <Field>
               <FieldLabel>Status</FieldLabel>
               <Select
-                value={form.watch("status")}
+                value={statusValue}
                 onValueChange={(value) => {
                   form.setValue("status", value as User["status"], {
                     shouldDirty: true,

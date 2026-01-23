@@ -4,9 +4,11 @@ import { toast } from "sonner";
 import { api } from "@/lib/api-client";
 
 export const downloadDocument = (id: string) => {
-  return api.get(`/documents/${id}/download`, {
-    responseType: "blob",
-  });
+  return api
+    .get<Blob>(`/documents/${id}/download`, {
+      responseType: "blob",
+    })
+    .then((response) => response.data);
 };
 
 type UseDownloadDocumentOptions = {
@@ -23,7 +25,7 @@ export const useDownloadDocument = (options?: UseDownloadDocumentOptions) => {
       originalName?: string;
     }) => downloadDocument(id),
     onSuccess: (data, variables) => {
-      const url = window.URL.createObjectURL(new Blob([data as any]));
+      const url = window.URL.createObjectURL(data);
       const link = document.createElement("a");
       link.href = url;
 

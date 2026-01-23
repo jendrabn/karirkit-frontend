@@ -4,7 +4,10 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { toast } from "sonner";
 import { useJob } from "@/features/admin/jobs/api/get-job";
-import { useUpdateJob } from "@/features/admin/jobs/api/update-job";
+import {
+  useUpdateJob,
+  type UpdateJobInput,
+} from "@/features/admin/jobs/api/update-job";
 import { JobForm } from "@/features/admin/jobs/components/JobForm";
 import { paths } from "@/config/paths";
 
@@ -15,7 +18,7 @@ export default function AdminJobEdit() {
   const { data: job, isLoading: isLoadingJob } = useJob({ id: id || "" });
   const updateJobMutation = useUpdateJob();
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: UpdateJobInput) => {
     if (!id) return;
     updateJobMutation.mutate(
       { id, data },

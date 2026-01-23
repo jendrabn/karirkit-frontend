@@ -36,7 +36,7 @@ interface CompanyFormModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   editingCompany: Company | null;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: CreateCompanyInput | UpdateCompanyInput) => void;
   onCancel: () => void;
   isLoading: boolean;
 }

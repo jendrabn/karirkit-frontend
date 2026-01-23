@@ -2,7 +2,10 @@ import { useNavigate } from "react-router";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { toast } from "sonner";
-import { useCreateJob } from "@/features/admin/jobs/api/create-job";
+import {
+  useCreateJob,
+  type CreateJobInput,
+} from "@/features/admin/jobs/api/create-job";
 import { JobForm } from "@/features/admin/jobs/components/JobForm";
 import { paths } from "@/config/paths";
 
@@ -10,7 +13,7 @@ export default function AdminJobCreate() {
   const navigate = useNavigate();
   const createJobMutation = useCreateJob();
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: CreateJobInput) => {
     createJobMutation.mutate(data, {
       onSuccess: (response) => {
         toast.success("Lowongan berhasil dibuat");

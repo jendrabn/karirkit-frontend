@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { Controller, useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Plus,
@@ -54,7 +54,12 @@ import { SOCIAL_PLATFORM_OPTIONS } from "@/types/social";
 import type { CVParagraphType } from "@/types/template";
 import { SKILL_CATEGORY_LABELS } from "@/types/skill-categories";
 import type { SkillCategory } from "@/types/cv";
-import { cvSchema, normalizeProjects, type CVFormData } from "../api/create-cv";
+import {
+  cvSchema,
+  normalizeProjects,
+  type CVFormData,
+  type CVFormInput,
+} from "../api/create-cv";
 
 interface CVFormProps {
   initialData?: Partial<CV>;
@@ -74,7 +79,7 @@ export function CVForm({
   isLoading,
   error,
 }: CVFormProps) {
-  const form = useForm<CVFormData>({
+  const form = useForm<CVFormInput>({
     resolver: zodResolver(cvSchema),
     defaultValues: {
       template_id: initialData?.template_id || "",
@@ -85,14 +90,19 @@ export function CVForm({
       address: initialData?.address || "",
       about: initialData?.about || "",
       photo: initialData?.photo || "",
-      educations: (initialData?.educations || []) as any[],
-      certificates: (initialData?.certificates || []) as any[],
-      experiences: (initialData?.experiences || []) as any[],
-      skills: (initialData?.skills || []) as any[],
-      awards: (initialData?.awards || []) as any[],
-      social_links: (initialData?.social_links || []) as any[],
-      organizations: (initialData?.organizations || []) as any[],
-      projects: (normalizeProjects(initialData?.projects) || []) as any[],
+      educations: (initialData?.educations || []) as CVFormInput["educations"],
+      certificates:
+        (initialData?.certificates || []) as CVFormInput["certificates"],
+      experiences:
+        (initialData?.experiences || []) as CVFormInput["experiences"],
+      skills: (initialData?.skills || []) as CVFormInput["skills"],
+      awards: (initialData?.awards || []) as CVFormInput["awards"],
+      social_links:
+        (initialData?.social_links || []) as CVFormInput["social_links"],
+      organizations:
+        (initialData?.organizations || []) as CVFormInput["organizations"],
+      projects:
+        (normalizeProjects(initialData?.projects) || []) as CVFormInput["projects"],
       language: initialData?.language || "id",
     },
   });
@@ -102,7 +112,6 @@ export function CVForm({
     control,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = form;
 
@@ -110,8 +119,22 @@ export function CVForm({
 
   useServerValidation(error, form);
 
+  const languageValue = useWatch({ control, name: "language" }) ?? "id";
+  const templateIdValue = useWatch({ control, name: "template_id" }) ?? "";
+  const nameValue = useWatch({ control, name: "name" }) ?? "";
+  const photoValue = useWatch({ control, name: "photo" }) ?? "";
+  const aboutValue = useWatch({ control, name: "about" }) ?? "";
+  const educationsValue = useWatch({ control, name: "educations" }) ?? [];
+  const experiencesValue = useWatch({ control, name: "experiences" }) ?? [];
+  const skillsValue = useWatch({ control, name: "skills" }) ?? [];
+  const awardsValue = useWatch({ control, name: "awards" }) ?? [];
+  const certificatesValue = useWatch({ control, name: "certificates" }) ?? [];
+  const organizationsValue =
+    useWatch({ control, name: "organizations" }) ?? [];
+  const projectsValue = useWatch({ control, name: "projects" }) ?? [];
+
   const { data: templatesData, isLoading: isTemplatesLoading } = useTemplates({
-    params: { type: "cv", language: watch("language") },
+    params: { type: "cv", language: languageValue },
   });
 
   const apiTemplates =
@@ -136,7 +159,6 @@ export function CVForm({
   const organizations = useFieldArray({ control, name: "organizations" });
   const projects = useFieldArray({ control, name: "projects" });
 
-  const photoValue = watch("photo");
   const handleOpenTemplateModal = (type: CVParagraphType, index?: number) => {
     setActiveParagraphType(type);
     setActiveParagraphIndex(typeof index === "number" ? index : null);
@@ -172,21 +194,21 @@ export function CVForm({
     if (!activeParagraphType) return "";
 
     if (activeParagraphType === "about") {
-      return watch("about") || "";
+      return aboutValue || "";
     }
 
     if (activeParagraphIndex === null) return "";
 
     if (activeParagraphType === "experience") {
-      return watch(`experiences.${activeParagraphIndex}.description`) || "";
+      return experiencesValue?.[activeParagraphIndex]?.description || "";
     }
 
     if (activeParagraphType === "organization") {
-      return watch(`organizations.${activeParagraphIndex}.description`) || "";
+      return organizationsValue?.[activeParagraphIndex]?.description || "";
     }
 
     if (activeParagraphType === "project") {
-      return watch(`projects.${activeParagraphIndex}.description`) || "";
+      return projectsValue?.[activeParagraphIndex]?.description || "";
     }
 
     return "";
@@ -195,9 +217,9 @@ export function CVForm({
   return (
     <>
       <form
-        onSubmit={handleSubmit(onSubmit, (errors) => {
-          displayFormErrors(errors);
-        })}
+        onSubmit={handleSubmit((data) => {
+          onSubmit(cvSchema.parse(data));
+        }, displayFormErrors)}
       >
         <FieldSet disabled={isLoading} className="space-y-6 mb-6">
           {/* Template Selection */}
@@ -213,7 +235,7 @@ export function CVForm({
                       Bahasa <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Select
-                      value={watch("language")}
+                      value={languageValue}
                       onValueChange={(v) =>
                         setValue("language", v as "id" | "en")
                       }
@@ -248,7 +270,7 @@ export function CVForm({
                       </FieldLabel>
                       <TemplateSelector
                         templates={apiTemplates}
-                        value={watch("template_id")}
+                        value={templateIdValue}
                         onChange={(v) => setValue("template_id", v)}
                       />
                       <FieldError>{errors.template_id?.message}</FieldError>
@@ -270,7 +292,7 @@ export function CVForm({
                   <PhotoUpload
                     value={photoValue || ""}
                     onChange={(value) => setValue("photo", value)}
-                    name={watch("name")}
+                    name={nameValue}
                     quality={75}
                     webp={false}
                     format="jpg,png"
@@ -441,7 +463,7 @@ export function CVForm({
                               {...register(`educations.${index}.degree`)}
                             />
                             <Select
-                              value={watch(`educations.${index}.degree`)}
+                              value={educationsValue?.[index]?.degree as string | undefined}
                               onValueChange={(v) =>
                                 setValue(
                                   `educations.${index}.degree`,
@@ -529,7 +551,7 @@ export function CVForm({
                             <FieldLabel>Bulan Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`educations.${index}.start_month`) || 1,
+                                educationsValue?.[index]?.start_month ?? 1,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -560,7 +582,7 @@ export function CVForm({
                             <FieldLabel>Tahun Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`educations.${index}.start_year`) ||
+                                educationsValue?.[index]?.start_year ??
                                   currentYear,
                               )}
                               onValueChange={(v) =>
@@ -589,7 +611,7 @@ export function CVForm({
                             <FieldLabel>Bulan Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`educations.${index}.end_month`) || 0,
+                                educationsValue?.[index]?.end_month ?? 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -597,7 +619,7 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={watch(`educations.${index}.is_current`)}
+                              disabled={!!educationsValue?.[index]?.is_current}
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -622,7 +644,7 @@ export function CVForm({
                             <FieldLabel>Tahun Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`educations.${index}.end_year`) || 0,
+                                educationsValue?.[index]?.end_year ?? 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -630,7 +652,7 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={watch(`educations.${index}.is_current`)}
+                              disabled={!!educationsValue?.[index]?.is_current}
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -657,7 +679,7 @@ export function CVForm({
                           <Checkbox
                             id={`edu-current-${index}`}
                             className="rounded-full data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                            checked={watch(`educations.${index}.is_current`)}
+                            checked={!!educationsValue?.[index]?.is_current}
                             onCheckedChange={(v) => {
                               setValue(`educations.${index}.is_current`, !!v);
                               if (v) {
@@ -833,7 +855,7 @@ export function CVForm({
                               <span className="text-destructive">*</span>
                             </FieldLabel>
                             <Select
-                              value={watch(`experiences.${index}.job_type`)}
+                              value={experiencesValue?.[index]?.job_type}
                               onValueChange={(v) =>
                                 setValue(
                                   `experiences.${index}.job_type`,
@@ -868,7 +890,7 @@ export function CVForm({
                             <FieldLabel>Bulan Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`experiences.${index}.start_month`) || 1,
+                                experiencesValue?.[index]?.start_month ?? 1,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -902,7 +924,7 @@ export function CVForm({
                             <FieldLabel>Tahun Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`experiences.${index}.start_year`) ||
+                                experiencesValue?.[index]?.start_year ??
                                   currentYear,
                               )}
                               onValueChange={(v) =>
@@ -932,7 +954,7 @@ export function CVForm({
                             <FieldLabel>Bulan Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`experiences.${index}.end_month`) || 0,
+                                experiencesValue?.[index]?.end_month ?? 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -940,9 +962,7 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={watch(
-                                `experiences.${index}.is_current`,
-                              )}
+                              disabled={!!experiencesValue?.[index]?.is_current}
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -967,7 +987,7 @@ export function CVForm({
                             <FieldLabel>Tahun Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`experiences.${index}.end_year`) || 0,
+                                experiencesValue?.[index]?.end_year ?? 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -975,9 +995,7 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={watch(
-                                `experiences.${index}.is_current`,
-                              )}
+                              disabled={!!experiencesValue?.[index]?.is_current}
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -1004,7 +1022,7 @@ export function CVForm({
                           <Checkbox
                             id={`exp-current-${index}`}
                             className="rounded-full data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                            checked={watch(`experiences.${index}.is_current`)}
+                            checked={!!experiencesValue?.[index]?.is_current}
                             onCheckedChange={(v) => {
                               setValue(`experiences.${index}.is_current`, !!v);
                               if (v) {
@@ -1094,8 +1112,7 @@ export function CVForm({
                       <Field className="w-48">
                         <Select
                           value={
-                            watch(`skills.${index}.skill_category`) ||
-                            "software"
+                            skillsValue?.[index]?.skill_category || "software"
                           }
                           onValueChange={(v) =>
                             setValue(
@@ -1109,7 +1126,7 @@ export function CVForm({
                           </SelectTrigger>
                           <SelectContent className="max-h-[300px]">
                             {Object.entries(
-                              SKILL_CATEGORY_LABELS[watch("language") || "id"],
+                              SKILL_CATEGORY_LABELS[languageValue],
                             ).map(([key, label]) => (
                               <SelectItem key={key} value={key}>
                                 {label}
@@ -1133,7 +1150,7 @@ export function CVForm({
                       </Field>
                       <Field className="w-40">
                         <Select
-                          value={watch(`skills.${index}.level`)}
+                          value={skillsValue?.[index]?.level}
                           onValueChange={(v) =>
                             setValue(
                               `skills.${index}.level`,
@@ -1274,7 +1291,7 @@ export function CVForm({
                             <FieldLabel>Bulan Terbit</FieldLabel>
                             <Select
                               value={String(
-                                watch(`certificates.${index}.issue_month`) || 1,
+                                certificatesValue?.[index]?.issue_month ?? 1,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -1308,7 +1325,7 @@ export function CVForm({
                             <FieldLabel>Tahun Terbit</FieldLabel>
                             <Select
                               value={String(
-                                watch(`certificates.${index}.issue_year`) ||
+                                certificatesValue?.[index]?.issue_year ??
                                   currentYear,
                               )}
                               onValueChange={(v) =>
@@ -1341,8 +1358,7 @@ export function CVForm({
                             <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
                             <Select
                               value={String(
-                                watch(`certificates.${index}.expiry_month`) ||
-                                  0,
+                                certificatesValue?.[index]?.expiry_month ?? 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -1350,9 +1366,9 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={watch(
-                                `certificates.${index}.no_expiry`,
-                              )}
+                              disabled={
+                                !!certificatesValue?.[index]?.no_expiry
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -1380,7 +1396,7 @@ export function CVForm({
                             <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
                             <Select
                               value={String(
-                                watch(`certificates.${index}.expiry_year`) || 0,
+                                certificatesValue?.[index]?.expiry_year ?? 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -1388,9 +1404,9 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={watch(
-                                `certificates.${index}.no_expiry`,
-                              )}
+                              disabled={
+                                !!certificatesValue?.[index]?.no_expiry
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -1420,7 +1436,7 @@ export function CVForm({
                           <Checkbox
                             id={`cert-no-expiry-${index}`}
                             className="rounded-full data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                            checked={watch(`certificates.${index}.no_expiry`)}
+                            checked={!!certificatesValue?.[index]?.no_expiry}
                             onCheckedChange={(v) => {
                               setValue(`certificates.${index}.no_expiry`, !!v);
                               if (v) {
@@ -1581,12 +1597,12 @@ export function CVForm({
                         </Field>
                         <Field>
                           <FieldLabel>Tahun</FieldLabel>
-                          <Select
-                            value={String(
-                              watch(`awards.${index}.year`) || currentYear,
-                            )}
-                            onValueChange={(v) =>
-                              setValue(`awards.${index}.year`, parseInt(v))
+                            <Select
+                              value={String(
+                                awardsValue?.[index]?.year ?? currentYear,
+                              )}
+                              onValueChange={(v) =>
+                                setValue(`awards.${index}.year`, parseInt(v))
                             }
                           >
                             <SelectTrigger>
@@ -1730,9 +1746,9 @@ export function CVForm({
                               <span className="text-destructive">*</span>
                             </FieldLabel>
                             <Select
-                              value={watch(
-                                `organizations.${index}.organization_type`,
-                              )}
+                              value={
+                                organizationsValue?.[index]?.organization_type
+                              }
                               onValueChange={(v) =>
                                 setValue(
                                   `organizations.${index}.organization_type`,
@@ -1779,8 +1795,7 @@ export function CVForm({
                             <FieldLabel>Bulan Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`organizations.${index}.start_month`) ||
-                                  1,
+                                organizationsValue?.[index]?.start_month ?? 1,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -1814,7 +1829,7 @@ export function CVForm({
                             <FieldLabel>Tahun Mulai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`organizations.${index}.start_year`) ||
+                                organizationsValue?.[index]?.start_year ??
                                   currentYear,
                               )}
                               onValueChange={(v) =>
@@ -1846,7 +1861,7 @@ export function CVForm({
                             <FieldLabel>Bulan Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`organizations.${index}.end_month`) || 0,
+                                organizationsValue?.[index]?.end_month ?? 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -1854,9 +1869,9 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={watch(
-                                `organizations.${index}.is_current`,
-                              )}
+                              disabled={
+                                !!organizationsValue?.[index]?.is_current
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -1884,7 +1899,7 @@ export function CVForm({
                             <FieldLabel>Tahun Selesai</FieldLabel>
                             <Select
                               value={String(
-                                watch(`organizations.${index}.end_year`) || 0,
+                                organizationsValue?.[index]?.end_year ?? 0,
                               )}
                               onValueChange={(v) =>
                                 setValue(
@@ -1892,9 +1907,9 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={watch(
-                                `organizations.${index}.is_current`,
-                              )}
+                              disabled={
+                                !!organizationsValue?.[index]?.is_current
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -1921,7 +1936,7 @@ export function CVForm({
                           <Checkbox
                             id={`org-current-${index}`}
                             className="rounded-full data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                            checked={watch(`organizations.${index}.is_current`)}
+                            checked={!!organizationsValue?.[index]?.is_current}
                             onCheckedChange={(v) => {
                               setValue(
                                 `organizations.${index}.is_current`,
@@ -2057,7 +2072,7 @@ export function CVForm({
                             </FieldLabel>
                             <Select
                               value={String(
-                                watch(`projects.${index}.year`) ?? currentYear,
+                                projectsValue?.[index]?.year ?? currentYear,
                               )}
                               onValueChange={(value) =>
                                 setValue(
@@ -2253,7 +2268,7 @@ export function CVForm({
         paragraphType={activeParagraphType}
         currentValue={getCurrentParagraphValue()}
         onSelectTemplate={handleSelectTemplate}
-        language={watch("language")}
+        language={languageValue}
       />
     </>
   );

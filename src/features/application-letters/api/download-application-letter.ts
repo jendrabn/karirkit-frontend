@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 
@@ -6,10 +7,12 @@ export const downloadApplicationLetter = (
   id: string,
   format: "pdf" | "docx"
 ) => {
-  return api.get(`/application-letters/${id}/download`, {
-    params: { format },
-    responseType: "blob",
-  });
+  return api
+    .get<Blob>(`/application-letters/${id}/download`, {
+      params: { format },
+      responseType: "blob",
+    })
+    .then((response) => response.data);
 };
 
 type UseDownloadApplicationLetterOptions = {
@@ -32,7 +35,7 @@ export const useDownloadApplicationLetter = (
     }) => downloadApplicationLetter(id, format),
     onSuccess: (data, variables) => {
       // Create blob link to download
-      const url = window.URL.createObjectURL(new Blob([data as any]));
+      const url = window.URL.createObjectURL(data);
       const link = document.createElement("a");
       link.href = url;
       const extension = variables.format;
@@ -52,7 +55,7 @@ export const useDownloadApplicationLetter = (
       );
       options?.onSuccess?.();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError) => {
       if (error.response?.status === 429) {
         toast.error("Batas unduhan harian tercapai. Silakan coba lagi besok.");
       } else {

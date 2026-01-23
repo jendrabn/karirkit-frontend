@@ -14,12 +14,16 @@ import { useMassDeleteJobs } from "@/features/admin/jobs/api/mass-delete-jobs";
 import { JobsList } from "@/features/admin/jobs/components/JobsList";
 import { JobDeleteDialog } from "@/features/admin/jobs/components/JobDeleteDialog";
 import { JobBulkDeleteDialog } from "@/features/admin/jobs/components/JobBulkDeleteDialog";
-import { JobFilterModal } from "@/features/admin/jobs/components/JobFilterModal";
+import {
+  JobFilterModal,
+  type JobFilterValues,
+} from "@/features/admin/jobs/components/JobFilterModal";
+import type { EducationLevel, JobStatus } from "@/types/job";
 import {
   JobColumnToggle,
   type ColumnVisibility,
-  defaultColumnVisibility,
 } from "@/features/admin/jobs/components/JobColumnToggle";
+import { defaultColumnVisibility } from "@/features/admin/jobs/types/job-column-toggle.constants";
 
 type SortField =
   | "created_at"
@@ -84,10 +88,12 @@ export default function AdminJobs() {
       q: params.q || undefined,
       sort_by: params.sort_by,
       sort_order: params.sort_order,
-      status: (params.status as any) || undefined,
+      status: params.status ? (params.status as JobStatus) : undefined,
       job_type: params.job_type || undefined,
       work_system: params.work_system || undefined,
-      education_level: (params.education_level as any) || undefined,
+      education_level: params.education_level
+        ? (params.education_level as EducationLevel)
+        : undefined,
       company_id: params.company_id || undefined,
       job_role_id: params.job_role_id || undefined,
       city_id: params.city_id || undefined,
@@ -245,10 +251,14 @@ export default function AdminJobs() {
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{
-          status: (params.status as any) || undefined,
+          status: params.status
+            ? (params.status as JobFilterValues["status"])
+            : undefined,
           job_type: params.job_type || "",
           work_system: params.work_system || "",
-          education_level: (params.education_level as any) || undefined,
+          education_level: params.education_level
+            ? (params.education_level as JobFilterValues["education_level"])
+            : undefined,
           company_id: params.company_id || "",
           job_role_id: params.job_role_id || "",
           city_id: params.city_id || "",

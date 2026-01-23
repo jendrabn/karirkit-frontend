@@ -68,8 +68,8 @@ import {
 import {
   BlogColumnToggle,
   type ColumnVisibility,
-  defaultColumnVisibility,
 } from "@/features/admin/blogs/components/BlogColumnToggle";
+import { defaultBlogColumnVisibility } from "@/features/admin/blogs/types/blog-column-toggle.constants";
 import {
   type Blog,
   type BlogStatus,
@@ -135,7 +135,7 @@ export const BlogsList = () => {
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<ColumnVisibility>(
       "blogs-table-columns",
-      defaultColumnVisibility,
+      defaultBlogColumnVisibility,
     );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
@@ -221,7 +221,7 @@ export const BlogsList = () => {
         setDeleteDialogOpen(false);
         setBlogToDelete(null);
         toast.success("Blog berhasil dihapus");
-      } catch (error) {
+      } catch {
         toast.error("Gagal menghapus blog");
       }
     }

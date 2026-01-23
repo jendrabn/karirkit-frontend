@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { Job } from "@/types/job";
 import { toast } from "sonner";
 import { useUser } from "@/lib/auth";
@@ -51,7 +51,10 @@ export function useBookmarks() {
     },
   });
 
-  const bookmarks = savedJobsData?.items || [];
+  const bookmarks = useMemo(
+    () => savedJobsData?.items || [],
+    [savedJobsData]
+  );
 
   const isBookmarked = useCallback(
     (jobId: string) => {

@@ -62,11 +62,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
-import { ApplicationLetterFilterModal } from "./ApplicationLetterFilterModal";
 import {
-  ApplicationLetterColumnToggle,
-  defaultColumnVisibility,
-} from "./ApplicationLetterColumnToggle";
+  ApplicationLetterFilterModal,
+  type FilterValues,
+} from "./ApplicationLetterFilterModal";
+import { ApplicationLetterColumnToggle } from "./ApplicationLetterColumnToggle";
+import { defaultColumnVisibility } from "../types/application-letter-column-toggle.constants";
 import type { ColumnVisibility } from "./ApplicationLetterColumnToggle";
 import { useApplicationLetters } from "../api/get-application-letters";
 import { useDeleteApplicationLetter } from "../api/delete-application-letter";
@@ -148,9 +149,15 @@ export function ApplicationLetterList() {
       company_name: params.company_name || undefined,
       company_city: params.company_city || undefined,
       applicant_city: params.applicant_city || undefined,
-      gender: (params.gender as any) || undefined,
-      marital_status: (params.marital_status as any) || undefined,
-      language: (params.language as any) || undefined,
+      gender: params.gender
+        ? (params.gender as FilterValues["gender"])
+        : undefined,
+      marital_status: params.marital_status
+        ? (params.marital_status as FilterValues["marital_status"])
+        : undefined,
+      language: params.language
+        ? (params.language as FilterValues["language"])
+        : undefined,
       application_date_from: params.application_date_from || undefined,
       application_date_to: params.application_date_to || undefined,
     },
@@ -691,9 +698,15 @@ export function ApplicationLetterList() {
           company_name: params.company_name || "",
           company_city: params.company_city || "",
           applicant_city: params.applicant_city || "",
-          gender: (params.gender as any) || undefined,
-          marital_status: (params.marital_status as any) || undefined,
-          language: (params.language as any) || undefined,
+          gender: params.gender
+            ? (params.gender as FilterValues["gender"])
+            : undefined,
+          marital_status: params.marital_status
+            ? (params.marital_status as FilterValues["marital_status"])
+            : undefined,
+          language: params.language
+            ? (params.language as FilterValues["language"])
+            : undefined,
           dateFrom: params.application_date_from
             ? new Date(params.application_date_from)
             : undefined,
@@ -716,7 +729,7 @@ export function ApplicationLetterList() {
               application_date_to: newFilters.dateTo
                 ? dayjs(newFilters.dateTo).format("YYYY-MM-DD")
                 : "",
-            } as any,
+            },
             true,
           );
           setFilterModalOpen(false);

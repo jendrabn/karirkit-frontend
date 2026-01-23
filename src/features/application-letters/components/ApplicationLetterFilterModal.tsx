@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { dayjs } from "@/lib/date";
 import { CalendarIcon } from "lucide-react";
 import {
@@ -53,9 +53,12 @@ export function ApplicationLetterFilterModal({
 }: ApplicationLetterFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<FilterValues>(filters);
 
-  useEffect(() => {
-    setLocalFilters(filters);
-  }, [filters, open]);
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setLocalFilters(filters);
+    }
+    onOpenChange(nextOpen);
+  };
 
   const handleApply = () => {
     onApplyFilters(localFilters);
@@ -67,7 +70,7 @@ export function ApplicationLetterFilterModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="!max-w-3xl p-0 gap-0">
         <div className="flex flex-col max-h-[85vh]">
           <DialogHeader className="px-6 pt-6 pb-4">

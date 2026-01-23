@@ -3,9 +3,12 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { UserForm } from "@/features/admin/users/components/UserForm";
 import { useUser } from "@/features/admin/users/api/get-user";
-import { useUpdateUser } from "@/features/admin/users/api/update-user";
+import {
+  useUpdateUser,
+  type UpdateUserInput,
+} from "@/features/admin/users/api/update-user";
 import { toast } from "sonner";
-import type { UpdateUserInput } from "@/features/admin/users/api/update-user";
+import type { CreateUserInput } from "@/features/admin/users/api/create-user";
 import { Spinner } from "@/components/ui/spinner";
 import { MinimalSEO } from "@/components/MinimalSEO";
 import { paths } from "@/config/paths";
@@ -30,7 +33,7 @@ const AdminUserEdit = () => {
     },
   });
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: CreateUserInput | UpdateUserInput) => {
     if (id) {
       updateUserMutation.mutate({ id, data: data as UpdateUserInput });
     }

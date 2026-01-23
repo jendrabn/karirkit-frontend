@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { dayjs } from "@/lib/date";
 import { CalendarIcon } from "lucide-react";
 import {
@@ -60,13 +59,16 @@ export function ApplicationFilterModal({
     filters.date_to ? dayjs(filters.date_to).toDate() : undefined
   );
 
-  useEffect(() => {
-    setLocalFilters(filters);
-    setDateFrom(
-      filters.date_from ? dayjs(filters.date_from).toDate() : undefined
-    );
-    setDateTo(filters.date_to ? dayjs(filters.date_to).toDate() : undefined);
-  }, [filters, open]);
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setLocalFilters(filters);
+      setDateFrom(
+        filters.date_from ? dayjs(filters.date_from).toDate() : undefined
+      );
+      setDateTo(filters.date_to ? dayjs(filters.date_to).toDate() : undefined);
+    }
+    onOpenChange(nextOpen);
+  };
 
   const handleApply = () => {
     onApplyFilters({
@@ -84,7 +86,7 @@ export function ApplicationFilterModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="!max-w-3xl p-0 gap-0">
         <div className="flex flex-col max-h-[85vh]">
           <DialogHeader className="px-6 pt-6 pb-4">

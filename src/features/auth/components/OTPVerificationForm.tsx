@@ -8,7 +8,7 @@ import {
 import { paths } from "@/config/paths";
 import { useCheckOtpStatus, useVerifyOtp, useResendOtp } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
@@ -50,9 +50,9 @@ const OTPVerificationForm = () => {
     };
   });
 
-  const checkOtpStatusMutation = useCheckOtpStatus();
+  const { mutate: checkOtpStatus } = useCheckOtpStatus();
 
-  const resolveOtpFieldError = (error: unknown) => {
+  const resolveOtpFieldError = useCallback((error: unknown) => {
     const fieldErrors = (error as { response?: { data?: { errors?: unknown } } })
       ?.response?.data?.errors;
     if (!fieldErrors || typeof fieldErrors !== "object") {
@@ -71,9 +71,9 @@ const OTPVerificationForm = () => {
     }
 
     return null;
-  };
+  }, []);
 
-  const toastGeneralErrors = (error: unknown) => {
+  const toastGeneralErrors = useCallback((error: unknown) => {
     const generalErrors = (error as { response?: { data?: { errors?: unknown } } })
       ?.response?.data?.errors;
     if (!generalErrors || typeof generalErrors !== "object") {
@@ -94,7 +94,7 @@ const OTPVerificationForm = () => {
     }
 
     return false;
-  };
+  }, []);
 
   // Check OTP status on mount and redirect if no active session
   useEffect(() => {
@@ -104,7 +104,7 @@ const OTPVerificationForm = () => {
       return;
     }
 
-    checkOtpStatusMutation.mutate(
+    checkOtpStatus(
       { identifier: authState.identifier },
       {
         onSuccess: (data) => {
@@ -148,7 +148,13 @@ const OTPVerificationForm = () => {
         },
       }
     );
-  }, []);
+  }, [
+    authState.identifier,
+    authState.password,
+    checkOtpStatus,
+    navigate,
+    toastGeneralErrors,
+  ]);
 
   // Countdown timer with persistence
   useEffect(() => {

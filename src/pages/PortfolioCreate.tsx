@@ -1,18 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router";
 import { paths } from "@/config/paths";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { PortfolioForm } from "@/features/portfolios/components/PortfolioForm";
-import { useCreatePortfolio } from "@/features/portfolios/api/create-portfolio";
+import {
+  useCreatePortfolio,
+  type CreatePortfolioInput,
+  type PortfolioFormData,
+} from "@/features/portfolios/api/create-portfolio";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/MinimalSEO";
 
 const PortfolioCreate = () => {
   const navigate = useNavigate();
-  const form = useForm();
+  const form = useForm<PortfolioFormData>();
 
   const createMutation = useCreatePortfolio({
     mutationConfig: {
@@ -25,8 +28,8 @@ const PortfolioCreate = () => {
 
   useServerValidation(createMutation.error, form);
 
-  const handleSubmit = (data: any) => {
-    createMutation.mutate(data);
+  const handleSubmit = (data: PortfolioFormData) => {
+    createMutation.mutate(data as CreatePortfolioInput);
   };
 
   return (

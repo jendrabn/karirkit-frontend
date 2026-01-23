@@ -1,4 +1,5 @@
 import type { ListResponse } from "./api";
+import type { SocialLink } from "./social";
 
 export type BlogStatus = "draft" | "published" | "archived";
 
@@ -29,7 +30,7 @@ export interface PublicUserProfile {
   bio?: string | null;
   location?: string | null;
   avatar?: string | null;
-  social_links?: any[]; // Simplified
+  social_links?: SocialLink[];
 }
 
 export interface Blog {

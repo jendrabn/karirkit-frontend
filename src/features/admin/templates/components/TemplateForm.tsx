@@ -27,6 +27,7 @@ import { useUploadFile } from "@/lib/upload";
 import {
   createTemplateInputSchema,
   type CreateTemplateInput,
+  type CreateTemplateFormInput,
 } from "../api/create-template";
 import { TEMPLATE_TYPE_OPTIONS } from "@/types/template";
 import { useServerValidation } from "@/hooks/use-server-validation";
@@ -52,8 +53,8 @@ export function TemplateForm({
 
   const isEdit = !!initialData?.name;
 
-  const form = useForm<CreateTemplateInput>({
-    resolver: zodResolver(createTemplateInputSchema) as any,
+  const form = useForm<CreateTemplateFormInput>({
+    resolver: zodResolver(createTemplateInputSchema),
     defaultValues: initialData || {
       name: "",
 
@@ -128,8 +129,12 @@ export function TemplateForm({
   const isUploading =
     uploadFileValidation.isPending || uploadPreviewValidation.isPending;
 
+  const handleSubmit = (data: CreateTemplateFormInput) => {
+    onSubmit(createTemplateInputSchema.parse(data));
+  };
+
   return (
-    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
+    <form onSubmit={form.handleSubmit(handleSubmit, displayFormErrors)}>
       <FieldSet disabled={isLoading || isUploading} className="space-y-8 mb-6">
         {/* ================= Informasi Template ================= */}
         <Card>

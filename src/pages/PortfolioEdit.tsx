@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate, useParams } from "react-router";
 import { paths } from "@/config/paths";
 import { toast } from "sonner";
@@ -7,7 +6,11 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { PortfolioForm } from "@/features/portfolios/components/PortfolioForm";
 import { usePortfolio } from "@/features/portfolios/api/get-portfolio";
-import { useUpdatePortfolio } from "@/features/portfolios/api/update-portfolio";
+import {
+  useUpdatePortfolio,
+  type UpdatePortfolioInput,
+} from "@/features/portfolios/api/update-portfolio";
+import type { PortfolioFormData } from "@/features/portfolios/api/create-portfolio";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/MinimalSEO";
@@ -15,7 +18,7 @@ import { MinimalSEO } from "@/components/MinimalSEO";
 const PortfolioEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const form = useForm();
+  const form = useForm<PortfolioFormData>();
 
   const { data: portfolioResponse, isLoading } = usePortfolio({
     id: id!,
@@ -32,9 +35,9 @@ const PortfolioEdit = () => {
 
   useServerValidation(updateMutation.error, form);
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: PortfolioFormData) => {
     if (id) {
-      updateMutation.mutate({ id, data });
+      updateMutation.mutate({ id, data: data as UpdatePortfolioInput });
     }
   };
 

@@ -15,6 +15,7 @@ export const createTemplateInputSchema = z.object({
 });
 
 export type CreateTemplateInput = z.infer<typeof createTemplateInputSchema>;
+export type CreateTemplateFormInput = z.input<typeof createTemplateInputSchema>;
 
 export const createTemplate = (
   data: CreateTemplateInput

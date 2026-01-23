@@ -28,6 +28,33 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MinimalSEO } from "@/components/MinimalSEO";
 
+const InfoItem = ({
+  label,
+  value,
+  isLink,
+}: {
+  label: string;
+  value: string | number;
+  isLink?: boolean;
+}) => (
+  <div className="space-y-1">
+    <p className="text-sm text-muted-foreground">{label}</p>
+    {isLink && value ? (
+      <a
+        href={String(value)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary hover:underline flex items-center gap-1 break-all"
+      >
+        {String(value)}
+        <ExternalLink className="h-3 w-3 shrink-0" />
+      </a>
+    ) : (
+      <p className="font-medium">{value || "-"}</p>
+    )}
+  </div>
+);
+
 export default function ApplicationShow() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -111,33 +138,6 @@ export default function ApplicationShow() {
       minimumFractionDigits: 0,
     }).format(value);
   };
-
-  const InfoItem = ({
-    label,
-    value,
-    isLink,
-  }: {
-    label: string;
-    value: string | number;
-    isLink?: boolean;
-  }) => (
-    <div className="space-y-1">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      {isLink && value ? (
-        <a
-          href={String(value)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary hover:underline flex items-center gap-1 break-all"
-        >
-          {String(value)}
-          <ExternalLink className="h-3 w-3 shrink-0" />
-        </a>
-      ) : (
-        <p className="font-medium">{value || "-"}</p>
-      )}
-    </div>
-  );
 
   return (
     <DashboardLayout

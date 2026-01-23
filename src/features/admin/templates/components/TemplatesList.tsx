@@ -56,11 +56,11 @@ import {
 import { TemplatesFilterModal } from "./TemplatesFilterModal";
 import {
   TemplatesColumnToggle,
-  defaultColumnVisibility,
   type ColumnVisibility,
 } from "./TemplatesColumnToggle";
+import { defaultColumnVisibility } from "../types/templates-column-toggle.constants";
 import { cn, buildImageUrl } from "@/lib/utils";
-import { useTemplates } from "../api/get-templates";
+import { useTemplates, type GetTemplatesParams } from "../api/get-templates";
 import { useDeleteTemplate } from "../api/delete-template";
 import { useMassDeleteTemplates } from "../api/mass-delete-templates";
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -77,6 +77,11 @@ type SortField =
   | "type"
   | "language"
   | "is_premium";
+
+type TemplateFilters = Omit<
+  GetTemplatesParams,
+  "page" | "per_page" | "q" | "sort_by" | "sort_order"
+>;
 
 export const TemplatesList = () => {
   const navigate = useNavigate();
@@ -117,12 +122,9 @@ export const TemplatesList = () => {
       q: params.q || undefined,
       sort_by: params.sort_by,
       sort_order: params.sort_order,
-      type: (params.type as TemplateType) || undefined,
-      language: (params.language as Language) || undefined,
-      is_premium:
-        params.is_premium !== undefined
-          ? (params.is_premium as any)
-          : undefined,
+      type: params.type ? (params.type as TemplateType) : undefined,
+      language: params.language ? (params.language as Language) : undefined,
+      is_premium: params.is_premium,
       created_at_from: params.created_at_from || undefined,
       created_at_to: params.created_at_to || undefined,
       updated_at_from: params.updated_at_from || undefined,
@@ -214,7 +216,7 @@ export const TemplatesList = () => {
     total_pages: 0,
   };
 
-  const handleApplyFilters = (newFilters: any) => {
+  const handleApplyFilters = (newFilters: TemplateFilters) => {
     setParams(
       {
         type: newFilters.type || "",
@@ -265,8 +267,8 @@ export const TemplatesList = () => {
               onClick={() =>
                 setParams(
                   {
-                    type: "" as any,
-                    language: "" as any,
+                    type: "",
+                    language: "",
                     is_premium: undefined,
                     created_at_from: "",
                     created_at_to: "",
@@ -606,8 +608,8 @@ export const TemplatesList = () => {
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{
-          type: (params.type as any) || "",
-          language: (params.language as any) || "",
+          type: params.type ? (params.type as TemplateType) : undefined,
+          language: params.language ? (params.language as Language) : undefined,
           is_premium:
             params.is_premium !== undefined ? params.is_premium : undefined,
           created_at_from: params.created_at_from || "",

@@ -61,9 +61,9 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import {
   TagColumnToggle,
-  defaultTagColumnVisibility,
   type TagColumnVisibility,
 } from "./TagColumnToggle";
+import { defaultTagColumnVisibility } from "../types/tag-column-toggle.constants";
 import { cn } from "@/lib/utils";
 import { SortableHeader } from "@/components/SortableHeader";
 

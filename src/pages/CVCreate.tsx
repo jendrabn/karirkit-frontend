@@ -3,8 +3,11 @@ import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { CVForm } from "@/features/cvs/components/CVForm";
-import { type CVFormData } from "@/features/cvs/api/create-cv";
-import { useCreateCV } from "@/features/cvs/api/create-cv";
+import {
+  type CreateCVInput,
+  type CVFormData,
+  useCreateCV,
+} from "@/features/cvs/api/create-cv";
 import { toast } from "sonner";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
@@ -26,7 +29,7 @@ export default function CVCreate() {
   useServerValidation(createMutation.error, form);
 
   const handleSubmit = (data: CVFormData) => {
-    createMutation.mutate(data as any);
+    createMutation.mutate(data as CreateCVInput);
   };
 
   return (

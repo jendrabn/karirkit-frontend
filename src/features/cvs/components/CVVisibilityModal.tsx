@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { isAxiosError } from "axios";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -42,7 +43,7 @@ export function CVVisibilityModal({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
     reset,
   } = useForm<FormValues>({
@@ -59,10 +60,9 @@ export function CVVisibilityModal({
         toast.success("Pengaturan visibilitas berhasil disimpan");
         onOpenChange(false);
       },
-      onError: (error: any) => {
-        toast.error(
-          "Gagal menyimpan pengaturan: " + (error.message || "Unknown error")
-        );
+      onError: (error: Error) => {
+        const message = isAxiosError(error) ? error.message : error.message;
+        toast.error("Gagal menyimpan pengaturan: " + (message || "Unknown error"));
       },
     },
   });
@@ -75,6 +75,9 @@ export function CVVisibilityModal({
       });
     }
   }, [cv, reset]);
+
+  const slugValue = useWatch({ control, name: "slug" });
+  const visibilityValue = useWatch({ control, name: "visibility" });
 
   const onSubmit = (data: FormValues) => {
     if (!cv) return;
@@ -89,7 +92,7 @@ export function CVVisibilityModal({
   };
 
   const handleCopyUrl = async () => {
-    const slug = watch("slug");
+    const slug = slugValue;
     if (!slug) {
       toast.error("Slug belum diisi");
       return;
@@ -104,7 +107,7 @@ export function CVVisibilityModal({
     try {
       await navigator.clipboard.writeText(url);
       toast.success("URL CV berhasil disalin");
-    } catch (error) {
+    } catch {
       toast.error("Gagal menyalin URL CV");
     }
   };
@@ -122,7 +125,7 @@ export function CVVisibilityModal({
             <FieldError>{errors.slug?.message}</FieldError>
             <div className="mt-2 flex items-center gap-2">
               <p className="text-xs text-muted-foreground break-all">
-                URL: {window.location.origin}/cv/{watch("slug")}
+                URL: {window.location.origin}/cv/{slugValue}
               </p>
               <Button
                 type="button"
@@ -139,8 +142,10 @@ export function CVVisibilityModal({
           <Field>
             <FieldLabel>Visibilitas *</FieldLabel>
             <Select
-              value={watch("visibility")}
-              onValueChange={(val) => setValue("visibility", val as any)}
+              value={visibilityValue}
+              onValueChange={(val) =>
+                setValue("visibility", val as FormValues["visibility"])
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih visibilitas" />

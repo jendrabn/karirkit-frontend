@@ -10,8 +10,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { useJobRoles } from "@/features/admin/job-roles/api/get-job-roles";
-import { useCreateJobRole } from "@/features/admin/job-roles/api/create-job-role";
-import { useUpdateJobRole } from "@/features/admin/job-roles/api/update-job-role";
+import {
+  useCreateJobRole,
+  type CreateJobRoleInput,
+} from "@/features/admin/job-roles/api/create-job-role";
+import {
+  useUpdateJobRole,
+  type UpdateJobRoleInput,
+} from "@/features/admin/job-roles/api/update-job-role";
 import { useDeleteJobRole } from "@/features/admin/job-roles/api/delete-job-role";
 import { useMassDeleteJobRoles } from "@/features/admin/job-roles/api/mass-delete-job-roles";
 import { JobRolesList } from "@/features/admin/job-roles/components/JobRolesList";
@@ -22,8 +28,8 @@ import { JobRoleFilterModal } from "@/features/admin/job-roles/components/JobRol
 import {
   JobRoleColumnToggle,
   type ColumnVisibility,
-  defaultColumnVisibility,
 } from "@/features/admin/job-roles/components/JobRoleColumnToggle";
+import { defaultColumnVisibility } from "@/features/admin/job-roles/types/job-role-column-toggle.constants";
 import { paths } from "@/config/paths";
 
 export default function AdminJobRoles() {
@@ -86,7 +92,7 @@ export default function AdminJobRoles() {
   const deleteRoleMutation = useDeleteJobRole();
   const massDeleteMutation = useMassDeleteJobRoles();
 
-  const handleCreate = (data: any) => {
+  const handleCreate = (data: CreateJobRoleInput) => {
     createRoleMutation.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["job-roles"] });
@@ -96,7 +102,7 @@ export default function AdminJobRoles() {
     });
   };
 
-  const handleUpdate = (data: any) => {
+  const handleUpdate = (data: UpdateJobRoleInput) => {
     if (!editingRole) return;
     updateRoleMutation.mutate(
       { id: editingRole.id, data },

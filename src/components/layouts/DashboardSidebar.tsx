@@ -32,8 +32,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar-context";
 import { Button } from "@/components/ui/button";
 import { DonationModal } from "@/components/DonationModal";
 import {

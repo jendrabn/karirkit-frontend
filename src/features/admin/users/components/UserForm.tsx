@@ -1,4 +1,10 @@
-import { Controller, useForm, type Resolver } from "react-hook-form";
+import {
+  Controller,
+  useForm,
+  useWatch,
+  type FieldErrors,
+  type Resolver,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,6 +76,8 @@ export function UserForm({
 
   useServerValidation(error, form);
 
+  const nameValue = useWatch({ control: form.control, name: "name" });
+
   const handleSubmit = (data: UserFormValues) => {
     onSubmit(data);
   };
@@ -91,7 +99,7 @@ export function UserForm({
                     <PhotoUpload
                       value={field.value || ""}
                       onChange={field.onChange}
-                      name={form.watch("name")}
+                      name={nameValue}
                     />
                     <FieldError className="mt-2">
                       {form.formState.errors.avatar?.message}
@@ -146,7 +154,10 @@ export function UserForm({
                     {...form.register("password")}
                   />
                   <FieldError>
-                    {(form.formState.errors as any).password?.message}
+                    {!isEdit
+                      ? (form.formState.errors as FieldErrors<CreateUserInput>)
+                          .password?.message
+                      : undefined}
                   </FieldError>
                 </Field>
               )}

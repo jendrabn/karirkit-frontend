@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import {
   MapPin,
@@ -73,30 +73,30 @@ export default function JobDetail() {
     setSelectedImageIndex(index);
   };
 
-  const closeImagePreview = () => {
+  const closeImagePreview = useCallback(() => {
     setSelectedImageIndex(null);
-  };
+  }, []);
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     if (job?.medias && selectedImageIndex !== null) {
       setSelectedImageIndex((selectedImageIndex + 1) % job.medias.length);
     }
-  };
+  }, [job, selectedImageIndex]);
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     if (job?.medias && selectedImageIndex !== null) {
       setSelectedImageIndex(
         (selectedImageIndex - 1 + job.medias.length) % job.medias.length
       );
     }
-  };
+  }, [job, selectedImageIndex]);
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (selectedImageIndex === null) return;
     if (e.key === "Escape") closeImagePreview();
     if (e.key === "ArrowRight") nextImage();
     if (e.key === "ArrowLeft") prevImage();
-  };
+  }, [closeImagePreview, nextImage, prevImage, selectedImageIndex]);
 
   // Add keyboard event listener
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function JobDetail() {
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
     }
-  }, [selectedImageIndex]);
+  }, [handleKeyDown]);
 
   if (isLoading) {
     return (

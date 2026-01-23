@@ -61,9 +61,9 @@ import {
 } from "@/features/documents/components/DocumentUploadModal";
 import {
   DocumentsColumnToggle,
-  defaultColumnVisibility,
   type ColumnVisibility,
 } from "@/features/documents/components/DocumentsColumnToggle";
+import { defaultColumnVisibility } from "@/features/documents/types/documents-column-toggle.constants";
 import {
   type Document,
   documentTypeLabels,
@@ -214,7 +214,7 @@ export function DocumentsList() {
         q: nextFilters.q || "",
         type: nextFilters.type || "",
         mime_type: nextFilters.mime_type || "",
-      } as any,
+      },
       true
     );
     setFilterModalOpen(false);
@@ -597,7 +597,7 @@ export function DocumentsList() {
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{
-          type: (params.type as any) || "",
+          type: params.type ? (params.type as DocumentType) : undefined,
           q: params.q || "",
           mime_type: params.mime_type || "",
         }}

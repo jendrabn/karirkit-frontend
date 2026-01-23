@@ -73,7 +73,10 @@ import {
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
-import { UserFilterModal } from "@/features/admin/users/components/UserFilterModal";
+import {
+  UserFilterModal,
+  type FilterValues,
+} from "@/features/admin/users/components/UserFilterModal";
 import {
   UserColumnToggle,
   type ColumnVisibility,
@@ -327,11 +330,19 @@ export const UsersList = () => {
       q: params.q || undefined,
       sort_by: params.sort_by,
       sort_order: params.sort_order,
-      role: (params.role as "user" | "admin") || undefined,
-      status: (params.status as any) || undefined,
-      gender: (params.gender as any) || undefined,
-      email_verified: (params.email_verified as any) || undefined,
-      suspended: (params.suspended as any) || undefined,
+      role: params.role ? (params.role as User["role"]) : undefined,
+      status: params.status
+        ? (params.status as FilterValues["status"])
+        : undefined,
+      gender: params.gender
+        ? (params.gender as FilterValues["gender"])
+        : undefined,
+      email_verified: params.email_verified
+        ? (params.email_verified as FilterValues["email_verified"])
+        : undefined,
+      suspended: params.suspended
+        ? (params.suspended as FilterValues["suspended"])
+        : undefined,
       created_at_from: params.created_at_from || undefined,
       created_at_to: params.created_at_to || undefined,
       daily_download_limit_from: params.daily_download_limit_from
@@ -943,11 +954,19 @@ export const UsersList = () => {
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{
-          role: (params.role as any) || "",
-          status: (params.status as any) || "",
-          gender: (params.gender as any) || "",
-          email_verified: (params.email_verified as any) || "",
-          suspended: (params.suspended as any) || "",
+          role: params.role ? (params.role as FilterValues["role"]) : undefined,
+          status: params.status
+            ? (params.status as FilterValues["status"])
+            : undefined,
+          gender: params.gender
+            ? (params.gender as FilterValues["gender"])
+            : undefined,
+          email_verified: params.email_verified
+            ? (params.email_verified as FilterValues["email_verified"])
+            : undefined,
+          suspended: params.suspended
+            ? (params.suspended as FilterValues["suspended"])
+            : undefined,
           created_at_from: params.created_at_from || "",
           created_at_to: params.created_at_to || "",
           daily_download_limit_from: params.daily_download_limit_from || "",
@@ -977,7 +996,7 @@ export const UsersList = () => {
               download_total_count_from:
                 newFilters.download_total_count_from || "",
               download_total_count_to: newFilters.download_total_count_to || "",
-            } as any,
+            },
             true
           );
           setFilterModalOpen(false);

@@ -16,14 +16,6 @@ export interface ColumnVisibility {
   uploaded_at: boolean;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const defaultColumnVisibility: ColumnVisibility = {
-  original_name: true,
-  type: true,
-  size: true,
-  uploaded_at: true,
-};
-
 const columnLabels: Record<keyof ColumnVisibility, string> = {
   original_name: "Nama File",
   type: "Tipe",

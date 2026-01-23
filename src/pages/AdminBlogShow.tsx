@@ -42,7 +42,7 @@ const AdminBlogShow = () => {
       await deleteBlogMutation.mutateAsync(id);
       toast.success("Blog berhasil dihapus");
       navigate(paths.admin.blogs.list.getHref());
-    } catch (error) {
+    } catch {
       toast.error("Gagal menghapus blog");
     }
   };

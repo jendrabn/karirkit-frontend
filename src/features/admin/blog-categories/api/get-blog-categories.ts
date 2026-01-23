@@ -24,7 +24,7 @@ export const getBlogCategories = (
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(
-          ([_, value]) => value !== null && value !== "" && value !== undefined
+          ([, value]) => value !== null && value !== "" && value !== undefined
         )
       )
     : undefined;

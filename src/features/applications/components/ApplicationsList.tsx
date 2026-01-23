@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
@@ -55,11 +55,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ApplicationFilterModal } from "./ApplicationFilterModal";
-import {
-  ApplicationColumnToggle,
-  defaultColumnVisibility,
-  type ColumnVisibility,
-} from "./ApplicationColumnToggle";
+import { ApplicationColumnToggle, type ColumnVisibility } from "./ApplicationColumnToggle";
+import { defaultColumnVisibility } from "../types/application-column-toggle.constants";
 import { ApplicationStats } from "./ApplicationStats";
 import {
   useApplications,
@@ -68,7 +65,10 @@ import {
 import { useApplicationStats } from "../api/get-application-stats";
 import { useDeleteApplication } from "../api/delete-application";
 import { useDuplicateApplication } from "../api/duplicate-application";
-import { useUpdateApplication } from "../api/update-application";
+import {
+  useUpdateApplication,
+  type UpdateApplicationInput,
+} from "../api/update-application";
 import { useMassDeleteApplications } from "../api/mass-delete-applications";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
@@ -86,6 +86,11 @@ import {
   STATUS_OPTIONS,
   RESULT_STATUS_OPTIONS,
 } from "@/types/application";
+
+type FilterParams = Omit<
+  GetApplicationsParams,
+  "page" | "per_page" | "q" | "sort_by" | "sort_order"
+>;
 
 // Helper functions (copied from original)
 const getJobTypeBadgeVariant = (jobType: JobType) => {
@@ -210,16 +215,26 @@ export const ApplicationsList = () => {
     q: params.q || undefined,
     sort_by: params.sort_by,
     sort_order: params.sort_order,
-    status: (params.status as any) || undefined,
-    result_status: (params.result_status as any) || undefined,
-    job_type: (params.job_type as any) || undefined,
-    work_system: (params.work_system as any) || undefined,
+    status: params.status
+      ? (params.status as ApplicationStatus)
+      : undefined,
+    result_status: params.result_status
+      ? (params.result_status as ResultStatus)
+      : undefined,
+    job_type: params.job_type ? (params.job_type as JobType) : undefined,
+    work_system: params.work_system
+      ? (params.work_system as WorkSystem)
+      : undefined,
     date_from: params.date_from || undefined,
     date_to: params.date_to || undefined,
     follow_up_date_from: params.follow_up_date_from || undefined,
     follow_up_date_to: params.follow_up_date_to || undefined,
-    follow_up_date_has: (params.follow_up_date_has as any) || undefined,
-    follow_up_overdue: (params.follow_up_overdue as any) || undefined,
+    follow_up_date_has: params.follow_up_date_has
+      ? (params.follow_up_date_has as "true" | "false")
+      : undefined,
+    follow_up_overdue: params.follow_up_overdue
+      ? (params.follow_up_overdue as "true" | "false")
+      : undefined,
     location: params.location || undefined,
     company_name: params.company_name || undefined,
     job_source: params.job_source || undefined,
@@ -354,31 +369,51 @@ export const ApplicationsList = () => {
     const handleBlur = () => {
       setIsEditing(false);
       if (value !== app[field]) {
-        const { id, user_id, created_at, updated_at, ...data } = {
+        const {
+          id: _id,
+          user_id: _userId,
+          created_at: _createdAt,
+          updated_at: _updatedAt,
+          ...data
+        } = {
           ...app,
           [field]: value,
         };
+        void _id;
+        void _userId;
+        void _createdAt;
+        void _updatedAt;
         updateApplicationMutation.mutate({
           id: app.id,
-          data: data as any,
+          data: data as UpdateApplicationInput,
         });
       }
     };
 
     const handleSelectChange = (val: string) => {
-      const { id, user_id, created_at, updated_at, ...data } = {
+      const {
+        id: _id,
+        user_id: _userId,
+        created_at: _createdAt,
+        updated_at: _updatedAt,
+        ...data
+      } = {
         ...app,
         [field]: val,
       };
+      void _id;
+      void _userId;
+      void _createdAt;
+      void _updatedAt;
       updateApplicationMutation.mutate({
         id: app.id,
-        data: data as any,
+        data: data as UpdateApplicationInput,
       });
     };
 
     if (type === "select") {
       let options: { value: string; label: string }[] = [];
-      let getBadgeVariant: () => string = () => "default";
+      let getBadgeVariant: () => BadgeProps["variant"] = () => "default";
 
       if (field === "job_type") {
         options = JOB_TYPE_OPTIONS;
@@ -402,7 +437,7 @@ export const ApplicationsList = () => {
         >
           <SelectTrigger className="h-auto w-full border-0 bg-transparent p-0 shadow-none focus:ring-0">
             <Badge
-              variant={getBadgeVariant() as any}
+              variant={getBadgeVariant()}
               className="cursor-pointer w-full justify-center text-center py-1"
             >
               {options.find((opt) => opt.value === app[field])?.label ||
@@ -909,16 +944,28 @@ export const ApplicationsList = () => {
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{
-          status: (params.status as any) || "",
-          result_status: (params.result_status as any) || "",
-          job_type: (params.job_type as any) || "",
-          work_system: (params.work_system as any) || "",
+          status: params.status
+            ? (params.status as FilterParams["status"])
+            : undefined,
+          result_status: params.result_status
+            ? (params.result_status as FilterParams["result_status"])
+            : undefined,
+          job_type: params.job_type
+            ? (params.job_type as FilterParams["job_type"])
+            : undefined,
+          work_system: params.work_system
+            ? (params.work_system as FilterParams["work_system"])
+            : undefined,
           date_from: params.date_from || "",
           date_to: params.date_to || "",
           follow_up_date_from: params.follow_up_date_from || "",
           follow_up_date_to: params.follow_up_date_to || "",
-          follow_up_date_has: (params.follow_up_date_has as any) || "",
-          follow_up_overdue: (params.follow_up_overdue as any) || "",
+          follow_up_date_has: params.follow_up_date_has
+            ? (params.follow_up_date_has as FilterParams["follow_up_date_has"])
+            : undefined,
+          follow_up_overdue: params.follow_up_overdue
+            ? (params.follow_up_overdue as FilterParams["follow_up_overdue"])
+            : undefined,
           location: params.location || "",
           company_name: params.company_name || "",
           job_source: params.job_source || "",
@@ -951,7 +998,7 @@ export const ApplicationsList = () => {
                 newFilters.salary_to !== undefined
                   ? String(newFilters.salary_to)
                   : "",
-            } as any,
+            },
             true,
           );
           setFilterModalOpen(false);

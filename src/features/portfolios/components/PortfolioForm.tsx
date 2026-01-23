@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +93,13 @@ export function PortfolioForm({
   // Handle form validation errors from API
 
   useServerValidation(error, form);
+
+  const projectTypeValue = useWatch({
+    control: form.control,
+    name: "project_type",
+  });
+  const monthValue = useWatch({ control: form.control, name: "month" });
+  const yearValue = useWatch({ control: form.control, name: "year" });
 
   const extraErrors = form.formState.errors as typeof form.formState.errors & {
     tools?: { message?: string };
@@ -198,7 +205,7 @@ export function PortfolioForm({
               <Field>
                 <FieldLabel>Tipe Proyek</FieldLabel>
                 <Select
-                  value={form.watch("project_type")}
+                  value={projectTypeValue}
                   onValueChange={(value) =>
                     form.setValue(
                       "project_type",
@@ -242,7 +249,7 @@ export function PortfolioForm({
                   Bulan <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Select
-                  value={String(form.watch("month"))}
+                  value={String(monthValue)}
                   onValueChange={(value) =>
                     form.setValue("month", parseInt(value))
                   }
@@ -267,7 +274,7 @@ export function PortfolioForm({
                   Tahun <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Select
-                  value={String(form.watch("year"))}
+                  value={String(yearValue)}
                   onValueChange={(value) =>
                     form.setValue("year", parseInt(value))
                   }

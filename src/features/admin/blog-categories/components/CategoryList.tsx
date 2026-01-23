@@ -66,9 +66,9 @@ import { useUrlParams } from "@/hooks/use-url-params";
 import { SortableHeader } from "@/components/SortableHeader";
 import {
   CategoryColumnToggle,
-  defaultCategoryColumnVisibility,
   type CategoryColumnVisibility,
 } from "./CategoryColumnToggle";
+import { defaultCategoryColumnVisibility } from "../types/category-column-toggle.constants";
 
 type SortField = "name" | "created_at" | "updated_at" | "blog_count";
 type SortOrder = "asc" | "desc";

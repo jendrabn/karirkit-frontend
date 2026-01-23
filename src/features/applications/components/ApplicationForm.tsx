@@ -51,7 +51,7 @@ export function ApplicationForm({
   error,
 }: ApplicationFormProps) {
   const form = useForm<CreateApplicationInput>({
-    resolver: zodResolver(createApplicationInputSchema) as any,
+    resolver: zodResolver(createApplicationInputSchema),
     defaultValues: initialData
       ? {
           ...initialData,
@@ -90,10 +90,10 @@ export function ApplicationForm({
         },
   });
 
-  useServerValidation(error, form as any);
+  useServerValidation(error, form);
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors) as any}>
+    <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
       <FieldSet disabled={isLoading} className="space-y-8 mb-6">
         {/* ================= Informasi Perusahaan ================= */}
         <Card>

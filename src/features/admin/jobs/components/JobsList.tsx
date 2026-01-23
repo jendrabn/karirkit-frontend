@@ -49,6 +49,15 @@ import {
 import { cn } from "@/lib/utils";
 import { type ColumnVisibility } from "./JobColumnToggle";
 
+type JobSortField =
+  | "title"
+  | "company_name"
+  | "salary_max"
+  | "status"
+  | "expiration_date"
+  | "created_at"
+  | "updated_at";
+
 interface JobsListProps {
   jobs: Job[];
   isLoading: boolean;
@@ -62,9 +71,9 @@ interface JobsListProps {
   totalItems: number;
   onPageChange: (page: number) => void;
   onPerPageChange: (perPage: number) => void;
-  sortField: string;
+  sortField: JobSortField;
   sortOrder: "asc" | "desc";
-  onSort: (field: any) => void;
+  onSort: (field: JobSortField) => void;
   columnVisibility: ColumnVisibility;
 }
 

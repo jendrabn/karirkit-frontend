@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 import { Separator } from "@/components/ui/separator";
-import { badgeVariants } from "@/components/ui/badge";
+import { badgeVariants } from "@/components/ui/badge-variants";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import { useLatestBlogs } from "@/features/blogs/api/get-latest-blogs";

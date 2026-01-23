@@ -18,14 +18,6 @@ export interface ColumnVisibility {
   updated_at: boolean;
 }
 
-export const defaultColumnVisibility: ColumnVisibility = {
-  name: true,
-  slug: true,
-  jobCount: true,
-  created_at: true,
-  updated_at: false,
-};
-
 const columnLabels: Record<keyof ColumnVisibility, string> = {
   name: "Nama Role",
   slug: "Slug",

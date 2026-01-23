@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +10,6 @@ import {
 import { RefreshCw } from "lucide-react";
 
 export function PWAUpdatePrompt() {
-  const [showReload, setShowReload] = useState(false);
-
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -26,16 +23,11 @@ export function PWAUpdatePrompt() {
     },
   });
 
-  useEffect(() => {
-    if (needRefresh) {
-      setShowReload(true);
-    }
-  }, [needRefresh]);
+  const showReload = needRefresh;
 
   const close = () => {
     setOfflineReady(false);
     setNeedRefresh(false);
-    setShowReload(false);
   };
 
   const reload = () => {

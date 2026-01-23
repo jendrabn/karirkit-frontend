@@ -47,7 +47,7 @@ export const getTemplates = async (
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(
-          ([_, value]) => value !== null && value !== undefined
+          ([, value]) => value !== null && value !== undefined
         )
       )
     : undefined;

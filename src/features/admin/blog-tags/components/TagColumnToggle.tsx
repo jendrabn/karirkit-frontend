@@ -17,14 +17,6 @@ export interface TagColumnVisibility {
   updated_at: boolean;
 }
 
-export const defaultTagColumnVisibility: TagColumnVisibility = {
-  name: true,
-  slug: true,
-  blog_count: true,
-  created_at: true,
-  updated_at: false,
-};
-
 const columnLabels: Record<keyof TagColumnVisibility, string> = {
   name: "Nama Tag",
   slug: "Slug",

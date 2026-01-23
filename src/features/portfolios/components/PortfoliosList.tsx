@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { paths } from "@/config/paths";
@@ -30,7 +28,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Select,
@@ -57,11 +55,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PortfolioFilterModal } from "@/features/portfolios/components/PortfolioFilterModal";
+import {
+  PortfolioFilterModal,
+  type PortfolioFilterValues,
+} from "@/features/portfolios/components/PortfolioFilterModal";
 import { usePortfolios } from "@/features/portfolios/api/get-portfolios";
 import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
 import { useMassDeletePortfolios } from "@/features/portfolios/api/mass-delete-portfolios";
-import { projectTypeLabels } from "@/types/portfolio";
+import { projectTypeLabels, type ProjectType } from "@/types/portfolio";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
 import { env } from "@/config/env";
@@ -77,7 +78,7 @@ type SortField =
   | "industry";
 type SortOrder = "asc" | "desc";
 
-const getProjectTypeBadgeVariant = (_type: string) => {
+const getProjectTypeBadgeVariant = (): BadgeProps["variant"] => {
   return "secondary"; // Consistent styling for all project types
 };
 
@@ -141,7 +142,9 @@ const PortfoliosList = () => {
       q: params.q || undefined,
       sort_by: params.sort_by,
       sort_order: params.sort_order,
-      project_type: (params.project_type as any) || undefined,
+      project_type: params.project_type
+        ? (params.project_type as ProjectType)
+        : undefined,
       industry: params.industry || undefined,
       year: params.year ? Number(params.year) : undefined,
       month: params.month ? Number(params.month) : undefined,
@@ -516,9 +519,7 @@ const PortfoliosList = () => {
                 {/* Project Type Badge */}
                 <div className="absolute bottom-2 left-2">
                   <Badge
-                    variant={
-                      getProjectTypeBadgeVariant(portfolio.project_type) as any
-                    }
+                    variant={getProjectTypeBadgeVariant()}
                   >
                     {projectTypeLabels[portfolio.project_type]}
                   </Badge>
@@ -681,7 +682,9 @@ const PortfoliosList = () => {
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{
-          project_type: (params.project_type as any) || "",
+          project_type: params.project_type
+            ? (params.project_type as PortfolioFilterValues["project_type"])
+            : undefined,
           industry: params.industry || "",
           year: params.year ? Number(params.year) : undefined,
           month: params.month ? Number(params.month) : undefined,
@@ -717,7 +720,7 @@ const PortfoliosList = () => {
                   ? String(newFilters.month_to)
                   : "",
               tools_name: newFilters.tools_name || "",
-            } as any,
+            },
             true
           );
           setFilterModalOpen(false);
