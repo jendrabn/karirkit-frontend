@@ -44,6 +44,7 @@ export const SEO = ({
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       {author && <meta name="author" content={author} />}
+      <meta name="application-name" content={appName} />
       <meta
         name="robots"
         content={noIndex ? "noindex, nofollow" : "index, follow"}

@@ -18,6 +18,8 @@ export const MinimalSEO = ({
   return (
     <Helmet>
       <title>{pageTitle}</title>
+      <meta name="application-name" content={appName} />
+      <meta property="og:site_name" content={appName} />
       <meta name="description" content={description} />
       <meta
         name="robots"
