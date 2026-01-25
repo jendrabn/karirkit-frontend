@@ -1,6 +1,7 @@
 import type { ListResponse } from "./api";
 import type { SocialPlatform } from "./social";
 import { JOB_TYPE_LABELS, type JobType } from "./job";
+import { months } from "@/lib/date-options";
 
 export type DegreeType =
   | "middle_school"
@@ -323,17 +324,4 @@ export const ORGANIZATION_TYPE_OPTIONS = [
   { value: "other", label: "Lainnya" },
 ];
 
-export const MONTH_OPTIONS = [
-  { value: 1, label: "Januari" },
-  { value: 2, label: "Februari" },
-  { value: 3, label: "Maret" },
-  { value: 4, label: "April" },
-  { value: 5, label: "Mei" },
-  { value: 6, label: "Juni" },
-  { value: 7, label: "Juli" },
-  { value: 8, label: "Agustus" },
-  { value: 9, label: "September" },
-  { value: 10, label: "Oktober" },
-  { value: 11, label: "November" },
-  { value: 12, label: "Desember" },
-];
+export const MONTH_OPTIONS = months;

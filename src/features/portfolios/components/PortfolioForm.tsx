@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { cn } from "@/lib/utils";
+import { months, years } from "@/lib/date-options";
 import { displayFormErrors } from "@/lib/form-errors";
 import {
   portfolioSchema,
@@ -37,24 +38,6 @@ interface PortfolioFormProps {
   isLoading?: boolean;
   error?: unknown;
 }
-
-const months = [
-  { value: 1, label: "Januari" },
-  { value: 2, label: "Februari" },
-  { value: 3, label: "Maret" },
-  { value: 4, label: "April" },
-  { value: 5, label: "Mei" },
-  { value: 6, label: "Juni" },
-  { value: 7, label: "Juli" },
-  { value: 8, label: "Agustus" },
-  { value: 9, label: "September" },
-  { value: 10, label: "Oktober" },
-  { value: 11, label: "November" },
-  { value: 12, label: "Desember" },
-];
-
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 
 export function PortfolioForm({
   initialData,
@@ -128,7 +111,7 @@ export function PortfolioForm({
   return (
     <form onSubmit={form.handleSubmit(handleFormSubmit, displayFormErrors)}>
       <FieldSet disabled={isLoading} className="space-y-8 mb-6">
-        {/* ================= Informasi Dasar ================= */}
+        {/* Base Info */}
         <Card>
           <CardHeader>
             <CardTitle>Informasi Dasar</CardTitle>
@@ -136,7 +119,6 @@ export function PortfolioForm({
 
           <CardContent className="pt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Judul Proyek */}
               <div className="md:col-span-2">
                 <Field>
                   <FieldLabel>
@@ -155,7 +137,6 @@ export function PortfolioForm({
                 </Field>
               </div>
 
-              {/* Deskripsi Singkat */}
               <div className="md:col-span-2">
                 <Field>
                   <FieldLabel>
@@ -176,7 +157,6 @@ export function PortfolioForm({
                 </Field>
               </div>
 
-              {/* Deskripsi */}
               <div className="md:col-span-2">
                 <Field>
                   <FieldLabel>
@@ -196,7 +176,6 @@ export function PortfolioForm({
                 </Field>
               </div>
 
-              {/* Role */}
               <Field>
                 <FieldLabel>
                   Role / Posisi <span className="text-destructive">*</span>
@@ -213,7 +192,6 @@ export function PortfolioForm({
                 </FieldError>
               </Field>
 
-              {/* Tipe Proyek */}
               <Field>
                 <FieldLabel>Tipe Proyek</FieldLabel>
                 <Select
@@ -246,7 +224,6 @@ export function PortfolioForm({
                 </FieldError>
               </Field>
 
-              {/* Industri */}
               <Field>
                 <FieldLabel>
                   Industri <span className="text-destructive">*</span>
@@ -263,68 +240,70 @@ export function PortfolioForm({
                 </FieldError>
               </Field>
 
-              {/* Bulan */}
-              <Field>
-                <FieldLabel>
-                  Bulan <span className="text-destructive">*</span>
-                </FieldLabel>
-                <Select
-                  value={monthValue ? String(monthValue) : ""}
-                  onValueChange={(value) =>
-                    form.setValue("month", parseInt(value))
-                  }
-                >
-                  <SelectTrigger
-                    className={cn(
-                      form.formState.errors.month && "border-destructive",
-                    )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <FieldLabel>
+                    Bulan <span className="text-destructive">*</span>
+                  </FieldLabel>
+                  <Select
+                    value={monthValue ? String(monthValue) : ""}
+                    onValueChange={(value) =>
+                      form.setValue("month", parseInt(value))
+                    }
                   >
-                    <SelectValue placeholder="Pilih Bulan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month.value} value={String(month.value)}>
-                        {month.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FieldError>{form.formState.errors.month?.message}</FieldError>
-              </Field>
-
-              {/* Tahun */}
-              <Field>
-                <FieldLabel>
-                  Tahun <span className="text-destructive">*</span>
-                </FieldLabel>
-                <Select
-                  value={yearValue ? String(yearValue) : ""}
-                  onValueChange={(value) =>
-                    form.setValue("year", parseInt(value))
-                  }
-                >
-                  <SelectTrigger
-                    className={cn(
-                      form.formState.errors.year && "border-destructive",
-                    )}
+                    <SelectTrigger
+                      className={cn(
+                        form.formState.errors.month && "border-destructive",
+                      )}
+                    >
+                      <SelectValue placeholder="Pilih Bulan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {months.map((month) => (
+                        <SelectItem
+                          key={month.value}
+                          value={String(month.value)}
+                        >
+                          {month.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError>{form.formState.errors.month?.message}</FieldError>
+                </div>
+                <div className="space-y-2">
+                  <FieldLabel>
+                    Tahun <span className="text-destructive">*</span>
+                  </FieldLabel>
+                  <Select
+                    value={yearValue ? String(yearValue) : ""}
+                    onValueChange={(value) =>
+                      form.setValue("year", parseInt(value))
+                    }
                   >
-                    <SelectValue placeholder="Pilih Tahun" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={String(year)}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FieldError>{form.formState.errors.year?.message}</FieldError>
-              </Field>
+                    <SelectTrigger
+                      className={cn(
+                        form.formState.errors.year && "border-destructive",
+                      )}
+                    >
+                      <SelectValue placeholder="Pilih Tahun" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map((year) => (
+                        <SelectItem key={year} value={String(year)}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError>{form.formState.errors.year?.message}</FieldError>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* ================= Links ================= */}
+        {/* Links */}
         <Card>
           <CardHeader>
             <CardTitle>Links</CardTitle>
@@ -365,7 +344,7 @@ export function PortfolioForm({
           </CardContent>
         </Card>
 
-        {/* ================= Tools ================= */}
+        {/* Tools */}
         <Card>
           <CardHeader>
             <CardTitle>Tools & Teknologi</CardTitle>
@@ -409,7 +388,7 @@ export function PortfolioForm({
           </CardContent>
         </Card>
 
-        {/* ================= Cover ================= */}
+        {/* Cover */}
         <Card>
           <CardHeader>
             <CardTitle>Cover Image</CardTitle>
@@ -420,7 +399,7 @@ export function PortfolioForm({
           </CardContent>
         </Card>
 
-        {/* ================= Media ================= */}
+        {/* Media */}
         <Card>
           <CardHeader>
             <CardTitle>Media Gallery</CardTitle>
@@ -432,7 +411,6 @@ export function PortfolioForm({
         </Card>
       </FieldSet>
 
-      {/* ================= Actions ================= */}
       <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"

@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { type ProjectType, projectTypeLabels } from "@/types/portfolio";
+import { months, years } from "@/lib/date-options";
 
 export interface PortfolioFilterValues {
   project_type?: ProjectType;
@@ -36,24 +37,6 @@ interface PortfolioFilterModalProps {
   filters: PortfolioFilterValues;
   onApplyFilters: (filters: PortfolioFilterValues) => void;
 }
-
-const months = [
-  { value: 1, label: "Januari" },
-  { value: 2, label: "Februari" },
-  { value: 3, label: "Maret" },
-  { value: 4, label: "April" },
-  { value: 5, label: "Mei" },
-  { value: 6, label: "Juni" },
-  { value: 7, label: "Juli" },
-  { value: 8, label: "Agustus" },
-  { value: 9, label: "September" },
-  { value: 10, label: "Oktober" },
-  { value: 11, label: "November" },
-  { value: 12, label: "Desember" },
-];
-
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 20 }, (_, i) => currentYear - i);
 
 export function PortfolioFilterModal({
   open,
