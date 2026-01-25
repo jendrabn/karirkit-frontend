@@ -80,9 +80,6 @@ export function JobForm({
           company_id: "",
           job_role_id: "",
           city_id: "",
-          job_type: "full_time",
-          work_system: "onsite",
-          education_level: "any",
           min_years_of_experience: 0,
           max_years_of_experience: null,
           description: "",
@@ -95,7 +92,6 @@ export function JobForm({
           contact_email: "",
           contact_phone: "",
           medias: [],
-          status: "draft",
           expiration_date: null,
         },
   });
@@ -224,10 +220,10 @@ export function JobForm({
                       </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value ?? undefined}
+                        value={field.value ?? ""}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Full-time / Internship / Freelance" />
+                          <SelectValue placeholder="Pilih Tipe Pekerjaan" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover z-50">
                           {Object.entries(JOB_TYPE_LABELS).map(([v, l]) => (
@@ -254,10 +250,10 @@ export function JobForm({
                       </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value ?? undefined}
+                        value={field.value ?? ""}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Onsite / Hybrid / Remote" />
+                          <SelectValue placeholder="Pilih Sistem Kerja" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover z-50">
                           {Object.entries(WORK_SYSTEM_LABELS).map(([v, l]) => (
@@ -284,9 +280,12 @@ export function JobForm({
                       Pendidikan Minimal{" "}
                       <span className="text-destructive">*</span>
                     </FieldLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value ?? ""}
+                    >
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih pendidikan minimal" />
+                        <SelectValue placeholder="Pilih Pendidikan Minimal" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
                         {Object.entries(EDUCATION_LEVEL_LABELS).map(
@@ -458,10 +457,10 @@ export function JobForm({
                     </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      value={field.value || undefined}
+                      value={field.value ?? ""}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih status publikasi" />
+                        <SelectValue placeholder="Pilih Status Publikasi" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
                         <SelectItem value="draft">Draft</SelectItem>

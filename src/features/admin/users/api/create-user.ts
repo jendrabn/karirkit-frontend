@@ -12,7 +12,9 @@ export const createUserInputSchema = z.object({
   email: z.string().email("Email tidak valid"),
   password: z.string().min(8, "Password minimal 8 karakter"),
   phone: z.string().optional().nullable(),
-  role: z.enum(["user", "admin"]),
+  role: z.enum(["user", "admin"], {
+    message: "Role wajib dipilih",
+  }),
   avatar: z.string().optional().nullable(),
   daily_download_limit: z.coerce
     .number()

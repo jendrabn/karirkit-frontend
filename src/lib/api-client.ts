@@ -53,7 +53,7 @@ api.interceptors.response.use(
         const until =
           typeof payload.suspended_until === "string" && payload.suspended_until
             ? `Berlaku sampai: ${new Date(
-                payload.suspended_until
+                payload.suspended_until,
               ).toLocaleString("id-ID")}`
             : "";
         const messageParts = [
@@ -82,5 +82,5 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );

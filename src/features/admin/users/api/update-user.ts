@@ -9,7 +9,9 @@ export const updateUserInputSchema = z.object({
   username: z.string().min(1, "Username wajib diisi"),
   email: z.string().email("Email tidak valid"),
   phone: z.string().optional().nullable(),
-  role: z.enum(["user", "admin"]),
+  role: z.enum(["user", "admin"], {
+    message: "Role wajib dipilih",
+  }),
   avatar: z.string().optional().nullable(),
   status: z.enum(["active", "suspended", "banned"]).optional(),
   status_reason: z.string().optional().nullable(),

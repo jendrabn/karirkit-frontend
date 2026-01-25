@@ -72,8 +72,8 @@ export function ApplicationLetterForm({
       template_id: initialData?.template_id || "",
       name: initialData?.name || "",
       birth_place_date: initialData?.birth_place_date || "",
-      gender: initialData?.gender || "male",
-      marital_status: initialData?.marital_status || "single",
+      gender: initialData?.gender,
+      marital_status: initialData?.marital_status,
       education: initialData?.education || "",
       phone: initialData?.phone || "",
       email: initialData?.email || "",
@@ -90,15 +90,12 @@ export function ApplicationLetterForm({
       attachments: initialData?.attachments || "",
       closing_paragraph: initialData?.closing_paragraph || "",
       signature: initialData?.signature || "",
-      language: initialData?.language || "id",
+      language: initialData?.language,
     },
   });
 
-  // Handle form validation errors from API
-
   useServerValidation(error, form);
 
-  // Fetch templates based on selected language
   const languageValue = useWatch({ control: form.control, name: "language" });
   const openingParagraphValue = useWatch({
     control: form.control,
@@ -154,10 +151,15 @@ export function ApplicationLetterForm({
     return "";
   };
 
+  const handleFormSubmit = form.handleSubmit(
+    (data) => onSubmit(applicationLetterSchema.parse(data)),
+    displayFormErrors,
+  );
+
   return (
     <>
       <form
-        onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}
+        onSubmit={handleFormSubmit}
         className="space-y-6"
       >
         <FieldSet>
@@ -179,10 +181,16 @@ export function ApplicationLetterForm({
                         </FieldLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value ?? ""}
                         >
-                        <SelectTrigger id={field.name} className={cn(form.formState.errors.language && "border-destructive")}>
-                          <SelectValue />
+                          <SelectTrigger
+                            id={field.name}
+                            className={cn(
+                              form.formState.errors.language &&
+                                "border-destructive",
+                            )}
+                          >
+                            <SelectValue placeholder="Pilih Bahasa" />
                           </SelectTrigger>
                           <SelectContent className="z-50">
                             {LANGUAGE_OPTIONS.map((option) => (
@@ -245,7 +253,13 @@ export function ApplicationLetterForm({
                   <FieldLabel htmlFor="name">
                     Nama Lengkap <span className="text-destructive">*</span>
                   </FieldLabel>
-                  <Input id="name" {...form.register("name")} className={cn(form.formState.errors.name && "border-destructive")} />
+                  <Input
+                    id="name"
+                    {...form.register("name")}
+                    className={cn(
+                      form.formState.errors.name && "border-destructive",
+                    )}
+                  />
                   <FieldError>{form.formState.errors.name?.message}</FieldError>
                 </Field>
 
@@ -258,7 +272,10 @@ export function ApplicationLetterForm({
                     id="birth_place_date"
                     {...form.register("birth_place_date")}
                     placeholder="Jakarta, 15 Mei 1995"
-                    className={cn(form.formState.errors.birth_place_date && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.birth_place_date &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.birth_place_date?.message}
@@ -276,10 +293,16 @@ export function ApplicationLetterForm({
                       </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value ?? ""}
                       >
-                        <SelectTrigger id={field.name}>
-                          <SelectValue />
+                        <SelectTrigger
+                          id={field.name}
+                          className={cn(
+                            form.formState.errors.gender &&
+                              "border-destructive",
+                          )}
+                        >
+                          <SelectValue placeholder="Pilih Jenis Kelamin" />
                         </SelectTrigger>
                         <SelectContent className="z-50">
                           {GENDER_OPTIONS.map((option) => (
@@ -305,12 +328,18 @@ export function ApplicationLetterForm({
                         Status Pernikahan{" "}
                         <span className="text-destructive">*</span>
                       </FieldLabel>
-                       <Select
-                         onValueChange={field.onChange}
-                         defaultValue={field.value}
-                       >
-                        <SelectTrigger id={field.name} className={cn(form.formState.errors.marital_status && "border-destructive")}>
-                          <SelectValue />
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value ?? ""}
+                      >
+                        <SelectTrigger
+                          id={field.name}
+                          className={cn(
+                            form.formState.errors.marital_status &&
+                              "border-destructive",
+                          )}
+                        >
+                          <SelectValue placeholder="Pilih Status Pernikahan" />
                         </SelectTrigger>
                         <SelectContent className="z-50">
                           {MARITAL_STATUS_OPTIONS.map((option) => (
@@ -336,7 +365,9 @@ export function ApplicationLetterForm({
                     id="education"
                     {...form.register("education")}
                     placeholder="S1 Teknik Informatika"
-                    className={cn(form.formState.errors.education && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.education && "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.education?.message}
@@ -351,7 +382,9 @@ export function ApplicationLetterForm({
                     id="phone"
                     {...form.register("phone")}
                     placeholder="081234567890"
-                    className={cn(form.formState.errors.phone && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.phone && "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.phone?.message}
@@ -362,7 +395,14 @@ export function ApplicationLetterForm({
                   <FieldLabel htmlFor="email">
                     Email <span className="text-destructive">*</span>
                   </FieldLabel>
-                  <Input type="email" id="email" {...form.register("email")} className={cn(form.formState.errors.email && "border-destructive")} />
+                  <Input
+                    type="email"
+                    id="email"
+                    {...form.register("email")}
+                    className={cn(
+                      form.formState.errors.email && "border-destructive",
+                    )}
+                  />
                   <FieldError>
                     {form.formState.errors.email?.message}
                   </FieldError>
@@ -376,7 +416,10 @@ export function ApplicationLetterForm({
                     id="applicant_city"
                     {...form.register("applicant_city")}
                     placeholder="Jakarta"
-                    className={cn(form.formState.errors.applicant_city && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.applicant_city &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.applicant_city?.message}
@@ -392,6 +435,9 @@ export function ApplicationLetterForm({
                       id="address"
                       {...form.register("address")}
                       rows={2}
+                      className={cn(
+                        form.formState.errors.address && "border-destructive",
+                      )}
                     />
                     <FieldError>
                       {form.formState.errors.address?.message}
@@ -417,7 +463,10 @@ export function ApplicationLetterForm({
                     id="receiver_title"
                     {...form.register("receiver_title")}
                     placeholder="HRD Manager"
-                    className={cn(form.formState.errors.receiver_title && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.receiver_title &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.receiver_title?.message}
@@ -428,7 +477,14 @@ export function ApplicationLetterForm({
                   <FieldLabel htmlFor="company_name">
                     Nama Perusahaan <span className="text-destructive">*</span>
                   </FieldLabel>
-                  <Input id="company_name" {...form.register("company_name")} className={cn(form.formState.errors.company_name && "border-destructive")} />
+                  <Input
+                    id="company_name"
+                    {...form.register("company_name")}
+                    className={cn(
+                      form.formState.errors.company_name &&
+                        "border-destructive",
+                    )}
+                  />
                   <FieldError>
                     {form.formState.errors.company_name?.message}
                   </FieldError>
@@ -442,7 +498,10 @@ export function ApplicationLetterForm({
                     id="company_city"
                     {...form.register("company_city")}
                     placeholder="Jakarta"
-                    className={cn(form.formState.errors.company_city && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.company_city &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.company_city?.message}
@@ -509,6 +568,10 @@ export function ApplicationLetterForm({
                       id="company_address"
                       {...form.register("company_address")}
                       rows={2}
+                      className={cn(
+                        form.formState.errors.company_address &&
+                          "border-destructive",
+                      )}
                     />
                     <FieldError>
                       {form.formState.errors.company_address?.message}
@@ -535,7 +598,9 @@ export function ApplicationLetterForm({
                       id="subject"
                       {...form.register("subject")}
                       placeholder="Lamaran Posisi Software Engineer"
-                      className={cn(form.formState.errors.subject && "border-destructive")}
+                      className={cn(
+                        form.formState.errors.subject && "border-destructive",
+                      )}
                     />
                     <FieldError>
                       {form.formState.errors.subject?.message}
@@ -564,6 +629,10 @@ export function ApplicationLetterForm({
                     {...form.register("opening_paragraph")}
                     rows={3}
                     placeholder="Dengan hormat, saya yang bertanda tangan di bawah ini..."
+                    className={cn(
+                      form.formState.errors.opening_paragraph &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.opening_paragraph?.message}
@@ -590,6 +659,10 @@ export function ApplicationLetterForm({
                     {...form.register("body_paragraph")}
                     rows={5}
                     placeholder="Saya memiliki pengalaman dalam bidang..."
+                    className={cn(
+                      form.formState.errors.body_paragraph &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.body_paragraph?.message}
@@ -602,7 +675,9 @@ export function ApplicationLetterForm({
                     id="attachments"
                     {...form.register("attachments")}
                     placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
-                    className={cn(form.formState.errors.attachments && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.attachments && "border-destructive",
+                    )}
                   />
                   <FieldDescription>
                     Pisahkan setiap item lampiran dengan tanda koma (,)
@@ -633,6 +708,10 @@ export function ApplicationLetterForm({
                     {...form.register("closing_paragraph")}
                     rows={3}
                     placeholder="Demikian surat lamaran ini saya buat..."
+                    className={cn(
+                      form.formState.errors.closing_paragraph &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.closing_paragraph?.message}

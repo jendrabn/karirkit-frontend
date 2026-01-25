@@ -46,7 +46,9 @@ export const cvVisibilitySchema = z.object({
       /^[a-z0-9-]+$/,
       "Slug hanya boleh berisi huruf kecil, angka, dan strip"
     ),
-  visibility: z.enum(["public", "private"]),
+  visibility: z.enum(["public", "private"], {
+    message: "Visibilitas wajib dipilih",
+  }),
 });
 
 export type CVVisibilityFormData = z.infer<typeof cvVisibilitySchema>;

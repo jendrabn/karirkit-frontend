@@ -57,16 +57,11 @@ export function TemplateForm({
     resolver: zodResolver(createTemplateInputSchema),
     defaultValues: initialData || {
       name: "",
-
-      type: "cv",
-      language: "id",
       is_premium: false,
       path: "",
       preview: "",
     },
   });
-
-  // Handle form validation errors from API
 
   useServerValidation(error, form);
 
@@ -163,10 +158,14 @@ export function TemplateForm({
                     </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value ?? ""}
                     >
-                      <SelectTrigger className={cn(form.formState.errors.type && "border-destructive")}>
-                        <SelectValue placeholder="Pilih jenis template (CV / Surat Lamaran)" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.type && "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Tipe Template" />
                       </SelectTrigger>
                       <SelectContent>
                         {TEMPLATE_TYPE_OPTIONS.map((opt) => (
@@ -193,10 +192,15 @@ export function TemplateForm({
                     </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value ?? ""}
                     >
-                      <SelectTrigger className={cn(form.formState.errors.language && "border-destructive")}>
-                        <SelectValue placeholder="Pilih bahasa template" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.language &&
+                            "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Bahasa Template" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="id">Bahasa Indonesia</SelectItem>
@@ -219,7 +223,9 @@ export function TemplateForm({
                 <Input
                   {...form.register("name")}
                   placeholder="Contoh: Simple Professional CV"
-                  className={cn(form.formState.errors.name && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.name && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>

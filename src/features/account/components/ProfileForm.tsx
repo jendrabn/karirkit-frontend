@@ -221,7 +221,7 @@ const ProfileForm = () => {
                             errors.gender && "border-destructive",
                           )}
                         >
-                          <SelectValue placeholder="Pilih gender" />
+                          <SelectValue placeholder="Pilih Gender" />
                         </SelectTrigger>
                         <SelectContent className="z-50">
                           {genderOptions.map((option) => (
@@ -333,7 +333,7 @@ const ProfileForm = () => {
                                     : undefined
                                 }
                               >
-                                <SelectValue placeholder="Platform" />
+                                <SelectValue placeholder="Pilih Platform" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {SOCIAL_PLATFORM_OPTIONS.map((option) => (

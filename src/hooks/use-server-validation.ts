@@ -2,9 +2,6 @@ import { useEffect, createElement } from "react";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 
-/**
- * Interface for error response from Laravel/server
- */
 export interface ServerError {
   response?: {
     data?: {

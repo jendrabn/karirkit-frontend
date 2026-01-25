@@ -10,7 +10,9 @@ export const blogSchema = z.object({
   featured_image: z.string().nullable().optional(),
   content: z.string().min(1, "Konten wajib diisi"),
   excerpt: z.string().nullable().optional(),
-  status: z.enum(["draft", "published", "archived"]),
+  status: z.enum(["draft", "published", "archived"], {
+    message: "Status blog wajib dipilih",
+  }),
   category_id: z.string().min(1, "Kategori wajib dipilih"),
   tag_ids: z.array(z.string()).optional(),
 });

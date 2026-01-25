@@ -15,8 +15,12 @@ export const createJobInputSchema = z.object({
     "contract",
     "internship",
     "freelance",
-  ]),
-  work_system: z.enum(["onsite", "hybrid", "remote"]),
+  ], {
+    message: "Tipe pekerjaan wajib dipilih",
+  }),
+  work_system: z.enum(["onsite", "hybrid", "remote"], {
+    message: "Sistem kerja wajib dipilih",
+  }),
   education_level: z.enum([
     "middle_school",
     "high_school",
@@ -27,7 +31,9 @@ export const createJobInputSchema = z.object({
     "master",
     "doctorate",
     "any",
-  ]),
+  ], {
+    message: "Pendidikan minimal wajib dipilih",
+  }),
   min_years_of_experience: z.number().min(0, "Minimal pengalaman wajib diisi"),
   max_years_of_experience: z.number().min(0).nullable().optional(),
   description: z.string().min(1, "Deskripsi wajib diisi"),
@@ -51,7 +57,9 @@ export const createJobInputSchema = z.object({
       })
     )
     .optional(),
-  status: z.enum(["draft", "published", "closed", "archived"]),
+  status: z.enum(["draft", "published", "closed", "archived"], {
+    message: "Status publikasi wajib dipilih",
+  }),
   expiration_date: z.string().optional().nullable(),
 });
 

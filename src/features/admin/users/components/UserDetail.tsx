@@ -1,40 +1,16 @@
-import { useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { dayjs } from "@/lib/date";
 import { Mail, Phone, Calendar, Shield, Ban, UserCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
 import {
   USER_ROLE_OPTIONS,
   USER_STATUS_OPTIONS,
   type UserRole,
 } from "@/types/user";
 import type { User } from "@/types/user";
-import { useUpdateUser } from "../api/update-user";
-import { useAuth } from "@/contexts/AuthContext";
-import { useServerValidation } from "@/hooks/use-server-validation";
 import { formatBytes } from "@/lib/utils";
-import { toast } from "sonner";
 
 const getRoleBadgeVariant = (role: UserRole) => {
   return role === "admin" ? "default" : "secondary";
@@ -53,25 +29,7 @@ const getStatusBadgeVariant = (status: User["status"]) => {
   }
 };
 
-const userStatusSchema = z
-  .object({
-    status: z.enum(["active", "suspended", "banned"]),
-    status_reason: z.string().optional(),
-    suspended_until: z.string().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.status === "suspended" && !data.suspended_until) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Tanggal suspend wajib diisi",
-        path: ["suspended_until"],
-      });
-    }
-  });
-
 export const UserDetail = ({ user }: { user: User }) => {
-  const { user: authUser } = useAuth();
-  const isSelf = authUser?.id === user.id;
   const storageStats = user.document_storage_stats;
   const storageLimit = user.document_storage_limit || 0;
   const storageUsed = storageStats?.used ?? 0;
@@ -80,61 +38,6 @@ export const UserDetail = ({ user }: { user: User }) => {
   const storagePercentage = storageLimit
     ? Math.min(100, Math.round((storageUsed / storageLimit) * 100))
     : 0;
-  const updateStatusMutation = useUpdateUser({
-    mutationConfig: {
-      onSuccess: () => {
-        toast.success("Status akun berhasil diperbarui");
-      },
-      onError: () => {
-        toast.error("Gagal memperbarui status user");
-      },
-    },
-  });
-
-  const form = useForm<z.infer<typeof userStatusSchema>>({
-    resolver: zodResolver(userStatusSchema),
-    defaultValues: {
-      status: user.status || "active",
-      status_reason: user.status_reason || "",
-      suspended_until: user.suspended_until
-        ? dayjs(user.suspended_until).local().format("YYYY-MM-DDTHH:mm")
-        : "",
-    },
-  });
-
-  useServerValidation(updateStatusMutation.error, form);
-
-  useEffect(() => {
-    form.reset({
-      status: user.status || "active",
-      status_reason: user.status_reason || "",
-      suspended_until: user.suspended_until
-        ? dayjs(user.suspended_until).local().format("YYYY-MM-DDTHH:mm")
-        : "",
-    });
-  }, [form, user]);
-
-  const statusValue = useWatch({
-    control: form.control,
-    name: "status",
-  });
-  const showSuspendedUntil = statusValue === "suspended";
-
-  const handleStatusSubmit = form.handleSubmit((data) => {
-    const suspendedUntil =
-      data.status === "suspended" && data.suspended_until
-        ? new Date(data.suspended_until).toISOString()
-        : undefined;
-
-    updateStatusMutation.mutate({
-      id: user.id,
-      data: {
-        status: data.status,
-        status_reason: data.status_reason || undefined,
-        suspended_until: suspendedUntil,
-      },
-    });
-  });
 
   return (
     <div className="bg-card border border-border/60 rounded-xl shadow-sm overflow-hidden">
@@ -263,8 +166,8 @@ export const UserDetail = ({ user }: { user: User }) => {
 
       <div className="p-6">
         <h3 className="font-semibold text-lg mb-4">Status Akun</h3>
-        {(user.status_reason || user.suspended_until) && (
-          <div className="mb-4 space-y-1 text-sm text-muted-foreground">
+        {(user.status_reason || user.suspended_until) ? (
+          <div className="space-y-1 text-sm text-muted-foreground">
             {user.status_reason && (
               <p>
                 Alasan:{" "}
@@ -280,87 +183,9 @@ export const UserDetail = ({ user }: { user: User }) => {
               </p>
             )}
           </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">-</p>
         )}
-
-        <form onSubmit={handleStatusSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field>
-              <FieldLabel>Status</FieldLabel>
-              <Select
-                value={statusValue}
-                onValueChange={(value) => {
-                  form.setValue("status", value as User["status"], {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
-                }}
-                disabled={isSelf || updateStatusMutation.isPending}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih status" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover z-50">
-                  {USER_STATUS_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldDescription>
-                Status menentukan akses user ke aplikasi.
-              </FieldDescription>
-              <FieldError>{form.formState.errors.status?.message}</FieldError>
-            </Field>
-
-            {showSuspendedUntil && (
-              <Field>
-                <FieldLabel>Suspend Sampai</FieldLabel>
-                <Input
-                  type="datetime-local"
-                  {...form.register("suspended_until")}
-                  disabled={isSelf || updateStatusMutation.isPending}
-                />
-                <FieldError>
-                  {form.formState.errors.suspended_until?.message}
-                </FieldError>
-              </Field>
-            )}
-          </div>
-
-          <Field>
-            <FieldLabel>Catatan Status</FieldLabel>
-            <Textarea
-              {...form.register("status_reason")}
-              rows={2}
-              placeholder="Catatan untuk audit (opsional)"
-              disabled={isSelf || updateStatusMutation.isPending}
-            />
-            <FieldDescription>
-              Tampilkan alasan status ini pada admin lain.
-            </FieldDescription>
-            <FieldError>
-              {form.formState.errors.status_reason?.message}
-            </FieldError>
-          </Field>
-
-          {isSelf && (
-            <p className="text-sm text-muted-foreground">
-              Anda tidak dapat mengubah status akun Anda sendiri.
-            </p>
-          )}
-
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              disabled={isSelf || updateStatusMutation.isPending}
-            >
-              {updateStatusMutation.isPending
-                ? "Menyimpan..."
-                : "Simpan Status"}
-            </Button>
-          </div>
-        </form>
       </div>
     </div>
   );

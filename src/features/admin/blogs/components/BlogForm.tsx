@@ -82,13 +82,11 @@ export function BlogForm({
       content: initialData?.content || "",
       excerpt: initialData?.teaser || "",
       status:
-        (initialData?.status as "draft" | "published" | "archived") || "draft",
+        (initialData?.status as "draft" | "published" | "archived") || "",
       category_id: initialData?.category?.id?.toString() || "",
       tag_ids: initialData?.tags?.map((t) => t.id.toString()) || [],
     },
   });
-
-  // Handle form validation errors from API
 
   useServerValidation(error, form);
 
@@ -171,7 +169,9 @@ export function BlogForm({
                   onChange: handleTitleChange,
                 })}
                 placeholder="Contoh: 7 Tips Lolos Interview Frontend Developer"
-                className={cn(form.formState.errors.title && "border-destructive")}
+                className={cn(
+                  form.formState.errors.title && "border-destructive",
+                )}
               />
               <FieldError>{form.formState.errors.title?.message}</FieldError>
             </Field>
@@ -188,8 +188,13 @@ export function BlogForm({
                       value={field.value || ""}
                       onValueChange={(v) => field.onChange(v)}
                     >
-                      <SelectTrigger className={cn(form.formState.errors.category_id && "border-destructive")}>
-                        <SelectValue placeholder="Pilih kategori blog" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.category_id &&
+                            "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Kategori Blog" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((cat) => (
@@ -214,9 +219,16 @@ export function BlogForm({
                     <FieldLabel>
                       Status <span className="text-destructive">*</span>
                     </FieldLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className={cn(form.formState.errors.status && "border-destructive")}>
-                        <SelectValue placeholder="Pilih status blog" />
+                    <Select
+                      value={field.value ?? ""}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.status && "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Status Blog" />
                       </SelectTrigger>
                       <SelectContent>
                         {BLOG_STATUS_OPTIONS.map((opt) => (
@@ -317,7 +329,9 @@ export function BlogForm({
                 {...form.register("excerpt")}
                 placeholder="Ringkasan singkat yang muncul di halaman listing blog"
                 rows={3}
-                className={cn(form.formState.errors.excerpt && "border-destructive")}
+                className={cn(
+                  form.formState.errors.excerpt && "border-destructive",
+                )}
               />
               <FieldError>{form.formState.errors.excerpt?.message}</FieldError>
             </Field>

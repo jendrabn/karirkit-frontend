@@ -29,7 +29,9 @@ export const portfolioSchema = z.object({
   sort_description: z.string().min(1, "Deskripsi singkat wajib diisi"),
   description: z.string().min(1, "Deskripsi wajib diisi"),
   role_title: z.string().min(1, "Role wajib diisi"),
-  project_type: z.enum(["work", "personal", "freelance", "academic"]),
+  project_type: z.enum(["work", "personal", "freelance", "academic"], {
+    message: "Tipe proyek wajib dipilih",
+  }),
   industry: z.string().min(1, "Industri wajib diisi"),
   month: z.number().min(1).max(12),
   year: z.number().min(1900).max(2100),

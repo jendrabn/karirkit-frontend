@@ -81,17 +81,15 @@ export function PortfolioForm({
       sort_description: initialData?.sort_description || "",
       description: initialData?.description || "",
       role_title: initialData?.role_title || "",
-      project_type: initialData?.project_type || "work",
+      project_type: initialData?.project_type,
       industry: initialData?.industry || "",
-      month: initialData?.month || new Date().getMonth() + 1,
-      year: initialData?.year || currentYear,
+      month: initialData?.month,
+      year: initialData?.year,
       live_url: initialData?.live_url || "",
       repo_url: initialData?.repo_url || "",
       cover: initialData?.cover || "",
     },
   });
-
-  // Handle form validation errors from API
 
   useServerValidation(error, form);
 
@@ -147,7 +145,9 @@ export function PortfolioForm({
                   <Input
                     {...form.register("title")}
                     placeholder="Contoh: Sistem Manajemen Inventori Berbasis Web"
-                    className={cn(form.formState.errors.title && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.title && "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.title?.message}
@@ -165,7 +165,10 @@ export function PortfolioForm({
                   <Input
                     {...form.register("sort_description")}
                     placeholder="Ringkasan singkat proyek (1 kalimat)"
-                    className={cn(form.formState.errors.sort_description && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.sort_description &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.sort_description?.message}
@@ -183,7 +186,9 @@ export function PortfolioForm({
                     {...form.register("description")}
                     rows={5}
                     placeholder="Jelaskan tujuan proyek, peran Anda, teknologi yang digunakan, dan hasil yang dicapai"
-                    className={cn(form.formState.errors.description && "border-destructive")}
+                    className={cn(
+                      form.formState.errors.description && "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.description?.message}
@@ -199,7 +204,9 @@ export function PortfolioForm({
                 <Input
                   {...form.register("role_title")}
                   placeholder="Contoh: Frontend Developer"
-                  className={cn(form.formState.errors.role_title && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.role_title && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.role_title?.message}
@@ -210,7 +217,7 @@ export function PortfolioForm({
               <Field>
                 <FieldLabel>Tipe Proyek</FieldLabel>
                 <Select
-                  value={projectTypeValue}
+                  value={projectTypeValue ?? ""}
                   onValueChange={(value) =>
                     form.setValue(
                       "project_type",
@@ -218,8 +225,13 @@ export function PortfolioForm({
                     )
                   }
                 >
-                  <SelectTrigger className={cn(form.formState.errors.project_type && "border-destructive")}>
-                    <SelectValue placeholder="Pilih tipe proyek" />
+                  <SelectTrigger
+                    className={cn(
+                      form.formState.errors.project_type &&
+                        "border-destructive",
+                    )}
+                  >
+                    <SelectValue placeholder="Pilih Tipe Proyek" />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(projectTypeLabels).map(([value, label]) => (
@@ -242,7 +254,9 @@ export function PortfolioForm({
                 <Input
                   {...form.register("industry")}
                   placeholder="Contoh: Teknologi Informasi, Fintech, E-commerce"
-                  className={cn(form.formState.errors.industry && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.industry && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.industry?.message}
@@ -255,13 +269,17 @@ export function PortfolioForm({
                   Bulan <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Select
-                  value={String(monthValue)}
+                  value={monthValue ? String(monthValue) : ""}
                   onValueChange={(value) =>
                     form.setValue("month", parseInt(value))
                   }
                 >
-                  <SelectTrigger className={cn(form.formState.errors.month && "border-destructive")}>
-                    <SelectValue placeholder="Pilih bulan" />
+                  <SelectTrigger
+                    className={cn(
+                      form.formState.errors.month && "border-destructive",
+                    )}
+                  >
+                    <SelectValue placeholder="Pilih Bulan" />
                   </SelectTrigger>
                   <SelectContent>
                     {months.map((month) => (
@@ -280,13 +298,17 @@ export function PortfolioForm({
                   Tahun <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Select
-                  value={String(yearValue)}
+                  value={yearValue ? String(yearValue) : ""}
                   onValueChange={(value) =>
                     form.setValue("year", parseInt(value))
                   }
                 >
-                  <SelectTrigger className={cn(form.formState.errors.year && "border-destructive")}>
-                    <SelectValue placeholder="Pilih tahun" />
+                  <SelectTrigger
+                    className={cn(
+                      form.formState.errors.year && "border-destructive",
+                    )}
+                  >
+                    <SelectValue placeholder="Pilih Tahun" />
                   </SelectTrigger>
                   <SelectContent>
                     {years.map((year) => (
@@ -316,7 +338,9 @@ export function PortfolioForm({
                   {...form.register("live_url")}
                   type="url"
                   placeholder="https://aplikasi-anda.com"
-                  className={cn(form.formState.errors.live_url && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.live_url && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.live_url?.message}
@@ -329,7 +353,9 @@ export function PortfolioForm({
                   {...form.register("repo_url")}
                   type="url"
                   placeholder="https://github.com/username/nama-project"
-                  className={cn(form.formState.errors.repo_url && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.repo_url && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.repo_url?.message}

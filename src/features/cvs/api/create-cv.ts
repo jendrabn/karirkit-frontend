@@ -68,7 +68,9 @@ export const experienceSchema = z.object({
     "contract",
     "internship",
     "freelance",
-  ]),
+  ], {
+    message: "Tipe pekerjaan wajib dipilih",
+  }),
   start_month: z.number().min(1).max(12),
   start_year: z.number().min(1900).max(2100),
   end_month: z.number().min(0).max(12).nullable().optional(),
@@ -79,7 +81,9 @@ export const experienceSchema = z.object({
 
 export const skillSchema = z.object({
   name: z.string().min(1, "Nama keahlian wajib diisi"),
-  level: z.enum(["beginner", "intermediate", "advanced", "expert"]),
+  level: z.enum(["beginner", "intermediate", "advanced", "expert"], {
+    message: "Level keahlian wajib dipilih",
+  }),
   skill_category: z.any(),
 });
 
@@ -113,7 +117,9 @@ export const organizationSchema = z.object({
     "professional",
     "volunteer",
     "community",
-  ]),
+  ], {
+    message: "Tipe organisasi wajib dipilih",
+  }),
   location: z.string().optional(),
   start_month: z.number().min(1).max(12),
   start_year: z.number().min(1900).max(2100),

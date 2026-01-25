@@ -7,7 +7,9 @@ import type { User } from "@/types/user";
 
 export const updateUserStatusInputSchema = z
   .object({
-    status: z.enum(["active", "suspended", "banned"]),
+    status: z.enum(["active", "suspended", "banned"], {
+      message: "Status wajib dipilih",
+    }),
     status_reason: z.string().optional().nullable(),
     suspended_until: z.string().optional().nullable(),
   })

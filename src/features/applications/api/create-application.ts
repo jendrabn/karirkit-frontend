@@ -16,8 +16,12 @@ export const createApplicationInputSchema = z.object({
     "contract",
     "internship",
     "freelance",
-  ]),
-  work_system: z.enum(["onsite", "hybrid", "remote"]),
+  ], {
+    message: "Tipe pekerjaan wajib dipilih",
+  }),
+  work_system: z.enum(["onsite", "hybrid", "remote"], {
+    message: "Sistem kerja wajib dipilih",
+  }),
   salary_min: z.number().min(0).optional().nullable(),
   salary_max: z.number().min(0).optional().nullable(),
   location: z.string().optional().nullable(),
@@ -38,8 +42,12 @@ export const createApplicationInputSchema = z.object({
     "onboarding",
     "accepted",
     "rejected",
-  ]),
-  result_status: z.enum(["pending", "passed", "failed"]),
+  ], {
+    message: "Status lamaran wajib dipilih",
+  }),
+  result_status: z.enum(["pending", "passed", "failed"], {
+    message: "Hasil akhir wajib dipilih",
+  }),
   contact_name: z.string().optional().nullable(),
   contact_email: z
     .string()

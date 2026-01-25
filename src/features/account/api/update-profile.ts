@@ -7,7 +7,9 @@ import type { User } from "@/types/user";
 
 const socialLinkField = z.object({
   id: z.string().optional(),
-  platform: z.enum(SOCIAL_PLATFORM_VALUES),
+  platform: z.enum(SOCIAL_PLATFORM_VALUES, {
+    message: "Platform wajib dipilih",
+  }),
   url: z.string().url("URL tidak valid"),
 });
 

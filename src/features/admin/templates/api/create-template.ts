@@ -7,8 +7,12 @@ import type { DocumentTemplate } from "@/types/template";
 
 export const createTemplateInputSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
-  type: z.enum(["cv", "application_letter"], "Tipe wajib dipilih"),
-  language: z.enum(["en", "id"], "Bahasa wajib dipilih"),
+  type: z.enum(["cv", "application_letter"], {
+    message: "Tipe wajib dipilih",
+  }),
+  language: z.enum(["en", "id"], {
+    message: "Bahasa wajib dipilih",
+  }),
   path: z.string().min(1, "Path file wajib diisi"),
   preview: z.string().min(1, "Preview image wajib diisi"),
   is_premium: z.boolean().default(false),

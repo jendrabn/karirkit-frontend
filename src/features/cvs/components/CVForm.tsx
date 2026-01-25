@@ -91,18 +91,18 @@ export function CVForm({
       about: initialData?.about || "",
       photo: initialData?.photo || "",
       educations: (initialData?.educations || []) as CVFormInput["educations"],
-      certificates:
-        (initialData?.certificates || []) as CVFormInput["certificates"],
-      experiences:
-        (initialData?.experiences || []) as CVFormInput["experiences"],
+      certificates: (initialData?.certificates ||
+        []) as CVFormInput["certificates"],
+      experiences: (initialData?.experiences ||
+        []) as CVFormInput["experiences"],
       skills: (initialData?.skills || []) as CVFormInput["skills"],
       awards: (initialData?.awards || []) as CVFormInput["awards"],
-      social_links:
-        (initialData?.social_links || []) as CVFormInput["social_links"],
-      organizations:
-        (initialData?.organizations || []) as CVFormInput["organizations"],
-      projects:
-        (normalizeProjects(initialData?.projects) || []) as CVFormInput["projects"],
+      social_links: (initialData?.social_links ||
+        []) as CVFormInput["social_links"],
+      organizations: (initialData?.organizations ||
+        []) as CVFormInput["organizations"],
+      projects: (normalizeProjects(initialData?.projects) ||
+        []) as CVFormInput["projects"],
       language: initialData?.language || "id",
     },
   });
@@ -114,8 +114,6 @@ export function CVForm({
     setValue,
     formState: { errors },
   } = form;
-
-  // Handle form validation errors from API
 
   useServerValidation(error, form);
 
@@ -129,8 +127,7 @@ export function CVForm({
   const skillsValue = useWatch({ control, name: "skills" }) ?? [];
   const awardsValue = useWatch({ control, name: "awards" }) ?? [];
   const certificatesValue = useWatch({ control, name: "certificates" }) ?? [];
-  const organizationsValue =
-    useWatch({ control, name: "organizations" }) ?? [];
+  const organizationsValue = useWatch({ control, name: "organizations" }) ?? [];
   const projectsValue = useWatch({ control, name: "projects" }) ?? [];
 
   const { data: templatesData, isLoading: isTemplatesLoading } = useTemplates({
@@ -241,7 +238,7 @@ export function CVForm({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Pilih Bahasa" />
                       </SelectTrigger>
                       <SelectContent className="z-50">
                         {LANGUAGE_OPTIONS.map((option) => (
@@ -463,7 +460,11 @@ export function CVForm({
                               {...register(`educations.${index}.degree`)}
                             />
                             <Select
-                              value={educationsValue?.[index]?.degree as string | undefined}
+                              value={
+                                educationsValue?.[index]?.degree as
+                                  | string
+                                  | undefined
+                              }
                               onValueChange={(v) =>
                                 setValue(
                                   `educations.${index}.degree`,
@@ -482,7 +483,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Jenjang" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {DEGREE_OPTIONS.map((opt) => (
@@ -561,7 +562,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Bulan Mulai" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {MONTH_OPTIONS.map((m) => (
@@ -593,7 +594,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun Mulai" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 {yearOptions.map((y) => (
@@ -622,7 +623,7 @@ export function CVForm({
                               disabled={!!educationsValue?.[index]?.is_current}
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Bulan Selesai" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 <SelectItem value="0">-</SelectItem>
@@ -655,7 +656,7 @@ export function CVForm({
                               disabled={!!educationsValue?.[index]?.is_current}
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun Selesai" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 <SelectItem value="0">-</SelectItem>
@@ -869,7 +870,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tipe Pekerjaan" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {JOB_TYPE_OPTIONS.map((opt) => (
@@ -900,7 +901,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Bulan Mulai" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {MONTH_OPTIONS.map((m) => (
@@ -935,7 +936,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun Mulai" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 {yearOptions.map((y) => (
@@ -965,7 +966,7 @@ export function CVForm({
                               disabled={!!experiencesValue?.[index]?.is_current}
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Bulan Selesai" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 <SelectItem value="0">-</SelectItem>
@@ -998,7 +999,7 @@ export function CVForm({
                               disabled={!!experiencesValue?.[index]?.is_current}
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun Selesai" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 <SelectItem value="0">-</SelectItem>
@@ -1122,7 +1123,7 @@ export function CVForm({
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Kategori" />
+                            <SelectValue placeholder="Pilih Kategori" />
                           </SelectTrigger>
                           <SelectContent className="max-h-[300px]">
                             {Object.entries(
@@ -1163,7 +1164,7 @@ export function CVForm({
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue />
+                            <SelectValue placeholder="Pilih Level Keahlian" />
                           </SelectTrigger>
                           <SelectContent className="z-50">
                             {SKILL_LEVEL_OPTIONS.map((opt) => (
@@ -1301,7 +1302,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Bulan Terbit" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {MONTH_OPTIONS.map((m) => (
@@ -1336,7 +1337,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun Terbit" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 {yearOptions.map((y) => (
@@ -1366,12 +1367,10 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={
-                                !!certificatesValue?.[index]?.no_expiry
-                              }
+                              disabled={!!certificatesValue?.[index]?.no_expiry}
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Bulan Kedaluwarsa" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 <SelectItem value="0">-</SelectItem>
@@ -1404,12 +1403,10 @@ export function CVForm({
                                   parseInt(v),
                                 )
                               }
-                              disabled={
-                                !!certificatesValue?.[index]?.no_expiry
-                              }
+                              disabled={!!certificatesValue?.[index]?.no_expiry}
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun Kedaluwarsa" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 <SelectItem value="0">-</SelectItem>
@@ -1597,16 +1594,16 @@ export function CVForm({
                         </Field>
                         <Field>
                           <FieldLabel>Tahun</FieldLabel>
-                            <Select
-                              value={String(
-                                awardsValue?.[index]?.year ?? currentYear,
-                              )}
-                              onValueChange={(v) =>
-                                setValue(`awards.${index}.year`, parseInt(v))
+                          <Select
+                            value={String(
+                              awardsValue?.[index]?.year ?? currentYear,
+                            )}
+                            onValueChange={(v) =>
+                              setValue(`awards.${index}.year`, parseInt(v))
                             }
                           >
                             <SelectTrigger>
-                              <SelectValue />
+                              <SelectValue placeholder="Pilih Tahun" />
                             </SelectTrigger>
                             <SelectContent className="z-50 max-h-48">
                               {yearOptions.map((y) => (
@@ -1761,7 +1758,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tipe Organisasi" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {ORGANIZATION_TYPE_OPTIONS.map((opt) => (
@@ -1805,7 +1802,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Bulan Mulai" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {MONTH_OPTIONS.map((m) => (
@@ -1840,7 +1837,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun Mulai" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 {yearOptions.map((y) => (
@@ -1874,7 +1871,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Bulan Selesai" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 <SelectItem value="0">-</SelectItem>
@@ -1912,7 +1909,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun Selesai" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 <SelectItem value="0">-</SelectItem>
@@ -2082,7 +2079,7 @@ export function CVForm({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih Tahun" />
                               </SelectTrigger>
                               <SelectContent className="z-50 max-h-48">
                                 {yearOptions.map((y) => (
@@ -2195,7 +2192,7 @@ export function CVForm({
                                     "border-destructive",
                                 )}
                               >
-                                <SelectValue placeholder="Platform" />
+                                <SelectValue placeholder="Pilih Platform" />
                               </SelectTrigger>
                               <SelectContent className="z-50">
                                 {SOCIAL_PLATFORM_OPTIONS.map((option) => (

@@ -126,7 +126,7 @@ export default function ApplicationShow() {
 
   const getLabel = (
     value: string,
-    options: { value: string; label: string }[]
+    options: { value: string; label: string }[],
   ) => {
     return options.find((opt) => opt.value === value)?.label || value;
   };
@@ -193,8 +193,8 @@ export default function ApplicationShow() {
             application.result_status === "passed"
               ? "default"
               : application.result_status === "failed"
-              ? "destructive"
-              : "outline"
+                ? "destructive"
+                : "outline"
           }
         >
           {getLabel(application.result_status, RESULT_STATUS_OPTIONS)}
@@ -310,13 +310,13 @@ export default function ApplicationShow() {
             <InfoItem
               label="Dibuat"
               value={dayjs(application.created_at).format(
-                "DD MMMM YYYY, HH:mm"
+                "DD MMMM YYYY, HH:mm",
               )}
             />
             <InfoItem
               label="Diperbarui"
               value={dayjs(application.updated_at).format(
-                "DD MMMM YYYY, HH:mm"
+                "DD MMMM YYYY, HH:mm",
               )}
             />
           </div>

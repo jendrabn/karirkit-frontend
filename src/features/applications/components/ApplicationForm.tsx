@@ -72,14 +72,10 @@ export function ApplicationForm({
           company_url: "",
           position: "",
           job_source: "",
-          job_type: "full_time",
-          work_system: "onsite",
           salary_min: 0,
           salary_max: 0,
           location: "",
           date: dayjs().format("YYYY-MM-DD"), // Default to today
-          status: "draft",
-          result_status: "pending",
           contact_name: "",
           contact_email: "",
           contact_phone: "",
@@ -95,7 +91,7 @@ export function ApplicationForm({
   return (
     <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
       <FieldSet disabled={isLoading} className="space-y-8 mb-6">
-        {/* ================= Informasi Perusahaan ================= */}
+        {/* Company Information */}
         <Card>
           <CardHeader>
             <CardTitle>Informasi Perusahaan</CardTitle>
@@ -109,7 +105,9 @@ export function ApplicationForm({
                 <Input
                   {...form.register("company_name")}
                   placeholder="Contoh: PT Teknologi Nusantara"
-                  className={cn(form.formState.errors.company_name && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.company_name && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.company_name?.message}
@@ -121,7 +119,9 @@ export function ApplicationForm({
                 <Input
                   {...form.register("company_url")}
                   placeholder="https://www.perusahaan.com"
-                  className={cn(form.formState.errors.company_url && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.company_url && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.company_url?.message}
@@ -135,7 +135,9 @@ export function ApplicationForm({
                 <Input
                   {...form.register("position")}
                   placeholder="Contoh: Frontend Developer"
-                  className={cn(form.formState.errors.position && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.position && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.position?.message}
@@ -147,7 +149,9 @@ export function ApplicationForm({
                 <Input
                   {...form.register("job_source")}
                   placeholder="LinkedIn, Jobstreet, Website Perusahaan"
-                  className={cn(form.formState.errors.job_source && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.job_source && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.job_source?.message}
@@ -159,7 +163,9 @@ export function ApplicationForm({
                 <Input
                   {...form.register("job_url")}
                   placeholder="https://jobs.company.com/frontend-developer"
-                  className={cn(form.formState.errors.job_url && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.job_url && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.job_url?.message}
@@ -171,7 +177,9 @@ export function ApplicationForm({
                 <Input
                   {...form.register("location")}
                   placeholder="Jakarta / Remote / Hybrid"
-                  className={cn(form.formState.errors.location && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.location && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.location?.message}
@@ -181,7 +189,7 @@ export function ApplicationForm({
           </CardContent>
         </Card>
 
-        {/* ================= Detail Pekerjaan ================= */}
+        {/* Job Information */}
         <Card>
           <CardHeader>
             <CardTitle>Detail Pekerjaan</CardTitle>
@@ -196,10 +204,15 @@ export function ApplicationForm({
                     <FieldLabel>Tipe Pekerjaan</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value ?? ""}
                     >
-                      <SelectTrigger className={cn(form.formState.errors.job_type && "border-destructive")}>
-                        <SelectValue placeholder="Pilih tipe pekerjaan" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.job_type &&
+                            "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Tipe Pekerjaan" />
                       </SelectTrigger>
                       <SelectContent className="z-50">
                         {JOB_TYPE_OPTIONS.map((option) => (
@@ -224,10 +237,15 @@ export function ApplicationForm({
                     <FieldLabel>Sistem Kerja</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value ?? ""}
                     >
-                      <SelectTrigger className={cn(form.formState.errors.work_system && "border-destructive")}>
-                        <SelectValue placeholder="Onsite / Hybrid / Remote" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.work_system &&
+                            "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Sistem Kerja" />
                       </SelectTrigger>
                       <SelectContent className="z-50">
                         {WORK_SYSTEM_OPTIONS.map((option) => (
@@ -252,7 +270,9 @@ export function ApplicationForm({
                   {...form.register("salary_min", {
                     setValueAs: (v) => (v === "" ? undefined : Number(v)),
                   })}
-                  className={cn(form.formState.errors.salary_min && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.salary_min && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.salary_min?.message}
@@ -267,7 +287,9 @@ export function ApplicationForm({
                   {...form.register("salary_max", {
                     setValueAs: (v) => (v === "" ? undefined : Number(v)),
                   })}
-                  className={cn(form.formState.errors.salary_max && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.salary_max && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.salary_max?.message}
@@ -329,10 +351,14 @@ export function ApplicationForm({
                     <FieldLabel>Status Lamaran</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value ?? ""}
                     >
-                      <SelectTrigger className={cn(form.formState.errors.status && "border-destructive")}>
-                        <SelectValue placeholder="Pilih status lamaran" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.status && "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Status Lamaran" />
                       </SelectTrigger>
                       <SelectContent className="z-50 max-h-60">
                         {STATUS_OPTIONS.map((option) => (
@@ -357,10 +383,15 @@ export function ApplicationForm({
                     <FieldLabel>Hasil Akhir</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value ?? ""}
                     >
-                      <SelectTrigger className={cn(form.formState.errors.result_status && "border-destructive")}>
-                        <SelectValue placeholder="Belum ada hasil" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.result_status &&
+                            "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Hasil Akhir" />
                       </SelectTrigger>
                       <SelectContent className="z-50">
                         {RESULT_STATUS_OPTIONS.map((option) => (
@@ -380,7 +411,7 @@ export function ApplicationForm({
           </CardContent>
         </Card>
 
-        {/* ================= Informasi Kontak ================= */}
+        {/* Contact Information */}
         <Card>
           <CardHeader>
             <CardTitle>Informasi Kontak</CardTitle>
@@ -392,7 +423,9 @@ export function ApplicationForm({
                 <Input
                   placeholder="Nama HR / Recruiter"
                   {...form.register("contact_name")}
-                  className={cn(form.formState.errors.contact_name && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.contact_name && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.contact_name?.message}
@@ -405,7 +438,9 @@ export function ApplicationForm({
                   type="email"
                   placeholder="hr@perusahaan.com"
                   {...form.register("contact_email")}
-                  className={cn(form.formState.errors.contact_email && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.contact_email && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.contact_email?.message}
@@ -417,7 +452,9 @@ export function ApplicationForm({
                 <Input
                   placeholder="+62 812 3456 7890"
                   {...form.register("contact_phone")}
-                  className={cn(form.formState.errors.contact_phone && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.contact_phone && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.contact_phone?.message}
@@ -427,7 +464,7 @@ export function ApplicationForm({
           </CardContent>
         </Card>
 
-        {/* ================= Follow Up ================= */}
+        {/* Follow Up */}
         <Card>
           <CardHeader>
             <CardTitle>Follow Up</CardTitle>
@@ -493,7 +530,7 @@ export function ApplicationForm({
           </CardContent>
         </Card>
 
-        {/* ================= Catatan ================= */}
+        {/* Notes */}
         <Card>
           <CardHeader>
             <CardTitle>Catatan</CardTitle>
@@ -512,7 +549,6 @@ export function ApplicationForm({
         </Card>
       </FieldSet>
 
-      {/* ================= Actions ================= */}
       <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"
