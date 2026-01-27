@@ -269,7 +269,9 @@ export function PortfolioForm({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FieldError>{form.formState.errors.month?.message}</FieldError>
+                  <FieldError>
+                    {form.formState.errors.month?.message}
+                  </FieldError>
                 </div>
                 <div className="space-y-2">
                   <FieldLabel>
@@ -312,7 +314,7 @@ export function PortfolioForm({
           <CardContent className="pt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field>
-                <FieldLabel>Live URL (Opsional)</FieldLabel>
+                <FieldLabel>Live URL</FieldLabel>
                 <Input
                   {...form.register("live_url")}
                   type="url"
@@ -327,7 +329,7 @@ export function PortfolioForm({
               </Field>
 
               <Field>
-                <FieldLabel>Repository URL (Opsional)</FieldLabel>
+                <FieldLabel>Repository URL</FieldLabel>
                 <Input
                   {...form.register("repo_url")}
                   type="url"

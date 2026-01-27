@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Combobox } from "@/components/ui/combobox";
 import {
   documentTypes,
   documentTypeLabels,
@@ -335,19 +334,23 @@ export function DocumentUploadModal({
                 <FieldLabel>
                   Tipe Dokumen <span className="text-destructive">*</span>
                 </FieldLabel>
-                <Combobox
-                  options={documentTypes.map((type) => ({
-                    value: type,
-                    label: documentTypeLabels[type],
-                  }))}
+                <Select
                   value={selectedType}
                   onValueChange={(value) =>
                     setSelectedType(value as DocumentType)
                   }
-                  placeholder="Pilih tipe dokumen"
-                  searchPlaceholder="Cari tipe dokumen..."
-                  emptyText="Tipe dokumen tidak ditemukan"
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih tipe dokumen" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {documentTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {documentTypeLabels[type]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
 
               <Field>

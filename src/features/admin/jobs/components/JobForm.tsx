@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Combobox } from "@/components/ui/combobox";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import {
@@ -47,6 +55,19 @@ export function JobForm({
   const { data: companiesData } = useCompaniesList();
   const { data: rolesData } = useJobRolesList();
   const { data: citiesData } = useCitiesList({ has_jobs: false });
+
+  const companyLabelById = useMemo(
+    () => new Map(companiesData?.map((company) => [company.id, company.name])),
+    [companiesData],
+  );
+  const roleLabelById = useMemo(
+    () => new Map(rolesData?.map((role) => [role.id, role.name])),
+    [rolesData],
+  );
+  const cityLabelById = useMemo(
+    () => new Map(citiesData?.map((city) => [city.id, city.name])),
+    [citiesData],
+  );
 
   const form = useForm<CreateJobInput | UpdateJobInput>({
     resolver: zodResolver(isEdit ? updateJobInputSchema : createJobInputSchema),
@@ -105,7 +126,7 @@ export function JobForm({
     >
       <FieldSet disabled={isLoading} className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* ================= Informasi Dasar ================= */}
+          {/*  Informasi Dasar  */}
           <Card>
             <CardHeader>
               <CardTitle>Informasi Dasar</CardTitle>
@@ -119,7 +140,9 @@ export function JobForm({
                 <Input
                   placeholder="Contoh: Senior Frontend Developer"
                   {...form.register("title")}
-                  className={cn(form.formState.errors.title && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.title && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.title?.message}</FieldError>
               </Field>
@@ -133,18 +156,32 @@ export function JobForm({
                       Perusahaan <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Combobox
-                      options={
-                        companiesData?.map((c) => ({
-                          value: c.id,
-                          label: c.name,
-                        })) || []
+                      items={companiesData?.map((company) => company.id) ?? []}
+                      value={field.value || null}
+                      onValueChange={(value) => field.onChange(value ?? "")}
+                      itemToStringLabel={(value) =>
+                        companyLabelById.get(value as string) ?? ""
                       }
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      placeholder="Pilih perusahaan tempat lowongan ini dibuka"
-                      searchPlaceholder="Ketik nama perusahaan..."
-                      emptyText="Perusahaan tidak ditemukan"
-                    />
+                    >
+                      <ComboboxInput
+                        className="w-full"
+                        placeholder="Pilih perusahaan tempat lowongan ini dibuka"
+                        aria-invalid={!!form.formState.errors.company_id}
+                        showClear
+                      />
+                      <ComboboxContent>
+                        <ComboboxEmpty>
+                          Perusahaan tidak ditemukan
+                        </ComboboxEmpty>
+                        <ComboboxList>
+                          {(companyId) => (
+                            <ComboboxItem key={companyId} value={companyId}>
+                              {companyLabelById.get(companyId) ?? ""}
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
                     <FieldError>
                       {form.formState.errors.company_id?.message}
                     </FieldError>
@@ -161,18 +198,30 @@ export function JobForm({
                       Role Pekerjaan <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Combobox
-                      options={
-                        rolesData?.map((r) => ({
-                          value: r.id,
-                          label: r.name,
-                        })) || []
+                      items={rolesData?.map((role) => role.id) ?? []}
+                      value={field.value || null}
+                      onValueChange={(value) => field.onChange(value ?? "")}
+                      itemToStringLabel={(value) =>
+                        roleLabelById.get(value as string) ?? ""
                       }
-                      value={field.value ?? undefined}
-                      onValueChange={field.onChange}
-                      placeholder="Pilih role atau posisi pekerjaan"
-                      searchPlaceholder="Cari role pekerjaan..."
-                      emptyText="Role tidak ditemukan"
-                    />
+                    >
+                      <ComboboxInput
+                        className="w-full"
+                        placeholder="Pilih role atau posisi pekerjaan"
+                        aria-invalid={!!form.formState.errors.job_role_id}
+                        showClear
+                      />
+                      <ComboboxContent>
+                        <ComboboxEmpty>Role tidak ditemukan</ComboboxEmpty>
+                        <ComboboxList>
+                          {(roleId) => (
+                            <ComboboxItem key={roleId} value={roleId}>
+                              {roleLabelById.get(roleId) ?? ""}
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
                     <FieldError>
                       {form.formState.errors.job_role_id?.message}
                     </FieldError>
@@ -189,18 +238,30 @@ export function JobForm({
                       Kota <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Combobox
-                      options={
-                        citiesData?.map((c) => ({
-                          value: c.id,
-                          label: c.name,
-                        })) || []
+                      items={citiesData?.map((city) => city.id) ?? []}
+                      value={field.value || null}
+                      onValueChange={(value) => field.onChange(value ?? "")}
+                      itemToStringLabel={(value) =>
+                        cityLabelById.get(value as string) ?? ""
                       }
-                      value={field.value ?? undefined}
-                      onValueChange={field.onChange}
-                      placeholder="Pilih lokasi penempatan kerja"
-                      searchPlaceholder="Cari nama kota..."
-                      emptyText="Kota tidak ditemukan"
-                    />
+                    >
+                      <ComboboxInput
+                        className="w-full"
+                        placeholder="Pilih lokasi penempatan kerja"
+                        aria-invalid={!!form.formState.errors.city_id}
+                        showClear
+                      />
+                      <ComboboxContent>
+                        <ComboboxEmpty>Kota tidak ditemukan</ComboboxEmpty>
+                        <ComboboxList>
+                          {(cityId) => (
+                            <ComboboxItem key={cityId} value={cityId}>
+                              {cityLabelById.get(cityId) ?? ""}
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
                     <FieldError>
                       {form.formState.errors.city_id?.message}
                     </FieldError>
@@ -341,7 +402,7 @@ export function JobForm({
             </CardContent>
           </Card>
 
-          {/* ================= Gaji & Kontak ================= */}
+          {/*  Gaji & Kontak  */}
           <Card>
             <CardHeader>
               <CardTitle>Gaji & Kontak</CardTitle>
@@ -479,7 +540,7 @@ export function JobForm({
           </Card>
         </div>
 
-        {/* ================= Media Poster ================= */}
+        {/*  Media Poster  */}
         <Card>
           <CardHeader>
             <CardTitle>Media Poster</CardTitle>
@@ -506,7 +567,7 @@ export function JobForm({
           </CardContent>
         </Card>
 
-        {/* ================= Deskripsi & Persyaratan ================= */}
+        {/*  Deskripsi & Persyaratan  */}
         <Card>
           <CardHeader>
             <CardTitle>Deskripsi & Persyaratan</CardTitle>
@@ -559,7 +620,7 @@ export function JobForm({
         </Card>
       </FieldSet>
 
-      {/* ================= Actions ================= */}
+      {/*  Actions  */}
       <div className="flex justify-end gap-4">
         <Button
           type="button"

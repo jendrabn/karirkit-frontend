@@ -3,28 +3,40 @@ import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TemplateGridModal } from "./template-grid-modal";
 import { type DocumentTemplate } from "@/types/template";
-import { buildImageUrl } from "@/lib/utils";
+import { buildImageUrl, cn } from "@/lib/utils";
 
 interface TemplateSelectorProps {
   templates: DocumentTemplate[];
   value: string;
   onChange: (value: string) => void;
+  hasError?: boolean;
+  disabled?: boolean;
 }
 
 export function TemplateSelector({
   templates,
   value,
   onChange,
+  hasError,
+  disabled,
 }: TemplateSelectorProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const selectedTemplate = templates.find((t) => t.id === value);
+  const canOpen = !disabled;
 
   return (
     <div className="space-y-2">
       {selectedTemplate ? (
         <div
-          className="group relative aspect-[3/4] max-w-[200px] cursor-pointer overflow-hidden rounded-lg border-2 border-primary"
-          onClick={() => setModalOpen(true)}
+          className={cn(
+            "group relative aspect-[3/4] max-w-[200px] cursor-pointer overflow-hidden rounded-lg border-2",
+            hasError ? "border-destructive" : "border-primary",
+            disabled && "cursor-not-allowed opacity-60",
+          )}
+          onClick={() => {
+            if (!canOpen) return;
+            setModalOpen(true);
+          }}
         >
           <img
             src={buildImageUrl(selectedTemplate.preview)}
@@ -44,13 +56,24 @@ export function TemplateSelector({
         </div>
       ) : (
         <div
-          className="aspect-[3/4] max-w-[200px] w-full"
-          onClick={() => setModalOpen(true)}
+          className={cn(
+            "aspect-[3/4] max-w-[200px] w-full",
+            disabled && "cursor-not-allowed",
+          )}
+          onClick={() => {
+            if (!canOpen) return;
+            setModalOpen(true);
+          }}
         >
           <Button
             type="button"
             variant="outline"
-            className="h-full w-full border-dashed flex-col gap-2 hover:bg-muted/50"
+            disabled={disabled}
+            className={cn(
+              "h-full w-full border-dashed flex-col gap-2 hover:bg-muted/50",
+              hasError && "border-destructive",
+              disabled && "hover:bg-transparent",
+            )}
           >
             <FileText className="h-8 w-8 text-muted-foreground" />
             <span className="text-sm font-medium text-muted-foreground">
@@ -65,7 +88,11 @@ export function TemplateSelector({
           type="button"
           variant="link"
           className="h-auto p-0 text-sm"
-          onClick={() => setModalOpen(true)}
+          onClick={() => {
+            if (!canOpen) return;
+            setModalOpen(true);
+          }}
+          disabled={disabled}
         >
           Lihat semua template
         </Button>

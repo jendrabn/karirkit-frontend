@@ -2,16 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Home, RefreshCw, AlertTriangle } from "lucide-react";
 import { Link } from "react-router";
 import { paths } from "@/config/paths";
-
-type MainErrorFallbackProps = {
-  error: Error;
-  resetErrorBoundary: () => void;
-};
+import type { FallbackProps } from "react-error-boundary";
 
 const MainErrorFallback = ({
   error,
   resetErrorBoundary,
-}: MainErrorFallbackProps) => (
+}: FallbackProps) => (
   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 px-4">
     <div className="max-w-md w-full text-center space-y-8">
       {/* Error Icon with Animation */}
@@ -32,7 +28,7 @@ const MainErrorFallback = ({
         </p>
         <div className="p-3 bg-destructive/10 rounded-lg">
           <p className="text-xs text-destructive font-mono break-all">
-            {error.message}
+            {error instanceof Error ? error.message : "Unknown error"}
           </p>
         </div>
       </div>

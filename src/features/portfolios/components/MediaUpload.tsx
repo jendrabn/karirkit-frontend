@@ -65,7 +65,7 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
 
   const handleCaptionChange = (index: number, caption: string) => {
     const newMedias = value.map((media, i) =>
-      i === index ? { ...media, caption } : media
+      i === index ? { ...media, caption } : media,
     );
     onChange(newMedias);
   };
@@ -102,7 +102,7 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
               </Button>
             </div>
             <Input
-              placeholder="Caption (opsional)"
+              placeholder="Caption"
               value={media.caption}
               onChange={(e) => handleCaptionChange(index, e.target.value)}
               disabled={uploadMutation.isPending}
@@ -120,12 +120,16 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
           {uploadMutation.isPending ? (
             <>
               <Loader2 className="h-6 w-6 text-muted-foreground animate-spin" />
-              <span className="text-sm text-muted-foreground">Mengupload...</span>
+              <span className="text-sm text-muted-foreground">
+                Mengupload...
+              </span>
             </>
           ) : (
             <>
               <Plus className="h-6 w-6 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Tambah Media</span>
+              <span className="text-sm text-muted-foreground">
+                Tambah Media
+              </span>
             </>
           )}
         </Button>

@@ -37,7 +37,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SortableHeader } from "@/components/SortableHeader";
 import {
   type Job,
@@ -310,18 +309,7 @@ export function JobsList({
                   )}
                   {columnVisibility.company && (
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={job.company?.logo || undefined}
-                            className="object-cover"
-                          />
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                            {job.company?.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm">{job.company?.name}</span>
-                      </div>
+                      <span className="text-sm">{job.company?.name}</span>
                     </TableCell>
                   )}
                   {columnVisibility.role && (

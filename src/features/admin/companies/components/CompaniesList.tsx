@@ -36,9 +36,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { type Company, EMPLOYEE_SIZE_LABELS } from "@/types/company";
-import { cn, buildImageUrl } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { type ColumnVisibility } from "./CompanyColumnToggle";
 import { SortableHeader } from "@/components/SortableHeader";
 
@@ -230,18 +229,7 @@ export function CompaniesList({
                   </TableCell>
                   {columnVisibility.name && (
                     <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={buildImageUrl(company.logo) || undefined}
-                            className="object-cover"
-                          />
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                            {company.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">{company.name}</span>
-                      </div>
+                      <span className="font-medium">{company.name}</span>
                     </TableCell>
                   )}
                   {columnVisibility.slug && (

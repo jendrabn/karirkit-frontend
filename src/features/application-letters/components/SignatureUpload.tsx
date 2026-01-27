@@ -152,7 +152,7 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
 
   return (
     <Field className="space-y-2 w-fit">
-      <FieldLabel>Tanda Tangan (Opsional)</FieldLabel>
+      <FieldLabel>Tanda Tangan</FieldLabel>
 
       {value ? (
         <div className="relative inline-block">

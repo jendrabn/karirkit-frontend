@@ -53,7 +53,7 @@ export function CompanyFormModal({
 
   const form = useForm<CreateCompanyInput | UpdateCompanyInput>({
     resolver: zodResolver(
-      isEdit ? updateCompanyInputSchema : createCompanyInputSchema
+      isEdit ? updateCompanyInputSchema : createCompanyInputSchema,
     ),
     defaultValues: {
       name: editingCompany?.name || "",
@@ -137,7 +137,7 @@ export function CompanyFormModal({
                             <SelectItem key={value} value={value}>
                               {label}
                             </SelectItem>
-                          )
+                          ),
                         )}
                       </SelectContent>
                     </Select>
@@ -205,8 +205,8 @@ export function CompanyFormModal({
               {isLoading
                 ? "Menyimpan..."
                 : isEdit
-                ? "Simpan Perubahan"
-                : "Tambah Perusahaan"}
+                  ? "Simpan Perubahan"
+                  : "Tambah Perusahaan"}
             </Button>
           </DialogFooter>
         </form>

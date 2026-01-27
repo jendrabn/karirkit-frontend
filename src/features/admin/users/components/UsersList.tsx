@@ -186,7 +186,7 @@ export const UsersList = () => {
   const [columnVisibilityState, setColumnVisibilityState] =
     useLocalStorage<ColumnVisibility>(
       "users-table-columns",
-      defaultColumnVisibility
+      defaultColumnVisibility,
     );
 
   const columnVisibility = {
@@ -200,7 +200,7 @@ export const UsersList = () => {
         toast.success(
           `Berhasil mengupdate batas unduhan untuk user (Limit: ${
             variables.data.daily_download_limit ?? "-"
-          })`
+          })`,
         );
       },
       onError: () => {
@@ -213,8 +213,8 @@ export const UsersList = () => {
       onSuccess: (_, variables) => {
         toast.success(
           `Berhasil mengupdate batas penyimpanan untuk user (Limit: ${formatBytes(
-            variables.data.document_storage_limit ?? 0
-          )})`
+            variables.data.document_storage_limit ?? 0,
+          )})`,
         );
       },
       onError: () => {
@@ -384,7 +384,7 @@ export const UsersList = () => {
       setParam(
         "sort_order",
         params.sort_order === "asc" ? "desc" : "asc",
-        false
+        false,
       );
     } else {
       setParams({ sort_by: field, sort_order: "asc" }, false);
@@ -452,7 +452,7 @@ export const UsersList = () => {
 
   const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
@@ -543,7 +543,7 @@ export const UsersList = () => {
                     download_total_count_from: "",
                     download_total_count_to: "",
                   },
-                  true
+                  true,
                 )
               }
               className="text-muted-foreground"
@@ -694,7 +694,7 @@ export const UsersList = () => {
                     key={user.id}
                     className={cn(
                       index % 2 === 0 ? "bg-background" : "bg-muted/20",
-                      selectedIds.includes(user.id) && "bg-primary/5"
+                      selectedIds.includes(user.id) && "bg-primary/5",
                     )}
                   >
                     <TableCell>
@@ -725,7 +725,7 @@ export const UsersList = () => {
                         >
                           {
                             USER_ROLE_OPTIONS.find(
-                              (opt) => opt.value === user.role
+                              (opt) => opt.value === user.role,
                             )?.label
                           }
                         </Badge>
@@ -741,7 +741,7 @@ export const UsersList = () => {
                               >
                                 {
                                   USER_STATUS_OPTIONS.find(
-                                    (opt) => opt.value === user.status
+                                    (opt) => opt.value === user.status,
                                   )?.label
                                 }
                               </Badge>
@@ -749,7 +749,7 @@ export const UsersList = () => {
                             <TooltipContent>
                               Suspend sampai{" "}
                               {dayjs(user.suspended_until).format(
-                                "DD MMM YYYY, HH:mm"
+                                "DD MMM YYYY, HH:mm",
                               )}
                             </TooltipContent>
                           </Tooltip>
@@ -757,7 +757,7 @@ export const UsersList = () => {
                           <Badge variant={getStatusBadgeVariant(user.status)}>
                             {
                               USER_STATUS_OPTIONS.find(
-                                (opt) => opt.value === user.status
+                                (opt) => opt.value === user.status,
                               )?.label
                             }
                           </Badge>
@@ -997,7 +997,7 @@ export const UsersList = () => {
                 newFilters.download_total_count_from || "",
               download_total_count_to: newFilters.download_total_count_to || "",
             },
-            true
+            true,
           );
           setFilterModalOpen(false);
         }}
@@ -1110,7 +1110,7 @@ export const UsersList = () => {
               <Textarea
                 {...statusForm.register("status_reason")}
                 rows={2}
-                placeholder="Catatan untuk audit (opsional)"
+                placeholder="Catatan untuk audit"
                 disabled={updateStatusMutation.isPending}
               />
               <FieldDescription>

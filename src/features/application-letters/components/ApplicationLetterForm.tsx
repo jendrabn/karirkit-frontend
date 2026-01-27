@@ -111,19 +111,23 @@ export function ApplicationLetterForm({
   });
   const signatureValue = useWatch({ control: form.control, name: "signature" });
 
+  const selectedTemplateLanguage =
+    languageValue === "en" || languageValue === "id" ? languageValue : undefined;
   const { data: templatesResponse, isLoading: isTemplatesLoading } =
     useTemplates({
       params: {
         type: "application_letter",
-        language: languageValue,
+        language: selectedTemplateLanguage,
       },
+      queryConfig: { enabled: !!selectedTemplateLanguage },
     });
 
-  const templates =
-    templatesResponse?.items.map((t) => ({
-      ...t,
-      previewImage: buildImageUrl(t.preview),
-    })) || [];
+  const templates = selectedTemplateLanguage
+    ? templatesResponse?.items.map((t) => ({
+        ...t,
+        previewImage: buildImageUrl(t.preview),
+      })) || []
+    : [];
 
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [activeParagraphType, setActiveParagraphType] =
@@ -180,7 +184,11 @@ export function ApplicationLetterForm({
                           Bahasa <span className="text-destructive">*</span>
                         </FieldLabel>
                         <Select
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            form.setValue("template_id", "");
+                            setSelectedTemplate("");
+                          }}
                           value={field.value ?? ""}
                         >
                           <SelectTrigger
@@ -231,6 +239,8 @@ export function ApplicationLetterForm({
                           setSelectedTemplate(value);
                           form.setValue("template_id", value);
                         }}
+                        hasError={!!form.formState.errors.template_id}
+                        disabled={!selectedTemplateLanguage}
                       />
                       <FieldError>
                         {form.formState.errors.template_id?.message}
@@ -524,13 +534,15 @@ export function ApplicationLetterForm({
                             variant="outline"
                             className={cn(
                               "w-full justify-start text-left font-normal",
+                              form.formState.errors.application_date &&
+                                "border-destructive",
                               !field.value && "text-muted-foreground",
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value
                               ? dayjs(field.value).format("DD/MM/YYYY")
-                              : "Pilih tanggal"}
+                              : "Pilih Tanggal Lamaran"}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent

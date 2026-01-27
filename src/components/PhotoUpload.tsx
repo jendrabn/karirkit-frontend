@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Camera, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { buildImageUrl } from "@/lib/utils";
+import { buildImageUrl, cn } from "@/lib/utils";
 import { useUploadFile } from "@/lib/upload";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ interface PhotoUploadProps {
   quality?: number;
   webp?: boolean;
   format?: string;
+  hasError?: boolean;
 }
 
 export function PhotoUpload({
@@ -22,6 +23,7 @@ export function PhotoUpload({
   quality,
   webp,
   format,
+  hasError,
 }: PhotoUploadProps) {
   const preview = value ? buildImageUrl(value) : "";
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,7 +83,12 @@ export function PhotoUpload({
     <Field className="w-fit flex flex-col items-center gap-4">
       <FieldLabel className="self-start">Foto</FieldLabel>
       <div className="relative group cursor-pointer" onClick={triggerUpload}>
-        <Avatar className="h-24 w-24 border-2 border-border">
+        <Avatar
+          className={cn(
+            "h-24 w-24 border-2",
+            hasError ? "border-destructive" : "border-border",
+          )}
+        >
           <AvatarImage src={preview} className="object-cover" />
           <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
             {name?.charAt(0).toUpperCase() || "U"}

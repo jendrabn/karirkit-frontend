@@ -33,8 +33,18 @@ export const portfolioSchema = z.object({
     message: "Tipe proyek wajib dipilih",
   }),
   industry: z.string().min(1, "Industri wajib diisi"),
-  month: z.number().min(1).max(12),
-  year: z.number().min(1900).max(2100),
+  month: z
+    .number({
+      message: "Bulan wajib dipilih",
+    })
+    .min(1, "Bulan tidak valid")
+    .max(12, "Bulan tidak valid"),
+  year: z
+    .number({
+      message: "Tahun wajib dipilih",
+    })
+    .min(1900, "Tahun tidak valid")
+    .max(2100, "Tahun tidak valid"),
   live_url: z.string().optional().nullable(),
   repo_url: z.string().optional().nullable(),
   cover: z.string().optional().nullable(),
@@ -44,17 +54,16 @@ export const portfolioSchema = z.object({
       z.object({
         path: z.string().min(1, "Path media wajib diisi"),
         caption: z.string().optional().nullable(),
-      })
+      }),
     )
     .optional(),
 });
-
 export type PortfolioFormData = z.infer<typeof portfolioSchema>;
 
 export type CreatePortfolioResponse = Portfolio;
 
 export const createPortfolio = (
-  data: CreatePortfolioInput
+  data: CreatePortfolioInput,
 ): Promise<CreatePortfolioResponse> => {
   return api.post("/portfolios", data);
 };

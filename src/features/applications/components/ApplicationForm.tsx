@@ -75,7 +75,7 @@ export function ApplicationForm({
           salary_min: 0,
           salary_max: 0,
           location: "",
-          date: dayjs().format("YYYY-MM-DD"), // Default to today
+          date: "",
           contact_name: "",
           contact_email: "",
           contact_phone: "",
@@ -311,13 +311,14 @@ export function ApplicationForm({
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
+                            form.formState.errors.date && "border-destructive",
                             !field.value && "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="mr-2 size-4" />
                           {field.value
                             ? dayjs(field.value).format("DD/MM/YYYY")
-                            : "Pilih tanggal lamaran"}
+                            : "Pilih Tanggal Lamaran"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 z-50" align="start">
@@ -483,13 +484,15 @@ export function ApplicationForm({
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
+                            form.formState.errors.follow_up_date &&
+                              "border-destructive",
                             !field.value && "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="mr-2 size-4" />
                           {field.value
                             ? dayjs(field.value).format("DD/MM/YYYY")
-                            : "Pilih tanggal follow up"}
+                            : "Pilih Tanggal Follow Up"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 z-50" align="start">

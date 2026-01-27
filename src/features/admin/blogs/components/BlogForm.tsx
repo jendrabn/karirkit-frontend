@@ -1,11 +1,10 @@
-import { useState, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X, Image as ImageIcon, Check, ChevronsUpDown } from "lucide-react";
+import { X, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import {
@@ -16,18 +15,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxValue,
+  useComboboxAnchor,
+} from "@/components/ui/combobox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   type Blog,
@@ -70,9 +69,21 @@ export function BlogForm({
   const [selectedTags, setSelectedTags] = useState<string[]>(
     initialData?.tags?.map((t) => t.id.toString()) || [],
   );
-  const [tagPopoverOpen, setTagPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadFileMutation = useUploadFile();
+  const tagAnchor = useComboboxAnchor();
+
+  const categoryLabelById = useMemo(
+    () =>
+      new Map(
+        categories.map((category) => [category.id.toString(), category.name]),
+      ),
+    [categories],
+  );
+  const tagById = useMemo(
+    () => new Map(tags.map((tag) => [tag.id.toString(), tag])),
+    [tags],
+  );
 
   const form = useForm<BlogFormData>({
     resolver: zodResolver(blogSchema),
@@ -81,8 +92,7 @@ export function BlogForm({
       featured_image: initialData?.image || null,
       content: initialData?.content || "",
       excerpt: initialData?.teaser || "",
-      status:
-        (initialData?.status as "draft" | "published" | "archived") || "",
+      status: (initialData?.status as "draft" | "published" | "archived") || "",
       category_id: initialData?.category?.id?.toString() || "",
       tag_ids: initialData?.tags?.map((t) => t.id.toString()) || [],
     },
@@ -134,17 +144,11 @@ export function BlogForm({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleTagToggle = (tagId: string) => {
-    const newTags = selectedTags.includes(tagId)
-      ? selectedTags.filter((id) => id !== tagId)
-      : [...selectedTags, tagId];
-    setSelectedTags(newTags);
-    form.setValue("tag_ids", newTags);
+  const handleTagsChange = (values: string[] | null) => {
+    const nextTags = values ?? [];
+    setSelectedTags(nextTags);
+    form.setValue("tag_ids", nextTags);
   };
-
-  const selectedTagObjects = tags.filter((tag) =>
-    selectedTags.includes(tag.id.toString()),
-  );
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
@@ -152,7 +156,7 @@ export function BlogForm({
         disabled={isLoading || isUploadingImage}
         className="space-y-8 mb-6"
       >
-        {/* ================= Informasi Dasar Blog ================= */}
+        {/*  Informasi Dasar Blog  */}
         <Card>
           <CardHeader>
             <CardTitle>{initialData ? "Edit Blog" : "Tambah Blog"}</CardTitle>
@@ -184,26 +188,33 @@ export function BlogForm({
                 render={({ field }) => (
                   <Field>
                     <FieldLabel>Kategori</FieldLabel>
-                    <Select
-                      value={field.value || ""}
-                      onValueChange={(v) => field.onChange(v)}
+                    <Combobox
+                      items={categories.map((category) =>
+                        category.id.toString(),
+                      )}
+                      value={field.value || null}
+                      onValueChange={(value) => field.onChange(value ?? "")}
+                      itemToStringLabel={(value) =>
+                        categoryLabelById.get(value as string) ?? ""
+                      }
                     >
-                      <SelectTrigger
-                        className={cn(
-                          form.formState.errors.category_id &&
-                            "border-destructive",
-                        )}
-                      >
-                        <SelectValue placeholder="Pilih Kategori Blog" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id.toString()}>
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <ComboboxInput
+                        className="w-full"
+                        placeholder="Pilih Kategori Blog"
+                        aria-invalid={!!form.formState.errors.category_id}
+                        showClear
+                      />
+                      <ComboboxContent>
+                        <ComboboxEmpty>Kategori tidak ditemukan.</ComboboxEmpty>
+                        <ComboboxList>
+                          {(categoryId) => (
+                            <ComboboxItem key={categoryId} value={categoryId}>
+                              {categoryLabelById.get(categoryId) ?? ""}
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
                     <FieldError>
                       {form.formState.errors.category_id?.message}
                     </FieldError>
@@ -248,7 +259,7 @@ export function BlogForm({
           </CardContent>
         </Card>
 
-        {/* ================= Tags & Metadata ================= */}
+        {/*  Tags & Metadata  */}
         <Card>
           <CardHeader>
             <CardTitle>Tag & Metadata</CardTitle>
@@ -258,66 +269,48 @@ export function BlogForm({
             {/* Tags */}
             <Field className="space-y-2">
               <FieldLabel>Tags</FieldLabel>
-
-              <Popover open={tagPopoverOpen} onOpenChange={setTagPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between"
-                  >
-                    {selectedTags.length > 0
-                      ? `${selectedTags.length} tag dipilih`
-                      : "Pilih tag yang relevan dengan artikel"}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-
-                <PopoverContent className="w-full p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="Cari tag..." />
-                    <CommandList>
-                      <CommandEmpty>Tidak ada tag ditemukan.</CommandEmpty>
-                      <CommandGroup>
-                        {tags.map((tag) => (
-                          <CommandItem
-                            key={tag.id}
-                            value={tag.name}
-                            onSelect={() => handleTagToggle(tag.id.toString())}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedTags.includes(tag.id.toString())
-                                  ? "opacity-100"
-                                  : "opacity-0",
-                              )}
-                            />
-                            {tag.name}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-
-              {selectedTagObjects.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {selectedTagObjects.map((tag) => (
-                    <Badge key={tag.id} variant="secondary" className="gap-1">
-                      {tag.name}
-                      <button
-                        type="button"
-                        onClick={() => handleTagToggle(tag.id.toString())}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
+              <Combobox
+                multiple
+                items={tags.map((tag) => tag.id.toString())}
+                value={selectedTags}
+                onValueChange={(values) =>
+                  handleTagsChange(values as string[] | null)
+                }
+                itemToStringLabel={(value) =>
+                  tagById.get(value as string)?.name ?? ""
+                }
+              >
+                <ComboboxChips
+                  ref={tagAnchor}
+                  className="w-full"
+                  aria-invalid={!!form.formState.errors.tag_ids}
+                >
+                  <ComboboxValue>
+                    {(values) => (
+                      <>
+                        {values.map((tagId: string) => {
+                          const tag = tagById.get(tagId);
+                          if (!tag) return null;
+                          return (
+                            <ComboboxChip key={tagId}>{tag.name}</ComboboxChip>
+                          );
+                        })}
+                        <ComboboxChipsInput placeholder="Cari tag..." />
+                      </>
+                    )}
+                  </ComboboxValue>
+                </ComboboxChips>
+                <ComboboxContent anchor={tagAnchor}>
+                  <ComboboxEmpty>Tidak ada tag ditemukan.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(tagId) => (
+                      <ComboboxItem key={tagId} value={tagId}>
+                        {tagById.get(tagId)?.name ?? ""}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
 
               <FieldError>{form.formState.errors.tag_ids?.message}</FieldError>
             </Field>
@@ -338,7 +331,7 @@ export function BlogForm({
           </CardContent>
         </Card>
 
-        {/* ================= Media ================= */}
+        {/*  Media  */}
         <Card>
           <CardHeader>
             <CardTitle>Media</CardTitle>
@@ -403,7 +396,7 @@ export function BlogForm({
           </CardContent>
         </Card>
 
-        {/* ================= Konten ================= */}
+        {/*  Konten  */}
         <Card>
           <CardHeader>
             <CardTitle>Konten Blog</CardTitle>
@@ -433,7 +426,7 @@ export function BlogForm({
         </Card>
       </FieldSet>
 
-      {/* ================= Action ================= */}
+      {/*  Action  */}
       <div className="flex justify-end gap-3 pt-6 border-t mt-8">
         <Button
           type="button"

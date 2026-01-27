@@ -35,7 +35,7 @@ import { SOCIAL_PLATFORM_LABELS } from "@/types/social";
 import type { User } from "@/types/user";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserStatus } from "@/features/admin/users/api/update-user-status";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useServerValidation } from "@/hooks/use-server-validation";
@@ -170,7 +170,10 @@ const AdminUserShow = () => {
   });
 
   const isSelf = authUser?.id === user?.id;
-  const statusValue = statusForm.watch("status");
+  const statusValue = useWatch({
+    control: statusForm.control,
+    name: "status",
+  });
 
   const applySuspendDays = (days: number) => {
     const nextDate = dayjs().add(days, "day").format("YYYY-MM-DDTHH:mm");
@@ -461,7 +464,7 @@ const AdminUserShow = () => {
               <Textarea
                 {...statusForm.register("status_reason")}
                 rows={2}
-                placeholder="Catatan untuk audit (opsional)"
+                placeholder="Catatan untuk audit"
                 disabled={updateStatusMutation.isPending}
               />
               <FieldDescription>
