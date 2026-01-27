@@ -1,20 +1,23 @@
 import { useMutation } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 
 export type DownloadCVParams = {
   id: string;
   format: "pdf" | "docx";
+  name?: string;
+  headline?: string;
 };
 
-export const downloadCV = (id: string, format: "pdf" | "docx") => {
-  return api
-    .get<Blob>(`/cvs/${id}/download`, {
-      params: { format },
-      responseType: "blob",
-    })
-    .then((response) => response.data);
+export const downloadCV = (
+  id: string,
+  format: "pdf" | "docx",
+): Promise<Blob> => {
+  return api.get(`/cvs/${id}/download`, {
+    params: { format },
+    responseType: "blob",
+  });
 };
 
 type UseDownloadCVOptions = {
@@ -22,46 +25,55 @@ type UseDownloadCVOptions = {
   onError?: () => void;
 };
 
+const createDownloadLink = (
+  blob: Blob,
+  filename: string,
+  extension: string,
+): void => {
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", `${filename}.${extension}`);
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  window.URL.revokeObjectURL(url);
+};
+
+const sanitizeFilename = (text: string): string => {
+  return text.replace(/\s+/g, "_");
+};
+
+const generateFilename = (name?: string, headline?: string): string => {
+  const safeName = sanitizeFilename(name || "");
+  const safeHeadline = sanitizeFilename(headline || "");
+  return `CV_${safeName}_${safeHeadline}`;
+};
+
 export const useDownloadCV = (options?: UseDownloadCVOptions) => {
-  return useMutation({
-    mutationFn: ({
-      id,
-      format,
-    }: {
-      id: string;
-      format: "pdf" | "docx";
-      name?: string;
-      headline?: string;
-    }) => downloadCV(id, format),
+  return useMutation<Blob, AxiosError, DownloadCVParams>({
+    mutationFn: ({ id, format }: DownloadCVParams) => downloadCV(id, format),
+
     onSuccess: (data, variables) => {
-      // Create blob link to download
-      const url = window.URL.createObjectURL(data);
-      const link = document.createElement("a");
-      link.href = url;
-      const extension = variables.format;
-
-      const safeName = (variables.name || "").replace(/\s+/g, "_");
-      const safeHeadline = (variables.headline || "").replace(/\s+/g, "_");
-      const filename = `CV_${safeName}_${safeHeadline}`;
-
-      link.setAttribute("download", `${filename}.${extension}`);
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      const filename = generateFilename(variables.name, variables.headline);
+      createDownloadLink(data, filename, variables.format);
 
       toast.success(
-        `Berhasil mengunduh CV (${variables.format.toUpperCase()})`
+        `Berhasil mengunduh CV (${variables.format.toUpperCase()})`,
       );
+
       options?.onSuccess?.();
     },
-    onError: (error: AxiosError) => {
-      if (error.response?.status === 429) {
-        toast.error("Batas unduhan harian tercapai. Silakan coba lagi besok.");
-      } else {
-        toast.error("Gagal mengunduh CV");
-      }
+
+    onError: (error) => {
+      const errorMessage =
+        error.response?.status === 429
+          ? "Batas unduhan harian tercapai. Silakan coba lagi besok."
+          : "Gagal mengunduh CV";
+
+      toast.error(errorMessage);
       options?.onError?.();
     },
   });
