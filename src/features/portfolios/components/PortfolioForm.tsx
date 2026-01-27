@@ -193,7 +193,9 @@ export function PortfolioForm({
               </Field>
 
               <Field>
-                <FieldLabel>Tipe Proyek</FieldLabel>
+                <FieldLabel>
+                  Tipe Proyek <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Select
                   value={projectTypeValue ?? ""}
                   onValueChange={(value) =>

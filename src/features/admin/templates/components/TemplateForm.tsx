@@ -200,7 +200,7 @@ export function TemplateForm({
                             "border-destructive",
                         )}
                       >
-                        <SelectValue placeholder="Pilih Bahasa Template" />
+                        <SelectValue placeholder="Pilih Bahasa" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="id">Bahasa Indonesia</SelectItem>

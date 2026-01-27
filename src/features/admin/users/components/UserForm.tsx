@@ -139,14 +139,14 @@ export function UserForm({
   const isEdit = !!initialData;
   const schema = isEdit ? updateUserInputSchema : createUserInputSchema;
 
-  const form = useForm<UserFormValues>({
-    resolver: zodResolver(schema) as Resolver<UserFormValues>,
+  const form = useForm<UserFormValues, unknown, UserFormValues>({
+    resolver: zodResolver(schema) as Resolver<UserFormValues, unknown, UserFormValues>,
     defaultValues: {
       name: initialData?.name || "",
       username: initialData?.username || "",
       email: initialData?.email || "",
       phone: initialData?.phone || "",
-      role: initialData?.role || "user",
+      role: initialData?.role ?? undefined,
       avatar: initialData?.avatar || "",
       daily_download_limit: initialData?.daily_download_limit || 10,
       document_storage_limit:
@@ -276,7 +276,10 @@ export function UserForm({
                     <FieldLabel>
                       Role <span className="text-destructive">*</span>
                     </FieldLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value ?? ""}
+                    >
                       <SelectTrigger
                         className={cn(
                           form.formState.errors.role && "border-destructive",

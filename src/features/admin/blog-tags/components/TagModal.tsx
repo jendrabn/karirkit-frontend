@@ -15,6 +15,7 @@ import type { BlogTag } from "../api/get-blog-tags";
 import { useEffect } from "react";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { tagSchema, type TagFormData } from "../api/create-blog-tag";
+import { cn } from "@/lib/utils";
 
 interface TagModalProps {
   open: boolean;
@@ -77,12 +78,17 @@ export function TagModal({
           <div className="overflow-y-auto px-6 py-2">
             <FieldSet>
               <Field>
-                <FieldLabel>Nama Tag *</FieldLabel>
+                <FieldLabel>
+                  Nama Tag <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   {...form.register("name", {
                     onChange: handleNameChange,
                   })}
                   placeholder="Masukkan nama tag"
+                  className={cn(
+                    form.formState.errors.name && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>

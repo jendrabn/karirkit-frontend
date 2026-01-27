@@ -187,7 +187,9 @@ export function BlogForm({
                 name="category_id"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Kategori</FieldLabel>
+                    <FieldLabel>
+                      Kategori <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Combobox
                       items={categories.map((category) =>
                         category.id.toString(),
@@ -199,8 +201,12 @@ export function BlogForm({
                       }
                     >
                       <ComboboxInput
-                        className="w-full"
-                        placeholder="Pilih Kategori Blog"
+                        className={cn(
+                          "w-full",
+                          form.formState.errors.category_id &&
+                            "border-destructive",
+                        )}
+                        placeholder="Pilih Kategori"
                         aria-invalid={!!form.formState.errors.category_id}
                         showClear
                       />
@@ -239,7 +245,7 @@ export function BlogForm({
                           form.formState.errors.status && "border-destructive",
                         )}
                       >
-                        <SelectValue placeholder="Pilih Status Blog" />
+                        <SelectValue placeholder="Pilih Status" />
                       </SelectTrigger>
                       <SelectContent>
                         {BLOG_STATUS_OPTIONS.map((opt) => (

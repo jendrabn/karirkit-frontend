@@ -201,7 +201,9 @@ export function ApplicationForm({
                 name="job_type"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Tipe Pekerjaan</FieldLabel>
+                    <FieldLabel>
+                      Tipe Pekerjaan <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value ?? ""}
@@ -234,7 +236,9 @@ export function ApplicationForm({
                 name="work_system"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Sistem Kerja</FieldLabel>
+                    <FieldLabel>
+                      Sistem Kerja <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value ?? ""}
@@ -349,7 +353,10 @@ export function ApplicationForm({
                 name="status"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Status Lamaran</FieldLabel>
+                    <FieldLabel>
+                      Status Lamaran{" "}
+                      <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value ?? ""}
@@ -381,7 +388,9 @@ export function ApplicationForm({
                 name="result_status"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Hasil Akhir</FieldLabel>
+                    <FieldLabel>
+                      Hasil Akhir <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value ?? ""}

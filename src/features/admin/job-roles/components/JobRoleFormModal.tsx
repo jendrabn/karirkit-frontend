@@ -17,6 +17,7 @@ import {
   jobRoleSchema,
   type JobRoleFormData as RoleInput,
 } from "../api/create-job-role";
+import { cn } from "@/lib/utils";
 
 interface JobRoleFormModalProps {
   isOpen: boolean;
@@ -73,10 +74,15 @@ export function JobRoleFormModal({
           <div className="overflow-y-auto px-6 py-2">
             <FieldSet disabled={isLoading} className="space-y-4">
               <Field>
-                <FieldLabel>Nama Role *</FieldLabel>
+                <FieldLabel>
+                  Nama Role <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   placeholder="Contoh: Frontend Developer"
                   {...form.register("name")}
+                  className={cn(
+                    form.formState.errors.name && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>

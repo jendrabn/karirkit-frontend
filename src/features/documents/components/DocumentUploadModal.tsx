@@ -25,6 +25,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
@@ -32,6 +33,7 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { getFileIconFromFile } from "@/features/documents/utils/file-icons";
+import { cn } from "@/lib/utils";
 
 export type CompressionLevel = DocumentCompressionLevel;
 
@@ -66,6 +68,8 @@ export function DocumentUploadModal({
   const [customName, setCustomName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [typeError, setTypeError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const hasFiles = selectedFiles.length > 0;
@@ -156,6 +160,7 @@ export function DocumentUploadModal({
       }
       return next;
     });
+    setFileError(null);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,7 +180,14 @@ export function DocumentUploadModal({
   };
 
   const handleSubmit = async () => {
-    if (!hasFiles || !selectedType) {
+    const nextFileError = !hasFiles
+      ? "File dokumen wajib diupload"
+      : null;
+    const nextTypeError = !selectedType ? "Tipe dokumen wajib dipilih" : null;
+    setFileError(nextFileError);
+    setTypeError(nextTypeError);
+
+    if (nextFileError || nextTypeError) {
       toast.error("Pilih file dan tipe dokumen");
       return;
     }
@@ -185,9 +197,10 @@ export function DocumentUploadModal({
       // Pass compression only for image files
       const compressionValue =
         isCompressibleFile && compression ? compression : undefined;
+      const documentType = selectedType as DocumentType;
       await onUpload({
         files: selectedFiles,
-        type: selectedType,
+        type: documentType,
         compression: compressionValue,
         merge: selectedFiles.length > 1 ? mergeFiles : undefined,
         name: customName.trim() ? customName.trim() : undefined,
@@ -208,6 +221,8 @@ export function DocumentUploadModal({
     setCompression("");
     setMergeFiles(false);
     setCustomName("");
+    setFileError(null);
+    setTypeError(null);
     onOpenChange(false);
   };
 
@@ -238,17 +253,20 @@ export function DocumentUploadModal({
           <div className="overflow-y-auto px-6 py-2">
             <FieldSet>
               <Field>
-                <FieldLabel>File Dokumen *</FieldLabel>
+                <FieldLabel>
+                  File Dokumen <span className="text-destructive">*</span>
+                </FieldLabel>
                 <div
-                  className={`relative rounded-lg transition-colors ${
+                  className={cn(
+                    "relative rounded-lg transition-colors",
                     hasFiles
                       ? "border border-border p-3 bg-muted/40"
-                      : "border-2 border-dashed p-8 text-center"
-                  } ${
+                      : "border-2 border-dashed p-8 text-center",
                     dragActive
                       ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50"
-                  }`}
+                      : "border-border hover:border-primary/50",
+                    fileError && "border-destructive",
+                  )}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
                   onDragOver={handleDrag}
@@ -328,6 +346,7 @@ export function DocumentUploadModal({
                   JPG, JPEG, PNG, GIF, WEBP, SVG, PDF, DOC, DOCX, XLS, XLSX,
                   PPT, PPTX, TXT, RTF (Maks. 25MB)
                 </FieldDescription>
+                <FieldError>{fileError}</FieldError>
               </Field>
 
               <Field>
@@ -336,12 +355,15 @@ export function DocumentUploadModal({
                 </FieldLabel>
                 <Select
                   value={selectedType}
-                  onValueChange={(value) =>
-                    setSelectedType(value as DocumentType)
-                  }
+                  onValueChange={(value) => {
+                    setSelectedType(value as DocumentType);
+                    setTypeError(null);
+                  }}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih tipe dokumen" />
+                  <SelectTrigger
+                    className={cn(typeError && "border-destructive")}
+                  >
+                    <SelectValue placeholder="Pilih Tipe Dokumen" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
                     {documentTypes.map((type) => (
@@ -351,6 +373,7 @@ export function DocumentUploadModal({
                     ))}
                   </SelectContent>
                 </Select>
+                <FieldError>{typeError}</FieldError>
               </Field>
 
               <Field>
@@ -393,7 +416,7 @@ export function DocumentUploadModal({
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Pilih level kompresi" />
+                      <SelectValue placeholder="Pilih Level Kompresi" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="auto">

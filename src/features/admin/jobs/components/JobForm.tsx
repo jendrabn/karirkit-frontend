@@ -27,8 +27,14 @@ import {
   type Job,
 } from "@/types/job";
 import { QuillEditor } from "@/features/admin/jobs/components/QuillEditor";
-import { createJobInputSchema, type CreateJobInput } from "../api/create-job";
-import { updateJobInputSchema, type UpdateJobInput } from "../api/update-job";
+import {
+  createJobInputSchema,
+  type CreateJobInput,
+} from "../api/create-job";
+import {
+  updateJobInputSchema,
+  type UpdateJobInput,
+} from "../api/update-job";
 import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 import { JobMediasUpload } from "./JobMediasUpload";
 import { useServerValidation } from "@/hooks/use-server-validation";
@@ -42,6 +48,8 @@ interface JobFormProps {
   isLoading?: boolean;
   error?: unknown;
 }
+
+type JobFormValues = CreateJobInput | UpdateJobInput;
 
 export function JobForm({
   initialData,
@@ -69,8 +77,10 @@ export function JobForm({
     [citiesData],
   );
 
-  const form = useForm<CreateJobInput | UpdateJobInput>({
-    resolver: zodResolver(isEdit ? updateJobInputSchema : createJobInputSchema),
+  const form = useForm<JobFormValues, unknown, JobFormValues>({
+    resolver: zodResolver(
+      isEdit ? updateJobInputSchema : createJobInputSchema,
+    ),
     defaultValues: initialData
       ? {
           company_id: initialData.company_id,
@@ -94,7 +104,7 @@ export function JobForm({
           medias:
             initialData.medias?.map((media) => ({ path: media.path })) || [],
           status: initialData.status,
-          expiration_date: initialData.expiration_date,
+          expiration_date: initialData.expiration_date || "",
         }
       : {
           title: "",
@@ -113,7 +123,8 @@ export function JobForm({
           contact_email: "",
           contact_phone: "",
           medias: [],
-          expiration_date: null,
+          status: undefined,
+          expiration_date: undefined,
         },
   });
 
@@ -163,9 +174,13 @@ export function JobForm({
                         companyLabelById.get(value as string) ?? ""
                       }
                     >
-                      <ComboboxInput
-                        className="w-full"
-                        placeholder="Pilih perusahaan tempat lowongan ini dibuka"
+                    <ComboboxInput
+                        className={cn(
+                          "w-full",
+                          form.formState.errors.company_id &&
+                            "border-destructive",
+                        )}
+                        placeholder="Pilih Perusahaan"
                         aria-invalid={!!form.formState.errors.company_id}
                         showClear
                       />
@@ -205,9 +220,13 @@ export function JobForm({
                         roleLabelById.get(value as string) ?? ""
                       }
                     >
-                      <ComboboxInput
-                        className="w-full"
-                        placeholder="Pilih role atau posisi pekerjaan"
+                    <ComboboxInput
+                        className={cn(
+                          "w-full",
+                          form.formState.errors.job_role_id &&
+                            "border-destructive",
+                        )}
+                        placeholder="Pilih Role Pekerjaan"
                         aria-invalid={!!form.formState.errors.job_role_id}
                         showClear
                       />
@@ -234,9 +253,7 @@ export function JobForm({
                 name="city_id"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>
-                      Kota <span className="text-destructive">*</span>
-                    </FieldLabel>
+                    <FieldLabel>Kota</FieldLabel>
                     <Combobox
                       items={citiesData?.map((city) => city.id) ?? []}
                       value={field.value || null}
@@ -246,8 +263,11 @@ export function JobForm({
                       }
                     >
                       <ComboboxInput
-                        className="w-full"
-                        placeholder="Pilih lokasi penempatan kerja"
+                        className={cn(
+                          "w-full",
+                          form.formState.errors.city_id && "border-destructive",
+                        )}
+                        placeholder="Pilih Kota"
                         aria-invalid={!!form.formState.errors.city_id}
                         showClear
                       />
@@ -283,7 +303,12 @@ export function JobForm({
                         onValueChange={field.onChange}
                         value={field.value ?? ""}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger
+                          className={cn(
+                            form.formState.errors.job_type &&
+                              "border-destructive",
+                          )}
+                        >
                           <SelectValue placeholder="Pilih Tipe Pekerjaan" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover z-50">
@@ -313,7 +338,12 @@ export function JobForm({
                         onValueChange={field.onChange}
                         value={field.value ?? ""}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger
+                          className={cn(
+                            form.formState.errors.work_system &&
+                              "border-destructive",
+                          )}
+                        >
                           <SelectValue placeholder="Pilih Sistem Kerja" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover z-50">
@@ -345,7 +375,12 @@ export function JobForm({
                       onValueChange={field.onChange}
                       value={field.value ?? ""}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.education_level &&
+                            "border-destructive",
+                        )}
+                      >
                         <SelectValue placeholder="Pilih Pendidikan Minimal" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
@@ -378,6 +413,10 @@ export function JobForm({
                     {...form.register("min_years_of_experience", {
                       valueAsNumber: true,
                     })}
+                    className={cn(
+                      form.formState.errors.min_years_of_experience &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.min_years_of_experience?.message}
@@ -393,6 +432,10 @@ export function JobForm({
                     {...form.register("max_years_of_experience", {
                       valueAsNumber: true,
                     })}
+                    className={cn(
+                      form.formState.errors.max_years_of_experience &&
+                        "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.max_years_of_experience?.message}
@@ -411,14 +454,15 @@ export function JobForm({
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>
-                    Gaji Minimum <span className="text-destructive">*</span>
-                  </FieldLabel>
+                  <FieldLabel>Gaji Minimum</FieldLabel>
                   <Input
                     type="number"
                     min={0}
                     placeholder="Contoh: 8000000"
                     {...form.register("salary_min", { valueAsNumber: true })}
+                    className={cn(
+                      form.formState.errors.salary_min && "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.salary_min?.message}
@@ -426,14 +470,15 @@ export function JobForm({
                 </Field>
 
                 <Field>
-                  <FieldLabel>
-                    Gaji Maksimum <span className="text-destructive">*</span>
-                  </FieldLabel>
+                  <FieldLabel>Gaji Maksimum</FieldLabel>
                   <Input
                     type="number"
                     min={0}
                     placeholder="Contoh: 12000000"
                     {...form.register("salary_max", { valueAsNumber: true })}
+                    className={cn(
+                      form.formState.errors.salary_max && "border-destructive",
+                    )}
                   />
                   <FieldError>
                     {form.formState.errors.salary_max?.message}
@@ -442,14 +487,16 @@ export function JobForm({
               </div>
 
               <Field>
-                <FieldLabel>
-                  Kuota Talenta <span className="text-destructive">*</span>
-                </FieldLabel>
+                <FieldLabel>Kuota Talenta</FieldLabel>
                 <Input
                   type="number"
                   min={1}
                   placeholder="Contoh: 3"
                   {...form.register("talent_quota", { valueAsNumber: true })}
+                  className={cn(
+                    form.formState.errors.talent_quota &&
+                      "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.talent_quota?.message}
@@ -461,6 +508,9 @@ export function JobForm({
                 <Input
                   placeholder="https://career.company.com/frontend-developer"
                   {...form.register("job_url")}
+                  className={cn(
+                    form.formState.errors.job_url && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.job_url?.message}
@@ -468,12 +518,14 @@ export function JobForm({
               </Field>
 
               <Field>
-                <FieldLabel>
-                  Nama Kontak <span className="text-destructive">*</span>
-                </FieldLabel>
+                <FieldLabel>Nama Kontak</FieldLabel>
                 <Input
                   placeholder="Nama HR atau Recruiter"
                   {...form.register("contact_name")}
+                  className={cn(
+                    form.formState.errors.contact_name &&
+                      "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.contact_name?.message}
@@ -481,13 +533,15 @@ export function JobForm({
               </Field>
 
               <Field>
-                <FieldLabel>
-                  Email Kontak <span className="text-destructive">*</span>
-                </FieldLabel>
+                <FieldLabel>Email Kontak</FieldLabel>
                 <Input
                   type="email"
                   placeholder="hr@company.com"
                   {...form.register("contact_email")}
+                  className={cn(
+                    form.formState.errors.contact_email &&
+                      "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.contact_email?.message}
@@ -495,12 +549,14 @@ export function JobForm({
               </Field>
 
               <Field>
-                <FieldLabel>
-                  Telepon Kontak <span className="text-destructive">*</span>
-                </FieldLabel>
+                <FieldLabel>Telepon Kontak</FieldLabel>
                 <Input
                   placeholder="+62 812 3456 7890"
                   {...form.register("contact_phone")}
+                  className={cn(
+                    form.formState.errors.contact_phone &&
+                      "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.contact_phone?.message}
@@ -520,8 +576,12 @@ export function JobForm({
                       onValueChange={field.onChange}
                       value={field.value ?? ""}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih Status Publikasi" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.status && "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Status Lowongan" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
                         <SelectItem value="draft">Draft</SelectItem>
@@ -536,6 +596,21 @@ export function JobForm({
                   </Field>
                 )}
               />
+
+              <Field>
+                <FieldLabel>Tanggal Kadaluarsa</FieldLabel>
+                <Input
+                  type="datetime-local"
+                  {...form.register("expiration_date")}
+                  className={cn(
+                    form.formState.errors.expiration_date &&
+                      "border-destructive",
+                  )}
+                />
+                <FieldError>
+                  {form.formState.errors.expiration_date?.message}
+                </FieldError>
+              </Field>
             </CardContent>
           </Card>
         </div>

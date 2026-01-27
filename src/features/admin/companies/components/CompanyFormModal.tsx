@@ -31,6 +31,7 @@ import {
 } from "../api/update-company";
 import { type Company } from "@/types/company";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface CompanyFormModalProps {
   isOpen: boolean;
@@ -59,7 +60,7 @@ export function CompanyFormModal({
       name: editingCompany?.name || "",
       description: editingCompany?.description || "",
       logo: editingCompany?.logo || "",
-      employee_size: editingCompany?.employee_size || "one_to_ten",
+      employee_size: editingCompany?.employee_size ?? undefined,
       business_sector: editingCompany?.business_sector || "",
       website_url: editingCompany?.website_url || "",
     },
@@ -72,7 +73,7 @@ export function CompanyFormModal({
         name: editingCompany?.name || "",
         description: editingCompany?.description || "",
         logo: editingCompany?.logo || "",
-        employee_size: editingCompany?.employee_size || "one_to_ten",
+        employee_size: editingCompany?.employee_size ?? undefined,
         business_sector: editingCompany?.business_sector || "",
         website_url: editingCompany?.website_url || "",
       });
@@ -85,7 +86,7 @@ export function CompanyFormModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-0 gap-0">
+      <DialogContent className="!max-w-3xl p-0 gap-0">
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
           className="flex flex-col max-h-[85vh]"
@@ -99,19 +100,28 @@ export function CompanyFormModal({
           <div className="overflow-y-auto px-6 py-2">
             <FieldSet disabled={isLoading}>
               <Field>
-                <FieldLabel>Nama Perusahaan *</FieldLabel>
+                <FieldLabel>
+                  Nama Perusahaan <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   placeholder="Nama perusahaan"
                   {...form.register("name")}
+                  className={cn(
+                    form.formState.errors.name && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>
 
               <Field>
-                <FieldLabel>Sektor Bisnis *</FieldLabel>
+                <FieldLabel>Sektor Bisnis</FieldLabel>
                 <Input
                   placeholder="Contoh: Teknologi, Retail"
                   {...form.register("business_sector")}
+                  className={cn(
+                    form.formState.errors.business_sector &&
+                      "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.business_sector?.message}
@@ -123,13 +133,18 @@ export function CompanyFormModal({
                 name="employee_size"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel>Ukuran Perusahaan *</FieldLabel>
+                    <FieldLabel>Ukuran Perusahaan</FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      value={field.value || undefined}
+                      value={field.value ?? ""}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih ukuran" />
+                      <SelectTrigger
+                        className={cn(
+                          form.formState.errors.employee_size &&
+                            "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih Ukuran Perusahaan" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
                         {Object.entries(EMPLOYEE_SIZE_LABELS).map(
@@ -153,6 +168,9 @@ export function CompanyFormModal({
                 <Input
                   placeholder="https://..."
                   {...form.register("website_url")}
+                  className={cn(
+                    form.formState.errors.website_url && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.website_url?.message}
@@ -178,10 +196,13 @@ export function CompanyFormModal({
               />
 
               <Field>
-                <FieldLabel>Deskripsi *</FieldLabel>
+                <FieldLabel>Deskripsi</FieldLabel>
                 <Textarea
                   placeholder="Deskripsi perusahaan..."
                   {...form.register("description")}
+                  className={cn(
+                    form.formState.errors.description && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.description?.message}

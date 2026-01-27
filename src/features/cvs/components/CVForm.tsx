@@ -257,7 +257,9 @@ export function CVForm({
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="md:col-span-1">
                   <Field>
-                    <FieldLabel>Bahasa</FieldLabel>
+                    <FieldLabel>
+                      Bahasa <span className="text-destructive">*</span>
+                    </FieldLabel>
                     <Select
                       value={languageValue}
                       onValueChange={(v) => {
@@ -679,7 +681,12 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Bulan Selesai</FieldLabel>
+                            <FieldLabel>
+                              Bulan Selesai{" "}
+                              {!educationsValue?.[index]?.is_current && (
+                                <span className="text-destructive">*</span>
+                              )}
+                            </FieldLabel>
                             <Select
                               value={
                                 educationsValue?.[index]?.end_month === 0
@@ -722,7 +729,12 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Tahun Selesai</FieldLabel>
+                            <FieldLabel>
+                              Tahun Selesai{" "}
+                              {!educationsValue?.[index]?.is_current && (
+                                <span className="text-destructive">*</span>
+                              )}
+                            </FieldLabel>
                             <Select
                               value={
                                 educationsValue?.[index]?.end_year === 0
@@ -1106,7 +1118,12 @@ export function CVForm({
                           </Field>
 
                           <Field>
-                            <FieldLabel>Bulan Selesai</FieldLabel>
+                            <FieldLabel>
+                              Bulan Selesai{" "}
+                              {!experiencesValue?.[index]?.is_current && (
+                                <span className="text-destructive">*</span>
+                              )}
+                            </FieldLabel>
                             <Select
                               value={
                                 experiencesValue?.[index]?.end_month === 0
@@ -1149,7 +1166,12 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Tahun Selesai</FieldLabel>
+                            <FieldLabel>
+                              Tahun Selesai{" "}
+                              {!experiencesValue?.[index]?.is_current && (
+                                <span className="text-destructive">*</span>
+                              )}
+                            </FieldLabel>
                             <Select
                               value={
                                 experiencesValue?.[index]?.end_year === 0
@@ -1624,7 +1646,12 @@ export function CVForm({
                           </Field>
 
                           <Field>
-                            <FieldLabel>Bulan Kedaluwarsa</FieldLabel>
+                            <FieldLabel>
+                              Bulan Kedaluwarsa{" "}
+                              {!certificatesValue?.[index]?.no_expiry && (
+                                <span className="text-destructive">*</span>
+                              )}
+                            </FieldLabel>
                             <Select
                               value={
                                 certificatesValue?.[index]?.expiry_month === 0
@@ -1671,7 +1698,12 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Tahun Kedaluwarsa</FieldLabel>
+                            <FieldLabel>
+                              Tahun Kedaluwarsa{" "}
+                              {!certificatesValue?.[index]?.no_expiry && (
+                                <span className="text-destructive">*</span>
+                              )}
+                            </FieldLabel>
                             <Select
                               value={
                                 certificatesValue?.[index]?.expiry_year === 0
@@ -2221,7 +2253,12 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Bulan Selesai</FieldLabel>
+                            <FieldLabel>
+                              Bulan Selesai{" "}
+                              {!organizationsValue?.[index]?.is_current && (
+                                <span className="text-destructive">*</span>
+                              )}
+                            </FieldLabel>
                             <Select
                               value={
                                 organizationsValue?.[index]?.end_month === 0
@@ -2269,7 +2306,12 @@ export function CVForm({
                             </FieldError>
                           </Field>
                           <Field>
-                            <FieldLabel>Tahun Selesai</FieldLabel>
+                            <FieldLabel>
+                              Tahun Selesai{" "}
+                              {!organizationsValue?.[index]?.is_current && (
+                                <span className="text-destructive">*</span>
+                              )}
+                            </FieldLabel>
                             <Select
                               value={
                                 organizationsValue?.[index]?.end_year === 0

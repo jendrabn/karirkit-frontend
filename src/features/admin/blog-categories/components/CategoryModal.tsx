@@ -19,6 +19,7 @@ import {
   categorySchema,
   type CategoryFormData,
 } from "../api/create-blog-category";
+import { cn } from "@/lib/utils";
 
 interface CategoryModalProps {
   open: boolean;
@@ -86,22 +87,32 @@ export function CategoryModal({
           <div className="overflow-y-auto px-6 py-2">
             <FieldSet>
               <Field>
-                <FieldLabel>Nama Kategori *</FieldLabel>
+                <FieldLabel>
+                  Nama Kategori <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   {...form.register("name", {
                     onChange: handleNameChange,
                   })}
                   placeholder="Masukkan nama kategori"
+                  className={cn(
+                    form.formState.errors.name && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>
 
               <Field>
-                <FieldLabel>Deskripsi *</FieldLabel>
+                <FieldLabel>
+                  Deskripsi <span className="text-destructive">*</span>
+                </FieldLabel>
                 <Textarea
                   {...form.register("description")}
                   placeholder="Masukkan deskripsi kategori"
                   rows={3}
+                  className={cn(
+                    form.formState.errors.description && "border-destructive",
+                  )}
                 />
                 <FieldError>
                   {form.formState.errors.description?.message}
