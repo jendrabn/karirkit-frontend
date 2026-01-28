@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 import { Separator } from "@/components/ui/separator";
-import { badgeVariants } from "@/components/ui/badge-variants";
+import { badgeVariants } from "@/components/ui/badge";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import { useLatestBlogs } from "@/features/blogs/api/get-latest-blogs";
@@ -28,7 +28,7 @@ const buildListHref = (
     categoryId?: string;
     tagId?: string;
     query?: string;
-  }
+  },
 ) => {
   const searchParams = new URLSearchParams();
 
@@ -111,7 +111,7 @@ export const BlogSidebar = ({
                   {format(
                     new Date(post.published_at || post.created_at),
                     "dd MMM yyyy",
-                    { locale: idLocale }
+                    { locale: idLocale },
                   )}
                 </p>
               </div>
@@ -223,7 +223,7 @@ export const BlogSidebar = ({
                 "cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors text-sm px-3 py-1.5",
                 selectedTagId === tag.id
                   ? "bg-primary text-primary-foreground border-primary"
-                  : ""
+                  : "",
               )}
             >
               {tag.name}

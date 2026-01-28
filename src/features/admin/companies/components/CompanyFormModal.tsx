@@ -94,12 +94,13 @@ export function CompanyFormModal({
               {editingCompany ? "Edit Perusahaan" : "Tambah Perusahaan"}
             </DialogTitle>
             <DialogDescription>
-              Make changes to your profile here. Click save when you&apos;re
-              done.
+              {editingCompany
+                ? "Edit informasi perusahaan pada formulir berikut. Klik simpan ketika selesai."
+                : "Tambahkan informasi perusahaan baru pada formulir berikut. Klik simpan ketika selesai."}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="no-scrollbar -mx-4 max-h-[75vh] overflow-y-auto px-4">
+          <div className="no-scrollbar -mx-4 max-h-[65vh] overflow-y-auto px-4">
             <FieldSet disabled={isLoading}>
               <Field>
                 <FieldLabel>

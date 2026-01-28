@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TemplateGridModal } from "./template-grid-modal";
+import { TemplateGridModal } from "./TemplateGridModal";
 import { type DocumentTemplate } from "@/types/template";
 import { buildImageUrl, cn } from "@/lib/utils";
 

@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/field";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { CVParagraphTemplateModal } from "./CVParagraphTemplateModal";
-import { TemplateSelector } from "@/components/ui/template-selector";
+import { TemplateSelector } from "@/components/TemplateSelector";
 import { useTemplates } from "@/features/landing/api/get-templates";
 import { buildImageUrl } from "@/lib/utils";
 import { useServerValidation } from "@/hooks/use-server-validation";

@@ -32,7 +32,7 @@ import {
   FieldDescription,
 } from "@/components/ui/field";
 import { SignatureUpload } from "./SignatureUpload";
-import { TemplateSelector } from "@/components/ui/template-selector";
+import { TemplateSelector } from "@/components/TemplateSelector";
 import {
   type ApplicationLetter,
   GENDER_OPTIONS,
@@ -112,7 +112,9 @@ export function ApplicationLetterForm({
   const signatureValue = useWatch({ control: form.control, name: "signature" });
 
   const selectedTemplateLanguage =
-    languageValue === "en" || languageValue === "id" ? languageValue : undefined;
+    languageValue === "en" || languageValue === "id"
+      ? languageValue
+      : undefined;
   const { data: templatesResponse, isLoading: isTemplatesLoading } =
     useTemplates({
       params: {
@@ -162,10 +164,7 @@ export function ApplicationLetterForm({
 
   return (
     <>
-      <form
-        onSubmit={handleFormSubmit}
-        className="space-y-6"
-      >
+      <form onSubmit={handleFormSubmit} className="space-y-6">
         <FieldSet>
           {/* Template Selection */}
           <Card>

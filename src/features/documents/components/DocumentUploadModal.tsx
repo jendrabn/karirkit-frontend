@@ -3,9 +3,10 @@ import { Upload, X, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -180,9 +181,7 @@ export function DocumentUploadModal({
   };
 
   const handleSubmit = async () => {
-    const nextFileError = !hasFiles
-      ? "File dokumen wajib diupload"
-      : null;
+    const nextFileError = !hasFiles ? "File dokumen wajib diupload" : null;
     const nextTypeError = !selectedType ? "Tipe dokumen wajib dipilih" : null;
     setFileError(nextFileError);
     setTypeError(nextTypeError);
@@ -238,19 +237,22 @@ export function DocumentUploadModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="!max-w-2xl p-0 gap-0">
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            handleSubmit();
-          }}
-          className="flex flex-col max-h-[85vh]"
-        >
-          <DialogHeader className="px-6 pt-6 pb-4">
+      <form
+        id="document-upload-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <DialogContent className="!max-w-2xl">
+          <DialogHeader>
             <DialogTitle>Upload Dokumen</DialogTitle>
+            <DialogDescription>
+              Unggah dokumen Anda ke platform kami
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto px-6 py-2">
+          <div className="no-scrollbar -mx-4 max-h-[65vh] overflow-y-auto px-4 py-4">
             <FieldSet>
               <Field>
                 <FieldLabel>
@@ -438,7 +440,7 @@ export function DocumentUploadModal({
             </FieldSet>
           </div>
 
-          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline" type="button" onClick={handleClose}>
                 Batal
@@ -446,6 +448,7 @@ export function DocumentUploadModal({
             </DialogClose>
             <Button
               type="submit"
+              form="document-upload-form"
               disabled={!hasFiles || !selectedType || isUploading}
             >
               {isUploading ? (
@@ -461,8 +464,8 @@ export function DocumentUploadModal({
               )}
             </Button>
           </DialogFooter>
-        </form>
-      </DialogContent>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 }

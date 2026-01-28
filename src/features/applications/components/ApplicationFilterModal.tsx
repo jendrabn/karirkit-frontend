@@ -4,9 +4,10 @@ import { CalendarIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,17 +54,17 @@ export function ApplicationFilterModal({
 }: ApplicationFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<FilterParams>(filters);
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
-    filters.date_from ? dayjs(filters.date_from).toDate() : undefined
+    filters.date_from ? dayjs(filters.date_from).toDate() : undefined,
   );
   const [dateTo, setDateTo] = useState<Date | undefined>(
-    filters.date_to ? dayjs(filters.date_to).toDate() : undefined
+    filters.date_to ? dayjs(filters.date_to).toDate() : undefined,
   );
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
       setLocalFilters(filters);
       setDateFrom(
-        filters.date_from ? dayjs(filters.date_from).toDate() : undefined
+        filters.date_from ? dayjs(filters.date_from).toDate() : undefined,
       );
       setDateTo(filters.date_to ? dayjs(filters.date_to).toDate() : undefined);
     }
@@ -87,13 +88,22 @@ export function ApplicationFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="!max-w-3xl p-0 gap-0">
-        <div className="flex flex-col max-h-[85vh]">
-          <DialogHeader className="px-6 pt-6 pb-4">
+      <form
+        id="application-filter-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleApply();
+        }}
+      >
+        <DialogContent className="!max-w-3xl">
+          <DialogHeader>
             <DialogTitle>Filter Lamaran</DialogTitle>
+            <DialogDescription>
+              Atur filter untuk mencari lamaran sesuai kriteria Anda
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto px-6 py-2">
+          <div className="no-scrollbar -mx-4 max-h-[65vh] overflow-y-auto px-4 py-4">
             <FieldSet className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Date Range */}
               <Field>
@@ -105,7 +115,7 @@ export function ApplicationFilterModal({
                         variant="outline"
                         className={cn(
                           "flex-1 justify-start text-left font-normal",
-                          !dateFrom && "text-muted-foreground"
+                          !dateFrom && "text-muted-foreground",
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -129,7 +139,7 @@ export function ApplicationFilterModal({
                         variant="outline"
                         className={cn(
                           "flex-1 justify-start text-left font-normal",
-                          !dateTo && "text-muted-foreground"
+                          !dateTo && "text-muted-foreground",
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -412,14 +422,16 @@ export function ApplicationFilterModal({
             </FieldSet>
           </div>
 
-          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogFooter>
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button onClick={handleApply}>Terapkan</Button>
+            <Button type="submit" form="application-filter-form">
+              Terapkan
+            </Button>
           </DialogFooter>
-        </div>
-      </DialogContent>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 }

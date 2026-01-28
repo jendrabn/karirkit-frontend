@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,18 +61,19 @@ export function JobRoleFormModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 gap-0">
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col max-h-[85vh]"
-        >
-          <DialogHeader className="px-6 pt-6 pb-4">
+      <form id="job-role-form" onSubmit={form.handleSubmit(handleSubmit)}>
+        <DialogContent>
+          <DialogHeader>
             <DialogTitle>
               {editingRole ? "Edit Role Pekerjaan" : "Tambah Role Pekerjaan"}
             </DialogTitle>
+            <DialogDescription>
+              Lengkapi formulir berikut untuk{" "}
+              {editingRole ? "mengubah" : "menambahkan"} role pekerjaan
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto px-6 py-2">
+          <div className="no-scrollbar -mx-4 max-h-[65vh] overflow-y-auto px-4 py-4">
             <FieldSet disabled={isLoading} className="space-y-4">
               <Field>
                 <FieldLabel>
@@ -83,6 +85,7 @@ export function JobRoleFormModal({
                   className={cn(
                     form.formState.errors.name && "border-destructive",
                   )}
+                  form="job-role-form"
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>
@@ -90,7 +93,7 @@ export function JobRoleFormModal({
             </FieldSet>
           </div>
 
-          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogFooter>
             <DialogClose asChild>
               <Button
                 type="button"
@@ -101,16 +104,16 @@ export function JobRoleFormModal({
                 Batal
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" form="job-role-form" disabled={isLoading}>
               {isLoading
                 ? "Menyimpan..."
                 : isEdit
-                ? "Simpan Perubahan"
-                : "Tambah Role"}
+                  ? "Simpan Perubahan"
+                  : "Tambah Role"}
             </Button>
           </DialogFooter>
-        </form>
-      </DialogContent>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 }

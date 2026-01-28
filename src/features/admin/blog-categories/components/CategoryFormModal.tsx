@@ -81,8 +81,10 @@ export function CategoryFormModal({
               {category ? "Edit Kategori" : "Tambah Kategori"}
             </DialogTitle>
             <DialogDescription>
-              Make changes to your profile here. Click save when you&apos;re
-              done.
+              {category
+                ? "Edit informasi kategori pada formulir berikut. Klik simpan ketika selesai."
+                : "Tambahkan informasi kategori baru pada formulir berikut. Klik simpan ketika selesai."
+              }
             </DialogDescription>
           </DialogHeader>
 

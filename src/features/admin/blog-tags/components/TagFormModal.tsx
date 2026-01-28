@@ -72,8 +72,10 @@ export function TagFormModal({
           <DialogHeader>
             <DialogTitle>{tag ? "Edit Tag" : "Tambah Tag"}</DialogTitle>
             <DialogDescription>
-              Make changes to your profile here. Click save when you&apos;re
-              done.
+              {tag
+                ? "Edit informasi tag pada formulir berikut. Klik simpan ketika selesai."
+                : "Tambahkan informasi tag baru pada formulir berikut. Klik simpan ketika selesai."
+              }
             </DialogDescription>
           </DialogHeader>
 

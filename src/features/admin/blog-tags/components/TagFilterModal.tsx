@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -50,13 +51,22 @@ export function TagFilterModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="!max-w-3xl p-0 gap-0">
-        <div className="flex flex-col max-h-[85vh]">
-          <DialogHeader className="px-6 pt-6 pb-4">
+      <form
+        id="tag-filter-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleApply();
+        }}
+      >
+        <DialogContent className="!max-w-3xl">
+          <DialogHeader>
             <DialogTitle>Filter Tag</DialogTitle>
+            <DialogDescription>
+              Atur filter untuk mencari tag sesuai kriteria Anda
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto px-6 py-2">
+          <div className="no-scrollbar -mx-4 max-h-[65vh] overflow-y-auto px-4 py-4">
             <FieldSet className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>Jumlah Blog</FieldLabel>
@@ -114,14 +124,16 @@ export function TagFilterModal({
             </FieldSet>
           </div>
 
-          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogFooter>
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button onClick={handleApply}>Terapkan</Button>
+            <Button type="submit" form="tag-filter-form">
+              Terapkan
+            </Button>
           </DialogFooter>
-        </div>
-      </DialogContent>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 }
