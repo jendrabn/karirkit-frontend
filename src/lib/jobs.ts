@@ -2,8 +2,6 @@ import { api } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { Company, JobRole, City } from "@/types/job";
 
-// --- API Calls ---
-
 export const getCompanies = (): Promise<Company[]> => {
   return api.get("/companies");
 };
@@ -20,8 +18,6 @@ export interface GetCitiesParams {
 export const getCities = (params?: GetCitiesParams): Promise<City[]> => {
   return api.get("/cities", { params });
 };
-
-// --- Query Options ---
 
 export const companiesQueryOptions = () => {
   return queryOptions({
@@ -43,8 +39,6 @@ export const citiesQueryOptions = (params?: GetCitiesParams) => {
     queryFn: () => getCities(params),
   });
 };
-
-// --- Hooks ---
 
 export const useCompaniesList = () => {
   return useQuery(companiesQueryOptions());

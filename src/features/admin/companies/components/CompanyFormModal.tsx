@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -86,18 +87,19 @@ export function CompanyFormModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="!max-w-3xl p-0 gap-0">
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col max-h-[85vh]"
-        >
-          <DialogHeader className="px-6 pt-6 pb-4">
+      <form id="company-form" onSubmit={form.handleSubmit(handleSubmit)}>
+        <DialogContent className="!max-w-xl">
+          <DialogHeader>
             <DialogTitle>
               {editingCompany ? "Edit Perusahaan" : "Tambah Perusahaan"}
             </DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you&apos;re
+              done.
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto px-6 py-2">
+          <div className="no-scrollbar -mx-4 max-h-[75vh] overflow-y-auto px-4">
             <FieldSet disabled={isLoading}>
               <Field>
                 <FieldLabel>
@@ -211,7 +213,7 @@ export function CompanyFormModal({
             </FieldSet>
           </div>
 
-          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogFooter>
             <DialogClose asChild>
               <Button
                 type="button"
@@ -222,7 +224,7 @@ export function CompanyFormModal({
                 Batal
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} form="company-form">
               {isLoading
                 ? "Menyimpan..."
                 : isEdit
@@ -230,8 +232,8 @@ export function CompanyFormModal({
                   : "Tambah Perusahaan"}
             </Button>
           </DialogFooter>
-        </form>
-      </DialogContent>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 }

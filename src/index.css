@@ -388,3 +388,7 @@
     box-shadow: var(--card-shadow);
   }
 }
+
+.no-scrollbar{
+  scrollbar-width: none !important;
+}

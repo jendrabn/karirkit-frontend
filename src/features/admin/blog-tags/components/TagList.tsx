@@ -48,7 +48,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TagModal } from "./TagModal";
+import { TagFormModal } from "./TagFormModal";
 import { TagFilterModal, type TagFilterValues } from "./TagFilterModal";
 import { useBlogTags } from "../api/get-blog-tags";
 import { useDeleteBlogTag } from "../api/delete-blog-tag";
@@ -59,10 +59,7 @@ import type { BlogTag } from "../api/get-blog-tags";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
-import {
-  TagColumnToggle,
-  type TagColumnVisibility,
-} from "./TagColumnToggle";
+import { TagColumnToggle, type TagColumnVisibility } from "./TagColumnToggle";
 import { defaultTagColumnVisibility } from "../types/tag-column-toggle.constants";
 import { cn } from "@/lib/utils";
 import { SortableHeader } from "@/components/SortableHeader";
@@ -489,7 +486,7 @@ export const TagList = () => {
         </div>
       </div>
 
-      <TagModal
+      <TagFormModal
         open={modalOpen}
         onOpenChange={setModalOpen}
         tag={editingTag}

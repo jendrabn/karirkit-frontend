@@ -48,7 +48,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CategoryModal } from "./CategoryModal";
+import { CategoryFormModal } from "./CategoryFormModal";
 import {
   CategoryFilterModal,
   type CategoryFilterValues,
@@ -512,7 +512,7 @@ export const CategoryList = () => {
       </div>
 
       {/* Category Modal */}
-      <CategoryModal
+      <CategoryFormModal
         open={modalOpen}
         onOpenChange={setModalOpen}
         category={editingCategory}

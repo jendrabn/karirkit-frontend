@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import type { BlogTag } from "../api/get-blog-tags";
@@ -17,7 +18,7 @@ import { useServerValidation } from "@/hooks/use-server-validation";
 import { tagSchema, type TagFormData } from "../api/create-blog-tag";
 import { cn } from "@/lib/utils";
 
-interface TagModalProps {
+interface TagFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tag?: BlogTag | null;
@@ -26,14 +27,14 @@ interface TagModalProps {
   isLoading?: boolean;
 }
 
-export function TagModal({
+export function TagFormModal({
   open,
   onOpenChange,
   tag,
   onSubmit,
   error,
   isLoading,
-}: TagModalProps) {
+}: TagFormModalProps) {
   const form = useForm<TagFormData>({
     resolver: zodResolver(tagSchema),
     defaultValues: {
@@ -66,47 +67,46 @@ export function TagModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] p-0 gap-0">
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col max-h-[85vh]"
-        >
-          <DialogHeader className="px-6 pt-6 pb-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} id="tag-form">
+        <DialogContent className="!max-w-xl">
+          <DialogHeader>
             <DialogTitle>{tag ? "Edit Tag" : "Tambah Tag"}</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you&apos;re
+              done.
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto px-6 py-2">
-            <FieldSet>
-              <Field>
-                <FieldLabel>
-                  Nama Tag <span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  {...form.register("name", {
-                    onChange: handleNameChange,
-                  })}
-                  placeholder="Masukkan nama tag"
-                  className={cn(
-                    form.formState.errors.name && "border-destructive",
-                  )}
-                />
-                <FieldError>{form.formState.errors.name?.message}</FieldError>
-              </Field>
-            </FieldSet>
-          </div>
+          <FieldSet>
+            <Field>
+              <FieldLabel>
+                Nama Tag <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Input
+                {...form.register("name", {
+                  onChange: handleNameChange,
+                })}
+                placeholder="Masukkan nama tag"
+                className={cn(
+                  form.formState.errors.name && "border-destructive",
+                )}
+              />
+              <FieldError>{form.formState.errors.name?.message}</FieldError>
+            </Field>
+          </FieldSet>
 
-          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
                 Batal
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} form="tag-form">
               {isLoading ? "Menyimpan..." : tag ? "Perbarui" : "Simpan"}
             </Button>
           </DialogFooter>
-        </form>
-      </DialogContent>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 }

@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
 import type { BlogCategory } from "../api/get-blog-categories";
@@ -21,7 +22,7 @@ import {
 } from "../api/create-blog-category";
 import { cn } from "@/lib/utils";
 
-interface CategoryModalProps {
+interface CategoryFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   category?: BlogCategory | null;
@@ -30,14 +31,14 @@ interface CategoryModalProps {
   isLoading?: boolean;
 }
 
-export function CategoryModal({
+export function CategoryFormModal({
   open,
   onOpenChange,
   category,
   onSubmit,
   error,
   isLoading,
-}: CategoryModalProps) {
+}: CategoryFormModalProps) {
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
@@ -73,66 +74,67 @@ export function CategoryModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] p-0 gap-0">
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col max-h-[85vh]"
-        >
-          <DialogHeader className="px-6 pt-6 pb-4">
+      <form id="category-form" onSubmit={form.handleSubmit(handleSubmit)}>
+        <DialogContent className="!max-w-xl">
+          <DialogHeader>
             <DialogTitle>
               {category ? "Edit Kategori" : "Tambah Kategori"}
             </DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you&apos;re
+              done.
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto px-6 py-2">
-            <FieldSet>
-              <Field>
-                <FieldLabel>
-                  Nama Kategori <span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  {...form.register("name", {
-                    onChange: handleNameChange,
-                  })}
-                  placeholder="Masukkan nama kategori"
-                  className={cn(
-                    form.formState.errors.name && "border-destructive",
-                  )}
-                />
-                <FieldError>{form.formState.errors.name?.message}</FieldError>
-              </Field>
+          <FieldSet>
+            <Field>
+              <FieldLabel>
+                Nama Kategori <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Input
+                {...form.register("name", {
+                  onChange: handleNameChange,
+                })}
+                form="category-form"
+                placeholder="Masukkan nama kategori"
+                className={cn(
+                  form.formState.errors.name && "border-destructive",
+                )}
+              />
+              <FieldError>{form.formState.errors.name?.message}</FieldError>
+            </Field>
 
-              <Field>
-                <FieldLabel>
-                  Deskripsi <span className="text-destructive">*</span>
-                </FieldLabel>
-                <Textarea
-                  {...form.register("description")}
-                  placeholder="Masukkan deskripsi kategori"
-                  rows={3}
-                  className={cn(
-                    form.formState.errors.description && "border-destructive",
-                  )}
-                />
-                <FieldError>
-                  {form.formState.errors.description?.message}
-                </FieldError>
-              </Field>
-            </FieldSet>
-          </div>
+            <Field>
+              <FieldLabel>
+                Deskripsi <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Textarea
+                {...form.register("description")}
+                form="category-form"
+                placeholder="Masukkan deskripsi kategori"
+                rows={3}
+                className={cn(
+                  form.formState.errors.description && "border-destructive",
+                )}
+              />
+              <FieldError>
+                {form.formState.errors.description?.message}
+              </FieldError>
+            </Field>
+          </FieldSet>
 
-          <DialogFooter className="px-6 py-4 bg-muted/30 border-t">
+          <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
                 Batal
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" form="category-form" disabled={isLoading}>
               {isLoading ? "Menyimpan..." : category ? "Perbarui" : "Simpan"}
             </Button>
           </DialogFooter>
-        </form>
-      </DialogContent>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 }
