@@ -30,8 +30,8 @@ export function MediaUpload({ value, onChange }: MediaUploadProps) {
           fileInputRef.current.value = "";
         }
       },
-      onError: () => {
-        toast.error("Gagal mengupload media");
+      onError: (error) => {
+        console.error("Error: ", error);
         // Reset file input
         if (fileInputRef.current) {
           fileInputRef.current.value = "";

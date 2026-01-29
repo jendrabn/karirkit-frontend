@@ -35,13 +35,10 @@ const ChangePasswordForm = () => {
     mutationConfig: {
       onSuccess: () => {
         toast.success("Password berhasil diubah");
-        // Reset form after successful password change
         form.reset();
       },
       onError: (error) => {
-        // Don't show generic error toast for validation errors
-        // The useFormErrors hook will handle displaying field-specific errors
-        console.error("Password update error:", error);
+        console.error("Error: ", error);
       },
     },
   });
@@ -76,7 +73,10 @@ const ChangePasswordForm = () => {
                   type={showCurrentPassword ? "text" : "password"}
                   {...form.register("current_password")}
                   placeholder="Masukkan password saat ini"
-                  className={cn(form.formState.errors.current_password && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.current_password &&
+                      "border-destructive",
+                  )}
                 />
                 <button
                   type="button"
@@ -106,7 +106,9 @@ const ChangePasswordForm = () => {
                   type={showNewPassword ? "text" : "password"}
                   {...form.register("new_password")}
                   placeholder="Masukkan password baru"
-                  className={cn(form.formState.errors.new_password && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.new_password && "border-destructive",
+                  )}
                 />
                 <button
                   type="button"
@@ -137,7 +139,10 @@ const ChangePasswordForm = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   {...form.register("confirm_password")}
                   placeholder="Ulangi password baru"
-                  className={cn(form.formState.errors.confirm_password && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.confirm_password &&
+                      "border-destructive",
+                  )}
                 />
                 <button
                   type="button"

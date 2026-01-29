@@ -31,8 +31,8 @@ export function SignatureUpload({ value, onChange }: SignatureUploadProps) {
         setIsModalOpen(false);
         toast.success("Tanda tangan berhasil diupload");
       },
-      onError: () => {
-        toast.error("Gagal mengupload tanda tangan");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });

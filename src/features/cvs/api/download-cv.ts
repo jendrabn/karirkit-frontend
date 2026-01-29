@@ -67,13 +67,7 @@ export const useDownloadCV = (options?: UseDownloadCVOptions) => {
       options?.onSuccess?.();
     },
 
-    onError: (error) => {
-      const errorMessage =
-        error.response?.status === 429
-          ? "Batas unduhan harian tercapai. Silakan coba lagi besok."
-          : "Gagal mengunduh CV";
-
-      toast.error(errorMessage);
+    onError: () => {
       options?.onError?.();
     },
   });

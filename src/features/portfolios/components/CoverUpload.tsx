@@ -20,8 +20,8 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
         onChange(data.path);
         toast.success("Cover berhasil diupload");
       },
-      onError: () => {
-        toast.error("Gagal mengupload cover");
+      onError: (error) => {
+        console.error("Error: ", error);
         // Reset file input
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -102,7 +102,9 @@ export function CoverUpload({ value, onChange }: CoverUploadProps) {
           ) : (
             <>
               <Image className="h-8 w-8 text-muted-foreground" />
-              <span className="text-muted-foreground">Klik untuk upload cover</span>
+              <span className="text-muted-foreground">
+                Klik untuk upload cover
+              </span>
             </>
           )}
         </Button>

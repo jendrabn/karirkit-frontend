@@ -30,7 +30,7 @@ const AdminTemplateEdit = () => {
         navigate(paths.admin.templates.detail.getHref(id!));
       },
       onError: (error) => {
-        console.error(error);
+        console.error("Error: ", error);
       },
     },
   });

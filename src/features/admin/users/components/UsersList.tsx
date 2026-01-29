@@ -203,8 +203,8 @@ export const UsersList = () => {
           })`,
         );
       },
-      onError: () => {
-        toast.error("Gagal mengupdate batas unduhan user");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });
@@ -217,8 +217,8 @@ export const UsersList = () => {
           )})`,
         );
       },
-      onError: () => {
-        toast.error("Gagal mengupdate batas penyimpanan user");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });
@@ -228,8 +228,8 @@ export const UsersList = () => {
         toast.success("Status akun berhasil diperbarui");
         setStatusDialogOpen(false);
       },
-      onError: () => {
-        toast.error("Gagal memperbarui status user");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });

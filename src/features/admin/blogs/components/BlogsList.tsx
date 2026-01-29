@@ -7,7 +7,6 @@ import {
   Plus,
   Eye,
   Pencil,
-  Copy,
   Trash2,
   MoreVertical,
   FileText,
@@ -557,16 +556,6 @@ export const BlogsList = () => {
                             >
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                toast.info(
-                                  "Fitur duplikat akan segera tersedia",
-                                )
-                              }
-                            >
-                              <Copy className="h-4 w-4 mr-2" />
-                              Duplikat
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem

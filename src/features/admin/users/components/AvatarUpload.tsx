@@ -26,17 +26,10 @@ export function AvatarUpload({
       onSuccess: (data) => {
         onChange(data.path);
         setLocalPreview(null);
-        // We update preview again with the path to ensure it's in sync with what's saved
-        // although FileReader already showed it.
-        // But FileReader result is base64, data.path is relative path.
-        // We might want to keep base64 until next refresh or use buildImageUrl(data.path).
-        // Let's just let the local preview persist as it feels faster,
-        // effectively handled by the fact that we setPreview in handleFileChange.
         toast.success("Avatar berhasil diupload");
       },
-      onError: () => {
-        toast.error("Gagal mengupload avatar");
-        // Revert to original value
+      onError: (error) => {
+        console.error("Error: ", error);
         setLocalPreview(null);
       },
     },

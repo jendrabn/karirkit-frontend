@@ -25,13 +25,13 @@ export function useBookmarks() {
         toast.success(
           isSaved
             ? "Lowongan berhasil disimpan"
-            : "Lowongan dihapus dari daftar simpan"
+            : "Lowongan dihapus dari daftar simpan",
         );
         queryClient.invalidateQueries({ queryKey: ["jobs"] });
         queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
       },
-      onError: () => {
-        toast.error("Gagal mengubah status penyimpanan lowongan");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });
@@ -40,27 +40,24 @@ export function useBookmarks() {
     mutationConfig: {
       onSuccess: (response) => {
         toast.success(
-          `${response.deleted_count} lowongan tersimpan berhasil dihapus`
+          `${response.deleted_count} lowongan tersimpan berhasil dihapus`,
         );
         queryClient.invalidateQueries({ queryKey: ["jobs"] });
         queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
       },
-      onError: () => {
-        toast.error("Gagal menghapus lowongan tersimpan");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });
 
-  const bookmarks = useMemo(
-    () => savedJobsData?.items || [],
-    [savedJobsData]
-  );
+  const bookmarks = useMemo(() => savedJobsData?.items || [], [savedJobsData]);
 
   const isBookmarked = useCallback(
     (jobId: string) => {
       return bookmarks.some((job: Job) => job.id === jobId);
     },
-    [bookmarks]
+    [bookmarks],
   );
 
   const toggleBookmark = useCallback(
@@ -71,7 +68,7 @@ export function useBookmarks() {
       }
       toggleMutation.mutate({ id: job.id });
     },
-    [user, toggleMutation]
+    [user, toggleMutation],
   );
 
   const removeBookmark = useCallback(
@@ -82,7 +79,7 @@ export function useBookmarks() {
         toggleMutation.mutate({ id: job.id });
       }
     },
-    [user, bookmarks, toggleMutation]
+    [user, bookmarks, toggleMutation],
   );
 
   const clearBookmarks = useCallback(() => {

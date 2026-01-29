@@ -131,8 +131,8 @@ const AdminUserShow = () => {
         toast.success("Status akun berhasil diperbarui");
         setStatusDialogOpen(false);
       },
-      onError: () => {
-        toast.error("Gagal memperbarui status user");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });

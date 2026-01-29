@@ -34,8 +34,8 @@ export function PhotoUpload({
         onChange(data.path);
         toast.success("Foto berhasil diunggah");
       },
-      onError: () => {
-        toast.error("Gagal mengunggah foto");
+      onError: (error) => {
+        console.error("Error: ", error);
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }

@@ -72,8 +72,8 @@ export function TemplateForm({
         form.trigger("path");
         toast.success("File template berhasil diupload");
       },
-      onError: () => {
-        toast.error("Gagal mengupload file template");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });
@@ -85,8 +85,8 @@ export function TemplateForm({
         form.trigger("preview");
         toast.success("Preview image berhasil diupload");
       },
-      onError: () => {
-        toast.error("Gagal mengupload preview image");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });

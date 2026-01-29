@@ -1,5 +1,4 @@
 import Axios, { type InternalAxiosRequestConfig } from "axios";
-
 import { env } from "@/config/env";
 import { toast } from "sonner";
 
@@ -7,7 +6,6 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = "application/json";
   }
-
   config.withCredentials = true;
   return config;
 }
@@ -17,10 +15,10 @@ export const api = Axios.create({
 });
 
 api.interceptors.request.use(authRequestInterceptor);
+
 api.interceptors.response.use(
   (response) => {
     if (response.status === 204) return null;
-
     if (
       response.data &&
       typeof response.data === "object" &&
@@ -28,21 +26,9 @@ api.interceptors.response.use(
     ) {
       return response.data.data;
     }
-
     return response.data;
   },
-  (error) => {
-    const shouldSkipGeneralErrorToast = (() => {
-      const url = error.config?.url ?? "";
-      const authEndpoints = [
-        "/auth/login",
-        "/auth/verify-otp",
-        "/auth/check-otp-status",
-        "/auth/resend-otp",
-      ];
-      return authEndpoints.some((endpoint) => url.includes(endpoint));
-    })();
-
+  async (error) => {
     if (error.response?.status === 403) {
       const payload = error.response?.data?.data ?? error.response?.data;
       if (payload?.status && typeof payload.status === "string") {
@@ -65,12 +51,20 @@ api.interceptors.response.use(
       }
     }
 
+    // Handle blob response errors
+    if (error.response?.data instanceof Blob) {
+      try {
+        const text = await error.response.data.text();
+        const jsonData = JSON.parse(text);
+        error.response.data = jsonData;
+      } catch (e) {
+        // If parsing fails, just continue with original error
+        console.error("Failed to parse blob error response:", e);
+      }
+    }
+
     // Handle general errors
-    if (
-      error.response?.status !== 401 &&
-      error.response?.data?.errors?.general &&
-      !shouldSkipGeneralErrorToast
-    ) {
+    if (error.response?.data?.errors?.general) {
       const generalErrors = error.response.data.errors.general;
       if (Array.isArray(generalErrors)) {
         generalErrors.forEach((errorMessage: string) => {

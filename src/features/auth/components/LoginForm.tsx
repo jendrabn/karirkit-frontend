@@ -60,31 +60,10 @@ const LoginForm = () => {
     },
   });
 
-  const toastGeneralErrors = (error: unknown) => {
-    const generalErrors = (
-      error as { response?: { data?: { errors?: unknown } } }
-    )?.response?.data?.errors;
-    if (!generalErrors || typeof generalErrors !== "object") {
-      return;
-    }
-
-    const messages = (generalErrors as { general?: unknown }).general;
-    if (Array.isArray(messages)) {
-      messages
-        .filter((message): message is string => typeof message === "string")
-        .forEach((message) => toast.error(message));
-      return;
-    }
-
-    if (typeof messages === "string") {
-      toast.error(messages);
-    }
-  };
-
   const onSubmit = (data: LoginInput) => {
     loginMutation.mutate(data, {
       onError: (error) => {
-        toastGeneralErrors(error);
+        console.error("Error: ", error);
       },
     });
   };
@@ -125,7 +104,10 @@ const LoginForm = () => {
                 <Input
                   id="identifier"
                   placeholder="nama@email.com atau username"
-                  className={cn("h-12", form.formState.errors.identifier && "border-destructive")}
+                  className={cn(
+                    "h-12",
+                    form.formState.errors.identifier && "border-destructive",
+                  )}
                   {...form.register("identifier")}
                 />
                 <FieldError>
@@ -151,7 +133,10 @@ const LoginForm = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Masukkan password"
-                    className={cn("h-12 pr-12", form.formState.errors.password && "border-destructive")}
+                    className={cn(
+                      "h-12 pr-12",
+                      form.formState.errors.password && "border-destructive",
+                    )}
                     {...form.register("password")}
                   />
                   <button

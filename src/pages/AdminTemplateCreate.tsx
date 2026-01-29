@@ -20,8 +20,7 @@ const AdminTemplateCreate = () => {
         navigate(paths.admin.templates.detail.getHref(data.id));
       },
       onError: (error) => {
-        // Error handling is done via toast in api-client usually, but we can add more here if needed
-        console.error(error);
+        console.error("Error: ", error);
       },
     },
   });

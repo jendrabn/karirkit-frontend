@@ -29,8 +29,8 @@ export function JobMediasUpload({
           inputRef.current.value = "";
         }
       },
-      onError: () => {
-        toast.error("Gagal mengupload media");
+      onError: (error) => {
+        console.error("Error: ", error);
         if (inputRef.current) {
           inputRef.current.value = "";
         }
@@ -104,12 +104,16 @@ export function JobMediasUpload({
           {uploadMutation.isPending ? (
             <>
               <Loader2 className="h-6 w-6 text-muted-foreground animate-spin" />
-              <span className="text-sm text-muted-foreground">Mengupload...</span>
+              <span className="text-sm text-muted-foreground">
+                Mengupload...
+              </span>
             </>
           ) : (
             <>
               <Plus className="h-6 w-6 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Tambah Media</span>
+              <span className="text-sm text-muted-foreground">
+                Tambah Media
+              </span>
             </>
           )}
         </Button>

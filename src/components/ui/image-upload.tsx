@@ -23,7 +23,7 @@ export function ImageUpload({
   accept = "image/*",
 }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(
-    value ? buildImageUrl(value) : null
+    value ? buildImageUrl(value) : null,
   );
   const [isDragging, setIsDragging] = useState(false);
   const [urlInput, setUrlInput] = useState(value || "");
@@ -38,8 +38,8 @@ export function ImageUpload({
         onChange(imagePath);
         toast.success("Gambar berhasil diupload");
       },
-      onError: () => {
-        toast.error("Gagal mengupload gambar");
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });
@@ -144,7 +144,7 @@ export function ImageUpload({
                 isDragging
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary/50",
-                uploadMutation.isPending && "opacity-50 pointer-events-none"
+                uploadMutation.isPending && "opacity-50 pointer-events-none",
               )}
               onDrop={handleDrop}
               onDragOver={handleDragOver}

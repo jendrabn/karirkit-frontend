@@ -28,7 +28,6 @@ import {
   useUpdateProfile,
 } from "@/features/account/api/update-profile";
 import { useAuth } from "@/contexts/AuthContext";
-import type { User } from "@/types/user";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
 import { z } from "zod";
@@ -45,16 +44,14 @@ type ProfileFormData = z.infer<typeof updateProfileInputSchema>;
 
 const ProfileForm = () => {
   const { user } = useAuth();
-  /* Removed unused state/hooks */
 
   const updateProfileMutation = useUpdateProfile({
     mutationConfig: {
-      onSuccess: (data: User) => {
+      onSuccess: () => {
         toast.success("Profil berhasil diperbarui");
-        console.log("Updated profile:", data);
       },
-      onError: (error: Error) => {
-        console.error("Update error:", error);
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });
@@ -357,7 +354,10 @@ const ProfileForm = () => {
                         <Input
                           placeholder="https://example.com/username"
                           {...register(`social_links.${index}.url`)}
-                          className={cn(errors.social_links?.[index]?.url && "border-destructive")}
+                          className={cn(
+                            errors.social_links?.[index]?.url &&
+                              "border-destructive",
+                          )}
                         />
                         <FieldError>
                           {errors.social_links?.[index]?.url?.message}

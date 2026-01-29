@@ -18,12 +18,8 @@ type UseDownloadDocumentOptions = {
 
 export const useDownloadDocument = (options?: UseDownloadDocumentOptions) => {
   return useMutation({
-    mutationFn: ({
-      id,
-    }: {
-      id: string;
-      originalName?: string;
-    }) => downloadDocument(id),
+    mutationFn: ({ id }: { id: string; originalName?: string }) =>
+      downloadDocument(id),
     onSuccess: (data, variables) => {
       const url = window.URL.createObjectURL(data);
       const link = document.createElement("a");
@@ -46,7 +42,6 @@ export const useDownloadDocument = (options?: UseDownloadDocumentOptions) => {
       options?.onSuccess?.();
     },
     onError: () => {
-      toast.error("Gagal mengunduh dokumen");
       options?.onError?.();
     },
   });

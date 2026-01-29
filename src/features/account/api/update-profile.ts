@@ -24,7 +24,7 @@ export const updateProfileInputSchema = z.object({
   location: z.string().optional().nullable(),
   gender: z.preprocess(
     (value) => (value === "" ? undefined : value),
-    z.enum(["male", "female"]).optional().nullable()
+    z.enum(["male", "female"]).optional().nullable(),
   ),
   birth_date: z.string().optional().nullable(),
   social_links: z.array(socialLinkField).optional().nullable(),

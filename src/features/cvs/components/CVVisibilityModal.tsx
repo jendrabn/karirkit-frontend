@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { isAxiosError } from "axios";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -60,9 +59,8 @@ export function CVVisibilityModal({
         toast.success("Pengaturan visibilitas berhasil disimpan");
         onOpenChange(false);
       },
-      onError: (error: Error) => {
-        const message = isAxiosError(error) ? error.message : error.message;
-        toast.error("Gagal menyimpan pengaturan: " + (message || "Unknown error"));
+      onError: (error) => {
+        console.error("Error: ", error);
       },
     },
   });

@@ -10,20 +10,11 @@ export interface ServerError {
   };
 }
 
-/**
- * Custom hook to synchronize validation errors from server (Laravel)
- * to react-hook-form state and display them as a single toast notification
- *
- * @template T - Type of form fields (extends FieldValues)
- * @param {ServerError | null | undefined} error - Error object from API call (e.g., from React Query)
- * @param {UseFormReturn<T>} form - Form object from useForm hook
- */
 export function useServerValidation<T extends FieldValues>(
   error: unknown,
   form: UseFormReturn<T>,
 ) {
   useEffect(() => {
-    // Type guard to check if error has the expected structure
     const serverError = error as ServerError;
 
     if (serverError?.response?.data?.errors) {
@@ -31,19 +22,18 @@ export function useServerValidation<T extends FieldValues>(
       const errorMessages: string[] = [];
 
       Object.entries(serverErrors).forEach(([field, messages]) => {
+        if (field === "general") return;
+
         const errorMessage = Array.isArray(messages) ? messages[0] : messages;
 
-        // Set error to form field
         form.setError(field as Path<T>, {
           type: "server",
           message: errorMessage,
         });
 
-        // Collect error message
         errorMessages.push(errorMessage);
       });
 
-      // Display all errors in a single toast with proper line breaks
       if (errorMessages.length > 0) {
         const errorElements = errorMessages.map((message, index) =>
           createElement(

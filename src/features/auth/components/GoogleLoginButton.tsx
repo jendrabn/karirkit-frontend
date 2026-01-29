@@ -45,8 +45,8 @@ const GoogleLoginButton = ({
         }, 100);
         setIsSubmitting(false);
       },
-      onError: (error: Error) => {
-        toast.error("Login dengan Google gagal");
+      onError: (error) => {
+        console.error("Error: ", error);
         onError?.(error);
         setIsSubmitting(false);
       },
@@ -70,7 +70,7 @@ const GoogleLoginButton = ({
   const handleCustomButtonClick = () => {
     // Cari dan klik button Google yang tersembunyi
     const googleButton = hiddenButtonRef.current?.querySelector(
-      'div[role="button"]'
+      'div[role="button"]',
     ) as HTMLElement;
     if (googleButton) {
       googleButton.click();

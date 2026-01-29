@@ -23,7 +23,7 @@ const OTPVerificationForm = () => {
     const storedIdentifier = sessionStorage.getItem("otp_identifier");
     const storedPassword = sessionStorage.getItem("otp_password");
     const storedResendAvailableAt = sessionStorage.getItem(
-      "otp_resend_available_at"
+      "otp_resend_available_at",
     );
 
     // Calculate initial countdown based on stored timestamps
@@ -35,7 +35,7 @@ const OTPVerificationForm = () => {
       const currentTime = Date.now();
       const remainingTime = Math.max(
         0,
-        Math.floor((resendAvailableTime - currentTime) / 1000)
+        Math.floor((resendAvailableTime - currentTime) / 1000),
       );
 
       initialCountdown = remainingTime;
@@ -53,8 +53,9 @@ const OTPVerificationForm = () => {
   const { mutate: checkOtpStatus } = useCheckOtpStatus();
 
   const resolveOtpFieldError = useCallback((error: unknown) => {
-    const fieldErrors = (error as { response?: { data?: { errors?: unknown } } })
-      ?.response?.data?.errors;
+    const fieldErrors = (
+      error as { response?: { data?: { errors?: unknown } } }
+    )?.response?.data?.errors;
     if (!fieldErrors || typeof fieldErrors !== "object") {
       return null;
     }
@@ -71,29 +72,6 @@ const OTPVerificationForm = () => {
     }
 
     return null;
-  }, []);
-
-  const toastGeneralErrors = useCallback((error: unknown) => {
-    const generalErrors = (error as { response?: { data?: { errors?: unknown } } })
-      ?.response?.data?.errors;
-    if (!generalErrors || typeof generalErrors !== "object") {
-      return false;
-    }
-
-    const messages = (generalErrors as { general?: unknown }).general;
-    if (Array.isArray(messages)) {
-      messages
-        .filter((message): message is string => typeof message === "string")
-        .forEach((message) => toast.error(message));
-      return messages.length > 0;
-    }
-
-    if (typeof messages === "string") {
-      toast.error(messages);
-      return true;
-    }
-
-    return false;
   }, []);
 
   // Check OTP status on mount and redirect if no active session
@@ -120,7 +98,7 @@ const OTPVerificationForm = () => {
             const currentTime = Date.now();
             const remainingTime = Math.max(
               0,
-              Math.floor((data.resend_available_at - currentTime) / 1000)
+              Math.floor((data.resend_available_at - currentTime) / 1000),
             );
 
             setAuthState((prev) => ({
@@ -132,29 +110,22 @@ const OTPVerificationForm = () => {
             if (remainingTime > 0) {
               sessionStorage.setItem(
                 "otp_resend_available_at",
-                data.resend_available_at.toString()
+                data.resend_available_at.toString(),
               );
             }
           }
         },
         onError: (error) => {
-          toastGeneralErrors(error);
-          toast.error("Terjadi kesalahan. Silakan login kembali.");
+          console.error("Error: ", error);
           sessionStorage.removeItem("otp_identifier");
           sessionStorage.removeItem("otp_password");
           sessionStorage.removeItem("otp_expires_at");
           sessionStorage.removeItem("otp_resend_available_at");
           navigate(paths.auth.login.getHref());
         },
-      }
+      },
     );
-  }, [
-    authState.identifier,
-    authState.password,
-    checkOtpStatus,
-    navigate,
-    toastGeneralErrors,
-  ]);
+  }, [authState.identifier, authState.password, checkOtpStatus, navigate]);
 
   // Countdown timer with persistence
   useEffect(() => {
@@ -173,7 +144,7 @@ const OTPVerificationForm = () => {
           const newResendAvailableAt = Date.now() + newCountdown * 1000;
           sessionStorage.setItem(
             "otp_resend_available_at",
-            newResendAvailableAt.toString()
+            newResendAvailableAt.toString(),
           );
         } else {
           sessionStorage.removeItem("otp_resend_available_at");
@@ -207,14 +178,14 @@ const OTPVerificationForm = () => {
   const resendOtpMutation = useResendOtp({
     onSuccess: (data) => {
       toast.success(
-        data.message || "Kode OTP baru telah dikirim ke email Anda"
+        data.message || "Kode OTP baru telah dikirim ke email Anda",
       );
 
       // Calculate countdown from resend_available_at
       const currentTime = Date.now();
       const remainingTime = Math.max(
         0,
-        Math.floor((data.resend_available_at - currentTime) / 1000)
+        Math.floor((data.resend_available_at - currentTime) / 1000),
       );
 
       setAuthState((prev) => ({
@@ -230,7 +201,7 @@ const OTPVerificationForm = () => {
       sessionStorage.setItem("otp_expires_at", data.expires_at.toString());
       sessionStorage.setItem(
         "otp_resend_available_at",
-        data.resend_available_at.toString()
+        data.resend_available_at.toString(),
       );
     },
   });
@@ -246,9 +217,9 @@ const OTPVerificationForm = () => {
       { identifier: authState.identifier },
       {
         onError: (error) => {
-          toastGeneralErrors(error);
+          console.error("Error: ", error);
         },
-      }
+      },
     );
   };
 
@@ -268,19 +239,22 @@ const OTPVerificationForm = () => {
     }
 
     setOtpError(null);
-    verifyOtpMutation.mutate({
-      identifier: authState.identifier,
-      otp_code: otpCode,
-      password: authState.password,
-    }, {
-      onError: (error) => {
-        toastGeneralErrors(error);
-        const fieldError = resolveOtpFieldError(error);
-        if (fieldError) {
-          setOtpError(fieldError);
-        }
+    verifyOtpMutation.mutate(
+      {
+        identifier: authState.identifier,
+        otp_code: otpCode,
+        password: authState.password,
       },
-    });
+      {
+        onError: (error) => {
+          console.error("Error: ", error);
+          const fieldError = resolveOtpFieldError(error);
+          if (fieldError) {
+            setOtpError(fieldError);
+          }
+        },
+      },
+    );
   };
 
   const formatTime = (seconds: number) => {

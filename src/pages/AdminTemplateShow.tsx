@@ -44,7 +44,7 @@ const AdminTemplateShow = () => {
         navigate("/admin/templates");
       },
       onError: (error) => {
-        console.error(error);
+        console.error("Error: ", error);
       },
     },
   });

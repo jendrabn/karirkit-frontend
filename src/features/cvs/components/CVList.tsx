@@ -140,7 +140,7 @@ const CVList = () => {
       sort_by: params.sort_by,
       sort_order: params.sort_order,
       language: (params.language as "id" | "en") || undefined,
-          visibility: (params.visibility as "private" | "public") || undefined,
+      visibility: (params.visibility as "private" | "public") || undefined,
       views_from: params.views_from ? Number(params.views_from) : undefined,
       views_to: params.views_to ? Number(params.views_to) : undefined,
       educations_degree: params.educations_degree || undefined,
@@ -852,7 +852,7 @@ const CVList = () => {
         onOpenChange={setFilterModalOpen}
         filters={{
           language: (params.language as "id" | "en") || undefined,
-      visibility: (params.visibility as "private" | "public") || undefined,
+          visibility: (params.visibility as "private" | "public") || undefined,
           views_from: params.views_from || "",
           views_to: params.views_to || "",
           educations_degree: params.educations_degree || "",
