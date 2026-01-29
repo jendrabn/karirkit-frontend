@@ -61,7 +61,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ApplicationFilterModal } from "./ApplicationFilterModal";
-import { ApplicationColumnToggle, type ColumnVisibility } from "./ApplicationColumnToggle";
+import {
+  ApplicationColumnToggle,
+  type ColumnVisibility,
+} from "./ApplicationColumnToggle";
 import { defaultColumnVisibility } from "../types/application-column-toggle.constants";
 import { ApplicationStats } from "./ApplicationStats";
 import {
@@ -98,7 +101,6 @@ type FilterParams = Omit<
   "page" | "per_page" | "q" | "sort_by" | "sort_order"
 >;
 
-// Helper functions (copied from original)
 const getJobTypeBadgeVariant = (jobType: JobType) => {
   const variants: Record<
     JobType,
@@ -221,9 +223,7 @@ export const ApplicationsList = () => {
     q: params.q || undefined,
     sort_by: params.sort_by,
     sort_order: params.sort_order,
-    status: params.status
-      ? (params.status as ApplicationStatus)
-      : undefined,
+    status: params.status ? (params.status as ApplicationStatus) : undefined,
     result_status: params.result_status
       ? (params.result_status as ResultStatus)
       : undefined,
@@ -586,311 +586,320 @@ export const ApplicationsList = () => {
         <div className="overflow-x-auto">
           <TooltipProvider>
             <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[40px]">
-                  <Checkbox
-                    checked={
-                      applications.length > 0 &&
-                      selectedIds.length === applications.length
-                    }
-                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                  />
-                </TableHead>
-                {columnVisibility.company_name && (
-                  <TableHead>
-                    <SortableHeader field="company_name" onSort={handleSort}>
-                      Perusahaan
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.position && (
-                  <TableHead>
-                    <SortableHeader field="position" onSort={handleSort}>
-                      Posisi
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.status && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Status
-                  </TableHead>
-                )}
-                {columnVisibility.result_status && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Hasil
-                  </TableHead>
-                )}
-                {columnVisibility.date && (
-                  <TableHead>
-                    <SortableHeader field="date" onSort={handleSort}>
-                      Tanggal Lamar
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.job_source && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Sumber Lowongan
-                  </TableHead>
-                )}
-                {columnVisibility.location && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Lokasi
-                  </TableHead>
-                )}
-                {columnVisibility.job_type && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Tipe Kerja
-                  </TableHead>
-                )}
-                {columnVisibility.work_system && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Sistem Kerja
-                  </TableHead>
-                )}
-                {columnVisibility.salary_range && (
-                  <TableHead>
-                    <SortableHeader field="salary_max" onSort={handleSort}>
-                      Rentang Gaji
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.follow_up_date && (
-                  <TableHead>
-                    <SortableHeader field="follow_up_date" onSort={handleSort}>
-                      Follow Up
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.contact_name && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Kontak HR
-                  </TableHead>
-                )}
-                {columnVisibility.contact_email && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Email HR
-                  </TableHead>
-                )}
-                {columnVisibility.contact_phone && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Telepon HR
-                  </TableHead>
-                )}
-                {columnVisibility.created_at && (
-                  <TableHead>
-                    <SortableHeader field="created_at" onSort={handleSort}>
-                      Dibuat
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                {columnVisibility.updated_at && (
-                  <TableHead>
-                    <SortableHeader field="updated_at" onSort={handleSort}>
-                      Diperbarui
-                    </SortableHeader>
-                  </TableHead>
-                )}
-                <TableHead className="w-[60px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
+              <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={14} className="py-14 text-center">
-                    <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
-                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                      <span className="text-sm font-medium text-muted-foreground">
-                        Memuat data…
-                      </span>
-                    </div>
-                  </TableCell>
+                  <TableHead className="w-[40px]">
+                    <Checkbox
+                      checked={
+                        applications.length > 0 &&
+                        selectedIds.length === applications.length
+                      }
+                      onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                    />
+                  </TableHead>
+                  {columnVisibility.company_name && (
+                    <TableHead>
+                      <SortableHeader field="company_name" onSort={handleSort}>
+                        Perusahaan
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.position && (
+                    <TableHead>
+                      <SortableHeader field="position" onSort={handleSort}>
+                        Posisi
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.status && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Status
+                    </TableHead>
+                  )}
+                  {columnVisibility.result_status && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Hasil
+                    </TableHead>
+                  )}
+                  {columnVisibility.date && (
+                    <TableHead>
+                      <SortableHeader field="date" onSort={handleSort}>
+                        Tanggal Lamar
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.job_source && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Sumber Lowongan
+                    </TableHead>
+                  )}
+                  {columnVisibility.location && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Lokasi
+                    </TableHead>
+                  )}
+                  {columnVisibility.job_type && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Tipe Kerja
+                    </TableHead>
+                  )}
+                  {columnVisibility.work_system && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Sistem Kerja
+                    </TableHead>
+                  )}
+                  {columnVisibility.salary_range && (
+                    <TableHead>
+                      <SortableHeader field="salary_max" onSort={handleSort}>
+                        Rentang Gaji
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.follow_up_date && (
+                    <TableHead>
+                      <SortableHeader
+                        field="follow_up_date"
+                        onSort={handleSort}
+                      >
+                        Follow Up
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.contact_name && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Kontak HR
+                    </TableHead>
+                  )}
+                  {columnVisibility.contact_email && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Email HR
+                    </TableHead>
+                  )}
+                  {columnVisibility.contact_phone && (
+                    <TableHead className="uppercase text-xs font-medium tracking-wide">
+                      Telepon HR
+                    </TableHead>
+                  )}
+                  {columnVisibility.created_at && (
+                    <TableHead>
+                      <SortableHeader field="created_at" onSort={handleSort}>
+                        Dibuat
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  {columnVisibility.updated_at && (
+                    <TableHead>
+                      <SortableHeader field="updated_at" onSort={handleSort}>
+                        Diperbarui
+                      </SortableHeader>
+                    </TableHead>
+                  )}
+                  <TableHead className="w-[60px]"></TableHead>
                 </TableRow>
-              ) : applications.length === 0 ? (
-                <TableRow className="hover:bg-transparent">
-                  <TableCell
-                    colSpan={14}
-                    className="text-center py-16 text-muted-foreground"
-                  >
-                    <div className="flex flex-col items-center gap-2">
-                      <FileStack className="h-10 w-10 text-muted-foreground/50" />
-                      <p className="text-base font-medium">
-                        Tidak ada data lamaran
-                      </p>
-                      <p className="text-sm">
-                        Mulai tambahkan lamaran pertama Anda
-                      </p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                applications.map((app, index) => (
-                  <TableRow
-                    key={app.id}
-                    className={cn(
-                      index % 2 === 1 && "bg-muted/30",
-                      selectedIds.includes(app.id) && "bg-primary/5",
-                    )}
-                  >
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedIds.includes(app.id)}
-                        onCheckedChange={(checked) =>
-                          handleSelectOne(app.id, !!checked)
-                        }
-                      />
-                    </TableCell>
-                    {columnVisibility.company_name && (
-                      <TableCell className="font-medium max-w-[180px]">
-                        <EditableCell app={app} field="company_name" />
-                      </TableCell>
-                    )}
-                    {columnVisibility.position && (
-                      <TableCell className="max-w-[200px]">
-                        <EditableCell app={app} field="position" />
-                      </TableCell>
-                    )}
-                    {columnVisibility.status && (
-                      <TableCell>
-                        <EditableCell app={app} field="status" type="select" />
-                      </TableCell>
-                    )}
-                    {columnVisibility.result_status && (
-                      <TableCell>
-                        <EditableCell
-                          app={app}
-                          field="result_status"
-                          type="select"
-                        />
-                      </TableCell>
-                    )}
-                    {columnVisibility.date && (
-                      <TableCell className="text-muted-foreground whitespace-nowrap">
-                        {dayjs(app.date).format("DD MMM YYYY")}
-                      </TableCell>
-                    )}
-{columnVisibility.job_source && (
-                      <TableCell className="max-w-[150px]">
-                        <EditableCell app={app} field="job_source" />
-                      </TableCell>
-                    )}
-{columnVisibility.location && (
-                      <TableCell className="max-w-[150px]">
-                        <EditableCell app={app} field="location" />
-                      </TableCell>
-                    )}
-                    {columnVisibility.job_type && (
-                      <TableCell>
-                        <EditableCell
-                          app={app}
-                          field="job_type"
-                          type="select"
-                        />
-                      </TableCell>
-                    )}
-                    {columnVisibility.work_system && (
-                      <TableCell>
-                        <EditableCell
-                          app={app}
-                          field="work_system"
-                          type="select"
-                        />
-                      </TableCell>
-                    )}
-                    {columnVisibility.salary_range && (
-                      <TableCell>
-                        <Badge
-                          variant="secondary"
-                          className="text-xs whitespace-nowrap"
-                        >
-                          {formatSalaryRange(app.salary_min, app.salary_max)}
-                        </Badge>
-                      </TableCell>
-                    )}
-                    {columnVisibility.follow_up_date && (
-                      <TableCell className="text-muted-foreground whitespace-nowrap">
-                        {app.follow_up_date
-                          ? dayjs(app.follow_up_date).format("DD MMM YYYY")
-                          : "-"}
-                      </TableCell>
-                    )}
-{columnVisibility.contact_name && (
-                      <TableCell className="max-w-[150px]">
-                        <EditableCell app={app} field="contact_name" />
-                      </TableCell>
-                    )}
-{columnVisibility.contact_email && (
-                      <TableCell className="max-w-[200px]">
-                        <EditableCell app={app} field="contact_email" />
-                      </TableCell>
-                    )}
-{columnVisibility.contact_phone && (
-                      <TableCell className="max-w-[150px]">
-                        <EditableCell app={app} field="contact_phone" />
-                      </TableCell>
-                    )}
-                    {columnVisibility.created_at && (
-                      <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
-                        {dayjs(app.created_at).format("DD MMM YYYY, HH:mm")}
-                      </TableCell>
-                    )}
-                    {columnVisibility.updated_at && (
-                      <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
-                        {dayjs(app.updated_at).format("DD MMM YYYY, HH:mm")}
-                      </TableCell>
-                    )}
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="secondary"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="z-50 bg-popover"
-                        >
-                          <DropdownMenuItem
-                            onClick={() => navigate(`/applications/${app.id}`)}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Lihat Detail
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              navigate(`/applications/${app.id}/edit`)
-                            }
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDuplicate(app.id)}
-                          >
-                            <Copy className="h-4 w-4 mr-2" />
-                            Duplikat
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(app.id)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Hapus
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={14} className="py-14 text-center">
+                      <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                        <span className="text-sm font-medium text-muted-foreground">
+                          Memuat data…
+                        </span>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TooltipProvider>
+                ) : applications.length === 0 ? (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell
+                      colSpan={14}
+                      className="text-center py-16 text-muted-foreground"
+                    >
+                      <div className="flex flex-col items-center gap-2">
+                        <FileStack className="h-10 w-10 text-muted-foreground/50" />
+                        <p className="text-base font-medium">
+                          Tidak ada data lamaran
+                        </p>
+                        <p className="text-sm">
+                          Mulai tambahkan lamaran pertama Anda
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  applications.map((app, index) => (
+                    <TableRow
+                      key={app.id}
+                      className={cn(
+                        index % 2 === 1 && "bg-muted/30",
+                        selectedIds.includes(app.id) && "bg-primary/5",
+                      )}
+                    >
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedIds.includes(app.id)}
+                          onCheckedChange={(checked) =>
+                            handleSelectOne(app.id, !!checked)
+                          }
+                        />
+                      </TableCell>
+                      {columnVisibility.company_name && (
+                        <TableCell className="font-medium">
+                          <EditableCell app={app} field="company_name" />
+                        </TableCell>
+                      )}
+                      {columnVisibility.position && (
+                        <TableCell>
+                          <EditableCell app={app} field="position" />
+                        </TableCell>
+                      )}
+                      {columnVisibility.status && (
+                        <TableCell>
+                          <EditableCell
+                            app={app}
+                            field="status"
+                            type="select"
+                          />
+                        </TableCell>
+                      )}
+                      {columnVisibility.result_status && (
+                        <TableCell>
+                          <EditableCell
+                            app={app}
+                            field="result_status"
+                            type="select"
+                          />
+                        </TableCell>
+                      )}
+                      {columnVisibility.date && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap">
+                          {dayjs(app.date).format("DD MMM YYYY")}
+                        </TableCell>
+                      )}
+                      {columnVisibility.job_source && (
+                        <TableCell>
+                          <EditableCell app={app} field="job_source" />
+                        </TableCell>
+                      )}
+                      {columnVisibility.location && (
+                        <TableCell>
+                          <EditableCell app={app} field="location" />
+                        </TableCell>
+                      )}
+                      {columnVisibility.job_type && (
+                        <TableCell>
+                          <EditableCell
+                            app={app}
+                            field="job_type"
+                            type="select"
+                          />
+                        </TableCell>
+                      )}
+                      {columnVisibility.work_system && (
+                        <TableCell>
+                          <EditableCell
+                            app={app}
+                            field="work_system"
+                            type="select"
+                          />
+                        </TableCell>
+                      )}
+                      {columnVisibility.salary_range && (
+                        <TableCell>
+                          <Badge
+                            variant="secondary"
+                            className="text-xs whitespace-nowrap"
+                          >
+                            {formatSalaryRange(app.salary_min, app.salary_max)}
+                          </Badge>
+                        </TableCell>
+                      )}
+                      {columnVisibility.follow_up_date && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap">
+                          {app.follow_up_date
+                            ? dayjs(app.follow_up_date).format("DD MMM YYYY")
+                            : "-"}
+                        </TableCell>
+                      )}
+                      {columnVisibility.contact_name && (
+                        <TableCell>
+                          <EditableCell app={app} field="contact_name" />
+                        </TableCell>
+                      )}
+                      {columnVisibility.contact_email && (
+                        <TableCell>
+                          <EditableCell app={app} field="contact_email" />
+                        </TableCell>
+                      )}
+                      {columnVisibility.contact_phone && (
+                        <TableCell>
+                          <EditableCell app={app} field="contact_phone" />
+                        </TableCell>
+                      )}
+                      {columnVisibility.created_at && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                          {dayjs(app.created_at).format("DD MMM YYYY, HH:mm")}
+                        </TableCell>
+                      )}
+                      {columnVisibility.updated_at && (
+                        <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                          {dayjs(app.updated_at).format("DD MMM YYYY, HH:mm")}
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            className="z-50 bg-popover"
+                          >
+                            <DropdownMenuItem
+                              onClick={() =>
+                                navigate(`/applications/${app.id}`)
+                              }
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              Lihat Detail
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                navigate(`/applications/${app.id}/edit`)
+                              }
+                            >
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDuplicate(app.id)}
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Duplikat
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(app.id)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Hapus
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TooltipProvider>
         </div>
         {/* Pagination */}
         {pagination.total_items > 0 && (

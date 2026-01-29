@@ -18,4 +18,3 @@ export const defaultColumnVisibility: ColumnVisibility = {
   created_at: true,
   updated_at: false,
 };
-

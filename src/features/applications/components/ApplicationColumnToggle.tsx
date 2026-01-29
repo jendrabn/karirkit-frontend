@@ -47,7 +47,6 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   updated_at: "Diperbarui",
 };
 
-// Define the order of columns as specified
 const columnOrder: (keyof ColumnVisibility)[] = [
   "company_name",
   "position",
