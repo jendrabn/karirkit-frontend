@@ -1,12 +1,22 @@
 import { useNavigate, useParams } from "react-router";
-import { format } from "date-fns";
-import { Pencil, Trash2, Calendar, Clock, Eye, User, Tag } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  Calendar,
+  Clock,
+  Eye,
+  Tag,
+  MessageSquare,
+  Share2,
+  FileText,
+  Loader2,
+} from "lucide-react";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { MinimalSEO } from "@/components/MinimalSEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -24,8 +34,10 @@ import { toast } from "sonner";
 import { paths } from "@/config/paths";
 import { useBlog } from "@/features/admin/blogs/api/get-blog";
 import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
-import { buildImageUrl } from "@/lib/utils";
+import { buildImageUrl, formatNumber } from "@/lib/utils";
 import { useState } from "react";
+import { formatDateTime } from "@/lib/date";
+import { InfoItem, RichText } from "@/components/ui/display-info";
 
 const AdminBlogShow = () => {
   const navigate = useNavigate();
@@ -47,7 +59,24 @@ const AdminBlogShow = () => {
     }
   };
 
-  if (error) {
+  if (isLoading) {
+    return (
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Blog", href: paths.admin.blogs.list.getHref() },
+          { label: "Detail Blog" },
+        ]}
+      >
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Memuat data blog...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error || !blogData) {
     return (
       <DashboardLayout
         breadcrumbItems={[
@@ -56,37 +85,28 @@ const AdminBlogShow = () => {
           { label: "Blog Tidak Ditemukan" },
         ]}
       >
-        <div className="flex flex-col items-center justify-center py-16">
-          <p className="text-lg font-medium">Blog tidak ditemukan</p>
-          <Button
-            onClick={() => navigate(paths.admin.blogs.list.getHref())}
-            className="mt-4"
-            variant="outline"
-          >
-            Kembali ke daftar blog
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <p className="text-muted-foreground">Blog tidak ditemukan</p>
+          <Button onClick={() => navigate(paths.admin.blogs.list.getHref())}>
+            Kembali ke Daftar
           </Button>
         </div>
       </DashboardLayout>
     );
   }
 
-  if (isLoading || !blogData) {
-    return (
-      <DashboardLayout
-        breadcrumbItems={[
-          { label: "Dashboard", href: "/dashboard" },
-          { label: "Blog", href: paths.admin.blogs.list.getHref() },
-          { label: "Memuat Blog..." },
-        ]}
-      >
-        <div className="flex items-center justify-center py-16">
-          <p className="text-muted-foreground">Memuat...</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   const blog = blogData;
+  const blogMeta = blog as typeof blog & {
+    comments_count?: number | null;
+    shares_count?: number | null;
+    images?: { id?: string; path: string }[] | null;
+    meta_title?: string | null;
+    meta_description?: string | null;
+  };
+  const featuredImage = blog.featured_image || blog.image || null;
+  const statusLabel =
+    BLOG_STATUS_OPTIONS.find((s) => s.value === blog.status)?.label ||
+    blog.status;
 
   return (
     <DashboardLayout
@@ -128,116 +148,31 @@ const AdminBlogShow = () => {
       </PageHeader>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Cover Image */}
-          {blog.featured_image && (
-            <Card>
-              <CardContent className="p-0">
-                <img
-                  src={buildImageUrl(blog.featured_image)}
-                  alt={blog.title}
-                  className="w-full h-64 object-cover rounded-t-lg"
-                />
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Content */}
           <Card>
-            <CardContent className="pt-6">
-              <h3 className="text-lg font-semibold mb-4">Konten</h3>
-              <div
-                className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Status & Info */}
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Status</span>
-                <Badge variant={getStatusBadgeVariant(blog.status)}>
-                  {
-                    BLOG_STATUS_OPTIONS.find((s) => s.value === blog.status)
-                      ?.label
-                  }
+            <CardHeader className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-lg">Informasi Blog</CardTitle>
+                <Badge
+                  variant={getStatusBadgeVariant(blog.status)}
+                  className="text-xs"
+                >
+                  {statusLabel}
                 </Badge>
               </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Views:</span>
-                  <span className="font-medium">
-                    {blog.views.toLocaleString()}
-                  </span>
+              {blog.category && (
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="gap-1.5">
+                    <Tag className="h-3 w-3" />
+                    {blog.category.name}
+                  </Badge>
                 </div>
-
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Waktu Baca:</span>
-                  <span className="font-medium">{blog.read_time} menit</span>
-                </div>
-
-                {blog.category && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Tag className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Kategori:</span>
-                    <Badge variant="secondary">{blog.category.name}</Badge>
-                  </div>
-                )}
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                {blog.published_at && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Dipublikasi:</span>
-                    <span>
-                      {format(new Date(blog.published_at), "dd MMM yyyy HH:mm")}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Dibuat:</span>
-                  <span>
-                    {format(new Date(blog.created_at), "dd MMM yyyy HH:mm")}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Diperbarui:</span>
-                  <span>
-                    {format(new Date(blog.updated_at), "dd MMM yyyy HH:mm")}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Author */}
-          {blog.user && (
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Penulis
-                </h3>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
+              )}
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {blog.user && (
+                <div className="flex items-start gap-3">
+                  <Avatar className="h-12 w-12 rounded-lg shrink-0">
                     <AvatarImage
                       src={
                         blog.user.avatar
@@ -246,38 +181,235 @@ const AdminBlogShow = () => {
                       }
                       className="object-cover"
                     />
-                    <AvatarFallback className="bg-primary/10 text-primary">
+                    <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold">
                       {blog.user.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="font-medium">{blog.user.name}</span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold truncate">
+                      {blog.user.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      @{blog.user.username}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <Separator />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <InfoItem
+                  label="Dipublikasikan"
+                  value={
+                    blog.published_at ? formatDateTime(blog.published_at) : "-"
+                  }
+                  icon={Calendar}
+                />
+                <InfoItem
+                  label="Diperbarui"
+                  value={formatDateTime(blog.updated_at)}
+                  icon={Clock}
+                />
+                <InfoItem
+                  label="Estimasi Baca"
+                  value={blog.read_time ? `${blog.read_time} menit` : "-"}
+                  icon={Clock}
+                />
+                <InfoItem
+                  label="Views"
+                  value={formatNumber(blog.views)}
+                  icon={Eye}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {featuredImage && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Gambar Utama</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+                  <img
+                    src={buildImageUrl(featuredImage)}
+                    alt={blog.title}
+                    className="h-full w-full object-cover transition-transform hover:scale-105"
+                  />
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Tags */}
-          {blog.tags && blog.tags.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Konten Blog</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RichText content={blog.content} />
+            </CardContent>
+          </Card>
+
+          {blogMeta.images && blogMeta.images.length > 0 && (
             <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                  <Tag className="h-4 w-4" />
-                  Tags
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {blog.tags.map((tag) => (
-                    <Badge key={tag.id} variant="outline">
-                      {tag.name}
-                    </Badge>
+              <CardHeader>
+                <CardTitle className="text-lg">Galeri</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {blogMeta.images.map((image) => (
+                    <div
+                      key={image.id || image.path}
+                      className="aspect-video overflow-hidden rounded-lg border bg-muted"
+                    >
+                      <img
+                        src={buildImageUrl(image.path)}
+                        alt="Galeri blog"
+                        className="h-full w-full object-cover transition-transform hover:scale-105"
+                      />
+                    </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
           )}
         </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-lg">Statistik Blog</CardTitle>
+                <Badge variant="outline" className="gap-1 text-xs uppercase">
+                  <Eye className="h-3 w-3" />
+                  {formatNumber(blog.views)} views
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <InfoItem
+                  label="Views"
+                  value={formatNumber(blog.views)}
+                  icon={Eye}
+                />
+                <InfoItem
+                  label="Komentar"
+                  value={formatNumber(blogMeta.comments_count)}
+                  icon={MessageSquare}
+                />
+                <InfoItem
+                  label="Dibagikan"
+                  value={formatNumber(blogMeta.shares_count)}
+                  icon={Share2}
+                />
+                <InfoItem
+                  label="Estimasi Baca"
+                  value={blog.read_time ? `${blog.read_time} menit` : "-"}
+                  icon={Clock}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Kategori & Tag</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Kategori
+                </p>
+                {blog.category ? (
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="gap-1.5">
+                      <Tag className="h-3 w-3" />
+                      {blog.category.name}
+                    </Badge>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">-</p>
+                )}
+              </div>
+
+              {blog.tags && blog.tags.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Tag
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {blog.tags.map((tag) => (
+                      <Badge key={tag.id} variant="outline">
+                        {tag.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">SEO & Metadata</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <InfoItem
+                  label="Meta Title"
+                  value={blogMeta.meta_title || blog.title}
+                  icon={FileText}
+                />
+                <InfoItem label="Slug" value={blog.slug} icon={Tag} />
+              </div>
+              <Separator />
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Meta Description
+                  </p>
+                </div>
+                <RichText content={blogMeta.meta_description || blog.excerpt} />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Informasi Sistem</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Blog ID
+                </p>
+                <p className="text-xs font-mono bg-muted px-2 py-1.5 rounded break-all">
+                  {blog.id}
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="grid grid-cols-2 gap-4">
+                <InfoItem
+                  label="Dibuat"
+                  value={formatDateTime(blog.created_at)}
+                  icon={Clock}
+                />
+                <InfoItem
+                  label="Diperbarui"
+                  value={formatDateTime(blog.updated_at)}
+                  icon={Clock}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Delete Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -292,8 +424,16 @@ const AdminBlogShow = () => {
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteBlogMutation.isPending}
             >
-              Hapus
+              {deleteBlogMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Menghapus...
+                </>
+              ) : (
+                "Hapus"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

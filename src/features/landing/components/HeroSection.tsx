@@ -18,7 +18,7 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <div className="space-y-8">
-            <h1 className="text-4xl xl:text-5xl font-bold text-shine leading-tight">
+            <h1 className="text-4xl xl:text-5xl font-bold leading-tight">
               Kelola Semua Lamaran Kerja Anda dengan Lebih Mudah
             </h1>
             <p className="text-lg lg:text-xl text-foreground/90 leading-relaxed">

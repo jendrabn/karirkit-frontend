@@ -129,12 +129,11 @@ const PortfoliosList = () => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState<string | null>(
-    null
+    null,
   );
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [massDeleteDialogOpen, setMassDeleteDialogOpen] = useState(false);
 
-  // API calls
   const { data: portfoliosResponse, isLoading } = usePortfolios({
     params: {
       page: params.page,
@@ -245,7 +244,8 @@ const PortfoliosList = () => {
 
   const handleShare = async (portfolio: (typeof portfolios)[number]) => {
     const shareUrl =
-      env.APP_URL + paths.publicPortfolio.detail.getHref(username, portfolio.id);
+      env.APP_URL +
+      paths.publicPortfolio.detail.getHref(username, portfolio.id);
 
     if (!navigator.share) {
       navigator.clipboard.writeText(shareUrl);
@@ -518,9 +518,7 @@ const PortfoliosList = () => {
 
                 {/* Project Type Badge */}
                 <div className="absolute bottom-2 left-2">
-                  <Badge
-                    variant={getProjectTypeBadgeVariant()}
-                  >
+                  <Badge variant={getProjectTypeBadgeVariant()}>
                     {projectTypeLabels[portfolio.project_type]}
                   </Badge>
                 </div>
@@ -721,7 +719,7 @@ const PortfoliosList = () => {
                   : "",
               tools_name: newFilters.tools_name || "",
             },
-            true
+            true,
           );
           setFilterModalOpen(false);
         }}

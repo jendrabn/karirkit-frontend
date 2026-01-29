@@ -466,15 +466,24 @@ export const BlogsList = () => {
                           )}
                         </TableCell>
                       )}
-                      {columnVisibility.author && (
-                        <TableCell className="whitespace-nowrap">
-                          {blog.user ? (
-                            <span className="text-sm">{blog.user.name}</span>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                      )}
+                       {columnVisibility.author && (
+                         <TableCell className="max-w-[150px]">
+                           {blog.user ? (
+                             <Tooltip>
+                               <TooltipTrigger asChild>
+                                 <span className="block truncate text-sm">
+                                   {blog.user.name}
+                                 </span>
+                               </TooltipTrigger>
+                               <TooltipContent>
+                                 <p>{blog.user.name}</p>
+                               </TooltipContent>
+                             </Tooltip>
+                           ) : (
+                             <span className="text-muted-foreground">-</span>
+                           )}
+                         </TableCell>
+                       )}
                       {columnVisibility.status && (
                         <TableCell className="whitespace-nowrap">
                           <Badge variant={getStatusBadgeVariant(blog.status)}>
@@ -505,11 +514,20 @@ export const BlogsList = () => {
                             : "-"}
                         </TableCell>
                       )}
-                      {columnVisibility.slug && (
-                        <TableCell className="text-muted-foreground truncate max-w-[200px]">
-                          {blog.slug}
-                        </TableCell>
-                      )}
+                       {columnVisibility.slug && (
+                         <TableCell className="max-w-[200px]">
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <span className="block truncate text-muted-foreground">
+                                 {blog.slug}
+                               </span>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                               <p>{blog.slug}</p>
+                             </TooltipContent>
+                           </Tooltip>
+                         </TableCell>
+                       )}
                       {columnVisibility.tags && (
                         <TableCell className="text-muted-foreground">
                           {blog.tags?.length || 0}

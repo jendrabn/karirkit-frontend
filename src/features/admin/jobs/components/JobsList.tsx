@@ -47,6 +47,12 @@ import {
 } from "@/types/job";
 import { cn } from "@/lib/utils";
 import { type ColumnVisibility } from "./JobColumnToggle";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type JobSortField =
   | "title"
@@ -132,9 +138,10 @@ export function JobsList({
   };
 
   return (
-    <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
+<div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
-        <Table>
+        <TooltipProvider>
+          <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-[40px]">
@@ -301,25 +308,51 @@ export function JobsList({
                     />
                   </TableCell>
                   {columnVisibility.title && (
-                    <TableCell>
-                      <div className="max-w-[200px]">
-                        <p className="font-medium truncate">{job.title}</p>
-                      </div>
+                    <TableCell className="max-w-[200px]">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <p className="font-medium truncate block">{job.title}</p>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{job.title}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                   )}
-                  {columnVisibility.company && (
-                    <TableCell>
-                      <span className="text-sm">{job.company?.name}</span>
+{columnVisibility.company && (
+                    <TableCell className="max-w-[180px]">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="text-sm truncate block">{job.company?.name}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{job.company?.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                   )}
-                  {columnVisibility.role && (
-                    <TableCell className="text-sm text-muted-foreground">
-                      {job.job_role?.name}
+{columnVisibility.role && (
+                    <TableCell className="text-sm text-muted-foreground max-w-[150px]">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="truncate block">{job.job_role?.name}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{job.job_role?.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                   )}
-                  {columnVisibility.city && (
-                    <TableCell className="text-muted-foreground text-sm">
-                      {job.city?.name}
+{columnVisibility.city && (
+                    <TableCell className="text-muted-foreground text-sm max-w-[120px]">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="truncate block">{job.city?.name}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{job.city?.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                   )}
                   {columnVisibility.type && (
@@ -336,9 +369,16 @@ export function JobsList({
                       </Badge>
                     </TableCell>
                   )}
-                  {columnVisibility.salary && (
-                    <TableCell className="text-sm">
-                      {formatSalary(job.salary_min || 0)}
+{columnVisibility.salary && (
+                    <TableCell className="text-sm max-w-[150px]">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="truncate block">{formatSalary(job.salary_min || 0)}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{formatSalary(job.salary_min || 0)}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                   )}
                   {columnVisibility.status && (
@@ -367,7 +407,7 @@ export function JobsList({
                     <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
                       {formatExperienceRange(
                         job.min_years_of_experience,
-                        job.max_years_of_experience
+                        job.max_years_of_experience,
                       )}
                     </TableCell>
                   )}
@@ -429,6 +469,7 @@ export function JobsList({
             )}
           </TableBody>
         </Table>
+      </TooltipProvider>
       </div>
 
       {!isLoading && jobs.length > 0 && (

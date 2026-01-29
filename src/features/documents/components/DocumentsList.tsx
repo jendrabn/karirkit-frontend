@@ -52,6 +52,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   DocumentFilterModal,
   type DocumentFilterValues,
 } from "@/features/documents/components/DocumentFilterModal";
@@ -334,7 +340,8 @@ export function DocumentsList() {
       {/* Table */}
       <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <Table>
+          <TooltipProvider>
+            <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-12">
@@ -428,23 +435,30 @@ export function DocumentsList() {
                         onCheckedChange={() => handleSelectOne(doc.id)}
                       />
                     </TableCell>
-                    {columnVisibility.original_name && (
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                            {getFileIcon(doc.mime_type, doc.original_name)}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-medium truncate max-w-[200px]">
-                              {doc.original_name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {doc.mime_type}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                    )}
+                     {columnVisibility.original_name && (
+                       <TableCell>
+                         <div className="flex items-center gap-3">
+                           <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                             {getFileIcon(doc.mime_type, doc.original_name)}
+                           </div>
+                           <div className="min-w-0">
+                             <Tooltip>
+                               <TooltipTrigger asChild>
+                                 <p className="font-medium truncate max-w-[200px]">
+                                   {doc.original_name}
+                                 </p>
+                               </TooltipTrigger>
+                               <TooltipContent>
+                                 <p>{doc.original_name}</p>
+                               </TooltipContent>
+                             </Tooltip>
+                             <p className="text-xs text-muted-foreground">
+                               {doc.mime_type}
+                             </p>
+                           </div>
+                         </div>
+                       </TableCell>
+                     )}
                     {columnVisibility.type && (
                       <TableCell>
                         <Badge variant="secondary">
@@ -507,6 +521,7 @@ export function DocumentsList() {
               )}
             </TableBody>
           </Table>
+          </TooltipProvider>
         </div>
       </div>
 

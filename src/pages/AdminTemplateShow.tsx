@@ -15,22 +15,40 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Crown, FileText, Loader2 } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  FileText,
+  Loader2,
+  Download,
+  Eye,
+  Tag,
+  Calendar,
+  Clock,
+  Info,
+} from "lucide-react";
 import { getTemplateTypeLabel } from "@/types/template";
 import { toast } from "sonner";
 import { useTemplate } from "@/features/admin/templates/api/get-template";
 import { useDeleteTemplate } from "@/features/admin/templates/api/delete-template";
-import { dayjs } from "@/lib/date";
+import { formatDateTime } from "@/lib/date";
 import { MinimalSEO } from "@/components/MinimalSEO";
-import { buildImageUrl } from "@/lib/utils";
+import {
+  buildImageUrl,
+  formatBytes,
+  formatNumber,
+  formatValue,
+} from "@/lib/utils";
 import { paths } from "@/config/paths";
+import { Separator } from "@/components/ui/separator";
+import { InfoItem, RichText } from "@/components/ui/display-info";
 
 const AdminTemplateShow = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const { data: template, isLoading } = useTemplate({
+  const { data: template, isLoading, error } = useTemplate({
     id: id as string,
     queryConfig: {
       enabled: !!id,
@@ -58,14 +76,15 @@ const AdminTemplateShow = () => {
           { label: "Detail Template" },
         ]}
       >
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Memuat data template...</p>
         </div>
       </DashboardLayout>
     );
   }
 
-  if (!template) {
+  if (error || !template) {
     return (
       <DashboardLayout
         breadcrumbItems={[
@@ -74,12 +93,30 @@ const AdminTemplateShow = () => {
           { label: "Template Tidak Ditemukan" },
         ]}
       >
-        <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
           <p className="text-muted-foreground">Template tidak ditemukan</p>
+          <Button onClick={() => navigate(paths.admin.templates.list.getHref())}>
+            Kembali ke Daftar
+          </Button>
         </div>
       </DashboardLayout>
     );
   }
+
+  const templateMeta = template as typeof template & {
+    description?: string | null;
+    features?: string[] | null;
+    instructions?: string | null;
+    file_size?: number | null;
+    file_format?: string | null;
+    version?: string | null;
+    usage_count?: number | null;
+  };
+  const downloadUrl = template.path ? buildImageUrl(template.path) : null;
+  const previewUrl = template.preview ? buildImageUrl(template.preview) : null;
+  const fileExtension = template.path
+    ? template.path.split(".").pop()
+    : null;
 
   const handleDelete = () => {
     if (template.id) {
@@ -127,99 +164,211 @@ const AdminTemplateShow = () => {
       </PageHeader>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Preview Image */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-base">Preview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {template.preview ? (
-              <a
-                href={buildImageUrl(template.preview)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  src={buildImageUrl(template.preview)}
-                  alt={template.name}
-                  className="w-full aspect-[3/4] object-cover rounded-lg border hover:opacity-80 transition-opacity"
-                />
-              </a>
-            ) : (
-              <div className="w-full aspect-[3/4] bg-muted rounded-lg border flex items-center justify-center">
-                <span className="text-muted-foreground">No Preview</span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Details */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">Informasi Template</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Tipe</p>
-                <Badge variant="outline" className="mt-1">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader className="space-y-3">
+              <CardTitle className="text-lg">Informasi Template</CardTitle>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="gap-1.5">
+                  <Tag className="h-3 w-3" />
                   {getTemplateTypeLabel(template.type)}
                 </Badge>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Bahasa</p>
-                <Badge variant="outline" className="mt-1 uppercase">
+                <Badge variant="outline" className="gap-1.5 uppercase">
+                  <FileText className="h-3 w-3" />
                   {template.language}
                 </Badge>
+                <Badge
+                  variant={template.is_premium ? "default" : "secondary"}
+                  className="gap-1.5"
+                >
+                  <Tag className="h-3 w-3" />
+                  {template.is_premium ? "Premium" : "Gratis"}
+                </Badge>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Status Premium</p>
-                {template.is_premium ? (
-                  <Badge className="mt-1 bg-amber-100 text-amber-700 hover:bg-amber-100">
-                    <Crown className="h-3 w-3 mr-1" />
-                    Premium
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="mt-1">
-                    Gratis
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <InfoItem
+                  label="Nama Template"
+                  value={template.name}
+                  icon={FileText}
+                />
+                <InfoItem
+                  label="Bahasa"
+                  value={template.language?.toUpperCase()}
+                  icon={Tag}
+                />
+                <InfoItem
+                  label="Versi"
+                  value={formatValue(templateMeta.version)}
+                  icon={Info}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Preview Template</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {previewUrl ? (
+                <a href={previewUrl} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={previewUrl}
+                    alt={template.name}
+                    className="w-full aspect-[3/4] object-cover rounded-lg border hover:opacity-90 transition-opacity"
+                  />
+                </a>
+              ) : (
+                <div className="w-full aspect-[3/4] bg-muted rounded-lg border flex items-center justify-center">
+                  <span className="text-muted-foreground">No Preview</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {(templateMeta.description || templateMeta.features || templateMeta.instructions) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Detail Template</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {templateMeta.description && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Deskripsi
+                    </p>
+                    <RichText content={templateMeta.description} />
+                  </div>
+                )}
+
+                {templateMeta.features && templateMeta.features.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Fitur
+                    </p>
+                    <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
+                      {templateMeta.features.map((feature, index) => (
+                        <li key={`${feature}-${index}`}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {templateMeta.instructions && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Cara Pakai
+                    </p>
+                    <RichText content={templateMeta.instructions} />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Informasi File</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <InfoItem
+                label="Ukuran File"
+                value={
+                  templateMeta.file_size !== null &&
+                  templateMeta.file_size !== undefined
+                    ? formatBytes(templateMeta.file_size)
+                    : "-"
+                }
+                icon={FileText}
+              />
+              <InfoItem
+                label="Format File"
+                value={formatValue(templateMeta.file_format || fileExtension)}
+                icon={Tag}
+              />
+              <InfoItem
+                label="Nama File"
+                value={template.path ? template.path.split("/").pop() : "-"}
+                icon={FileText}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-lg">Aksi</CardTitle>
+                {templateMeta.usage_count !== null && (
+                  <Badge variant="outline" className="gap-1 text-xs uppercase">
+                    <Eye className="h-3 w-3" />
+                    {formatNumber(templateMeta.usage_count)} penggunaan
                   </Badge>
                 )}
               </div>
-            </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-col gap-2">
+                <Button asChild disabled={!downloadUrl}>
+                  <a
+                    href={downloadUrl || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Template
+                  </a>
+                </Button>
+                <Button variant="outline" asChild disabled={!previewUrl}>
+                  <a
+                    href={previewUrl || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Lihat Preview
+                  </a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-            {template.path && (
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  File Template
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Informasi Sistem</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Template ID
                 </p>
-                <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/30 w-fit">
-                  <FileText className="h-6 w-6 text-blue-600" />
-                  <span className="text-sm">
-                    {template.path.split("/").pop()}
-                  </span>
-                </div>
+                <p className="text-xs font-mono bg-muted px-2 py-1.5 rounded break-all">
+                  {template.id}
+                </p>
               </div>
-            )}
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-              <div>
-                <p className="text-sm text-muted-foreground">Dibuat</p>
-                <p className="mt-1 text-sm">
-                  {dayjs(template.created_at).format("D MMMM YYYY")}
-                </p>
+              <Separator />
+
+              <div className="grid grid-cols-2 gap-4">
+                <InfoItem
+                  label="Dibuat"
+                  value={formatDateTime(template.created_at)}
+                  icon={Calendar}
+                />
+                <InfoItem
+                  label="Diperbarui"
+                  value={formatDateTime(template.updated_at)}
+                  icon={Clock}
+                />
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Diperbarui</p>
-                <p className="mt-1 text-sm">
-                  {dayjs(template.updated_at).format("D MMMM YYYY")}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Delete Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -234,8 +383,16 @@ const AdminTemplateShow = () => {
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteTemplateMutation.isPending}
             >
-              Hapus
+              {deleteTemplateMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Menghapus...
+                </>
+              ) : (
+                "Hapus"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

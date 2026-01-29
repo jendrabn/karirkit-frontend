@@ -1,14 +1,13 @@
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
 import {
   Building2,
-  Users,
+  Mail,
+  Phone,
   Globe,
-  Briefcase,
+  MapPin,
+  Users,
   Calendar,
-  Hash,
-  Clock,
   Loader2,
+  Briefcase,
 } from "lucide-react";
 import {
   Dialog,
@@ -24,8 +23,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { EMPLOYEE_SIZE_LABELS } from "@/types/company";
-import { buildImageUrl } from "@/lib/utils";
+import { buildImageUrl, formatNumber } from "@/lib/utils";
 import { useCompany } from "../api/get-company";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ContactItem, InfoItem, RichText } from "@/components/ui/display-info";
+import { formatDateTime } from "@/lib/date";
 
 interface CompanyDetailModalProps {
   companyId: string | null;
@@ -47,12 +49,44 @@ export function CompanyDetailModal({
 
   if (!companyId) return null;
 
+  const companyMeta = company as typeof company & {
+    employeeSize?: string | null;
+    businessSector?: string | null;
+    websiteUrl?: string | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+    jobCount?: number | null;
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    founded_at?: string | null;
+    foundedAt?: string | null;
+  };
+
+  const employeeSize = company?.employee_size ?? companyMeta?.employeeSize ?? null;
+  const employeeSizeLabel = employeeSize
+    ? EMPLOYEE_SIZE_LABELS[employeeSize as keyof typeof EMPLOYEE_SIZE_LABELS] ||
+      employeeSize
+    : "-";
+  const businessSector =
+    company?.business_sector ?? companyMeta?.businessSector ?? null;
+  const websiteUrl = company?.website_url ?? companyMeta?.websiteUrl ?? null;
+  const createdAt = company?.created_at ?? companyMeta?.createdAt ?? null;
+  const updatedAt = company?.updated_at ?? companyMeta?.updatedAt ?? null;
+  const jobCount = company?.job_count ?? companyMeta?.jobCount ?? null;
+  const companyEmail = companyMeta?.email ?? null;
+  const companyPhone = companyMeta?.phone ?? null;
+  const address = companyMeta?.address ?? null;
+  const foundedAt = companyMeta?.founded_at ?? companyMeta?.foundedAt ?? null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="!max-w-3xl">
+      <DialogContent className="!max-w-4xl">
         <DialogHeader>
           <DialogTitle>Detail Perusahaan</DialogTitle>
-          <DialogDescription></DialogDescription>
+          <DialogDescription>
+            Informasi lengkap tentang perusahaan dan kontak.
+          </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
@@ -60,120 +94,160 @@ export function CompanyDetailModal({
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : company ? (
-          <>
-            <div className="no-scrollbar -mx-4 max-h-[65vh] overflow-y-auto px-4 py-4">
-              <div className="space-y-8 pb-4">
-                {/* Header Section */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                  <Avatar className="h-24 w-24 border sm:h-32 sm:w-32">
-                    <AvatarImage
-                      src={buildImageUrl(company.logo) || undefined}
-                      alt={company.name}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="text-2xl">
-                      {company.name.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+          <div className="no-scrollbar -mx-4 max-h-[70vh] overflow-y-auto px-4 py-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Profil Perusahaan</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="flex items-start gap-4">
+                      <Avatar className="h-16 w-16 rounded-lg shrink-0">
+                        <AvatarImage
+                          src={buildImageUrl(company.logo) || undefined}
+                          alt={company.name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold">
+                          {company.name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0 space-y-1">
+                        <p className="text-base font-semibold truncate">
+                          {company.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground font-mono truncate">
+                          {company.slug || "-"}
+                        </p>
+                      </div>
+                    </div>
 
-                  <div className="space-y-2 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-2xl font-bold">{company.name}</h2>
-                      <Badge variant="secondary" className="font-mono">
-                        {company.slug}
+                    <Separator />
+
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="gap-1.5">
+                        <Users className="h-3 w-3" />
+                        {employeeSizeLabel}
                       </Badge>
+                      {businessSector && (
+                        <Badge variant="outline" className="gap-1.5">
+                          <Building2 className="h-3 w-3" />
+                          {businessSector}
+                        </Badge>
+                      )}
                     </div>
 
-                    {company.website_url && (
-                      <a
-                        href={company.website_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 hover:underline gap-1.5"
-                      >
-                        <Globe className="h-4 w-4" />
-                        {company.website_url.replace(/^https?:\/\//, "")}
-                      </a>
+              </CardContent>
+            </Card>
+
+            {company.description && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Deskripsi</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <RichText content={company.description} />
+                </CardContent>
+              </Card>
+            )}
+              </div>
+
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Kontak Perusahaan</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <ContactItem
+                      type="url"
+                      value={websiteUrl}
+                      label="Website"
+                      icon={Globe}
+                    />
+                    <ContactItem
+                      type="email"
+                      value={companyEmail}
+                      label="Email"
+                      icon={Mail}
+                    />
+                    <ContactItem
+                      type="phone"
+                      value={companyPhone}
+                      label="Telepon"
+                      icon={Phone}
+                    />
+                    {address && (
+                      <InfoItem
+                        label="Alamat"
+                        value={address}
+                        icon={MapPin}
+                      />
                     )}
+                  </CardContent>
+                </Card>
 
-                    <div className="flex flex-wrap gap-3 text-sm text-muted-foreground pt-1">
-                      <div className="flex items-center gap-1.5">
-                        <Users className="h-4 w-4" />
-                        <span>
-                          {EMPLOYEE_SIZE_LABELS[
-                            company.employee_size as keyof typeof EMPLOYEE_SIZE_LABELS
-                          ] || company.employee_size}
-                        </span>
-                      </div>
-                      <Separator orientation="vertical" className="h-4" />
-                      <div className="flex items-center gap-1.5">
-                        <Building2 className="h-4 w-4" />
-                        <span>{company.business_sector}</span>
-                      </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Informasi Tambahan</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <InfoItem
+                      label="Sektor Bisnis"
+                      value={businessSector}
+                      icon={Briefcase}
+                    />
+                    <InfoItem
+                      label="Ukuran Perusahaan"
+                      value={employeeSizeLabel}
+                      icon={Users}
+                    />
+                    <InfoItem
+                      label="Jumlah Lowongan"
+                      value={formatNumber(jobCount)}
+                      icon={Building2}
+                    />
+                    <InfoItem
+                      label="Didirikan"
+                      value={foundedAt ? formatDateTime(foundedAt) : "-"}
+                      icon={Calendar}
+                    />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Informasi Sistem</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Company ID
+                      </p>
+                      <p className="text-xs font-mono bg-muted px-2 py-1.5 rounded break-all">
+                        {company.id}
+                      </p>
                     </div>
-                  </div>
-                </div>
 
-                <Separator />
+                    <Separator />
 
-                {/* Description Section */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-lg font-semibold">
-                    <Briefcase className="h-5 w-5 text-primary" />
-                    <h3>Deskripsi Perusahaan</h3>
-                  </div>
-                  <div
-                    className="prose prose-sm max-w-none text-muted-foreground"
-                    dangerouslySetInnerHTML={{
-                      __html: company.description || "",
-                    }}
-                  />
-                </div>
-
-                <Separator />
-
-                {/* Metadata Section */}
-                <div className="rounded-lg bg-muted/50 p-4 space-y-3">
-                  <h4 className="text-sm font-medium text-muted-foreground mb-3">
-                    Informasi Sistem
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Hash className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground w-24">ID:</span>
-                      <span className="font-mono truncate">{company.id}</span>
+                    <div className="grid grid-cols-2 gap-4">
+                      <InfoItem
+                        label="Dibuat"
+                        value={createdAt ? formatDateTime(createdAt) : "-"}
+                        icon={Calendar}
+                      />
+                      <InfoItem
+                        label="Diperbarui"
+                        value={updatedAt ? formatDateTime(updatedAt) : "-"}
+                        icon={Calendar}
+                      />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground w-24">
-                        Dibuat:
-                      </span>
-                      <span>
-                        {format(
-                          new Date(company.created_at),
-                          "dd MMMM yyyy, HH:mm",
-                          { locale: id },
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground w-24">
-                        Diupdate:
-                      </span>
-                      <span>
-                        {format(
-                          new Date(company.updated_at),
-                          "dd MMMM yyyy, HH:mm",
-                          { locale: id },
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <div className="p-6 text-center text-muted-foreground">
             Data perusahaan tidak ditemukan

@@ -131,7 +131,6 @@ const CVList = () => {
   const [visibilityModalOpen, setVisibilityModalOpen] = useState(false);
   const [cvToEditVisibility, setCvToEditVisibility] = useState<CV | null>(null);
 
-  // API calls
   const { data: cvsResponse, isLoading } = useCVs({
     params: {
       page: params.page,
@@ -515,16 +514,30 @@ const CVList = () => {
                             </Tooltip>
                           </TableCell>
                         )}
-                        {columnVisibility.latest_experience && (
+                         {columnVisibility.latest_experience && (
                           <TableCell>
                             {latestExp ? (
                               <div className="text-sm">
-                                <p className="font-medium truncate max-w-[150px]">
-                                  {latestExp.job_title}
-                                </p>
-                                <p className="text-muted-foreground text-xs truncate max-w-[150px]">
-                                  {latestExp.company_name}
-                                </p>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p className="font-medium truncate max-w-[150px]">
+                                      {latestExp.job_title}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{latestExp.job_title}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p className="text-muted-foreground text-xs truncate max-w-[150px]">
+                                      {latestExp.company_name}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{latestExp.company_name}</p>
+                                  </TooltipContent>
+                                </Tooltip>
                               </div>
                             ) : (
                               <span className="text-muted-foreground text-sm">
@@ -533,18 +546,34 @@ const CVList = () => {
                             )}
                           </TableCell>
                         )}
-                        {columnVisibility.latest_education && (
+                         {columnVisibility.latest_education && (
                           <TableCell>
                             {latestEdu ? (
                               <div className="text-sm">
-                                <p className="font-medium truncate max-w-[150px]">
-                                  {DEGREE_OPTIONS.find(
-                                    (d) => d.value === latestEdu.degree,
-                                  )?.label || latestEdu.degree}
-                                </p>
-                                <p className="text-muted-foreground text-xs truncate max-w-[150px]">
-                                  {latestEdu.school_name}
-                                </p>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p className="font-medium truncate max-w-[150px]">
+                                      {DEGREE_OPTIONS.find(
+                                        (d) => d.value === latestEdu.degree,
+                                      )?.label || latestEdu.degree}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{DEGREE_OPTIONS.find(
+                                      (d) => d.value === latestEdu.degree,
+                                    )?.label || latestEdu.degree}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p className="text-muted-foreground text-xs truncate max-w-[150px]">
+                                      {latestEdu.school_name}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{latestEdu.school_name}</p>
+                                  </TooltipContent>
+                                </Tooltip>
                               </div>
                             ) : (
                               <span className="text-muted-foreground text-sm">
@@ -609,15 +638,46 @@ const CVList = () => {
                                   {cv.name.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
-                              <span>{cv.name}</span>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="block truncate max-w-[120px] font-medium">
+                                    {cv.name}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{cv.name}</p>
+                                </TooltipContent>
+                              </Tooltip>
                             </div>
                           </TableCell>
                         )}
                         {columnVisibility.email && (
-                          <TableCell>{cv.email}</TableCell>
+                          <TableCell className="max-w-[180px]">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate">
+                                  {cv.email}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{cv.email}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TableCell>
                         )}
                         {columnVisibility.phone && (
-                          <TableCell>{cv.phone}</TableCell>
+                          <TableCell className="max-w-[150px]">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate">
+                                  {cv.phone}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{cv.phone}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TableCell>
                         )}
                         {columnVisibility.about && (
                           <TableCell className="max-w-[200px]">
@@ -634,8 +694,17 @@ const CVList = () => {
                           </TableCell>
                         )}
                         {columnVisibility.address && (
-                          <TableCell className="max-w-[150px] truncate">
-                            {cv.address}
+                          <TableCell className="max-w-[150px]">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate">
+                                  {cv.address}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{cv.address}</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </TableCell>
                         )}
                         {columnVisibility.photo && (
@@ -680,7 +749,18 @@ const CVList = () => {
                           </TableCell>
                         )}
                         {columnVisibility.template && (
-                          <TableCell>{cv.template?.name || "-"}</TableCell>
+                          <TableCell className="max-w-[150px]">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate">
+                                  {cv.template?.name || "-"}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{cv.template?.name || "-"}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TableCell>
                         )}
                         {columnVisibility.created_at && (
                           <TableCell className="text-muted-foreground whitespace-nowrap text-sm">

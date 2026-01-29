@@ -1,17 +1,32 @@
 import { useNavigate, useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { createElement, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Pencil, Trash2, ExternalLink, Shield } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  Shield,
+  Loader2,
+  User as UserIcon,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  ExternalLink,
+  Briefcase,
+} from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { useUser } from "@/features/admin/users/api/get-user";
-import { UserDetail } from "@/features/admin/users/components/UserDetail";
-import { Spinner } from "@/components/ui/spinner";
 import { MinimalSEO } from "@/components/MinimalSEO";
 import { paths } from "@/config/paths";
 import { useDeleteUser } from "@/features/admin/users/api/delete-user";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,9 +45,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { dayjs } from "@/lib/date";
+import { dayjs, formatDate, formatDateTime } from "@/lib/date";
+import { formatBytes, formatNumber } from "@/lib/utils";
 import { SOCIAL_PLATFORM_LABELS } from "@/types/social";
-import type { User } from "@/types/user";
+import type { User, UserRole } from "@/types/user";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserStatus } from "@/features/admin/users/api/update-user-status";
 import { useForm, useWatch } from "react-hook-form";
@@ -54,7 +70,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { USER_STATUS_OPTIONS } from "@/types/user";
+import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from "@/types/user";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { ContactItem, InfoItem, RichText } from "@/components/ui/display-info";
 
 const userStatusSchema = z
   .object({
@@ -72,32 +91,30 @@ const userStatusSchema = z
     }
   });
 
-const InfoItem = ({
-  label,
-  value,
-  isLink,
-}: {
-  label: string;
-  value: string | number;
-  isLink?: boolean;
-}) => (
-  <div className="space-y-1">
-    <p className="text-sm text-muted-foreground">{label}</p>
-    {isLink && value ? (
-      <a
-        href={String(value)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-primary hover:underline flex items-center gap-1 break-all"
-      >
-        {String(value)}
-        <ExternalLink className="h-3 w-3 shrink-0" />
-      </a>
-    ) : (
-      <p className="font-medium">{value === 0 ? "0" : value || "-"}</p>
-    )}
-  </div>
-);
+const getRoleBadgeVariant = (role: UserRole) => {
+  return role === "admin" ? "default" : "secondary";
+};
+
+const getStatusBadgeVariant = (status: User["status"]) => {
+  switch (status) {
+    case "active":
+      return "default";
+    case "suspended":
+      return "secondary";
+    case "banned":
+      return "destructive";
+    default:
+      return "outline";
+  }
+};
+
+const STATUS_ICON_MAP: Partial<
+  Record<User["status"], typeof CheckCircle>
+> = {
+  active: CheckCircle,
+  suspended: AlertCircle,
+  banned: XCircle,
+};
 
 const getGenderLabel = (gender: User["gender"]) => {
   if (gender === "male") {
@@ -111,6 +128,11 @@ const getGenderLabel = (gender: User["gender"]) => {
   return "-";
 };
 
+const formatBytesValue = (value?: number | null) => {
+  if (value === null || value === undefined) return "-";
+  return formatBytes(value);
+};
+
 const AdminUserShow = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -118,7 +140,7 @@ const AdminUserShow = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
 
-  const { data: user, isLoading } = useUser({
+  const { data: user, isLoading, error } = useUser({
     id: id!,
     queryConfig: {
       enabled: !!id,
@@ -198,14 +220,15 @@ const AdminUserShow = () => {
           { label: "Detail Pengguna" },
         ]}
       >
-        <div className="flex bg-background h-screen items-center justify-center">
-          <Spinner size="lg" />
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Memuat data pengguna...</p>
         </div>
       </DashboardLayout>
     );
   }
 
-  if (!user) {
+  if (error || !user) {
     return (
       <DashboardLayout
         breadcrumbItems={[
@@ -214,12 +237,37 @@ const AdminUserShow = () => {
           { label: "User Tidak Ditemukan" },
         ]}
       >
-        <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
           <p className="text-muted-foreground">User tidak ditemukan.</p>
+          <Button onClick={() => navigate(paths.admin.users.list.getHref())}>
+            Kembali ke Daftar
+          </Button>
         </div>
       </DashboardLayout>
     );
   }
+
+  const roleLabel =
+    USER_ROLE_OPTIONS.find((option) => option.value === user.role)?.label ||
+    user.role;
+  const statusLabel =
+    USER_STATUS_OPTIONS.find((option) => option.value === user.status)?.label ||
+    user.status;
+  const statusIconComponent = STATUS_ICON_MAP[user.status] ?? AlertCircle;
+  const downloadStats = user.download_stats;
+  const totalDownloads =
+    downloadStats?.total_count ?? user.total_downloads ?? null;
+  const storageStats = user.document_storage_stats;
+  const storageLimit = user.document_storage_limit ?? storageStats?.limit ?? null;
+  const storageUsed = storageStats?.used ?? null;
+  const storageRemaining =
+    storageStats?.remaining ??
+    (storageLimit !== null && storageUsed !== null
+      ? Math.max(storageLimit - storageUsed, 0)
+      : null);
+  const emailVerifiedLabel = user.email_verified_at
+    ? formatDateTime(user.email_verified_at)
+    : "Belum terverifikasi";
 
   return (
     <DashboardLayout
@@ -235,8 +283,8 @@ const AdminUserShow = () => {
         noIndex={true}
       />
       <PageHeader
-        title="Detail User"
-        subtitle="Informasi lengkap tentang pengguna."
+        title={user.name}
+        subtitle={`@${user.username}`}
         backButtonUrl={paths.admin.users.list.getHref()}
         showBackButton
       >
@@ -269,91 +317,308 @@ const AdminUserShow = () => {
         </div>
       </PageHeader>
 
-      <UserDetail user={user} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-lg">Profil Pengguna</CardTitle>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={getRoleBadgeVariant(user.role)}
+                    className="gap-1 text-xs"
+                  >
+                    <Shield className="h-3 w-3" />
+                    {roleLabel}
+                  </Badge>
+                  <Badge
+                    variant={getStatusBadgeVariant(user.status)}
+                    className="gap-1 text-xs"
+                  >
+                    {createElement(statusIconComponent, {
+                      className: "h-3 w-3",
+                    })}
+                    {statusLabel}
+                  </Badge>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-start gap-4">
+                <Avatar className="h-14 w-14 rounded-lg shrink-0">
+                  <AvatarImage
+                    src={user.avatar || undefined}
+                    alt={user.name}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold">
+                    {user.name.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 space-y-1">
+                  <p className="text-base font-semibold truncate">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground font-mono truncate">
+                    @{user.username}
+                  </p>
+                </div>
+              </div>
 
-      <div className="grid gap-6 mt-6">
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Profil & Personal</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoItem label="Headline" value={user.headline || "-"} />
-            <InfoItem label="Lokasi" value={user.location || "-"} />
-            <InfoItem label="Gender" value={getGenderLabel(user.gender)} />
-            <InfoItem
-              label="Tanggal Lahir"
-              value={
-                user.birth_date
-                  ? dayjs(user.birth_date).format("DD MMMM YYYY")
-                  : "-"
-              }
-            />
-            <InfoItem label="Bio" value={user.bio || "-"} />
-          </div>
-        </Card>
+              <Separator />
 
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Verifikasi & Sistem</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoItem label="User ID" value={user.id} />
-            <InfoItem
-              label="Email Terverifikasi"
-              value={
-                user.email_verified_at
-                  ? dayjs(user.email_verified_at).format("DD MMMM YYYY, HH:mm")
-                  : "-"
-              }
-            />
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Batasan</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoItem
-              label="Batas Download Harian"
-              value={user.daily_download_limit}
-            />
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Statistik Unduhan</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoItem
-              label="Batas Harian"
-              value={user.download_stats?.daily_limit ?? "-"}
-            />
-            <InfoItem
-              label="Unduhan Hari Ini"
-              value={user.download_stats?.today_count ?? "-"}
-            />
-            <InfoItem
-              label="Sisa Unduhan Hari Ini"
-              value={user.download_stats?.remaining ?? "-"}
-            />
-            <InfoItem
-              label="Total Unduhan"
-              value={user.download_stats?.total_count ?? "-"}
-            />
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Social Links</h3>
-          {user.social_links && user.social_links.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {user.social_links.map((link) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <InfoItem
-                  key={`${link.platform}-${link.url}`}
-                  label={SOCIAL_PLATFORM_LABELS[link.platform] || link.platform}
-                  value={link.url}
-                  isLink
+                  label="Headline"
+                  value={user.headline}
+                  icon={Briefcase}
                 />
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">-</p>
-          )}
-        </Card>
+                <InfoItem label="Lokasi" value={user.location} icon={MapPin} />
+                <InfoItem
+                  label="Gender"
+                  value={getGenderLabel(user.gender)}
+                  icon={UserIcon}
+                />
+                <InfoItem
+                  label="Tanggal Lahir"
+                  value={user.birth_date ? formatDate(user.birth_date) : "-"}
+                  icon={Calendar}
+                />
+              </div>
+
+              {user.bio && (
+                <>
+                  <Separator />
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Bio
+                    </p>
+                    <RichText content={user.bio} emptyText="Belum ada bio" />
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-lg">Aktivitas & Statistik</CardTitle>
+                {totalDownloads !== null && (
+                  <Badge variant="outline" className="gap-1 text-xs uppercase">
+                    <CheckCircle className="h-3 w-3" />
+                    {formatNumber(totalDownloads)} total
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Unduhan
+                  </p>
+                  {totalDownloads !== null && (
+                    <Badge
+                      variant="outline"
+                      className="gap-1 text-[11px] uppercase"
+                    >
+                      <Shield className="h-3 w-3" />
+                      Total {formatNumber(totalDownloads)}
+                    </Badge>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <InfoItem
+                    label="Batas Harian"
+                    value={formatNumber(
+                      downloadStats?.daily_limit ?? user.daily_download_limit
+                    )}
+                    icon={Clock}
+                  />
+                  <InfoItem
+                    label="Unduhan Hari Ini"
+                    value={formatNumber(downloadStats?.today_count)}
+                    icon={Calendar}
+                  />
+                  <InfoItem
+                    label="Sisa Unduhan"
+                    value={formatNumber(downloadStats?.remaining)}
+                    icon={Shield}
+                  />
+                  <InfoItem
+                    label="Total Unduhan"
+                    value={formatNumber(totalDownloads)}
+                    icon={CheckCircle}
+                  />
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Penyimpanan Dokumen
+                  </p>
+                  {storageLimit !== null && (
+                    <Badge
+                      variant="outline"
+                      className="gap-1 text-[11px] uppercase"
+                    >
+                      <Briefcase className="h-3 w-3" />
+                      {formatBytesValue(storageLimit)} limit
+                    </Badge>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <InfoItem
+                    label="Batas Penyimpanan"
+                    value={formatBytesValue(storageLimit)}
+                    icon={Briefcase}
+                  />
+                  <InfoItem
+                    label="Terpakai"
+                    value={formatBytesValue(storageUsed)}
+                    icon={Shield}
+                  />
+                  <InfoItem
+                    label="Sisa Penyimpanan"
+                    value={formatBytesValue(storageRemaining)}
+                    icon={Calendar}
+                  />
+                  <InfoItem
+                    label="Limit (Statistik)"
+                    value={formatBytesValue(storageStats?.limit)}
+                    icon={Clock}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Informasi Kontak</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ContactItem
+                type="email"
+                value={user.email}
+                label="Email"
+                icon={Mail}
+              />
+              <ContactItem
+                type="phone"
+                value={user.phone}
+                label="Telepon"
+                icon={Phone}
+              />
+
+              {user.social_links && user.social_links.length > 0 && (
+                <>
+                  <Separator />
+                  <div className="space-y-4">
+                    {user.social_links.map((link) => (
+                      <ContactItem
+                        key={`${link.platform}-${link.url}`}
+                        type="url"
+                        value={link.url}
+                        label={
+                          SOCIAL_PLATFORM_LABELS[link.platform] || link.platform
+                        }
+                        icon={ExternalLink}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Detail Akun</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <InfoItem label="Role" value={roleLabel} icon={Shield} />
+                <InfoItem
+                  label="Status"
+                  value={statusLabel}
+                  icon={statusIconComponent}
+                />
+                <InfoItem
+                  label="Email Terverifikasi"
+                  value={emailVerifiedLabel}
+                  icon={CheckCircle}
+                />
+                <InfoItem
+                  label="Tanggal Registrasi"
+                  value={formatDate(user.created_at)}
+                  icon={Calendar}
+                />
+              </div>
+
+              {(user.status_reason || user.suspended_until) && (
+                <>
+                  <Separator />
+                  <div className="space-y-2 text-sm">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Detail Status
+                    </p>
+                    {user.status_reason && (
+                      <p>
+                        Alasan: <span className="font-medium">{user.status_reason}</span>
+                      </p>
+                    )}
+                    {user.suspended_until && (
+                      <p>
+                        Suspend sampai:{" "}
+                        <span className="font-medium">
+                          {formatDateTime(user.suspended_until)}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Informasi Sistem</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  User ID
+                </p>
+                <p className="text-xs font-mono bg-muted px-2 py-1.5 rounded break-all">
+                  {user.id}
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="grid grid-cols-2 gap-4">
+                <InfoItem
+                  label="Dibuat"
+                  value={formatDateTime(user.created_at)}
+                  icon={Clock}
+                />
+                <InfoItem
+                  label="Diperbarui"
+                  value={formatDateTime(user.updated_at)}
+                  icon={Clock}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <Dialog
@@ -508,7 +773,14 @@ const AdminUserShow = () => {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleteUserMutation.isPending}
             >
-              Hapus
+              {deleteUserMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Menghapus...
+                </>
+              ) : (
+                "Hapus"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

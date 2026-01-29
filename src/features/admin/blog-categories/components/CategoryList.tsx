@@ -110,7 +110,6 @@ export const CategoryList = () => {
       defaultCategoryColumnVisibility,
     );
 
-  // API calls
   const { data: categoriesResponse, isLoading } = useBlogCategories({
     params: {
       page: params.page,

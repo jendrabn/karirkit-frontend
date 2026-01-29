@@ -14,8 +14,19 @@ dayjs.extend(relativeTime);
 export { dayjs };
 
 // Format date to Indonesian format
-export const formatDate = (date: string | Date, format: string = "DD MMM YYYY"): string => {
+export const formatDate = (
+  date: string | Date,
+  format: string = "DD MMM YYYY",
+): string => {
   return dayjs(date).format(format);
+};
+
+export const formatDateTime = (date: string | Date): string => {
+  return dayjs(date).format("DD MMM YYYY, HH:mm");
+};
+
+export const formatTime = (date: string | Date): string => {
+  return dayjs(date).format("HH:mm");
 };
 
 // Format date to relative time (e.g., "2 days ago")

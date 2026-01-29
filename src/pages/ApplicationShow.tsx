@@ -1,21 +1,34 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { dayjs } from "@/lib/date";
-import { Pencil, ExternalLink, Trash2, Loader2 } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  Loader2,
+  Calendar,
+  Clock,
+  Briefcase,
+  Wallet,
+  Globe,
+  Mail,
+  Phone,
+  MapPin,
+  CheckCircle,
+  AlertCircle,
+  Building2,
+  Info,
+  ExternalLink,
+} from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  JOB_TYPE_OPTIONS,
-  WORK_SYSTEM_OPTIONS,
-  STATUS_OPTIONS,
-  RESULT_STATUS_OPTIONS,
-} from "@/types/application";
-import { useApplication } from "@/features/applications/api/get-application";
-import { useDeleteApplication } from "@/features/applications/api/delete-application";
-import { toast } from "sonner";
-import { useState } from "react";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,48 +40,50 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { useApplication } from "@/features/applications/api/get-application";
+import { useDeleteApplication } from "@/features/applications/api/delete-application";
+import { toast } from "sonner";
+import { formatDate, formatDateTime } from "@/lib/date";
+import { formatCurrency } from "@/lib/utils";
+import { InfoItem, ContactItem, RichText } from "@/components/ui/display-info";
+import {
+  JOB_TYPE_OPTIONS,
+  WORK_SYSTEM_OPTIONS,
+  STATUS_OPTIONS,
+  RESULT_STATUS_OPTIONS,
+  type Application,
+} from "@/types/application";
 
-const InfoItem = ({
-  label,
-  value,
-  isLink,
-}: {
-  label: string;
-  value: string | number;
-  isLink?: boolean;
-}) => (
-  <div className="space-y-1">
-    <p className="text-sm text-muted-foreground">{label}</p>
-    {isLink && value ? (
-      <a
-        href={String(value)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-primary hover:underline flex items-center gap-1 break-all"
-      >
-        {String(value)}
-        <ExternalLink className="h-3 w-3 shrink-0" />
-      </a>
-    ) : (
-      <p className="font-medium">{value || "-"}</p>
-    )}
-  </div>
-);
+const getLabel = (
+  value: string,
+  options: { value: string; label: string }[],
+) => {
+  return options.find((opt) => opt.value === value)?.label || value;
+};
 
-export default function ApplicationShow() {
+const getResultBadgeVariant = (result: Application["result_status"]) => {
+  if (result === "passed") return "default";
+  if (result === "failed") return "destructive";
+  return "outline";
+};
+
+const getStatusBadgeVariant = (status: Application["status"]) => {
+  if (status === "draft" || status === "submitted") return "secondary";
+  if (status === "accepted") return "default";
+  if (status === "rejected") return "destructive";
+  return "outline";
+};
+
+const ApplicationShow = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const {
-    data: application,
-    isLoading,
-    error,
-  } = useApplication({
+  const { data: application, isLoading, error } = useApplication({
     id: id!,
   });
 
-  const deleteApplicationMutation = useDeleteApplication({
+  const deleteMutation = useDeleteApplication({
     mutationConfig: {
       onSuccess: () => {
         toast.success("Lamaran berhasil dihapus");
@@ -87,12 +102,13 @@ export default function ApplicationShow() {
         ]}
       >
         <MinimalSEO
-          title="Loading..."
+          title="Memuat Lamaran"
           description="Memuat detail lamaran..."
           noIndex={true}
         />
-        <div className="flex justify-center items-center h-full min-h-[50vh]">
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Memuat data lamaran...</p>
         </div>
       </DashboardLayout>
     );
@@ -112,32 +128,33 @@ export default function ApplicationShow() {
           description="Data lamaran tidak ditemukan."
           noIndex={true}
         />
-        <PageHeader title="Lamaran Tidak Ditemukan" />
-        <p className="text-muted-foreground">
-          Data lamaran dengan ID tersebut tidak ditemukan atau terjadi
-          kesalahan.
-        </p>
-        <Button onClick={() => navigate("/applications")} className="mt-4">
-          Kembali ke Daftar
-        </Button>
+        <PageHeader title="Lamaran Tidak Ditemukan" showBackButton />
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <p className="text-muted-foreground">
+            Data lamaran tersebut tidak tersedia atau terjadi kesalahan.
+          </p>
+          <Button onClick={() => navigate("/applications")}>
+            Kembali ke Daftar
+          </Button>
+        </div>
       </DashboardLayout>
     );
   }
 
-  const getLabel = (
-    value: string,
-    options: { value: string; label: string }[],
-  ) => {
-    return options.find((opt) => opt.value === value)?.label || value;
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+  const statusLabel = getLabel(application.status, STATUS_OPTIONS);
+  const resultLabel = getLabel(application.result_status, RESULT_STATUS_OPTIONS);
+  const badges = [
+    {
+      label: getLabel(application.job_type, JOB_TYPE_OPTIONS),
+      icon: Briefcase,
+      variant: "outline" as const,
+    },
+    {
+      label: getLabel(application.work_system, WORK_SYSTEM_OPTIONS),
+      icon: Clock,
+      variant: "outline" as const,
+    },
+  ];
 
   return (
     <DashboardLayout
@@ -148,7 +165,7 @@ export default function ApplicationShow() {
       ]}
     >
       <MinimalSEO
-        title={`${application.position} at ${application.company_name}`}
+        title={`${application.position} di ${application.company_name}`}
         description={`Detail lamaran untuk posisi ${application.position} di ${application.company_name}`}
         noIndex={true}
       />
@@ -171,6 +188,7 @@ export default function ApplicationShow() {
             size="sm"
             variant="destructive"
             onClick={() => setDeleteDialogOpen(true)}
+            disabled={deleteMutation.isPending}
           >
             <Trash2 className="h-3.5 w-3.5 mr-1.5" />
             Hapus
@@ -178,149 +196,169 @@ export default function ApplicationShow() {
         </div>
       </PageHeader>
 
-      <div className="flex flex-wrap gap-2 mb-6">
-        <Badge variant="outline">
-          {getLabel(application.job_type, JOB_TYPE_OPTIONS)}
-        </Badge>
-        <Badge variant="outline">
-          {getLabel(application.work_system, WORK_SYSTEM_OPTIONS)}
-        </Badge>
-        <Badge variant="secondary">
-          {getLabel(application.status, STATUS_OPTIONS)}
-        </Badge>
-        <Badge
-          variant={
-            application.result_status === "passed"
-              ? "default"
-              : application.result_status === "failed"
-                ? "destructive"
-                : "outline"
-          }
-        >
-          {getLabel(application.result_status, RESULT_STATUS_OPTIONS)}
-        </Badge>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-lg">Informasi Lamaran</CardTitle>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={getStatusBadgeVariant(application.status)}
+                    className="text-xs uppercase gap-1"
+                  >
+                    <AlertCircle className="h-3 w-3" />
+                    {statusLabel}
+                  </Badge>
+                  <Badge
+                    variant={getResultBadgeVariant(application.result_status)}
+                    className="text-xs uppercase gap-1"
+                  >
+                    <CheckCircle className="h-3 w-3" />
+                    {resultLabel}
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                {badges.map((badge) => (
+                  <Badge
+                    key={badge.label}
+                    variant={badge.variant}
+                    className="gap-1.5 text-[10px] uppercase"
+                  >
+                    <badge.icon className="h-3 w-3" />
+                    {badge.label}
+                  </Badge>
+                ))}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <InfoItem
+                  label="Posisi"
+                  value={application.position}
+                  icon={Briefcase}
+                />
+                <InfoItem
+                  label="Perusahaan"
+                  value={application.company_name}
+                  icon={Building2}
+                />
+                <InfoItem
+                  label="Lokasi"
+                  value={application.location}
+                  icon={MapPin}
+                />
+                <InfoItem
+                  label="Sumber Lowongan"
+                  value={application.job_source}
+                  icon={Globe}
+                />
+                <InfoItem
+                  label="Tanggal Lamaran"
+                  value={formatDate(application.date)}
+                  icon={Calendar}
+                />
+                <InfoItem
+                  label="Range Gaji"
+                  value={`${formatCurrency(application.salary_min)} - ${formatCurrency(
+                    application.salary_max,
+                  )}`}
+                  icon={Wallet}
+                />
+              </div>
 
-      <div className="grid gap-6">
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Informasi Perusahaan</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoItem
-              label="Nama Perusahaan"
-              value={application.company_name}
-            />
-            <InfoItem
-              label="URL Perusahaan"
-              value={application.company_url || "-"}
-              isLink
-            />
-            <InfoItem label="Posisi" value={application.position} />
-            <InfoItem
-              label="Sumber Lowongan"
-              value={application.job_source || "-"}
-            />
-            <InfoItem
-              label="URL Lowongan"
-              value={application.job_url || "-"}
-              isLink
-            />
-            <InfoItem label="Lokasi" value={application.location || "-"} />
-          </div>
-        </Card>
+              <Separator />
 
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Detail Pekerjaan</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoItem
-              label="Tipe Pekerjaan"
-              value={getLabel(application.job_type, JOB_TYPE_OPTIONS)}
-            />
-            <InfoItem
-              label="Sistem Kerja"
-              value={getLabel(application.work_system, WORK_SYSTEM_OPTIONS)}
-            />
-            <InfoItem
-              label="Gaji Minimal"
-              value={formatCurrency(application.salary_min)}
-            />
-            <InfoItem
-              label="Gaji Maksimal"
-              value={formatCurrency(application.salary_max)}
-            />
-            <InfoItem
-              label="Tanggal Lamaran"
-              value={dayjs(application.date).format("DD MMMM YYYY")}
-            />
-            <InfoItem
-              label="Status"
-              value={getLabel(application.status, STATUS_OPTIONS)}
-            />
-            <InfoItem
-              label="Hasil"
-              value={getLabel(application.result_status, RESULT_STATUS_OPTIONS)}
-            />
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Informasi Kontak</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <InfoItem
-              label="Nama Kontak"
-              value={application.contact_name || "-"}
-            />
-            <InfoItem
-              label="Email Kontak"
-              value={application.contact_email || "-"}
-            />
-            <InfoItem
-              label="Telepon Kontak"
-              value={application.contact_phone || "-"}
-            />
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Follow Up</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InfoItem
-              label="Tanggal Follow Up"
-              value={
-                application.follow_up_date
-                  ? dayjs(application.follow_up_date).format("DD MMMM YYYY")
-                  : "-"
-              }
-            />
-            <InfoItem
-              label="Catatan Follow Up"
-              value={application.follow_up_note || "-"}
-            />
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Catatan</h3>
-          <p className="whitespace-pre-wrap">{application.notes || "-"}</p>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Informasi Sistem</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <InfoItem label="ID" value={application.id} />
-            <InfoItem
-              label="Dibuat"
-              value={dayjs(application.created_at).format(
-                "DD MMMM YYYY, HH:mm",
+              {application.notes && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Catatan Lamaran
+                  </p>
+                  <RichText content={application.notes} />
+                </div>
               )}
-            />
-            <InfoItem
-              label="Diperbarui"
-              value={dayjs(application.updated_at).format(
-                "DD MMMM YYYY, HH:mm",
-              )}
-            />
-          </div>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Follow Up</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <InfoItem
+                  label="Tanggal Follow Up"
+                  value={
+                    application.follow_up_date
+                      ? formatDate(application.follow_up_date)
+                      : "-"
+                  }
+                  icon={Calendar}
+                />
+                <InfoItem
+                  label="Catatan Follow Up"
+                  value={application.follow_up_note}
+                  icon={Info}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Kontak & Link</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ContactItem
+                type="url"
+                value={application.company_url}
+                label="Website Perusahaan"
+                icon={Globe}
+              />
+              <ContactItem
+                type="url"
+                value={application.job_url}
+                label="Link Lowongan"
+                icon={ExternalLink}
+              />
+              <ContactItem
+                type="email"
+                value={application.contact_email}
+                label="Email Kontak"
+                icon={Mail}
+              />
+              <ContactItem
+                type="phone"
+                value={application.contact_phone}
+                label="Telepon Kontak"
+                icon={Phone}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Informasi Sistem</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <InfoItem
+                  label="Dibuat"
+                  value={formatDateTime(application.created_at)}
+                  icon={Clock}
+                />
+                <InfoItem
+                  label="Diperbarui"
+                  value={formatDateTime(application.updated_at)}
+                  icon={Clock}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -336,16 +374,25 @@ export default function ApplicationShow() {
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
               onClick={() =>
-                deleteApplicationMutation.mutate({ id: application.id })
+                deleteMutation.mutate({ id: application.id })
               }
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={deleteApplicationMutation.isPending}
+              disabled={deleteMutation.isPending}
             >
-              Hapus
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Menghapus...
+                </>
+              ) : (
+                "Hapus"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </DashboardLayout>
   );
-}
+};
+
+export default ApplicationShow;

@@ -13,6 +13,8 @@ import {
   Copy,
   Check,
   Share2,
+  Globe,
+  Clock,
 } from "lucide-react";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -29,15 +31,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { InfoItem, ContactItem, RichText } from "@/components/ui/display-info";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import { usePortfolio } from "@/features/portfolios/api/get-portfolio";
 import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
 import { projectTypeLabels } from "@/types/portfolio";
 import { toast } from "sonner";
 import { buildImageUrl } from "@/lib/utils";
-import { MinimalSEO } from "@/components/MinimalSEO";
 import { env } from "@/config/env";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
+import { formatDateTime } from "@/lib/date";
 
 const monthNames = [
   "Januari",
@@ -55,7 +59,7 @@ const monthNames = [
 ];
 
 export default function PortfolioShow() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
@@ -75,81 +79,26 @@ export default function PortfolioShow() {
     },
   });
 
-  const handleDelete = () => {
-    setDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (id) {
-      deleteMutation.mutate(id);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <DashboardLayout
-        breadcrumbItems={[
-          { label: "Dashboard", href: "/dashboard" },
-          { label: "Portfolio", href: "/portfolios" },
-          { label: "Detail Portfolio" },
-        ]}
-      >
-        <MinimalSEO
-          title="Loading..."
-          description="Memuat data portfolio..."
-          noIndex={true}
-        />
-        <div className="flex justify-center items-center h-full min-h-[50vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   const portfolio = portfolioResponse;
   const username = user?.username;
 
-  if (!portfolio) {
-    return (
-      <DashboardLayout
-        breadcrumbItems={[
-          { label: "Dashboard", href: "/dashboard" },
-          { label: "Portfolio", href: "/portfolios" },
-          { label: "Portfolio Tidak Ditemukan" },
-        ]}
-      >
-        <MinimalSEO
-          title="Portfolio Tidak Ditemukan"
-          description="Portfolio tidak ditemukan."
-          noIndex={true}
-        />
-        <div className="flex flex-col items-center justify-center py-16">
-          <p className="text-lg font-medium text-muted-foreground">
-            Portfolio tidak ditemukan
-          </p>
-          <Button className="mt-4" onClick={() => navigate("/portfolios")}>
-            Kembali ke Daftar Portfolio
-          </Button>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const publicPortfolioUrl = username
+    ? env.APP_URL + paths.publicPortfolio.detail.getHref(username, portfolio?.id || "")
+    : "";
 
   const nextMedia = () => {
+    if (!portfolio) return;
     setCurrentMediaIndex((prev) =>
-      prev === portfolio.medias.length - 1 ? 0 : prev + 1
+      prev === portfolio.medias.length - 1 ? 0 : prev + 1,
     );
   };
 
   const prevMedia = () => {
+    if (!portfolio) return;
     setCurrentMediaIndex((prev) =>
-      prev === 0 ? portfolio.medias.length - 1 : prev - 1
+      prev === 0 ? portfolio.medias.length - 1 : prev - 1,
     );
   };
-
-  const publicPortfolioUrl = username
-    ? env.APP_URL + paths.publicPortfolio.detail.getHref(username, portfolio.id)
-    : "";
 
   const handleCopyLink = () => {
     if (!publicPortfolioUrl) {
@@ -176,8 +125,8 @@ export default function PortfolioShow() {
 
     try {
       await navigator.share({
-        title: portfolio.title,
-        text: `Lihat portfolio ${portfolio.title}`,
+        title: portfolio?.title || "Portfolio",
+        text: `Lihat portfolio ${portfolio?.title}`,
         url: publicPortfolioUrl,
       });
     } catch (error) {
@@ -186,6 +135,64 @@ export default function PortfolioShow() {
       }
     }
   };
+
+  const handleDelete = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (id) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Portfolio", href: "/portfolios" },
+          { label: "Detail Portfolio" },
+        ]}
+      >
+        <MinimalSEO
+          title="Memuat Portfolio"
+          description="Memuat data portfolio..."
+          noIndex={true}
+        />
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Memuat data portfolio...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!portfolio) {
+    return (
+      <DashboardLayout
+        breadcrumbItems={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Portfolio", href: "/portfolios" },
+          { label: "Portfolio Tidak Ditemukan" },
+        ]}
+      >
+        <MinimalSEO
+          title="Portfolio Tidak Ditemukan"
+          description="Portfolio tidak ditemukan."
+          noIndex={true}
+        />
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <p className="text-lg font-medium text-muted-foreground">
+            Portfolio tidak ditemukan
+          </p>
+          <Button onClick={() => navigate("/portfolios")}>
+            Kembali ke Daftar Portfolio
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout
@@ -207,12 +214,7 @@ export default function PortfolioShow() {
         backButtonUrl="/portfolios"
       >
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleCopyLink}
-            className="gap-2"
-          >
+          <Button size="sm" variant="outline" onClick={handleCopyLink} className="gap-2">
             {copied ? (
               <>
                 <Check className="h-4 w-4" />
@@ -225,12 +227,7 @@ export default function PortfolioShow() {
               </>
             )}
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleShare}
-            className="gap-2"
-          >
+          <Button size="sm" variant="outline" onClick={handleShare} className="gap-2">
             <Share2 className="h-4 w-4" />
             Bagikan
           </Button>
@@ -250,172 +247,158 @@ export default function PortfolioShow() {
       </PageHeader>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Main Content - 3/5 */}
         <div className="lg:w-3/5 space-y-6">
-          {/* Media Gallery */}
-          <Card className="overflow-hidden">
-            <div className="relative aspect-video">
-              <img
-                src={
-                  buildImageUrl(portfolio.medias[currentMediaIndex]?.path) ||
-                  buildImageUrl(portfolio.cover)
-                }
-                alt={
-                  portfolio.medias[currentMediaIndex]?.caption ||
-                  portfolio.title
-                }
-                className="w-full h-full object-cover"
-              />
-
-              {portfolio.medias.length > 1 && (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10"
-                    onClick={prevMedia}
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10"
-                    onClick={nextMedia}
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </Button>
-
-                  {/* Media indicators */}
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    {portfolio.medias.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentMediaIndex(index)}
-                        className={`h-2 w-2 rounded-full transition-colors ${
-                          index === currentMediaIndex
-                            ? "bg-white"
-                            : "bg-white/50 hover:bg-white/75"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-
-            {portfolio.medias[currentMediaIndex]?.caption && (
-              <CardContent className="py-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Galeri Media</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="relative aspect-video">
+                <img
+                  src={
+                    buildImageUrl(
+                      portfolio.medias[currentMediaIndex]?.path || portfolio.cover,
+                    )
+                  }
+                  alt={
+                    portfolio.medias[currentMediaIndex]?.caption || portfolio.title
+                  }
+                  className="w-full h-full object-cover"
+                />
+                {portfolio.medias.length > 1 && (
+                  <>
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10"
+                      onClick={prevMedia}
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10"
+                      onClick={nextMedia}
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </Button>
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                      {portfolio.medias.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentMediaIndex(index)}
+                          className={`h-2 w-2 rounded-full transition-colors ${
+                            index === currentMediaIndex
+                              ? "bg-white"
+                              : "bg-white/50 hover:bg-white/75"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              {portfolio.medias[currentMediaIndex]?.caption && (
                 <p className="text-sm text-muted-foreground text-center">
                   {portfolio.medias[currentMediaIndex].caption}
                 </p>
-              </CardContent>
-            )}
+              )}
+              {portfolio.medias.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {portfolio.medias.map((media, index) => (
+                    <button
+                      key={media.id}
+                      onClick={() => setCurrentMediaIndex(index)}
+                      className={`shrink-0 w-20 h-14 rounded-md overflow-hidden border-2 transition-colors ${
+                        index === currentMediaIndex
+                          ? "border-primary"
+                          : "border-transparent hover:border-primary/50"
+                      }`}
+                    >
+                      <img
+                        src={buildImageUrl(media.path)}
+                        alt={media.caption}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </CardContent>
           </Card>
 
-          {/* Thumbnail Gallery */}
-          {portfolio.medias.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {portfolio.medias.map((media, index) => (
-                <button
-                  key={media.id}
-                  onClick={() => setCurrentMediaIndex(index)}
-                  className={`shrink-0 w-20 h-14 rounded-md overflow-hidden border-2 transition-colors ${
-                    index === currentMediaIndex
-                      ? "border-primary"
-                      : "border-transparent hover:border-primary/50"
-                  }`}
-                >
-                  <img
-                    src={buildImageUrl(media.path)}
-                    alt={media.caption}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Description */}
           <Card>
             <CardHeader>
-              <CardTitle>Deskripsi Proyek</CardTitle>
+              <CardTitle className="text-lg">Deskripsi Proyek</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-sm max-w-none dark:prose-invert">
-                {portfolio.description.split("\n").map((paragraph, idx) => (
-                  <p key={idx} className="mb-4 last:mb-0">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
+              <RichText
+                content={portfolio.description}
+                className="text-sm leading-relaxed"
+              />
             </CardContent>
           </Card>
         </div>
 
-        {/* Sidebar - 2/5 */}
         <div className="lg:w-2/5 space-y-6">
-          {/* Header Info */}
           <Card>
-            <CardContent className="pt-6 space-y-4">
-              <div className="flex items-start justify-between gap-4">
-                <Badge variant="secondary">
-                  {projectTypeLabels[portfolio.project_type]}
-                </Badge>
-              </div>
-
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="h-4 w-4" />
-                  <span>{portfolio.role_title}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    {monthNames[portfolio.month - 1]} {portfolio.year}
-                  </span>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <span className="text-sm font-medium">Industri:</span>
-                <p className="text-sm text-muted-foreground">
-                  {portfolio.industry}
-                </p>
-              </div>
-
-              {/* Links */}
-              <div className="flex gap-2 pt-2">
-                {portfolio.live_url && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => window.open(portfolio.live_url, "_blank")}
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Live Demo
-                  </Button>
-                )}
-                {portfolio.repo_url && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => window.open(portfolio.repo_url, "_blank")}
-                  >
-                    <Github className="h-4 w-4 mr-2" />
-                    Repository
-                  </Button>
-                )}
+            <CardHeader className="space-y-3">
+              <CardTitle className="text-lg">Informasi Proyek</CardTitle>
+              <Badge variant="secondary" className="text-xs uppercase gap-1">
+                <Briefcase className="h-3 w-3" />
+                {projectTypeLabels[portfolio.project_type]}
+              </Badge>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <InfoItem
+                  label="Peran"
+                  value={portfolio.role_title}
+                  icon={Briefcase}
+                />
+                <InfoItem
+                  label="Industri"
+                  value={portfolio.industry}
+                  icon={Globe}
+                />
+                <InfoItem
+                  label="Bulan"
+                  value={monthNames[portfolio.month - 1]}
+                  icon={Calendar}
+                />
+                <InfoItem
+                  label="Tahun"
+                  value={portfolio.year}
+                  icon={Clock}
+                />
               </div>
             </CardContent>
           </Card>
 
-          {/* Tools */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Tools & Teknologi</CardTitle>
+              <CardTitle className="text-lg">Tautan</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ContactItem
+                type="url"
+                value={portfolio.live_url}
+                label="Live Demo"
+                icon={ExternalLink}
+              />
+              <ContactItem
+                type="url"
+                value={portfolio.repo_url}
+                label="Repository"
+                icon={Github}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Tools & Teknologi</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -427,10 +410,27 @@ export default function PortfolioShow() {
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Informasi Sistem</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <InfoItem
+                label="Dibuat"
+                value={formatDateTime(portfolio.created_at)}
+                icon={Calendar}
+              />
+              <InfoItem
+                label="Diperbarui"
+                value={formatDateTime(portfolio.updated_at)}
+                icon={Clock}
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      {/* Delete Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -446,7 +446,14 @@ export default function PortfolioShow() {
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Hapus
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Menghapus...
+                </>
+              ) : (
+                "Hapus"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

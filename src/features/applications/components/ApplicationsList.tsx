@@ -54,6 +54,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ApplicationFilterModal } from "./ApplicationFilterModal";
 import { ApplicationColumnToggle, type ColumnVisibility } from "./ApplicationColumnToggle";
 import { defaultColumnVisibility } from "../types/application-column-toggle.constants";
@@ -475,16 +481,29 @@ export const ApplicationsList = () => {
 
     const displayValue = app[field];
     return (
-      <span
-        className="cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors whitespace-nowrap block min-h-[1.5rem]"
-        onClick={() => setIsEditing(true)}
-      >
-        {displayValue === null ||
-        displayValue === undefined ||
-        displayValue === ""
-          ? "-"
-          : String(displayValue)}
-      </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className="cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors whitespace-nowrap block min-h-[1.5rem] truncate max-w-[150px]"
+            onClick={() => setIsEditing(true)}
+          >
+            {displayValue === null ||
+            displayValue === undefined ||
+            displayValue === ""
+              ? "-"
+              : String(displayValue)}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>
+            {displayValue === null ||
+            displayValue === undefined ||
+            displayValue === ""
+              ? "-"
+              : String(displayValue)}
+          </p>
+        </TooltipContent>
+      </Tooltip>
     );
   };
 
@@ -565,7 +584,8 @@ export const ApplicationsList = () => {
       {/* Table */}
       <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <Table>
+          <TooltipProvider>
+            <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[40px]">
@@ -721,12 +741,12 @@ export const ApplicationsList = () => {
                       />
                     </TableCell>
                     {columnVisibility.company_name && (
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium max-w-[180px]">
                         <EditableCell app={app} field="company_name" />
                       </TableCell>
                     )}
                     {columnVisibility.position && (
-                      <TableCell>
+                      <TableCell className="max-w-[200px]">
                         <EditableCell app={app} field="position" />
                       </TableCell>
                     )}
@@ -749,13 +769,13 @@ export const ApplicationsList = () => {
                         {dayjs(app.date).format("DD MMM YYYY")}
                       </TableCell>
                     )}
-                    {columnVisibility.job_source && (
-                      <TableCell>
+{columnVisibility.job_source && (
+                      <TableCell className="max-w-[150px]">
                         <EditableCell app={app} field="job_source" />
                       </TableCell>
                     )}
-                    {columnVisibility.location && (
-                      <TableCell>
+{columnVisibility.location && (
+                      <TableCell className="max-w-[150px]">
                         <EditableCell app={app} field="location" />
                       </TableCell>
                     )}
@@ -794,18 +814,18 @@ export const ApplicationsList = () => {
                           : "-"}
                       </TableCell>
                     )}
-                    {columnVisibility.contact_name && (
-                      <TableCell>
+{columnVisibility.contact_name && (
+                      <TableCell className="max-w-[150px]">
                         <EditableCell app={app} field="contact_name" />
                       </TableCell>
                     )}
-                    {columnVisibility.contact_email && (
-                      <TableCell>
+{columnVisibility.contact_email && (
+                      <TableCell className="max-w-[200px]">
                         <EditableCell app={app} field="contact_email" />
                       </TableCell>
                     )}
-                    {columnVisibility.contact_phone && (
-                      <TableCell>
+{columnVisibility.contact_phone && (
+                      <TableCell className="max-w-[150px]">
                         <EditableCell app={app} field="contact_phone" />
                       </TableCell>
                     )}
@@ -870,6 +890,7 @@ export const ApplicationsList = () => {
               )}
             </TableBody>
           </Table>
+        </TooltipProvider>
         </div>
         {/* Pagination */}
         {pagination.total_items > 0 && (

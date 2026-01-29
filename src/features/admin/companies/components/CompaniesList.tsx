@@ -40,6 +40,12 @@ import { type Company, EMPLOYEE_SIZE_LABELS } from "@/types/company";
 import { cn } from "@/lib/utils";
 import { type ColumnVisibility } from "./CompanyColumnToggle";
 import { SortableHeader } from "@/components/SortableHeader";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface CompaniesListProps {
   companies: Company[];
@@ -97,7 +103,8 @@ export function CompaniesList({
   return (
     <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
-        <Table>
+        <TooltipProvider>
+          <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-[40px]">
@@ -227,16 +234,34 @@ export function CompaniesList({
                       onCheckedChange={() => onSelectOne(company.id)}
                     />
                   </TableCell>
-                  {columnVisibility.name && (
-                    <TableCell>
-                      <span className="font-medium">{company.name}</span>
-                    </TableCell>
-                  )}
-                  {columnVisibility.slug && (
-                    <TableCell className="text-sm text-muted-foreground">
-                      {company.slug}
-                    </TableCell>
-                  )}
+                   {columnVisibility.name && (
+                     <TableCell className="max-w-[180px]">
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <span className="block truncate font-medium">
+                             {company.name}
+                           </span>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>{company.name}</p>
+                         </TooltipContent>
+                       </Tooltip>
+                     </TableCell>
+                   )}
+                   {columnVisibility.slug && (
+                     <TableCell className="max-w-[150px]">
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <span className="block truncate text-sm text-muted-foreground">
+                             {company.slug}
+                           </span>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>{company.slug}</p>
+                         </TooltipContent>
+                       </Tooltip>
+                     </TableCell>
+                   )}
                   {columnVisibility.sector && (
                     <TableCell>
                       <Badge variant="outline">{company.business_sector}</Badge>
@@ -254,22 +279,29 @@ export function CompaniesList({
                       <Badge variant="secondary">{company.job_count}</Badge>
                     </TableCell>
                   )}
-                  {columnVisibility.website_url && (
-                    <TableCell>
-                      {company.website_url ? (
-                        <a
-                          href={company.website_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-primary underline-offset-2 hover:underline"
-                        >
-                          {company.website_url}
-                        </a>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                  )}
+                   {columnVisibility.website_url && (
+                     <TableCell className="max-w-[200px]">
+                       {company.website_url ? (
+                         <Tooltip>
+                           <TooltipTrigger asChild>
+                             <a
+                               href={company.website_url}
+                               target="_blank"
+                               rel="noreferrer"
+                               className="text-primary underline-offset-2 hover:underline block truncate"
+                             >
+                               {company.website_url}
+                             </a>
+                           </TooltipTrigger>
+                           <TooltipContent>
+                             <p>{company.website_url}</p>
+                           </TooltipContent>
+                         </Tooltip>
+                       ) : (
+                         <span className="text-muted-foreground">-</span>
+                       )}
+                     </TableCell>
+                   )}
                   {columnVisibility.description && (
                     <TableCell className="text-muted-foreground max-w-[250px] truncate">
                       {company.description || "-"}
@@ -324,6 +356,7 @@ export function CompaniesList({
             )}
           </TableBody>
         </Table>
+        </TooltipProvider>
       </div>
       {!isLoading && companies.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t">

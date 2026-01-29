@@ -55,6 +55,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -314,12 +315,19 @@ export const UsersList = () => {
     }
 
     return (
-      <span
-        className="cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors whitespace-nowrap block min-h-[1.5rem]"
-        onClick={() => setIsEditing(true)}
-      >
-        {displayFormatter(value)}
-      </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className="cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors whitespace-nowrap block min-h-[1.5rem] truncate max-w-[120px]"
+            onClick={() => setIsEditing(true)}
+          >
+            {displayFormatter(value)}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{displayFormatter(value)}</p>
+        </TooltipContent>
+      </Tooltip>
     );
   };
 
@@ -573,7 +581,8 @@ export const UsersList = () => {
       {/* Table */}
       <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <Table>
+          <TooltipProvider>
+            <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[40px]">
@@ -704,17 +713,46 @@ export const UsersList = () => {
                       />
                     </TableCell>
                     {columnVisibility.name && (
-                      <TableCell>
-                        <span className="font-medium">{user.name}</span>
+                      <TableCell className="max-w-[150px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="font-medium block truncate">
+                              {user.name}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     )}
-                    {columnVisibility.username && (
-                      <TableCell className="text-muted-foreground">
-                        {user.username}
+{columnVisibility.username && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.username}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.username}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     )}
-                    {columnVisibility.email && (
-                      <TableCell>{user.email}</TableCell>
+{columnVisibility.email && (
+                      <TableCell className="max-w-[200px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.email}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.email}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
                     )}
                     {columnVisibility.role && (
                       <TableCell>
@@ -764,13 +802,22 @@ export const UsersList = () => {
                         )}
                       </TableCell>
                     )}
-                    {columnVisibility.phone && (
-                      <TableCell className="text-muted-foreground">
-                        {user.phone || "-"}
+{columnVisibility.phone && (
+                      <TableCell className="text-muted-foreground max-w-[150px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.phone || "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.phone || "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     )}
-                    {columnVisibility.daily_download_limit && (
-                      <TableCell>
+{columnVisibility.daily_download_limit && (
+                      <TableCell className="max-w-[120px]">
                         <EditableCell
                           label="Batas Unduhan"
                           value={user.daily_download_limit}
@@ -784,8 +831,8 @@ export const UsersList = () => {
                         />
                       </TableCell>
                     )}
-                    {columnVisibility.document_storage_limit && (
-                      <TableCell>
+{columnVisibility.document_storage_limit && (
+                      <TableCell className="max-w-[150px]">
                         <EditableCell
                           label="Batas Penyimpanan"
                           value={user.document_storage_limit}
@@ -811,9 +858,18 @@ export const UsersList = () => {
                         />
                       </TableCell>
                     )}
-                    {columnVisibility.total_downloads && (
-                      <TableCell className="text-muted-foreground">
-                        {user.total_downloads ?? 0}
+{columnVisibility.total_downloads && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.total_downloads ?? 0}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.total_downloads ?? 0}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     )}
                     {columnVisibility.created_at && (
@@ -878,6 +934,7 @@ export const UsersList = () => {
               )}
             </TableBody>
           </Table>
+        </TooltipProvider>
         </div>
 
         {/* Pagination */}

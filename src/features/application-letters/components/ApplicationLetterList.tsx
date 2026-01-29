@@ -122,14 +122,12 @@ export function ApplicationLetterList() {
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
 
-  // Use useLocalStorage for column visibility persistence
   const [storedVisibility, setStoredVisibility] =
     useLocalStorage<ColumnVisibility>(
       "application-letters-columns",
       defaultColumnVisibility,
     );
 
-  // Merge stored visibility with defaults to handle new columns that might be missing in storage
   const columnVisibility = { ...defaultColumnVisibility, ...storedVisibility };
   const setColumnVisibility = setStoredVisibility;
 
@@ -138,7 +136,6 @@ export function ApplicationLetterList() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
-  // API calls
   const { data: lettersResponse, isLoading } = useApplicationLetters({
     params: {
       page: params.page,
@@ -336,10 +333,7 @@ export function ApplicationLetterList() {
                   )}
                   {columnVisibility.company_name && (
                     <TableHead>
-                      <SortableHeader
-                        field="company_name"
-                        onSort={handleSort}
-                      >
+                      <SortableHeader field="company_name" onSort={handleSort}>
                         Perusahaan
                       </SortableHeader>
                     </TableHead>
@@ -484,7 +478,18 @@ export function ApplicationLetterList() {
                         </TableCell>
                       )}
                       {columnVisibility.company_name && (
-                        <TableCell>{letter.company_name}</TableCell>
+                        <TableCell className="max-w-[180px]">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate">
+                                {letter.company_name}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{letter.company_name}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                       )}
                       {columnVisibility.application_date && (
                         <TableCell className="text-muted-foreground">
@@ -503,22 +508,88 @@ export function ApplicationLetterList() {
                         </TableCell>
                       )}
                       {columnVisibility.name && (
-                        <TableCell>{letter.name}</TableCell>
+                        <TableCell className="max-w-[150px]">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate">
+                                {letter.name}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{letter.name}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                       )}
-                      {columnVisibility.education && (
-                        <TableCell>{letter.education}</TableCell>
+{columnVisibility.education && (
+                        <TableCell className="max-w-[150px]">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate">
+                                {letter.education}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{letter.education}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                       )}
-                      {columnVisibility.applicant_city && (
-                        <TableCell>{letter.applicant_city}</TableCell>
+{columnVisibility.applicant_city && (
+                        <TableCell className="max-w-[120px]">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate">
+                                {letter.applicant_city}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{letter.applicant_city}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                       )}
-                      {columnVisibility.company_city && (
-                        <TableCell>{letter.company_city}</TableCell>
+{columnVisibility.company_city && (
+                        <TableCell className="max-w-[120px]">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate">
+                                {letter.company_city}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{letter.company_city}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                       )}
-                      {columnVisibility.email && (
-                        <TableCell>{letter.email}</TableCell>
+{columnVisibility.email && (
+                        <TableCell className="max-w-[200px]">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate">
+                                {letter.email}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{letter.email}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                       )}
-                      {columnVisibility.phone && (
-                        <TableCell>{letter.phone}</TableCell>
+{columnVisibility.phone && (
+                        <TableCell className="max-w-[150px]">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate">
+                                {letter.phone}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{letter.phone}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                       )}
                       {columnVisibility.marital_status && (
                         <TableCell>
@@ -533,8 +604,19 @@ export function ApplicationLetterList() {
                           {getLabel(letter.gender, GENDER_OPTIONS)}
                         </TableCell>
                       )}
-                      {columnVisibility.template && (
-                        <TableCell>{letter.template?.name || "-"}</TableCell>
+{columnVisibility.template && (
+                        <TableCell className="max-w-[150px]">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate">
+                                {letter.template?.name || "-"}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{letter.template?.name || "-"}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                       )}
                       {columnVisibility.created_at && (
                         <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
