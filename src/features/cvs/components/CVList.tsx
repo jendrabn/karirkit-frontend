@@ -16,7 +16,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   FileText,
-  User,
   MoreVertical,
   Loader2,
   Globe,
@@ -626,29 +625,16 @@ const CVList = () => {
                         )}
                         {columnVisibility.name && (
                           <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Avatar className="h-7 w-7">
-                                {cv.photo ? (
-                                  <AvatarImage
-                                    src={buildImageUrl(cv.photo)}
-                                    className="object-cover"
-                                  />
-                                ) : null}
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                                  {cv.name.charAt(0)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span className="block truncate max-w-[120px] font-medium">
-                                    {cv.name}
-                                  </span>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{cv.name}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate max-w-[160px] font-medium">
+                                  {cv.name}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{cv.name}</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </TableCell>
                         )}
                         {columnVisibility.email && (
@@ -709,15 +695,19 @@ const CVList = () => {
                         )}
                         {columnVisibility.photo && (
                           <TableCell>
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage
-                                src={cv.photo}
-                                className="object-cover"
-                              />
-                              <AvatarFallback className="bg-primary/10 text-primary">
-                                <User className="h-4 w-4" />
-                              </AvatarFallback>
-                            </Avatar>
+                            {cv.photo ? (
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage
+                                  src={buildImageUrl(cv.photo)}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="bg-primary/10 text-primary">
+                                  {cv.name.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">-</span>
+                            )}
                           </TableCell>
                         )}
                         {columnVisibility.certificates_count && (

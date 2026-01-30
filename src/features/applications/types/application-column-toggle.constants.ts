@@ -7,7 +7,7 @@ export const defaultColumnVisibility: ColumnVisibility = {
   result_status: true,
   date: true,
   job_source: true,
-  location: true,
+  location: false,
   follow_up_date: false,
   job_type: false,
   work_system: false,

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
+import { useUser } from "@/lib/auth";
 import { CalendarIcon, FileText } from "lucide-react";
 import { ParagraphTemplateModal } from "./ParagraphTemplateModal";
 import { Button } from "@/components/ui/button";
@@ -62,6 +63,7 @@ export function ApplicationLetterForm({
   isLoading,
   error,
 }: ApplicationLetterFormProps) {
+  const { data: user } = useUser();
   const [selectedTemplate, setSelectedTemplate] = useState(
     initialData?.template_id || "",
   );
@@ -70,14 +72,14 @@ export function ApplicationLetterForm({
     resolver: zodResolver(applicationLetterSchema),
     defaultValues: {
       template_id: initialData?.template_id || "",
-      name: initialData?.name || "",
-      birth_place_date: initialData?.birth_place_date || "",
-      gender: initialData?.gender,
+      name: initialData?.name || user?.name || "",
+      birth_place_date: initialData?.birth_place_date || (user?.birth_date ? `${user?.location || ""}, ${new Date(user.birth_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}` : ""),
+      gender: initialData?.gender || user?.gender || undefined,
       marital_status: initialData?.marital_status,
       education: initialData?.education || "",
-      phone: initialData?.phone || "",
-      email: initialData?.email || "",
-      address: initialData?.address || "",
+      phone: initialData?.phone || user?.phone || "",
+      email: initialData?.email || user?.email || "",
+      address: initialData?.address || user?.location || "",
       subject: initialData?.subject || "",
       applicant_city: initialData?.applicant_city || "",
       application_date: initialData?.application_date || "",

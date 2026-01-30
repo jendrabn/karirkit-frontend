@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Controller, useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useUser } from "@/lib/auth";
 import {
   Plus,
   Trash2,
@@ -88,17 +89,19 @@ export function CVForm({
   isLoading,
   error,
 }: CVFormProps) {
+  const { data: user } = useUser();
+  
   const form = useForm<CVFormInput>({
     resolver: zodResolver(cvSchema, undefined, { raw: true }),
     defaultValues: {
       template_id: initialData?.template_id || "",
-      name: initialData?.name || "",
-      headline: initialData?.headline || "",
-      email: initialData?.email || "",
-      phone: initialData?.phone || "",
-      address: initialData?.address || "",
-      about: initialData?.about || "",
-      photo: initialData?.photo || "",
+      name: initialData?.name || user?.name || "",
+      headline: initialData?.headline || user?.headline || "",
+      email: initialData?.email || user?.email || "",
+      phone: initialData?.phone || user?.phone || "",
+      address: initialData?.address || user?.location || "",
+      about: initialData?.about || user?.bio || "",
+      photo: initialData?.photo || user?.avatar || "",
       educations: (initialData?.educations || []) as CVFormInput["educations"],
       certificates: (initialData?.certificates ||
         []) as CVFormInput["certificates"],

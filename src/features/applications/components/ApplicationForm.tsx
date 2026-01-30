@@ -354,8 +354,7 @@ export function ApplicationForm({
                 render={({ field }) => (
                   <Field>
                     <FieldLabel>
-                      Status Lamaran{" "}
-                      <span className="text-destructive">*</span>
+                      Status Lamaran <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
