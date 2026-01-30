@@ -1,10 +1,19 @@
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Select,
   SelectContent,
@@ -22,6 +31,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import {
   JOB_TYPE_OPTIONS,
   WORK_SYSTEM_OPTIONS,
   STATUS_OPTIONS,
@@ -32,6 +47,7 @@ import {
   createApplicationInputSchema,
 } from "../api/create-application";
 import type { UpdateApplicationInput } from "../api/update-application";
+import { jobSources } from "../data/job-sources";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
 
@@ -50,6 +66,7 @@ export function ApplicationForm({
   isLoading,
   error,
 }: ApplicationFormProps) {
+  const [jobSourceOpen, setJobSourceOpen] = useState(false);
   const form = useForm<CreateApplicationInput>({
     resolver: zodResolver(createApplicationInputSchema),
     defaultValues: initialData
@@ -146,13 +163,56 @@ export function ApplicationForm({
 
               <Field>
                 <FieldLabel>Sumber Lowongan</FieldLabel>
-                <Input
-                  {...form.register("job_source")}
-                  placeholder="LinkedIn, Jobstreet, Website Perusahaan"
-                  className={cn(
-                    form.formState.errors.job_source && "border-destructive",
-                  )}
-                />
+                <InputGroup>
+                  <InputGroupInput
+                    {...form.register("job_source")}
+                    placeholder="LinkedIn, JobStreet, Website Perusahaan"
+                    aria-invalid={!!form.formState.errors.job_source}
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <Popover
+                      open={jobSourceOpen}
+                      onOpenChange={setJobSourceOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <InputGroupButton
+                          size="icon-xs"
+                          variant="ghost"
+                          aria-label="Pilih sumber lowongan"
+                        >
+                          <Plus className="size-3.5" />
+                        </InputGroupButton>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-0" align="end">
+                        <Command>
+                          <CommandInput placeholder="Cari sumber lowongan..." />
+                          <CommandEmpty>
+                            Sumber lowongan tidak ditemukan
+                          </CommandEmpty>
+                          <CommandList>
+                            <CommandGroup>
+                              {jobSources.map((source) => (
+                                <CommandItem
+                                  key={source}
+                                  value={source}
+                                  onSelect={(value) => {
+                                    form.setValue("job_source", value, {
+                                      shouldDirty: true,
+                                      shouldValidate: true,
+                                    });
+                                    setJobSourceOpen(false);
+                                  }}
+                                >
+                                  {source}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </InputGroupAddon>
+                </InputGroup>
                 <FieldError>
                   {form.formState.errors.job_source?.message}
                 </FieldError>
