@@ -1,0 +1,71 @@
+name: Deploy VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps-main
+  cancel-in-progress: true
+
+env:
+  DEPLOY_BRANCH: main
+  VPS_APP_DIR: /var/www/karirkit-frontend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build check before deploy
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_BRANCH: ${{ env.DEPLOY_BRANCH }}
+          VPS_APP_DIR: ${{ env.VPS_APP_DIR }}
+          POST_DEPLOY_CMD: ${{ secrets.POST_DEPLOY_CMD }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          command_timeout: 30m
+          envs: DEPLOY_BRANCH,VPS_APP_DIR,POST_DEPLOY_CMD
+          script: |
+            set -euo pipefail
+
+            cd "$VPS_APP_DIR"
+
+            git fetch origin "$DEPLOY_BRANCH"
+            git checkout "$DEPLOY_BRANCH"
+            git pull --ff-only origin "$DEPLOY_BRANCH"
+
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
+
+            npm run build
+
+            if [ -n "$POST_DEPLOY_CMD" ]; then
+              echo "Running POST_DEPLOY_CMD..."
+              eval "$POST_DEPLOY_CMD"
+            fi
