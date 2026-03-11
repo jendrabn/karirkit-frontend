@@ -1,3 +1,4 @@
+import { isAxiosError } from "axios";
 import z from "zod";
 import { api } from "./api-client";
 import type { User } from "@/types/user";
@@ -14,8 +15,18 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-export const getUser = (): Promise<User> => {
-  return api.get("/account/me");
+export const getUser = async (): Promise<User | null> => {
+  try {
+    return await api.get("/account/me", {
+      skipGeneralErrorToast: true,
+    });
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 401) {
+      return null;
+    }
+
+    throw error;
+  }
 };
 
 export const userQueryKey = ["user"];
@@ -28,7 +39,7 @@ export const userQueryKeyOptions = () =>
 
 export const useUser = () =>
   useQuery({
-    queryKey: ["user"],
+    queryKey: userQueryKey,
     queryFn: getUser,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes

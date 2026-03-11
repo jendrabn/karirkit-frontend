@@ -1,6 +1,15 @@
-import Axios, { type InternalAxiosRequestConfig } from "axios";
+import Axios, {
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+} from "axios";
 import { env } from "@/config/env";
 import { toast } from "sonner";
+
+declare module "axios" {
+  interface AxiosRequestConfig {
+    skipGeneralErrorToast?: boolean;
+  }
+}
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
@@ -29,6 +38,21 @@ api.interceptors.response.use(
     return response.data;
   },
   async (error) => {
+    const skipGeneralErrorToast =
+      (error.config as AxiosRequestConfig | undefined)
+        ?.skipGeneralErrorToast === true;
+
+    // Normalize blob error payloads before inspecting them downstream.
+    if (error.response?.data instanceof Blob) {
+      try {
+        const text = await error.response.data.text();
+        const jsonData = JSON.parse(text);
+        error.response.data = jsonData;
+      } catch (e) {
+        console.error("Failed to parse blob error response:", e);
+      }
+    }
+
     if (error.response?.status === 403) {
       const payload = error.response?.data?.data ?? error.response?.data;
       if (payload?.status && typeof payload.status === "string") {
@@ -51,20 +75,8 @@ api.interceptors.response.use(
       }
     }
 
-    // Handle blob response errors
-    if (error.response?.data instanceof Blob) {
-      try {
-        const text = await error.response.data.text();
-        const jsonData = JSON.parse(text);
-        error.response.data = jsonData;
-      } catch (e) {
-        // If parsing fails, just continue with original error
-        console.error("Failed to parse blob error response:", e);
-      }
-    }
-
     // Handle general errors
-    if (error.response?.data?.errors?.general) {
+    if (!skipGeneralErrorToast && error.response?.data?.errors?.general) {
       const generalErrors = error.response.data.errors.general;
       if (Array.isArray(generalErrors)) {
         generalErrors.forEach((errorMessage: string) => {

@@ -25,7 +25,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { data: userData, isLoading, error } = useUser();
+  const { data: userData, isLoading } = useUser();
   const logoutMutation = useLogout({
     onSuccess: () => {
       // Query cache will be automatically cleared by the useLogout hook
@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const user = userData || null;
-  const isAuthenticated = !!user && !error;
+  const isAuthenticated = !!user;
 
   const value: AuthContextType = {
     user,
