@@ -25,12 +25,15 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          run_install: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Build check before deploy
         run: |
@@ -55,6 +58,9 @@ jobs:
             set -euo pipefail
             export CI=true
 
+            command -v node >/dev/null 2>&1 || { echo "Node.js is not installed on VPS"; exit 1; }
+            command -v corepack >/dev/null 2>&1 || { echo "Corepack is not available on VPS"; exit 1; }
+
             cd "$VPS_APP_DIR"
 
             git fetch origin "$DEPLOY_BRANCH"
@@ -62,15 +68,23 @@ jobs:
             git pull --ff-only origin "$DEPLOY_BRANCH"
 
             corepack enable
-            corepack prepare pnpm@10.32.1 --activate
+            PNPM_PACKAGE_MANAGER="$(node -p "require('./package.json').packageManager || ''")"
+            if [ -n "$PNPM_PACKAGE_MANAGER" ]; then
+              corepack prepare "$PNPM_PACKAGE_MANAGER" --activate
+            else
+              corepack prepare pnpm@10 --activate
+            fi
+            pnpm --version
 
             if [ -d node_modules ]; then
               rm -rf node_modules 2>/dev/null || {
                 if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
                   sudo rm -rf node_modules
                 else
+                  CURRENT_USER="$(id -un)"
+                  CURRENT_GROUP="$(id -gn)"
                   echo "Failed to remove node_modules due to permission issues."
-                  echo "Run once on VPS: sudo chown -R $USER:$USER \"$VPS_APP_DIR\""
+                  echo "Run once on VPS: sudo chown -R ${CURRENT_USER}:${CURRENT_GROUP} \"$VPS_APP_DIR\""
                   exit 1
                 fi
               }
