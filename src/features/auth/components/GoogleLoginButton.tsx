@@ -32,8 +32,9 @@ const GoogleLoginButton = ({
 
   const googleAuthMutation = useGoogleAuth({
     mutationConfig: {
-      onSuccess: (user) => {
+      onSuccess: async (user) => {
         queryClient.setQueryData(userQueryKey, user);
+        await queryClient.invalidateQueries({ queryKey: userQueryKey });
         toast.success("Login dengan Google berhasil");
         onSuccess?.();
 
