@@ -64,6 +64,18 @@ jobs:
             corepack enable
             corepack prepare pnpm@10.32.1 --activate
 
+            if [ -d node_modules ]; then
+              rm -rf node_modules 2>/dev/null || {
+                if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+                  sudo rm -rf node_modules
+                else
+                  echo "Failed to remove node_modules due to permission issues."
+                  echo "Run once on VPS: sudo chown -R $USER:$USER \"$VPS_APP_DIR\""
+                  exit 1
+                fi
+              }
+            fi
+
             if [ -f pnpm-lock.yaml ]; then
               pnpm install --frozen-lockfile
             else
