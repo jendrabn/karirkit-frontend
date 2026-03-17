@@ -23,16 +23,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: pnpm
 
       - name: Build check before deploy
         run: |
-          npm ci
-          npm run build
+          pnpm install --frozen-lockfile
+          pnpm run build
 
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -57,13 +62,16 @@ jobs:
             git checkout "$DEPLOY_BRANCH"
             git pull --ff-only origin "$DEPLOY_BRANCH"
 
-            if [ -f package-lock.json ]; then
-              npm ci
+            corepack enable
+            corepack prepare pnpm@10 --activate
+
+            if [ -f pnpm-lock.yaml ]; then
+              pnpm install --frozen-lockfile
             else
-              npm install
+              pnpm install --no-frozen-lockfile
             fi
 
-            npm run build
+            pnpm run build
 
             if [ -n "$POST_DEPLOY_CMD" ]; then
               echo "Running POST_DEPLOY_CMD..."
