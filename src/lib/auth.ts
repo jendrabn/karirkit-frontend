@@ -1,5 +1,6 @@
 import z from "zod";
 import { api } from "./api-client";
+import { isAxiosError } from "axios";
 import type { User } from "@/types/user";
 import type {
   LoginResponse,
@@ -9,13 +10,24 @@ import type {
 } from "@/types/auth";
 import {
   queryOptions,
+  type QueryClient,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 
-export const getUser = (): Promise<User> => {
-  return api.get("/account/me");
+export const getUser = async (): Promise<User | null> => {
+  try {
+    return await api.get("/account/me", {
+      skipGeneralErrorToast: true,
+    });
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 401) {
+      return null;
+    }
+
+    throw error;
+  }
 };
 
 export const userQueryKey = ["user"];
@@ -25,6 +37,15 @@ export const userQueryKeyOptions = () =>
     queryKey: userQueryKey,
     queryFn: getUser,
   });
+
+export const syncAuthenticatedUser = async (queryClient: QueryClient) => {
+  const user = await getUser();
+
+  queryClient.setQueryData(userQueryKey, user);
+  await queryClient.invalidateQueries({ queryKey: userQueryKey });
+
+  return user;
+};
 
 export const useUser = () =>
   useQuery({
@@ -130,13 +151,11 @@ export const useLogin = ({
 
   return useMutation({
     mutationFn: login,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       if (response && "requires_otp" in response && response.requires_otp) {
         onOtpRequired?.(response as LoginOtpData);
       } else if (response) {
-        const user = response as User;
-        queryClient.setQueryData(userQueryKey, user);
-        queryClient.invalidateQueries({ queryKey: userQueryKey });
+        await syncAuthenticatedUser(queryClient);
         onSuccess?.();
       }
     },
@@ -164,9 +183,8 @@ export const useVerifyOtp = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   return useMutation({
     mutationFn: verifyOtp,
-    onSuccess: (user) => {
-      queryClient.setQueryData(userQueryKey, user);
-      queryClient.invalidateQueries({ queryKey: userQueryKey });
+    onSuccess: async () => {
+      await syncAuthenticatedUser(queryClient);
       onSuccess?.();
     },
   });
@@ -271,10 +289,11 @@ export const useResetPassword = ({
 
   return useMutation({
     mutationFn: resetPassword,
-    onSuccess: (user) => {
-      queryClient.setQueryData(userQueryKey, user);
-      queryClient.invalidateQueries({ queryKey: userQueryKey });
-      onSuccess?.(user);
+    onSuccess: async () => {
+      const user = await syncAuthenticatedUser(queryClient);
+      if (user) {
+        onSuccess?.(user);
+      }
     },
   });
 };

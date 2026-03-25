@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { userQueryKey } from "@/lib/auth";
+import { syncAuthenticatedUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import googleLogo from "@/assets/images/google_g_logo.png";
@@ -32,8 +32,8 @@ const GoogleLoginButton = ({
 
   const googleAuthMutation = useGoogleAuth({
     mutationConfig: {
-      onSuccess: (user) => {
-        queryClient.setQueryData(userQueryKey, user);
+      onSuccess: async () => {
+        await syncAuthenticatedUser(queryClient);
         toast.success("Login dengan Google berhasil");
         onSuccess?.();
 
