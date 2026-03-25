@@ -1,0 +1,59 @@
+name: Frontend Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Ensure target directory exists
+        run: |
+          set -euo pipefail
+          ssh -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "mkdir -p /var/www/karirkit-frontend"
+
+      - name: Sync project files to VPS
+        run: |
+          set -euo pipefail
+          rsync -az --delete \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "node_modules" \
+            --exclude "dist" \
+            --exclude ".env" \
+            --exclude ".env.*" \
+            -e "ssh -p ${{ secrets.VPS_PORT }}" \
+            ./ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/karirkit-frontend/"
+
+      - name: Install dependencies and build on VPS
+        run: |
+          set -euo pipefail
+          ssh -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'EOF'
+            set -euo pipefail
+            cd /var/www/karirkit-frontend
+            npm ci
+            npm run build
+          EOF
