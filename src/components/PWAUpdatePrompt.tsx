@@ -9,19 +9,12 @@ import {
 } from "@/components/ui/card";
 import { RefreshCw } from "lucide-react";
 
-export function PWAUpdatePrompt() {
+function PWAUpdatePromptContent() {
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
-  } = useRegisterSW({
-    onRegistered(r: ServiceWorkerRegistration | undefined) {
-      console.log("SW Registered: " + r);
-    },
-    onRegisterError(error: unknown) {
-      console.log("SW registration error", error);
-    },
-  });
+  } = useRegisterSW();
 
   const showReload = needRefresh;
 
@@ -63,4 +56,12 @@ export function PWAUpdatePrompt() {
       </Card>
     </div>
   );
+}
+
+export function PWAUpdatePrompt() {
+  if (import.meta.env.DEV) {
+    return null;
+  }
+
+  return <PWAUpdatePromptContent />;
 }

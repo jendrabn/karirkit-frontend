@@ -15,7 +15,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-export function PWAInstallPrompt() {
+function PWAInstallPromptContent() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
@@ -43,11 +43,7 @@ export function PWAInstallPrompt() {
     if (!deferredPrompt) return;
 
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === "accepted") {
-      console.log("User accepted the install prompt");
-    }
+    await deferredPrompt.userChoice;
 
     setDeferredPrompt(null);
     setShowPrompt(false);
@@ -106,4 +102,12 @@ export function PWAInstallPrompt() {
       </Card>
     </div>
   );
+}
+
+export function PWAInstallPrompt() {
+  if (import.meta.env.DEV) {
+    return null;
+  }
+
+  return <PWAInstallPromptContent />;
 }

@@ -11,6 +11,7 @@ import {
   FolderOpen,
   BookOpen,
   FileStack,
+  Settings2,
   Shield,
   Heart,
   Users,
@@ -474,6 +475,34 @@ export function DashboardSidebar() {
                       <FileStack className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
                         <span className="font-medium">Template</span>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    size="lg"
+                    tooltip="System Settings"
+                  >
+                    <NavLink
+                      to={paths.admin.systemSettings.list.getHref()}
+                      className={cn(
+                        "flex items-center rounded-lg transition-colors",
+                        isCollapsed
+                          ? "justify-center px-2 py-3"
+                          : "gap-3 px-3 py-3",
+                        isActive(paths.admin.systemSettings.list.getHref())
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted text-foreground"
+                      )}
+                    >
+                      <Settings2 className="h-5 w-5 shrink-0" />
+                      {!isCollapsed && (
+                        <span className="font-medium">System Settings</span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>

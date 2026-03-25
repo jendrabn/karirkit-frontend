@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { env } from "@/config/env";
 
 export interface SEOProps {

@@ -191,6 +191,11 @@ export const paths = {
         getHref: () => "/admin/templates/guide",
       },
     },
+    systemSettings: {
+      list: {
+        getHref: () => "/admin/system-settings",
+      },
+    },
     jobs: {
       list: {
         getHref: () => "/admin/jobs",
