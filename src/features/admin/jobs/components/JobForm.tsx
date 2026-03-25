@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type DefaultValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,7 @@ import { JobMediasUpload } from "./JobMediasUpload";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
 import { cn } from "@/lib/utils";
+import { dayjs } from "@/lib/date";
 
 interface JobFormProps {
   initialData?: Job;
@@ -50,6 +51,64 @@ interface JobFormProps {
 }
 
 type JobFormValues = CreateJobInput | UpdateJobInput;
+
+const toDateTimeLocalValue = (value?: string | null) => {
+  if (!value) return "";
+
+  const parsedValue = dayjs(value);
+  return parsedValue.isValid()
+    ? parsedValue.utc().local().format("YYYY-MM-DDTHH:mm")
+    : "";
+};
+
+const getDefaultValues = (initialData?: Job): DefaultValues<JobFormValues> => {
+  if (initialData) {
+    return {
+      company_id: initialData.company_id,
+      job_role_id: initialData.job_role_id,
+      city_id: initialData.city_id,
+      title: initialData.title,
+      job_type: initialData.job_type,
+      work_system: initialData.work_system,
+      education_level: initialData.education_level,
+      min_years_of_experience: initialData.min_years_of_experience,
+      max_years_of_experience: initialData.max_years_of_experience,
+      description: initialData.description,
+      requirements: initialData.requirements,
+      salary_min: initialData.salary_min,
+      salary_max: initialData.salary_max,
+      talent_quota: initialData.talent_quota,
+      job_url: initialData.job_url,
+      contact_name: initialData.contact_name,
+      contact_email: initialData.contact_email,
+      contact_phone: initialData.contact_phone,
+      medias: initialData.medias?.map((media) => ({ path: media.path })) || [],
+      status: initialData.status,
+      expiration_date: toDateTimeLocalValue(initialData.expiration_date),
+    };
+  }
+
+  return {
+    title: "",
+    company_id: "",
+    job_role_id: "",
+    city_id: "",
+    min_years_of_experience: 0,
+    max_years_of_experience: null,
+    description: "",
+    requirements: "",
+    salary_min: 0,
+    salary_max: 0,
+    talent_quota: 1,
+    job_url: "",
+    contact_name: "",
+    contact_email: "",
+    contact_phone: "",
+    medias: [],
+    status: undefined,
+    expiration_date: undefined,
+  };
+};
 
 export function JobForm({
   initialData,
@@ -81,51 +140,7 @@ export function JobForm({
     resolver: zodResolver(
       isEdit ? updateJobInputSchema : createJobInputSchema,
     ),
-    defaultValues: initialData
-      ? {
-          company_id: initialData.company_id,
-          job_role_id: initialData.job_role_id,
-          city_id: initialData.city_id,
-          title: initialData.title,
-          job_type: initialData.job_type,
-          work_system: initialData.work_system,
-          education_level: initialData.education_level,
-          min_years_of_experience: initialData.min_years_of_experience,
-          max_years_of_experience: initialData.max_years_of_experience,
-          description: initialData.description,
-          requirements: initialData.requirements,
-          salary_min: initialData.salary_min,
-          salary_max: initialData.salary_max,
-          talent_quota: initialData.talent_quota,
-          job_url: initialData.job_url,
-          contact_name: initialData.contact_name,
-          contact_email: initialData.contact_email,
-          contact_phone: initialData.contact_phone,
-          medias:
-            initialData.medias?.map((media) => ({ path: media.path })) || [],
-          status: initialData.status,
-          expiration_date: initialData.expiration_date || "",
-        }
-      : {
-          title: "",
-          company_id: "",
-          job_role_id: "",
-          city_id: "",
-          min_years_of_experience: 0,
-          max_years_of_experience: null,
-          description: "",
-          requirements: "",
-          salary_min: 0,
-          salary_max: 0,
-          talent_quota: 1,
-          job_url: "",
-          contact_name: "",
-          contact_email: "",
-          contact_phone: "",
-          medias: [],
-          status: undefined,
-          expiration_date: undefined,
-        },
+    defaultValues: getDefaultValues(initialData),
   });
 
   useServerValidation(error, form);
@@ -167,11 +182,15 @@ export function JobForm({
                       Perusahaan <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Combobox
+                      key={`${field.value ?? "empty"}-${companiesData?.length ?? 0}`}
                       items={companiesData?.map((company) => company.id) ?? []}
                       value={field.value || null}
                       onValueChange={(value) => field.onChange(value ?? "")}
                       itemToStringLabel={(value) =>
-                        companyLabelById.get(value as string) ?? ""
+                        companyLabelById.get(value as string) ??
+                        (value === initialData?.company_id
+                          ? initialData.company?.name ?? ""
+                          : "")
                       }
                     >
                     <ComboboxInput
@@ -213,11 +232,15 @@ export function JobForm({
                       Role Pekerjaan <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Combobox
+                      key={`${field.value ?? "empty"}-${rolesData?.length ?? 0}`}
                       items={rolesData?.map((role) => role.id) ?? []}
                       value={field.value || null}
                       onValueChange={(value) => field.onChange(value ?? "")}
                       itemToStringLabel={(value) =>
-                        roleLabelById.get(value as string) ?? ""
+                        roleLabelById.get(value as string) ??
+                        (value === initialData?.job_role_id
+                          ? initialData.job_role?.name ?? ""
+                          : "")
                       }
                     >
                     <ComboboxInput
@@ -255,11 +278,15 @@ export function JobForm({
                   <Field>
                     <FieldLabel>Kota</FieldLabel>
                     <Combobox
+                      key={`${field.value ?? "empty"}-${citiesData?.length ?? 0}`}
                       items={citiesData?.map((city) => city.id) ?? []}
                       value={field.value || null}
                       onValueChange={(value) => field.onChange(value ?? "")}
                       itemToStringLabel={(value) =>
-                        cityLabelById.get(value as string) ?? ""
+                        cityLabelById.get(value as string) ??
+                        (value === initialData?.city_id
+                          ? initialData.city?.name ?? ""
+                          : "")
                       }
                     >
                       <ComboboxInput
