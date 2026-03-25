@@ -133,6 +133,15 @@ const getStatusBadgeVariant = (status: User["status"]) => {
   }
 };
 
+const getUserDailyDownloadLimit = (user: User) =>
+  user.daily_download_limit ?? user.download_stats?.daily_limit ?? 0;
+
+const getUserDocumentStorageLimit = (user: User) =>
+  user.document_storage_limit ?? user.document_storage_stats?.limit ?? 0;
+
+const getUserTotalDownloads = (user: User) =>
+  user.download_stats?.total_count ?? user.total_downloads ?? 0;
+
 const userStatusSchema = z
   .object({
     status: z.enum(["active", "suspended", "banned"]),
@@ -820,7 +829,7 @@ export const UsersList = () => {
                       <TableCell className="max-w-[120px]">
                         <EditableCell
                           label="Batas Unduhan"
-                          value={user.daily_download_limit}
+                          value={getUserDailyDownloadLimit(user)}
                           onSave={(value) =>
                             updateDownloadLimitMutation.mutate({
                               id: user.id,
@@ -835,7 +844,7 @@ export const UsersList = () => {
                       <TableCell className="max-w-[150px]">
                         <EditableCell
                           label="Batas Penyimpanan"
-                          value={user.document_storage_limit}
+                          value={getUserDocumentStorageLimit(user)}
                           onSave={(value) =>
                             updateStorageLimitMutation.mutate({
                               id: user.id,
@@ -863,11 +872,11 @@ export const UsersList = () => {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="block truncate">
-                              {user.total_downloads ?? 0}
+                              {getUserTotalDownloads(user)}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>{user.total_downloads ?? 0}</p>
+                            <p>{getUserTotalDownloads(user)}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>

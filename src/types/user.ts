@@ -14,7 +14,7 @@ export interface User {
   avatar: string | null;
   created_at: string;
   updated_at: string;
-  /** @alias download_stats.total */
+  /** @deprecated gunakan download_stats.total_count */
   total_downloads?: number;
   email_verified_at?: string | null;
   download_stats?: DownloadStats;
