@@ -82,22 +82,6 @@ interface CVFormProps {
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i);
 
-const formatGpaInput = (value?: number | null) => {
-  if (value === null || value === undefined || Number.isNaN(value)) {
-    return "";
-  }
-
-  return Number(value.toFixed(2)).toString();
-};
-
-const normalizeEducations = (
-  educations?: Partial<CV>["educations"],
-): CVFormInput["educations"] =>
-  ((educations || []).map((education) => ({
-    ...education,
-    gpa: formatGpaInput(education.gpa),
-  })) as CVFormInput["educations"]);
-
 export function CVForm({
   initialData,
   onSubmit,
@@ -118,7 +102,7 @@ export function CVForm({
       address: initialData?.address || user?.location || "",
       about: initialData?.about || user?.bio || "",
       photo: initialData?.photo ?? "",
-      educations: normalizeEducations(initialData?.educations),
+      educations: (initialData?.educations || []) as CVFormInput["educations"],
       certificates: (initialData?.certificates ||
         []) as CVFormInput["certificates"],
       experiences: (initialData?.experiences ||
@@ -844,10 +828,14 @@ export function CVForm({
                         <Field className="w-full md:w-1/2">
                           <FieldLabel>IPK</FieldLabel>
                           <Input
-                            type="text"
-                            inputMode="decimal"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="4"
                             placeholder="3.85"
-                            {...register(`educations.${index}.gpa`)}
+                            {...register(`educations.${index}.gpa`, {
+                              valueAsNumber: true,
+                            })}
                             className={cn(
                               errors.educations?.[index]?.gpa &&
                                 "border-destructive",

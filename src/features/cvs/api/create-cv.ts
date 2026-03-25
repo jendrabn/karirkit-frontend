@@ -123,44 +123,11 @@ export const educationSchema = z
     end_month: monthOptional.nullable().optional(),
     end_year: yearOptional.nullable().optional(),
     is_current: z.boolean(),
-    gpa: z
-      .union([z.string(), z.number(), z.null(), z.undefined()])
-      .transform((value, ctx) => {
-        if (value === "" || value === null || value === undefined) {
-          return null;
-        }
-
-        const parsedValue =
-          typeof value === "number"
-            ? value
-            : Number.parseFloat(value.replace(",", ".").trim());
-
-        if (Number.isNaN(parsedValue)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "IPK harus berupa angka",
-          });
-          return z.NEVER;
-        }
-
-        if (parsedValue < 0) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "IPK minimal 0",
-          });
-          return z.NEVER;
-        }
-
-        if (parsedValue > 4) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "IPK maksimal 4",
-          });
-          return z.NEVER;
-        }
-
-        return Number(parsedValue.toFixed(2));
-      }),
+    gpa: z.preprocess(
+      (v) =>
+        v === "" || v === null || v === undefined || Number.isNaN(v) ? null : v,
+      z.number().min(0).max(4).nullable(),
+    ),
     description: z.string().optional(),
   })
   .superRefine(validateDateRange("end"));

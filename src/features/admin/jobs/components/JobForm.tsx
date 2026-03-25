@@ -61,6 +61,17 @@ const toDateTimeLocalValue = (value?: string | null) => {
     : "";
 };
 
+const ensureSelectedItemExists = (
+  items: string[] | undefined,
+  selectedValue?: string | null,
+) => {
+  if (!selectedValue) {
+    return items ?? [];
+  }
+
+  return Array.from(new Set([...(items ?? []), selectedValue]));
+};
+
 const getDefaultValues = (initialData?: Job): DefaultValues<JobFormValues> => {
   if (initialData) {
     return {
@@ -183,7 +194,10 @@ export function JobForm({
                     </FieldLabel>
                     <Combobox
                       key={`${field.value ?? "empty"}-${companiesData?.length ?? 0}`}
-                      items={companiesData?.map((company) => company.id) ?? []}
+                      items={ensureSelectedItemExists(
+                        companiesData?.map((company) => company.id),
+                        field.value,
+                      )}
                       value={field.value || null}
                       onValueChange={(value) => field.onChange(value ?? "")}
                       itemToStringLabel={(value) =>
@@ -233,7 +247,10 @@ export function JobForm({
                     </FieldLabel>
                     <Combobox
                       key={`${field.value ?? "empty"}-${rolesData?.length ?? 0}`}
-                      items={rolesData?.map((role) => role.id) ?? []}
+                      items={ensureSelectedItemExists(
+                        rolesData?.map((role) => role.id),
+                        field.value,
+                      )}
                       value={field.value || null}
                       onValueChange={(value) => field.onChange(value ?? "")}
                       itemToStringLabel={(value) =>
@@ -279,7 +296,10 @@ export function JobForm({
                     <FieldLabel>Kota</FieldLabel>
                     <Combobox
                       key={`${field.value ?? "empty"}-${citiesData?.length ?? 0}`}
-                      items={citiesData?.map((city) => city.id) ?? []}
+                      items={ensureSelectedItemExists(
+                        citiesData?.map((city) => city.id),
+                        field.value,
+                      )}
                       value={field.value || null}
                       onValueChange={(value) => field.onChange(value ?? "")}
                       itemToStringLabel={(value) =>
