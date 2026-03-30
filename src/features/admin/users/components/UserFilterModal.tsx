@@ -28,10 +28,6 @@ export interface FilterValues {
   suspended?: "true" | "false";
   created_at_from?: string;
   created_at_to?: string;
-  daily_download_limit_from?: string;
-  daily_download_limit_to?: string;
-  document_storage_used_from?: string;
-  document_storage_used_to?: string;
   download_total_count_from?: string;
   download_total_count_to?: string;
 }
@@ -225,62 +221,6 @@ export function UserFilterModal({
                       setLocalFilters({
                         ...localFilters,
                         created_at_to: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </Field>
-
-              <Field>
-                <FieldLabel>Daily Download Limit</FieldLabel>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    placeholder="Dari"
-                    value={localFilters.daily_download_limit_from || ""}
-                    onChange={(e) =>
-                      setLocalFilters({
-                        ...localFilters,
-                        daily_download_limit_from: e.target.value,
-                      })
-                    }
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Sampai"
-                    value={localFilters.daily_download_limit_to || ""}
-                    onChange={(e) =>
-                      setLocalFilters({
-                        ...localFilters,
-                        daily_download_limit_to: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </Field>
-
-              <Field>
-                <FieldLabel>Document Storage Used</FieldLabel>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    placeholder="Dari"
-                    value={localFilters.document_storage_used_from || ""}
-                    onChange={(e) =>
-                      setLocalFilters({
-                        ...localFilters,
-                        document_storage_used_from: e.target.value,
-                      })
-                    }
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Sampai"
-                    value={localFilters.document_storage_used_to || ""}
-                    onChange={(e) =>
-                      setLocalFilters({
-                        ...localFilters,
-                        document_storage_used_to: e.target.value,
                       })
                     }
                   />

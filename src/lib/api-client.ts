@@ -5,6 +5,19 @@ import Axios, {
 import { env } from "@/config/env";
 import { toast } from "sonner";
 
+const SUBSCRIPTION_ERROR_MESSAGES: Record<string, string> = {
+  CV_LIMIT_REACHED:
+    "Batas CV Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
+  APPLICATION_LIMIT_REACHED:
+    "Batas application tracker Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
+  APP_LETTER_LIMIT_REACHED:
+    "Batas surat lamaran Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
+  PREMIUM_TEMPLATE_REQUIRED:
+    "Template premium hanya tersedia untuk pengguna Pro atau Max. Upgrade paket di halaman Langganan untuk melanjutkan.",
+  DOCUMENT_ACCESS_DENIED:
+    "Fitur dokumen hanya tersedia untuk pengguna Pro atau Max. Upgrade paket di halaman Langganan untuk membuka akses.",
+};
+
 declare module "axios" {
   interface AxiosRequestConfig {
     skipGeneralErrorToast?: boolean;
@@ -75,8 +88,20 @@ api.interceptors.response.use(
       }
     }
 
+    const errorCode = error.response?.data?.code;
+    const handledSubscriptionCode =
+      typeof errorCode === "string" && SUBSCRIPTION_ERROR_MESSAGES[errorCode];
+
+    if (!skipGeneralErrorToast && handledSubscriptionCode) {
+      toast.error(SUBSCRIPTION_ERROR_MESSAGES[errorCode]);
+    }
+
     // Handle general errors
-    if (!skipGeneralErrorToast && error.response?.data?.errors?.general) {
+    if (
+      !skipGeneralErrorToast &&
+      !handledSubscriptionCode &&
+      error.response?.data?.errors?.general
+    ) {
       const generalErrors = error.response.data.errors.general;
       if (Array.isArray(generalErrors)) {
         generalErrors.forEach((errorMessage: string) => {

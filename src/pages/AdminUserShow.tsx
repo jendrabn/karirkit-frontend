@@ -46,7 +46,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { dayjs, formatDate, formatDateTime } from "@/lib/date";
-import { formatBytes, formatNumber } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils";
 import { SOCIAL_PLATFORM_LABELS } from "@/types/social";
 import type { User, UserRole } from "@/types/user";
 import { useAuth } from "@/contexts/AuthContext";
@@ -74,6 +74,7 @@ import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from "@/types/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ContactItem, InfoItem, RichText } from "@/components/ui/display-info";
+import { SUBSCRIPTION_PLAN_LABELS } from "@/features/subscriptions/utils";
 
 const userStatusSchema = z
   .object({
@@ -126,11 +127,6 @@ const getGenderLabel = (gender: User["gender"]) => {
   }
 
   return "-";
-};
-
-const formatBytesValue = (value?: number | null) => {
-  if (value === null || value === undefined) return "-";
-  return formatBytes(value);
 };
 
 const AdminUserShow = () => {
@@ -254,20 +250,19 @@ const AdminUserShow = () => {
     USER_STATUS_OPTIONS.find((option) => option.value === user.status)?.label ||
     user.status;
   const statusIconComponent = STATUS_ICON_MAP[user.status] ?? AlertCircle;
-  const downloadStats = user.download_stats;
   const totalDownloads =
-    downloadStats?.total_count ?? user.total_downloads ?? null;
-  const storageStats = user.document_storage_stats;
-  const storageLimit = user.document_storage_limit ?? storageStats?.limit ?? null;
-  const storageUsed = storageStats?.used ?? null;
-  const storageRemaining =
-    storageStats?.remaining ??
-    (storageLimit !== null && storageUsed !== null
-      ? Math.max(storageLimit - storageUsed, 0)
-      : null);
+    user.download_total_count ?? user.download_stats?.total_count ?? 0;
+  const downloadTodayCount =
+    user.download_today_count ?? user.download_stats?.today_count ?? 0;
   const emailVerifiedLabel = user.email_verified_at
     ? formatDateTime(user.email_verified_at)
     : "Belum terverifikasi";
+  const lastLoginLabel = user.last_login_at
+    ? formatDateTime(user.last_login_at)
+    : "Belum pernah login";
+  const subscriptionPlanLabel = user.subscription_plan
+    ? SUBSCRIPTION_PLAN_LABELS[user.subscription_plan]
+    : "-";
 
   return (
     <DashboardLayout
@@ -404,95 +399,34 @@ const AdminUserShow = () => {
             <CardHeader>
               <div className="flex items-center justify-between gap-3">
                 <CardTitle className="text-lg">Aktivitas & Statistik</CardTitle>
-                {totalDownloads !== null && (
-                  <Badge variant="outline" className="gap-1 text-xs uppercase">
-                    <CheckCircle className="h-3 w-3" />
-                    {formatNumber(totalDownloads)} total
-                  </Badge>
-                )}
+                <Badge variant="outline" className="gap-1 text-xs uppercase">
+                  <CheckCircle className="h-3 w-3" />
+                  {formatNumber(totalDownloads)} total
+                </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Unduhan
-                  </p>
-                  {totalDownloads !== null && (
-                    <Badge
-                      variant="outline"
-                      className="gap-1 text-[11px] uppercase"
-                    >
-                      <Shield className="h-3 w-3" />
-                      Total {formatNumber(totalDownloads)}
-                    </Badge>
-                  )}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <InfoItem
-                    label="Batas Harian"
-                    value={formatNumber(
-                      downloadStats?.daily_limit ?? user.daily_download_limit
-                    )}
-                    icon={Clock}
-                  />
-                  <InfoItem
-                    label="Unduhan Hari Ini"
-                    value={formatNumber(downloadStats?.today_count)}
-                    icon={Calendar}
-                  />
-                  <InfoItem
-                    label="Sisa Unduhan"
-                    value={formatNumber(downloadStats?.remaining)}
-                    icon={Shield}
-                  />
-                  <InfoItem
-                    label="Total Unduhan"
-                    value={formatNumber(totalDownloads)}
-                    icon={CheckCircle}
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Penyimpanan Dokumen
-                  </p>
-                  {storageLimit !== null && (
-                    <Badge
-                      variant="outline"
-                      className="gap-1 text-[11px] uppercase"
-                    >
-                      <Briefcase className="h-3 w-3" />
-                      {formatBytesValue(storageLimit)} limit
-                    </Badge>
-                  )}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <InfoItem
-                    label="Batas Penyimpanan"
-                    value={formatBytesValue(storageLimit)}
-                    icon={Briefcase}
-                  />
-                  <InfoItem
-                    label="Terpakai"
-                    value={formatBytesValue(storageUsed)}
-                    icon={Shield}
-                  />
-                  <InfoItem
-                    label="Sisa Penyimpanan"
-                    value={formatBytesValue(storageRemaining)}
-                    icon={Calendar}
-                  />
-                  <InfoItem
-                    label="Limit (Statistik)"
-                    value={formatBytesValue(storageStats?.limit)}
-                    icon={Clock}
-                  />
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <InfoItem
+                  label="Unduhan Hari Ini"
+                  value={formatNumber(downloadTodayCount)}
+                  icon={Calendar}
+                />
+                <InfoItem
+                  label="Total Unduhan"
+                  value={formatNumber(totalDownloads)}
+                  icon={CheckCircle}
+                />
+                <InfoItem
+                  label="Login Terakhir"
+                  value={lastLoginLabel}
+                  icon={Clock}
+                />
+                <InfoItem
+                  label="Email Terverifikasi"
+                  value={emailVerifiedLabel}
+                  icon={Shield}
+                />
               </div>
             </CardContent>
           </Card>
@@ -551,14 +485,33 @@ const AdminUserShow = () => {
                   icon={statusIconComponent}
                 />
                 <InfoItem
+                  label="Plan Langganan"
+                  value={subscriptionPlanLabel}
+                  icon={Briefcase}
+                />
+                <InfoItem
                   label="Email Terverifikasi"
                   value={emailVerifiedLabel}
                   icon={CheckCircle}
                 />
                 <InfoItem
+                  label="Login Terakhir"
+                  value={lastLoginLabel}
+                  icon={Clock}
+                />
+                <InfoItem
                   label="Tanggal Registrasi"
-                  value={formatDate(user.created_at)}
+                  value={user.created_at ? formatDate(user.created_at) : "-"}
                   icon={Calendar}
+                />
+                <InfoItem
+                  label="Langganan Berakhir"
+                  value={
+                    user.subscription_expires_at
+                      ? formatDateTime(user.subscription_expires_at)
+                      : "-"
+                  }
+                  icon={Clock}
                 />
               </div>
 
@@ -607,12 +560,12 @@ const AdminUserShow = () => {
               <div className="grid grid-cols-2 gap-4">
                 <InfoItem
                   label="Dibuat"
-                  value={formatDateTime(user.created_at)}
+                  value={user.created_at ? formatDateTime(user.created_at) : "-"}
                   icon={Clock}
                 />
                 <InfoItem
                   label="Diperbarui"
-                  value={formatDateTime(user.updated_at)}
+                  value={user.updated_at ? formatDateTime(user.updated_at) : "-"}
                   icon={Clock}
                 />
               </div>

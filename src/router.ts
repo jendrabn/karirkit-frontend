@@ -274,6 +274,11 @@ export const createAppRouter = (queryClient: QueryClient) =>
           lazy: () =>
             import("./pages/Documents").then(convertWithProtection(queryClient)),
         },
+        {
+          path: "/subscriptions",
+          lazy: () =>
+            import("./pages/Subscription").then(convertWithProtection(queryClient)),
+        },
         // Admin routes (authentication and admin role required)
         {
           path: "/admin/dashboard",
@@ -388,9 +393,16 @@ export const createAppRouter = (queryClient: QueryClient) =>
             ),
         },
         {
-          path: "/admin/system-settings",
+          path: "/admin/subscriptions",
           lazy: () =>
-            import("./pages/AdminSystemSettings").then(
+            import("./pages/AdminSubscriptions").then(
+              convertWithAdminProtection(queryClient)
+            ),
+        },
+        {
+          path: "/admin/subscriptions/:id",
+          lazy: () =>
+            import("./pages/AdminSubscriptionShow").then(
               convertWithAdminProtection(queryClient)
             ),
         },

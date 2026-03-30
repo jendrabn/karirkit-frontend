@@ -17,7 +17,6 @@ export type GetUsersParams = {
     | "email"
     | "role"
     | "status"
-    | "document_storage_used"
     | "download_total_count";
   role?: "user" | "admin";
   status?: "active" | "suspended" | "banned";
@@ -26,10 +25,6 @@ export type GetUsersParams = {
   suspended?: "true" | "false";
   created_at_from?: string;
   created_at_to?: string;
-  daily_download_limit_from?: number;
-  daily_download_limit_to?: number;
-  document_storage_used_from?: number;
-  document_storage_used_to?: number;
   download_total_count_from?: number;
   download_total_count_to?: number;
 };

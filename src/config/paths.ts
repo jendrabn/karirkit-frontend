@@ -126,6 +126,12 @@ export const paths = {
     list: { getHref: () => "/documents" },
   },
 
+  subscriptions: {
+    list: {
+      getHref: () => "/subscriptions",
+    },
+  },
+
   publicPortfolio: {
     list: {
       getHref: (username: string) => `/u/${username}`,
@@ -191,9 +197,12 @@ export const paths = {
         getHref: () => "/admin/templates/guide",
       },
     },
-    systemSettings: {
+    subscriptions: {
       list: {
-        getHref: () => "/admin/system-settings",
+        getHref: () => "/admin/subscriptions",
+      },
+      detail: {
+        getHref: (id: string) => `/admin/subscriptions/${id}`,
       },
     },
     jobs: {

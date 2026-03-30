@@ -4,8 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import type { User } from "@/types/user";
 
-export const DEFAULT_DOCUMENT_STORAGE_LIMIT = 100 * 1024 * 1024;
-
 export const createUserInputSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
   username: z.string().min(1, "Username wajib diisi"),
@@ -16,17 +14,6 @@ export const createUserInputSchema = z.object({
     message: "Role wajib dipilih",
   }),
   avatar: z.string().optional().nullable(),
-  daily_download_limit: z.coerce
-    .number()
-    .min(0)
-    .max(1000)
-    .optional()
-    .default(10),
-  document_storage_limit: z.coerce
-    .number()
-    .min(0)
-    .optional()
-    .default(DEFAULT_DOCUMENT_STORAGE_LIMIT),
 });
 
 export type CreateUserInput = z.infer<typeof createUserInputSchema>;

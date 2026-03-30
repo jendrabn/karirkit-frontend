@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Lock } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,7 @@ interface TemplateGridModalProps {
   templates: DocumentTemplate[];
   value: string;
   onSelect: (templateId: string) => void;
+  getTemplateDisabledReason?: (template: DocumentTemplate) => string | null;
   title?: string;
   description?: string;
 }
@@ -29,6 +30,7 @@ export function TemplateGridModal({
   templates,
   value,
   onSelect,
+  getTemplateDisabledReason,
   title = "Pilih Template",
   description = "Template yang dipilih akan secara otomatis dilengkapi dengan informasi yang tersedia pada profil Anda.",
 }: TemplateGridModalProps) {
@@ -51,19 +53,25 @@ export function TemplateGridModal({
             {templates.map((template) => {
               const isSelected = value === template.id;
               const isHovered = hoveredId === template.id;
+              const disabledReason = getTemplateDisabledReason?.(template) ?? null;
+              const isDisabled = Boolean(disabledReason);
 
               return (
                 <div
                   key={template.id}
                   className={cn(
-                    "group relative aspect-[3/4] cursor-pointer overflow-hidden rounded-lg border-2 transition-all",
+                    "group relative aspect-[3/4] overflow-hidden rounded-lg border-2 transition-all",
                     isSelected
                       ? "border-primary ring-2 ring-primary/20"
                       : "border-border hover:border-primary/50",
+                    isDisabled && "cursor-not-allowed opacity-80",
                   )}
                   onMouseEnter={() => setHoveredId(template.id)}
                   onMouseLeave={() => setHoveredId(null)}
-                  onClick={() => handleSelect(template.id)}
+                  onClick={() => {
+                    if (isDisabled) return;
+                    handleSelect(template.id);
+                  }}
                 >
                   <img
                     src={buildImageUrl(template.preview)}
@@ -83,11 +91,17 @@ export function TemplateGridModal({
                         "transition-all",
                         isSelected && "bg-primary",
                       )}
+                      disabled={isDisabled}
                     >
                       {isSelected ? (
                         <>
                           <Check className="mr-1 h-4 w-4" />
                           Terpilih
+                        </>
+                      ) : isDisabled ? (
+                        <>
+                          <Lock className="mr-1 h-4 w-4" />
+                          Terkunci
                         </>
                       ) : (
                         "Pilih template"
@@ -105,6 +119,11 @@ export function TemplateGridModal({
                     <p className="truncate text-sm font-medium text-white">
                       {template.name}
                     </p>
+                    {disabledReason ? (
+                      <p className="mt-1 line-clamp-2 text-[11px] text-white/80">
+                        {disabledReason}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               );

@@ -47,6 +47,8 @@ import {
   applicationLetterSchema,
   type CreateApplicationLetterInput,
 } from "../api/create-application-letter";
+import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
+import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
 
 interface ApplicationLetterFormProps {
   initialData?: Partial<ApplicationLetter>;
@@ -64,6 +66,8 @@ export function ApplicationLetterForm({
   error,
 }: ApplicationLetterFormProps) {
   const { data: user } = useUser();
+  const { data: mySubscription } = useMySubscription();
+  const subscriptionFeatures = getPlanFeatureAccess(mySubscription?.current_features);
   const [selectedTemplate, setSelectedTemplate] = useState(
     initialData?.template_id || "",
   );
@@ -240,6 +244,12 @@ export function ApplicationLetterForm({
                           setSelectedTemplate(value);
                           form.setValue("template_id", value);
                         }}
+                        getTemplateDisabledReason={(template) =>
+                          template.is_premium &&
+                          !subscriptionFeatures.canUsePremiumApplicationLetterTemplates
+                            ? "Template premium membutuhkan paket Pro atau Max."
+                            : null
+                        }
                         hasError={!!form.formState.errors.template_id}
                         disabled={!selectedTemplateLanguage}
                       />

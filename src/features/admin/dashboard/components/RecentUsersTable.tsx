@@ -85,10 +85,14 @@ export const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                    {dayjs(user.created_at).format("DD MMM YYYY, HH:mm")}
+                    {user.created_at
+                      ? dayjs(user.created_at).format("DD MMM YYYY, HH:mm")
+                      : "-"}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                    {dayjs(user.updated_at).format("DD MMM YYYY, HH:mm")}
+                    {user.updated_at
+                      ? dayjs(user.updated_at).format("DD MMM YYYY, HH:mm")
+                      : "-"}
                   </TableCell>
                   <TableCell>
                     <Button

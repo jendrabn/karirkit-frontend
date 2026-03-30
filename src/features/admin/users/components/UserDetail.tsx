@@ -1,16 +1,25 @@
 import { dayjs } from "@/lib/date";
-import { Mail, Phone, Calendar, Shield, Ban, UserCheck } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  Calendar,
+  Shield,
+  Ban,
+  UserCheck,
+  Clock,
+  CheckCircle,
+  Briefcase,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
 import {
   USER_ROLE_OPTIONS,
   USER_STATUS_OPTIONS,
   type UserRole,
 } from "@/types/user";
 import type { User } from "@/types/user";
-import { formatBytes } from "@/lib/utils";
+import { SUBSCRIPTION_PLAN_LABELS } from "@/features/subscriptions/utils";
 
 const getRoleBadgeVariant = (role: UserRole) => {
   return role === "admin" ? "default" : "secondary";
@@ -30,14 +39,12 @@ const getStatusBadgeVariant = (status: User["status"]) => {
 };
 
 export const UserDetail = ({ user }: { user: User }) => {
-  const storageStats = user.document_storage_stats;
-  const storageLimit = user.document_storage_limit || 0;
-  const storageUsed = storageStats?.used ?? 0;
-  const storageRemaining =
-    storageStats?.remaining ?? Math.max(storageLimit - storageUsed, 0);
-  const storagePercentage = storageLimit
-    ? Math.min(100, Math.round((storageUsed / storageLimit) * 100))
-    : 0;
+  const subscriptionPlanLabel = user.subscription_plan
+    ? SUBSCRIPTION_PLAN_LABELS[user.subscription_plan]
+    : "-";
+  const lastLoginLabel = user.last_login_at
+    ? dayjs(user.last_login_at).format("DD MMMM YYYY, HH:mm")
+    : "Belum pernah login";
 
   return (
     <div className="bg-card border border-border/60 rounded-xl shadow-sm overflow-hidden">
@@ -131,34 +138,61 @@ export const UserDetail = ({ user }: { user: User }) => {
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <div className="p-2 rounded-lg bg-muted">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <Clock className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-xs">
-                    Terakhir Diupdate
-                  </p>
+                  <p className="text-muted-foreground text-xs">Login Terakhir</p>
                   <p className="font-medium">
-                    {user.updated_at
-                      ? dayjs(user.updated_at).format("DD MMMM YYYY, HH:mm")
-                      : "-"}
+                    {lastLoginLabel}
                   </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-8 space-y-3 border-t border-border/70 pt-6">
-          <div className="flex items-center justify-between">
-            <p className="text-base font-semibold">Penyimpanan Dokumen</p>
-            <p className="text-sm text-muted-foreground">
-              {formatBytes(user.document_storage_limit)}
-            </p>
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-border/70 pt-6">
+          <div className="flex items-center gap-3 text-sm">
+            <div className="p-2 rounded-lg bg-muted">
+              <Briefcase className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs">Plan Langganan</p>
+              <p className="font-medium">{subscriptionPlanLabel}</p>
+            </div>
           </div>
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>Digunakan {formatBytes(storageUsed)}</span>
-            <span>Tersisa {formatBytes(storageRemaining)}</span>
+          <div className="flex items-center gap-3 text-sm">
+            <div className="p-2 rounded-lg bg-muted">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs">Langganan Berakhir</p>
+              <p className="font-medium">
+                {user.subscription_expires_at
+                  ? dayjs(user.subscription_expires_at).format(
+                      "DD MMMM YYYY, HH:mm",
+                    )
+                  : "-"}
+              </p>
+            </div>
           </div>
-          <Progress value={storagePercentage} className="h-2" />
+          <div className="flex items-center gap-3 text-sm">
+            <div className="p-2 rounded-lg bg-muted">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs">Unduhan Hari Ini</p>
+              <p className="font-medium">{user.download_today_count ?? 0}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <div className="p-2 rounded-lg bg-muted">
+              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs">Total Unduhan</p>
+              <p className="font-medium">{user.download_total_count ?? 0}</p>
+            </div>
+          </div>
         </div>
       </div>
 

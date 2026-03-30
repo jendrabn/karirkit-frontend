@@ -8,6 +8,7 @@ import {
   Eye,
   Pencil,
   Trash2,
+  Copy,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -88,18 +89,12 @@ import {
   USER_STATUS_OPTIONS,
   type User,
 } from "@/types/user";
-import {
-  bytesToMegabytes,
-  cn,
-  formatBytes,
-  megabytesToBytes,
-} from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { SUBSCRIPTION_PLAN_LABELS } from "@/features/subscriptions/utils";
 import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
 import { useMassDeleteUsers } from "../api/mass-delete-users";
 import { useUpdateUserStatus } from "../api/update-user-status";
-import { useUpdateUserDownloadLimit } from "../api/update-user-download-limit";
-import { useUpdateUserStorageLimit } from "../api/update-user-storage-limit";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { useServerValidation } from "@/hooks/use-server-validation";
@@ -107,7 +102,7 @@ import { toast } from "sonner";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { SortableHeader } from "@/components/SortableHeader";
 
 type SortField =
@@ -117,7 +112,6 @@ type SortField =
   | "status"
   | "created_at"
   | "updated_at"
-  | "document_storage_used"
   | "download_total_count";
 
 const getStatusBadgeVariant = (status: User["status"]) => {
@@ -133,14 +127,19 @@ const getStatusBadgeVariant = (status: User["status"]) => {
   }
 };
 
-const getUserDailyDownloadLimit = (user: User) =>
-  user.daily_download_limit ?? user.download_stats?.daily_limit ?? 0;
-
-const getUserDocumentStorageLimit = (user: User) =>
-  user.document_storage_limit ?? user.document_storage_stats?.limit ?? 0;
+const getUserTodayDownloads = (user: User) =>
+  user.download_today_count ?? user.download_stats?.today_count ?? 0;
 
 const getUserTotalDownloads = (user: User) =>
-  user.download_stats?.total_count ?? user.total_downloads ?? 0;
+  user.download_total_count ??
+  user.download_stats?.total_count ??
+  user.total_downloads ??
+  0;
+
+const getSubscriptionPlanLabel = (user: User) =>
+  user.subscription_plan
+    ? SUBSCRIPTION_PLAN_LABELS[user.subscription_plan]
+    : "-";
 
 const userStatusSchema = z
   .object({
@@ -183,10 +182,6 @@ export const UsersList = () => {
     suspended: "",
     created_at_from: "",
     created_at_to: "",
-    daily_download_limit_from: "",
-    daily_download_limit_to: "",
-    document_storage_used_from: "",
-    document_storage_used_to: "",
     download_total_count_from: "",
     download_total_count_to: "",
   });
@@ -204,34 +199,6 @@ export const UsersList = () => {
     ...columnVisibilityState,
   };
 
-  const updateDownloadLimitMutation = useUpdateUserDownloadLimit({
-    mutationConfig: {
-      onSuccess: (_, variables) => {
-        toast.success(
-          `Berhasil mengupdate batas unduhan untuk user (Limit: ${
-            variables.data.daily_download_limit ?? "-"
-          })`,
-        );
-      },
-      onError: (error) => {
-        console.error("Error: ", error);
-      },
-    },
-  });
-  const updateStorageLimitMutation = useUpdateUserStorageLimit({
-    mutationConfig: {
-      onSuccess: (_, variables) => {
-        toast.success(
-          `Berhasil mengupdate batas penyimpanan untuk user (Limit: ${formatBytes(
-            variables.data.document_storage_limit ?? 0,
-          )})`,
-        );
-      },
-      onError: (error) => {
-        console.error("Error: ", error);
-      },
-    },
-  });
   const updateStatusMutation = useUpdateUserStatus({
     mutationConfig: {
       onSuccess: () => {
@@ -243,102 +210,6 @@ export const UsersList = () => {
       },
     },
   });
-
-  const defaultFormatDisplay = (value?: number | null) => {
-    if (value == null || Number.isNaN(value)) {
-      return "-";
-    }
-    return String(value);
-  };
-
-  const defaultFormatInput = (value?: number | null) => {
-    if (value == null || Number.isNaN(value)) {
-      return "";
-    }
-    return String(value);
-  };
-
-  const defaultParseValue = (input: string) => {
-    if (input.trim() === "") {
-      return null;
-    }
-    const parsed = Number(input);
-    return Number.isFinite(parsed) ? parsed : null;
-  };
-
-  const EditableCell = ({
-    label,
-    value,
-    onSave,
-    type = "number",
-    formatDisplay,
-    formatInput,
-    parseValue,
-  }: {
-    label: string;
-    value?: number | null;
-    onSave: (value: number) => void;
-    type?: "text" | "number";
-    formatDisplay?: (value?: number | null) => string;
-    formatInput?: (value?: number | null) => string;
-    parseValue?: (input: string) => number | null;
-  }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const displayFormatter = formatDisplay ?? defaultFormatDisplay;
-    const inputFormatter = formatInput ?? defaultFormatInput;
-    const parser = parseValue ?? defaultParseValue;
-    const [inputValue, setInputValue] = useState(() => inputFormatter(value));
-
-    useEffect(() => {
-      if (!isEditing) {
-        setInputValue(inputFormatter(value));
-      }
-    }, [inputFormatter, isEditing, value]);
-
-    const handleBlur = () => {
-      setIsEditing(false);
-      const parsedValue = parser(inputValue);
-      if (parsedValue === null) {
-        toast.error(`${label} tidak valid`);
-        setInputValue(inputFormatter(value));
-        return;
-      }
-      if (parsedValue === value) {
-        return;
-      }
-      onSave(parsedValue);
-    };
-
-    if (isEditing) {
-      return (
-        <Input
-          type={type}
-          value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={(event) => event.key === "Enter" && handleBlur()}
-          autoFocus
-          className="h-8 w-24 px-2"
-        />
-      );
-    }
-
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span
-            className="cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors whitespace-nowrap block min-h-[1.5rem] truncate max-w-[120px]"
-            onClick={() => setIsEditing(true)}
-          >
-            {displayFormatter(value)}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{displayFormatter(value)}</p>
-        </TooltipContent>
-      </Tooltip>
-    );
-  };
 
   const { data: usersData, isLoading } = useUsers({
     params: {
@@ -362,18 +233,6 @@ export const UsersList = () => {
         : undefined,
       created_at_from: params.created_at_from || undefined,
       created_at_to: params.created_at_to || undefined,
-      daily_download_limit_from: params.daily_download_limit_from
-        ? Number(params.daily_download_limit_from)
-        : undefined,
-      daily_download_limit_to: params.daily_download_limit_to
-        ? Number(params.daily_download_limit_to)
-        : undefined,
-      document_storage_used_from: params.document_storage_used_from
-        ? Number(params.document_storage_used_from)
-        : undefined,
-      document_storage_used_to: params.document_storage_used_to
-        ? Number(params.document_storage_used_to)
-        : undefined,
       download_total_count_from: params.download_total_count_from
         ? Number(params.download_total_count_from)
         : undefined,
@@ -432,6 +291,10 @@ export const UsersList = () => {
       suspended_until: "",
     },
   });
+  const statusValue = useWatch({
+    control: statusForm.control,
+    name: "status",
+  });
 
   useServerValidation(updateStatusMutation.error, statusForm);
 
@@ -482,6 +345,20 @@ export const UsersList = () => {
     setStatusDialogOpen(true);
   };
 
+  const handleCopyUserId = async (id: string) => {
+    if (!navigator.clipboard) {
+      toast.error("Clipboard tidak didukung di browser ini");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(id);
+      toast.success("ID user berhasil disalin");
+    } catch {
+      toast.error("Gagal menyalin ID user");
+    }
+  };
+
   const applySuspendDays = (days: number) => {
     const nextDate = dayjs().add(days, "day").format("YYYY-MM-DDTHH:mm");
     statusForm.setValue("suspended_until", nextDate, {
@@ -498,10 +375,6 @@ export const UsersList = () => {
     params.suspended ||
     params.created_at_from ||
     params.created_at_to ||
-    params.daily_download_limit_from ||
-    params.daily_download_limit_to ||
-    params.document_storage_used_from ||
-    params.document_storage_used_to ||
     params.download_total_count_from ||
     params.download_total_count_to;
 
@@ -512,6 +385,8 @@ export const UsersList = () => {
     total_items: 0,
     total_pages: 0,
   };
+  const visibleColumnCount =
+    Object.values(columnVisibility).filter(Boolean).length + 2;
 
   return (
     <>
@@ -553,10 +428,6 @@ export const UsersList = () => {
                     suspended: "",
                     created_at_from: "",
                     created_at_to: "",
-                    daily_download_limit_from: "",
-                    daily_download_limit_to: "",
-                    document_storage_used_from: "",
-                    document_storage_used_to: "",
                     download_total_count_from: "",
                     download_total_count_to: "",
                   },
@@ -602,6 +473,11 @@ export const UsersList = () => {
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
+                {columnVisibility.id && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    ID
+                  </TableHead>
+                )}
                 {columnVisibility.name && (
                   <TableHead>
                     <SortableHeader field="name" onSort={handleSort}>
@@ -621,6 +497,21 @@ export const UsersList = () => {
                     </SortableHeader>
                   </TableHead>
                 )}
+                {columnVisibility.phone && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Telepon
+                  </TableHead>
+                )}
+                {columnVisibility.headline && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Headline
+                  </TableHead>
+                )}
+                {columnVisibility.location && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Lokasi
+                  </TableHead>
+                )}
                 {columnVisibility.role && (
                   <TableHead>
                     <SortableHeader field="role" onSort={handleSort}>
@@ -635,22 +526,32 @@ export const UsersList = () => {
                     </SortableHeader>
                   </TableHead>
                 )}
-                {columnVisibility.phone && (
+                {columnVisibility.email_verified_at && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Telepon
+                    Email Verified
                   </TableHead>
                 )}
-                {columnVisibility.daily_download_limit && (
+                {columnVisibility.last_login_at && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Batas Unduhan
+                    Login Terakhir
                   </TableHead>
                 )}
-                {columnVisibility.document_storage_limit && (
+                {columnVisibility.subscription_plan && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Batas Penyimpanan
+                    Paket
                   </TableHead>
                 )}
-                {columnVisibility.total_downloads && (
+                {columnVisibility.subscription_expires_at && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Masa Aktif
+                  </TableHead>
+                )}
+                {columnVisibility.download_today_count && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Unduhan Hari Ini
+                  </TableHead>
+                )}
+                {columnVisibility.download_total_count && (
                   <TableHead>
                     <SortableHeader
                       field="download_total_count"
@@ -680,7 +581,10 @@ export const UsersList = () => {
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={12} className="py-14 text-center">
+                  <TableCell
+                    colSpan={visibleColumnCount}
+                    className="py-14 text-center"
+                  >
                     <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
                       <Loader2 className="h-5 w-5 animate-spin text-primary" />
                       <span className="text-sm font-medium text-muted-foreground">
@@ -692,7 +596,7 @@ export const UsersList = () => {
               ) : users.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
-                    colSpan={12}
+                    colSpan={visibleColumnCount}
                     className="text-center py-16 text-muted-foreground"
                   >
                     <div className="flex flex-col items-center gap-2">
@@ -721,8 +625,33 @@ export const UsersList = () => {
                         onCheckedChange={() => handleSelectOne(user.id)}
                       />
                     </TableCell>
+                    {columnVisibility.id && (
+                      <TableCell className="max-w-[220px]">
+                        <div className="flex items-center gap-2">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block truncate font-mono text-xs text-muted-foreground">
+                                {user.id}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{user.id}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 shrink-0"
+                            onClick={() => handleCopyUserId(user.id)}
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                     {columnVisibility.name && (
-                      <TableCell className="max-w-[150px]">
+                      <TableCell className="min-w-[220px]">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="font-medium block truncate">
@@ -735,7 +664,7 @@ export const UsersList = () => {
                         </Tooltip>
                       </TableCell>
                     )}
-{columnVisibility.username && (
+                    {columnVisibility.username && (
                       <TableCell className="text-muted-foreground max-w-[120px]">
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -749,7 +678,7 @@ export const UsersList = () => {
                         </Tooltip>
                       </TableCell>
                     )}
-{columnVisibility.email && (
+                    {columnVisibility.email && (
                       <TableCell className="max-w-[200px]">
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -759,6 +688,48 @@ export const UsersList = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>{user.email}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.phone && (
+                      <TableCell className="text-muted-foreground max-w-[150px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.phone || "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.phone || "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.headline && (
+                      <TableCell className="text-muted-foreground max-w-[220px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.headline || "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.headline || "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.location && (
+                      <TableCell className="text-muted-foreground max-w-[150px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.location || "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.location || "-"}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>
@@ -811,63 +782,66 @@ export const UsersList = () => {
                         )}
                       </TableCell>
                     )}
-{columnVisibility.phone && (
-                      <TableCell className="text-muted-foreground max-w-[150px]">
+                    {columnVisibility.email_verified_at && (
+                      <TableCell className="whitespace-nowrap">
+                        {user.email_verified_at ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge variant="default">Terverifikasi</Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                {dayjs(user.email_verified_at).format(
+                                  "DD MMM YYYY, HH:mm",
+                                )}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <Badge variant="outline">Belum</Badge>
+                        )}
+                      </TableCell>
+                    )}
+                    {columnVisibility.last_login_at && (
+                      <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                        {user.last_login_at
+                          ? dayjs(user.last_login_at).format(
+                              "DD MMM YYYY, HH:mm",
+                            )
+                          : "-"}
+                      </TableCell>
+                    )}
+                    {columnVisibility.subscription_plan && (
+                      <TableCell className="whitespace-nowrap">
+                        <Badge variant="outline">
+                          {getSubscriptionPlanLabel(user)}
+                        </Badge>
+                      </TableCell>
+                    )}
+                    {columnVisibility.subscription_expires_at && (
+                      <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                        {user.subscription_expires_at
+                          ? dayjs(user.subscription_expires_at).format(
+                              "DD MMM YYYY, HH:mm",
+                            )
+                          : "-"}
+                      </TableCell>
+                    )}
+                    {columnVisibility.download_today_count && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="block truncate">
-                              {user.phone || "-"}
+                              {getUserTodayDownloads(user)}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>{user.phone || "-"}</p>
+                            <p>{getUserTodayDownloads(user)}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>
                     )}
-{columnVisibility.daily_download_limit && (
-                      <TableCell className="max-w-[120px]">
-                        <EditableCell
-                          label="Batas Unduhan"
-                          value={getUserDailyDownloadLimit(user)}
-                          onSave={(value) =>
-                            updateDownloadLimitMutation.mutate({
-                              id: user.id,
-                              data: { daily_download_limit: value },
-                            })
-                          }
-                          type="number"
-                        />
-                      </TableCell>
-                    )}
-{columnVisibility.document_storage_limit && (
-                      <TableCell className="max-w-[150px]">
-                        <EditableCell
-                          label="Batas Penyimpanan"
-                          value={getUserDocumentStorageLimit(user)}
-                          onSave={(value) =>
-                            updateStorageLimitMutation.mutate({
-                              id: user.id,
-                              data: { document_storage_limit: value },
-                            })
-                          }
-                          type="number"
-                          formatDisplay={(val) => formatBytes(val ?? 0)}
-                          formatInput={(val) =>
-                            String(Math.round(bytesToMegabytes(val ?? 0)))
-                          }
-                          parseValue={(input) => {
-                            const parsed = Number(input);
-                            if (!Number.isFinite(parsed) || parsed < 0) {
-                              return null;
-                            }
-
-                            return megabytesToBytes(parsed);
-                          }}
-                        />
-                      </TableCell>
-                    )}
-{columnVisibility.total_downloads && (
+                    {columnVisibility.download_total_count && (
                       <TableCell className="text-muted-foreground max-w-[120px]">
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -883,12 +857,16 @@ export const UsersList = () => {
                     )}
                     {columnVisibility.created_at && (
                       <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
-                        {dayjs(user.created_at).format("DD MMM YYYY, HH:mm")}
+                        {user.created_at
+                          ? dayjs(user.created_at).format("DD MMM YYYY, HH:mm")
+                          : "-"}
                       </TableCell>
                     )}
                     {columnVisibility.updated_at && (
                       <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
-                        {dayjs(user.updated_at).format("DD MMM YYYY, HH:mm")}
+                        {user.updated_at
+                          ? dayjs(user.updated_at).format("DD MMM YYYY, HH:mm")
+                          : "-"}
                       </TableCell>
                     )}
                     <TableCell className="text-right">
@@ -1035,10 +1013,6 @@ export const UsersList = () => {
             : undefined,
           created_at_from: params.created_at_from || "",
           created_at_to: params.created_at_to || "",
-          daily_download_limit_from: params.daily_download_limit_from || "",
-          daily_download_limit_to: params.daily_download_limit_to || "",
-          document_storage_used_from: params.document_storage_used_from || "",
-          document_storage_used_to: params.document_storage_used_to || "",
           download_total_count_from: params.download_total_count_from || "",
           download_total_count_to: params.download_total_count_to || "",
         }}
@@ -1052,13 +1026,6 @@ export const UsersList = () => {
               suspended: newFilters.suspended || "",
               created_at_from: newFilters.created_at_from || "",
               created_at_to: newFilters.created_at_to || "",
-              daily_download_limit_from:
-                newFilters.daily_download_limit_from || "",
-              daily_download_limit_to: newFilters.daily_download_limit_to || "",
-              document_storage_used_from:
-                newFilters.document_storage_used_from || "",
-              document_storage_used_to:
-                newFilters.document_storage_used_to || "",
               download_total_count_from:
                 newFilters.download_total_count_from || "",
               download_total_count_to: newFilters.download_total_count_to || "",
@@ -1115,7 +1082,7 @@ export const UsersList = () => {
             <Field>
               <FieldLabel>Status</FieldLabel>
               <Select
-                value={statusForm.watch("status")}
+                value={statusValue}
                 onValueChange={(value) => {
                   statusForm.setValue("status", value as User["status"], {
                     shouldDirty: true,
@@ -1143,7 +1110,7 @@ export const UsersList = () => {
               </FieldError>
             </Field>
 
-            {statusForm.watch("status") === "suspended" && (
+            {statusValue === "suspended" && (
               <Field>
                 <FieldLabel>Suspend Sampai</FieldLabel>
                 <Input

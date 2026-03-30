@@ -11,58 +11,82 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export interface ColumnVisibility {
+  id: boolean;
   name: boolean;
   username: boolean;
   email: boolean;
+  phone: boolean;
+  headline: boolean;
+  location: boolean;
   role: boolean;
   status: boolean;
-  phone: boolean;
-  daily_download_limit: boolean;
-  document_storage_limit: boolean;
-  total_downloads: boolean;
+  email_verified_at: boolean;
+  last_login_at: boolean;
+  subscription_plan: boolean;
+  subscription_expires_at: boolean;
+  download_today_count: boolean;
+  download_total_count: boolean;
   created_at: boolean;
   updated_at: boolean;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const defaultColumnVisibility: ColumnVisibility = {
+  id: false,
   name: true,
   username: true,
   email: true,
+  phone: false,
+  headline: true,
+  location: false,
   role: true,
   status: true,
-  phone: false,
-  daily_download_limit: true,
-  document_storage_limit: true,
-  total_downloads: false,
+  email_verified_at: false,
+  last_login_at: true,
+  subscription_plan: true,
+  subscription_expires_at: false,
+  download_today_count: false,
+  download_total_count: true,
   created_at: true,
   updated_at: false,
 };
 
 const columnOrder: (keyof ColumnVisibility)[] = [
+  "id",
   "name",
   "username",
   "email",
+  "phone",
+  "headline",
+  "location",
   "role",
   "status",
-  "phone",
-  "daily_download_limit",
-  "document_storage_limit",
-  "total_downloads",
+  "email_verified_at",
+  "last_login_at",
+  "subscription_plan",
+  "subscription_expires_at",
+  "download_today_count",
+  "download_total_count",
   "created_at",
   "updated_at",
 ];
 
 const columnLabels: Record<keyof ColumnVisibility, string> = {
+  id: "ID",
   name: "Nama",
   username: "Username",
   email: "Email",
+  phone: "Telepon",
+  headline: "Headline",
+  location: "Lokasi",
   role: "Role",
   status: "Status",
-  phone: "Telepon",
-  daily_download_limit: "Batas Unduhan",
-  document_storage_limit: "Batas Penyimpanan",
-  total_downloads: "Total Unduhan",
+  email_verified_at: "Email Verified",
+  last_login_at: "Login Terakhir",
+  subscription_plan: "Paket",
+  subscription_expires_at: "Masa Aktif",
+  download_today_count: "Unduhan Hari Ini",
+  download_total_count: "Total Unduhan",
   created_at: "Dibuat",
   updated_at: "Diperbarui",
 };

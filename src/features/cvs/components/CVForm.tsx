@@ -70,6 +70,8 @@ import {
   type CVFormData,
   type CVFormInput,
 } from "../api/create-cv";
+import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
+import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
 
 interface CVFormProps {
   initialData?: Partial<CV>;
@@ -90,6 +92,8 @@ export function CVForm({
   error,
 }: CVFormProps) {
   const { data: user } = useUser();
+  const { data: mySubscription } = useMySubscription();
+  const subscriptionFeatures = getPlanFeatureAccess(mySubscription?.current_features);
   
   const form = useForm<CVFormInput>({
     resolver: zodResolver(cvSchema, undefined, { raw: true }),
@@ -304,6 +308,12 @@ export function CVForm({
                         templates={apiTemplates}
                         value={templateIdValue}
                         onChange={(v) => setValue("template_id", v)}
+                        getTemplateDisabledReason={(template) =>
+                          template.is_premium &&
+                          !subscriptionFeatures.canUsePremiumCvTemplates
+                            ? "Template premium membutuhkan paket Pro atau Max."
+                            : null
+                        }
                         hasError={!!errors.template_id}
                         disabled={!selectedTemplateLanguage}
                       />

@@ -9,6 +9,7 @@ interface TemplateSelectorProps {
   templates: DocumentTemplate[];
   value: string;
   onChange: (value: string) => void;
+  getTemplateDisabledReason?: (template: DocumentTemplate) => string | null;
   hasError?: boolean;
   disabled?: boolean;
 }
@@ -17,6 +18,7 @@ export function TemplateSelector({
   templates,
   value,
   onChange,
+  getTemplateDisabledReason,
   hasError,
   disabled,
 }: TemplateSelectorProps) {
@@ -104,6 +106,7 @@ export function TemplateSelector({
         templates={templates}
         value={value}
         onSelect={onChange}
+        getTemplateDisabledReason={getTemplateDisabledReason}
       />
     </div>
   );

@@ -16,8 +16,6 @@ export const updateUserInputSchema = z.object({
   status: z.enum(["active", "suspended", "banned"]).optional(),
   status_reason: z.string().optional().nullable(),
   suspended_until: z.string().optional().nullable(),
-  daily_download_limit: z.coerce.number().min(0).max(1000).optional(),
-  document_storage_limit: z.coerce.number().min(0).optional(),
 });
 
 export type UpdateUserInput = z.infer<typeof updateUserInputSchema>;

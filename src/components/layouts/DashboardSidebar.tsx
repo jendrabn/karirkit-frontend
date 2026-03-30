@@ -11,7 +11,6 @@ import {
   FolderOpen,
   BookOpen,
   FileStack,
-  Settings2,
   Shield,
   Heart,
   Users,
@@ -21,6 +20,7 @@ import {
   Bookmark,
   Files,
   Bell,
+  Crown,
 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import {
@@ -55,8 +55,10 @@ import { cn } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
 import { buildImageUrl } from "@/lib/utils";
+import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
+import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
 
-const menuItems = [
+const baseMenuItems = [
   {
     title: "Dashboard",
     url: paths.dashboard.getHref(),
@@ -87,6 +89,11 @@ const menuItems = [
     url: paths.documents.list.getHref(),
     icon: Files,
   },
+  {
+    title: "Langganan",
+    url: paths.subscriptions.list.getHref(),
+    icon: Crown,
+  },
 ];
 
 const blogMenuItems = [
@@ -107,6 +114,9 @@ export function DashboardSidebar() {
   const { state } = useSidebar();
   const { theme, setTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
+  const { data: mySubscription } = useMySubscription({
+    queryConfig: { enabled: isAuthenticated },
+  });
   const isCollapsed = state === "collapsed";
   const [blogOpen, setBlogOpen] = useState(
     location.pathname.startsWith("/admin/blogs") ||
@@ -121,6 +131,11 @@ export function DashboardSidebar() {
     isAuthenticated &&
     user &&
     (user.role === "admin" || (user.role as string) === "superadmin");
+  const subscriptionFeatures = getPlanFeatureAccess(mySubscription?.current_features);
+  const menuItems = baseMenuItems.filter(
+    (item) =>
+      item.title !== "Dokumen" || subscriptionFeatures.canManageDocuments,
+  );
 
   const handleLogout = () => {
     logout();
@@ -483,26 +498,22 @@ export function DashboardSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    size="lg"
-                    tooltip="System Settings"
-                  >
+                  <SidebarMenuButton asChild size="lg" tooltip="Langganan">
                     <NavLink
-                      to={paths.admin.systemSettings.list.getHref()}
+                      to={paths.admin.subscriptions.list.getHref()}
                       className={cn(
                         "flex items-center rounded-lg transition-colors",
                         isCollapsed
                           ? "justify-center px-2 py-3"
                           : "gap-3 px-3 py-3",
-                        isActive(paths.admin.systemSettings.list.getHref())
+                        isActive(paths.admin.subscriptions.list.getHref())
                           ? "bg-primary text-primary-foreground"
                           : "hover:bg-muted text-foreground"
                       )}
                     >
-                      <Settings2 className="h-5 w-5 shrink-0" />
+                      <Crown className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
-                        <span className="font-medium">System Settings</span>
+                        <span className="font-medium">Langganan</span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
