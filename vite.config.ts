@@ -4,11 +4,80 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
-// https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const rawEnv = loadEnv(mode, process.cwd(), "");
   const apiBaseUrl = rawEnv.VITE_APP_API_URL ?? "";
-  const parsedApiUrl = apiBaseUrl ? new URL(apiBaseUrl) : null;
+
+  const runtimeCaching: any[] = [
+    {
+      urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+      handler: "CacheFirst",
+      options: {
+        cacheName: "google-fonts-cache",
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 60 * 60 * 24 * 365,
+        },
+        cacheableResponse: {
+          statuses: [0, 200],
+        },
+      },
+    },
+    {
+      urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+      handler: "CacheFirst",
+      options: {
+        cacheName: "gstatic-fonts-cache",
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 60 * 60 * 24 * 365,
+        },
+        cacheableResponse: {
+          statuses: [0, 200],
+        },
+      },
+    },
+    {
+      urlPattern: /\.(png|jpg|jpeg|svg|gif|webp)$/i,
+      handler: "CacheFirst",
+      options: {
+        cacheName: "images-cache",
+        expiration: {
+          maxEntries: 60,
+          maxAgeSeconds: 60 * 60 * 24 * 30,
+        },
+      },
+    },
+  ];
+
+  if (apiBaseUrl) {
+    try {
+      const parsedApiUrl = new URL(apiBaseUrl);
+      const apiPattern = new RegExp(
+        `^${parsedApiUrl.origin}${parsedApiUrl.pathname.replace(/\/$/, "")}/.*`,
+        "i"
+      );
+
+      runtimeCaching.push({
+        urlPattern: ({ url }: { url: { href: string } }) => {
+          return apiPattern.test(url.href);
+        },
+        handler: "NetworkFirst",
+        options: {
+          cacheName: "api-cache",
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 60 * 5,
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      });
+    } catch {
+      // ignore invalid URL
+    }
+  }
 
   return {
     plugins: [
@@ -21,8 +90,8 @@ export default defineConfig(({ mode }) => {
           "favicon-16x16.png",
           "favicon-32x32.png",
           "apple-touch-icon.png",
-          "android-chrome-192x192.png",
-          "android-chrome-512x512.png",
+          "android-ch192x192.png",
+          "android-ch512x512.png",
           "images/**/*",
         ],
         manifest: {
@@ -53,7 +122,7 @@ export default defineConfig(({ mode }) => {
               type: "image/png",
             },
             {
-              src: "android-chrome-192x192.png",
+              src: "android-ch192x192.png",
               sizes: "192x192",
               type: "image/png",
             },
@@ -63,7 +132,7 @@ export default defineConfig(({ mode }) => {
               type: "image/png",
             },
             {
-              src: "android-chrome-512x512.png",
+              src: "android-ch512x512.png",
               sizes: "512x512",
               type: "image/png",
             },
@@ -83,70 +152,7 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-              handler: "CacheFirst",
-              options: {
-                cacheName: "google-fonts-cache",
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365,
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-            {
-              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-              handler: "CacheFirst",
-              options: {
-                cacheName: "gstatic-fonts-cache",
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365,
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-            {
-              urlPattern: ({ url, request }) => {
-                if (request.method !== "GET" || !parsedApiUrl) {
-                  return false;
-                }
-
-                return (
-                  url.origin === parsedApiUrl.origin &&
-                  url.pathname.startsWith(parsedApiUrl.pathname)
-                );
-              },
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "api-cache",
-                expiration: {
-                  maxEntries: 50,
-                  maxAgeSeconds: 60 * 5,
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-            {
-              urlPattern: /\.(png|jpg|jpeg|svg|gif|webp)$/i,
-              handler: "CacheFirst",
-              options: {
-                cacheName: "images-cache",
-                expiration: {
-                  maxEntries: 60,
-                  maxAgeSeconds: 60 * 60 * 24 * 30,
-                },
-              },
-            },
-          ],
+          runtimeCaching,
         },
         devOptions: {
           enabled: false,
