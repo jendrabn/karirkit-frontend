@@ -226,6 +226,9 @@ export function SubscriptionManager() {
               options?.loadingErrorMessage ?? "Pembayaran Midtrans gagal dibuka.",
             );
           },
+          onClose: () => {
+            toast.info("Pembayaran dibatalkan. Silakan coba lagi.");
+          },
         });
         return;
       }
@@ -392,7 +395,7 @@ export function SubscriptionManager() {
                   {cancelMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : null}
-                  Batalkan Pending
+                  Batalkan
                 </Button>
               ) : null}
             </div>
@@ -591,11 +594,11 @@ export function SubscriptionManager() {
                         {`Berlaku sampai ${expiresAtLabel}`}
                       </p>
                     ) : null}
-                    {isPendingPlan ? (
+                    {/* {isPendingPlan ? (
                       <p className="text-xs font-medium text-amber-700">
                         Paket ini sedang menunggu pembayaran.
                       </p>
-                    ) : null}
+                    ) : null} */}
                   </div>
                 ) : null}
               </div>
