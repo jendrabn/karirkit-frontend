@@ -70,6 +70,8 @@ export interface SubscriptionCurrentFeatures {
 export interface MySubscription {
   id?: string | null;
   plan: SubscriptionPlanId;
+  pending_plan?: SubscriptionPlanId | null;
+  pendingPlan?: SubscriptionPlanId | null;
   status: SubscriptionStatus;
   amount?: number | null;
   paid_at?: string | null;
@@ -78,17 +80,30 @@ export interface MySubscription {
   updated_at?: string | null;
   midtrans_order_id?: string | null;
   midtrans_payment_type?: string | null;
+  snap_token?: string | null;
+  snapToken?: string | null;
+  snap_url?: string | null;
+  snapUrl?: string | null;
+  can_resume_payment?: boolean;
+  canResumePayment?: boolean;
   current_limits: SubscriptionCurrentLimits;
   current_features: SubscriptionCurrentFeatures;
 }
 
 export interface SubscriptionOrderResponse {
   id?: string;
+  subscription_id?: string;
+  order_id?: string;
+  amount?: number;
+  plan?: SubscriptionPlanId;
   redirectUrl?: string | null;
   redirect_url?: string | null;
   paymentUrl?: string | null;
   payment_url?: string | null;
+  snapUrl?: string | null;
+  snap_url?: string | null;
   snapToken?: string | null;
+  snap_token?: string | null;
   token?: string | null;
   [key: string]: unknown;
 }

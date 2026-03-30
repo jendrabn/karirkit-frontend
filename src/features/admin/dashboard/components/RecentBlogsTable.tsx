@@ -11,10 +11,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import type { DashboardStatistics } from "../api/get-dashboard-stats";
+import type { AdminDashboardStatistics } from "@/types/dashboard";
 
 interface RecentBlogsTableProps {
-  blogs: DashboardStatistics["recent_blogs"];
+  blogs: NonNullable<AdminDashboardStatistics["recent_blogs"]>;
 }
 
 export const RecentBlogsTable = ({ blogs }: RecentBlogsTableProps) => {

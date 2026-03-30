@@ -258,7 +258,7 @@ const ProfileForm = () => {
                 <FieldError>{errors.headline?.message}</FieldError>
               </Field>
               <Field>
-                <FieldLabel>Bio Singkat</FieldLabel>
+                <FieldLabel>Bio</FieldLabel>
                 <Textarea
                   {...register("bio")}
                   rows={4}
@@ -273,10 +273,6 @@ const ProfileForm = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <FieldLabel>Media Sosial</FieldLabel>
-                  <FieldDescription className="mt-1">
-                    Gunakan platform yang tersedia untuk menjaga konsistensi
-                    tautan.
-                  </FieldDescription>
                 </div>
                 <Button
                   type="button"
