@@ -318,12 +318,12 @@ export function SubscriptionManager() {
   return (
     <div className="space-y-8">
       {hasPendingPayment ? (
-        <Card className="rounded-3xl border-amber-200 bg-linear-to-r from-amber-50 via-background to-background p-6">
+        <Card className="rounded-3xl border-amber-200 dark:border-amber-800 bg-linear-to-r from-amber-50 via-background to-background dark:from-amber-950/50 dark:via-background dark:to-background p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-3">
               <Badge
                 variant="secondary"
-                className="w-fit rounded-full bg-amber-100 px-3 py-1 text-amber-800"
+                className="w-fit rounded-full bg-amber-100 dark:bg-amber-900 px-3 py-1 text-amber-800 dark:text-amber-200"
               >
                 Menunggu Pembayaran
               </Badge>
@@ -337,11 +337,11 @@ export function SubscriptionManager() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                <div className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5">
-                  <Clock3 className="h-4 w-4 text-amber-600" />
+                <div className="inline-flex items-center gap-2 rounded-full border bg-background dark:bg-background px-3 py-1.5">
+                  <Clock3 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   Plan efektif saat ini: {SUBSCRIPTION_PLAN_LABELS[activePlanId]}
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5">
+                <div className="inline-flex items-center gap-2 rounded-full border bg-background dark:bg-background px-3 py-1.5">
                   <ArrowRight className="h-4 w-4 text-primary" />
                   Pending upgrade: {pendingPlanLabel}
                 </div>

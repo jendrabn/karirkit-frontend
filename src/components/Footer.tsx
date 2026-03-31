@@ -1,5 +1,4 @@
 import {
-  Heart,
   Instagram,
   Linkedin,
   Mail,
@@ -207,14 +206,9 @@ export function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-background/10 dark:border-foreground/10">
         <div className="container mx-auto px-4 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-background/60 dark:text-muted-foreground text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <p className="text-sm text-background/60 dark:text-muted-foreground text-center">
               © {currentYear} KarirKit. Semua hak dilindungi.
-            </p>
-            <p className="text-sm text-background/60 dark:text-muted-foreground flex items-center gap-1">
-              Dibuat dengan{" "}
-              <Heart className="w-4 h-4 text-red-400 fill-red-400" /> di
-              Indonesia
             </p>
           </div>
         </div>

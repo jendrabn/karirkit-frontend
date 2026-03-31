@@ -19,7 +19,7 @@ const createEnv = () => {
     APP_MOCK_API_PORT: z.string().optional().default("8080"),
     GOOGLE_CLIENT_ID: z.string().optional().default("YOUR_GOOGLE_CLIENT_ID"),
     MIDTRANS_CLIENT_KEY: z.string().optional().default(""),
-    SUPPORT_EMAIL: z.string().optional().default("support@karirkit.com"),
+    SUPPORT_EMAIL: z.string().optional().default("karirkitid@gmail.com"),
   });
 
   const envVars = Object.entries(import.meta.env).reduce<
