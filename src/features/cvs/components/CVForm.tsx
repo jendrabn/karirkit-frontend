@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Controller, useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "@/lib/auth";
@@ -119,7 +119,7 @@ export function CVForm({
         []) as CVFormInput["organizations"],
       projects: (normalizeProjects(initialData?.projects) ||
         []) as CVFormInput["projects"],
-      language: initialData?.language ?? undefined,
+      language: initialData?.language ?? "id",
     },
   });
 
@@ -175,6 +175,12 @@ export function CVForm({
         previewImage: buildImageUrl(t.preview),
       })) || []
     : [];
+
+  useEffect(() => {
+    if (apiTemplates.length > 0 && !templateIdValue) {
+      setValue("template_id", apiTemplates[0].id);
+    }
+  }, [apiTemplates, templateIdValue, setValue]);
 
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [activeParagraphType, setActiveParagraphType] =

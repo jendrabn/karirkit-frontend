@@ -248,7 +248,7 @@ export function DocumentUploadModal({
           <DialogHeader>
             <DialogTitle>Upload Dokumen</DialogTitle>
             <DialogDescription>
-              Unggah dokumen Anda ke platform kami
+              Unggah dan kelola dokumen persyaratan kerja seperti ijazah, transkrip, sertifikat, KTP, SKCK, dan dokumen lainnya
             </DialogDescription>
           </DialogHeader>
 
@@ -346,7 +346,7 @@ export function DocumentUploadModal({
                 </div>
                 <FieldDescription>
                   JPG, JPEG, PNG, GIF, WEBP, SVG, PDF, DOC, DOCX, XLS, XLSX,
-                  PPT, PPTX, TXT, RTF (Maks. 25MB)
+                  PPT, PPTX, TXT, RTF (MAX 25MB)
                 </FieldDescription>
                 <FieldError>{fileError}</FieldError>
               </Field>
@@ -410,7 +410,7 @@ export function DocumentUploadModal({
 
               {isCompressibleFile && (
                 <Field>
-                  <FieldLabel>Kompresi File</FieldLabel>
+                  <FieldLabel>Level Kompresi</FieldLabel>
                   <Select
                     value={compression}
                     onValueChange={(value) =>

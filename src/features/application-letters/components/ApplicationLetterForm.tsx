@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
@@ -96,7 +96,7 @@ export function ApplicationLetterForm({
       attachments: initialData?.attachments || "",
       closing_paragraph: initialData?.closing_paragraph || "",
       signature: initialData?.signature || "",
-      language: initialData?.language,
+      language: initialData?.language ?? "id",
     },
   });
 
@@ -136,6 +136,13 @@ export function ApplicationLetterForm({
         previewImage: buildImageUrl(t.preview),
       })) || []
     : [];
+
+  useEffect(() => {
+    if (templates.length > 0 && !selectedTemplate) {
+      setSelectedTemplate(templates[0].id);
+      form.setValue("template_id", templates[0].id);
+    }
+  }, [templates, selectedTemplate, form]);
 
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [activeParagraphType, setActiveParagraphType] =

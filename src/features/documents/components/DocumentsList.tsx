@@ -3,7 +3,6 @@ import {
   Search,
   Filter,
   Plus,
-  Eye,
   Trash2,
   ChevronLeft,
   ChevronRight,
@@ -77,7 +76,7 @@ import {
 } from "@/types/document";
 import { toast } from "sonner";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
-import { buildImageUrl, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { useDocuments } from "@/features/documents/api/get-documents";
@@ -272,14 +271,6 @@ export function DocumentsList() {
       id: doc.id,
       originalName: doc.original_name,
     });
-  };
-
-  const handlePreview = (doc: Document) => {
-    const previewUrl = buildImageUrl(doc.path);
-    if (previewUrl) {
-      window.open(previewUrl, "_blank");
-      toast.info(`Membuka preview ${doc.original_name}`);
-    }
   };
 
   const handleSortField = (field: SortField) => {
@@ -497,10 +488,6 @@ export function DocumentsList() {
                           align="end"
                           className="w-40 bg-popover z-50"
                         >
-                          <DropdownMenuItem onClick={() => handlePreview(doc)}>
-                            <Eye className="h-4 w-4 mr-2" />
-                            Preview
-                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleDownload(doc)}>
                             <Download className="h-4 w-4 mr-2" />
                             Download

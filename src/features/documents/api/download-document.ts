@@ -3,12 +3,10 @@ import { toast } from "sonner";
 
 import { api } from "@/lib/api-client";
 
-export const downloadDocument = (id: string) => {
-  return api
-    .get<Blob>(`/documents/${id}/download`, {
-      responseType: "blob",
-    })
-    .then((response) => response.data);
+export const downloadDocument = (id: string): Promise<Blob> => {
+  return api.get(`/documents/${id}/download`, {
+    responseType: "blob",
+  });
 };
 
 type UseDownloadDocumentOptions = {

@@ -27,7 +27,7 @@ export function DonationModal({ open, onOpenChange }: DonationModalProps) {
               Dukung Operasional KarirKit
             </DialogTitle>
             <DialogDescription className="text-base leading-relaxed mt-2">
-              KarirKit berjalan tanpa iklan dan paywall untuk mendukung pencari
+              KarirKit berjalan tanpa iklan untuk mendukung pencari
               kerja di Indonesia, dan donasi Anda membantu kami membiayai
               server, pemeliharaan sistem, serta pengembangan fitur agar layanan
               ini terus berjalan dan berkembang.
