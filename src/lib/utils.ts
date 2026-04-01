@@ -166,12 +166,25 @@ export const formatPhoneForWhatsApp = (phone: string): string => {
 export const getContactLink = (
   type: "email" | "phone" | "url",
   value: string,
+  message?: string,
 ): string => {
   switch (type) {
-    case "email":
-      return `mailto:${value}`;
+    case "email": {
+      if (!message) {
+        return `mailto:${value}`;
+      }
+
+      return `mailto:${value}?subject=${encodeURIComponent(
+        "KarirKit Support",
+      )}&body=${encodeURIComponent(message)}`;
+    }
     case "phone": {
-      return `https://wa.me/${formatPhoneForWhatsApp(value)}`;
+      const phone = formatPhoneForWhatsApp(value);
+      if (!message) {
+        return `https://wa.me/${phone}`;
+      }
+
+      return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     }
     case "url":
       return value.startsWith("http") ? value : `https://${value}`;

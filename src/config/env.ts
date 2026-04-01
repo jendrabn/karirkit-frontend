@@ -20,6 +20,7 @@ const createEnv = () => {
     GOOGLE_CLIENT_ID: z.string().optional().default("YOUR_GOOGLE_CLIENT_ID"),
     MIDTRANS_CLIENT_KEY: z.string().optional().default(""),
     SUPPORT_EMAIL: z.string().optional().default("karirkitid@gmail.com"),
+    SUPPORT_WHATSAPP: z.string().optional().default(""),
   });
 
   const envVars = Object.entries(import.meta.env).reduce<

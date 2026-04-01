@@ -43,7 +43,7 @@ import { Link } from "react-router";
 
 const navLinks = [
   { href: paths.home.getHref(), label: "Beranda", icon: Home },
-  { href: paths.jobs.list.getHref(), label: "Info Loker", icon: Briefcase },
+  { href: paths.jobs.list.getHref(), label: "Lowongan", icon: Briefcase },
   { href: paths.blog.list.getHref(), label: "Blog", icon: Globe },
 ];
 

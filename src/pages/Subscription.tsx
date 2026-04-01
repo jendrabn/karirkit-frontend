@@ -14,12 +14,12 @@ export default function Subscription() {
     >
       <MinimalSEO
         title="Langganan"
-        description="Kelola paket langganan dan capability akun Anda."
+        description="Kelola paket langganan, lihat fitur akun, dan upgrade sesuai kebutuhan."
         noIndex={true}
       />
       <PageHeader
         title="Langganan"
-        subtitle="Kelola paket, lihat capability akun, dan upgrade plan sesuai kebutuhan."
+        subtitle="Kelola paket langganan, lihat fitur akun, dan upgrade sesuai kebutuhan."
       />
       <SubscriptionManager />
     </DashboardLayout>

@@ -8,6 +8,8 @@ import {
   Crown,
   Infinity as InfinityIcon,
   Loader2,
+  Mail,
+  MessageCircle,
   X,
   Zap,
 } from "lucide-react";
@@ -17,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { env } from "@/config/env";
+import { getContactLink } from "@/lib/utils";
 import { useCancelSubscription } from "@/features/subscriptions/api/cancel-subscription";
 import { useCreateSubscriptionOrder } from "@/features/subscriptions/api/create-subscription-order";
 import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
@@ -276,22 +279,6 @@ export function SubscriptionManager() {
     },
   });
 
-  const currentSubscriptionPayload = currentSubscription
-    ? (currentSubscription as unknown as Record<string, unknown>)
-    : null;
-  const activePlanId = currentSubscription?.plan ?? "free";
-  const pendingPlanId = currentSubscriptionPayload
-    ? resolvePendingPlan(currentSubscriptionPayload)
-    : null;
-  const canResumePayment = currentSubscriptionPayload
-    ? resolveCanResumePayment(currentSubscriptionPayload)
-    : false;
-  const hasPendingPayment =
-    currentSubscription?.status === "pending" && canResumePayment && !!pendingPlanId;
-  const pendingPlanLabel = pendingPlanId
-    ? SUBSCRIPTION_PLAN_LABELS[pendingPlanId]
-    : null;
-
   if (isPlansLoading || isSubscriptionLoading) {
     return (
       <div className="flex min-h-[320px] items-center justify-center rounded-2xl border bg-card">
@@ -314,6 +301,24 @@ export function SubscriptionManager() {
       </Card>
     );
   }
+
+  const currentSubscriptionPayload =
+    currentSubscription as unknown as Record<string, unknown>;
+  const activePlanId = currentSubscription.plan ?? "free";
+  const pendingPlanId = resolvePendingPlan(currentSubscriptionPayload);
+  const canResumePayment = resolveCanResumePayment(currentSubscriptionPayload);
+  const hasPendingPayment =
+    currentSubscription.status === "pending" && canResumePayment && !!pendingPlanId;
+  const pendingPlanLabel = pendingPlanId
+    ? SUBSCRIPTION_PLAN_LABELS[pendingPlanId]
+    : null;
+  const expiresAtLabel = currentSubscription.expires_at
+    ? format(new Date(currentSubscription.expires_at), "d MMM yyyy", {
+        locale: indonesianLocale,
+      })
+    : "Tidak tersedia";
+  const supportWhatsAppMessage = `Halo ${env.APP_NAME}, saya ingin konsultasi paket langganan. Mohon bantuannya untuk memilih plan yang paling sesuai dengan kebutuhan saya.`;
+  const supportEmailMessage = `Halo ${env.APP_NAME} Support,\n\nSaya ingin konsultasi paket langganan. Mohon bantuannya untuk memilih plan yang paling sesuai dengan kebutuhan saya.\n\nTerima kasih.`;
 
   return (
     <div className="space-y-8">
@@ -360,15 +365,12 @@ export function SubscriptionManager() {
                   setIsResumingPayment(true);
 
                   try {
-                    await openMidtransCheckout(
-                      currentSubscriptionPayload as Record<string, unknown>,
-                      {
-                        missingPaymentMessage:
-                          "Data resume pembayaran tidak tersedia untuk order pending ini.",
-                        loadingErrorMessage:
-                          "Gagal membuka resume pembayaran Midtrans.",
-                      },
-                    );
+                    await openMidtransCheckout(currentSubscriptionPayload, {
+                      missingPaymentMessage:
+                        "Data resume pembayaran tidak tersedia untuk order pending ini.",
+                      loadingErrorMessage:
+                        "Gagal membuka resume pembayaran Midtrans.",
+                    });
                   } finally {
                     setIsResumingPayment(false);
                   }
@@ -412,12 +414,8 @@ export function SubscriptionManager() {
           const features = getPlanFeatureAccess(undefined, plan);
           const isOrdering =
             orderMutation.isPending && orderMutation.variables?.planId === plan.id;
-          const expiresAtLabel =
-            isCurrent && currentSubscription.expires_at
-              ? format(new Date(currentSubscription.expires_at), "d MMM yyyy", {
-                  locale: indonesianLocale,
-                })
-              : null;
+          const currentPlanExpiresAtLabel =
+            isCurrent && currentSubscription.expires_at ? expiresAtLabel : null;
 
           return (
             <Card
@@ -587,11 +585,11 @@ export function SubscriptionManager() {
                         : "Pilih Paket"}
                 </Button>
 
-                {(isCurrent && expiresAtLabel) || isPendingPlan ? (
+                {(isCurrent && currentPlanExpiresAtLabel) || isPendingPlan ? (
                   <div className="mt-3 space-y-2 text-center">
-                    {isCurrent && expiresAtLabel ? (
+                    {isCurrent && currentPlanExpiresAtLabel ? (
                       <p className="text-xs text-muted-foreground">
-                        {`Berlaku sampai ${expiresAtLabel}`}
+                        {`Berlaku sampai ${currentPlanExpiresAtLabel}`}
                       </p>
                     ) : null}
                     {/* {isPendingPlan ? (
@@ -606,6 +604,61 @@ export function SubscriptionManager() {
           );
         })}
       </div>
+
+      {env.SUPPORT_WHATSAPP || env.SUPPORT_EMAIL ? (
+        <Card className="rounded-2xl border-primary/15 bg-primary/5 p-5 shadow-sm">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <MessageCircle className="h-5 w-5" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Butuh bantuan?
+                </h3>
+                <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+                  Hubungi support jika butuh bantuan terkait paket, pembayaran,
+                  atau upgrade langganan.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row md:shrink-0">
+              {env.SUPPORT_WHATSAPP ? (
+                <Button asChild className="justify-between sm:min-w-52">
+                  <a
+                    href={getContactLink(
+                      "phone",
+                      env.SUPPORT_WHATSAPP,
+                      supportWhatsAppMessage,
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      Chat WhatsApp
+                    </span>
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </Button>
+              ) : null}
+
+              {env.SUPPORT_EMAIL ? (
+                <Button asChild variant="outline" className="justify-between sm:min-w-52">
+                  <a href={getContactLink("email", env.SUPPORT_EMAIL, supportEmailMessage)}>
+                    <span className="inline-flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Hubungi via Email
+                    </span>
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        </Card>
+      ) : null}
     </div>
   );
 }
