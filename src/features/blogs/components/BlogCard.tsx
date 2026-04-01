@@ -2,7 +2,6 @@ import { Link } from "react-router";
 import { Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buildImageUrl } from "@/lib/utils";
 import type { Blog } from "@/features/blogs/api/get-blogs";
 import { paths } from "@/config/paths";
@@ -56,30 +55,6 @@ export function BlogCard({ blog }: BlogCardProps) {
             {blog.excerpt}
           </p>
         )}
-
-        {/* Author Info */}
-        <div className="flex items-center space-x-4">
-          <Avatar className="size-8">
-            <AvatarImage
-              src={
-                blog.user?.avatar ? buildImageUrl(blog.user.avatar) : undefined
-              }
-              className="object-cover"
-              alt={blog.user?.name}
-            />
-            <AvatarFallback className="text-xs">
-              {blog.user?.name?.charAt(0) || "A"}
-            </AvatarFallback>
-          </Avatar>
-          <div className="space-y-1">
-            <p className="text-sm leading-none font-medium">
-              {blog.user?.name || "Anonymous"}
-            </p>
-            <div className="text-muted-foreground flex items-center text-xs">
-              Blogger
-            </div>
-          </div>
-        </div>
 
         {/* Read More Button */}
         <Button variant="outline" className="w-full h-9" asChild>

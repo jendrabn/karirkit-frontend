@@ -12,11 +12,6 @@ const faqs = [
       "KarirKit adalah platform lengkap untuk pencari kerja yang menyediakan fitur Pelacak Lamaran, CV Builder, Surat Lamaran, dan Portfolio Digital. Semua tools yang kamu butuhkan untuk kelola proses lamaran kerja dalam satu tempat.",
   },
   {
-    question: "Apakah KarirKit benar-benar gratis?",
-    answer:
-      "Ya! Semua fitur utama KarirKit tersedia gratis. Kamu bisa membuat CV profesional, surat lamaran, melacak lamaran, dan membuat portfolio digital tanpa biaya apapun.",
-  },
-  {
     question: "Apakah saya bisa download CV dan Surat Lamaran?",
     answer:
       "Tentu! Kamu bisa download CV dan Surat Lamaran dalam format DOCX atau PDF. File yang dihasilkan berkualitas tinggi dan siap dikirim ke recruiter atau diunggah ke portal lowongan kerja.",

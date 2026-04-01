@@ -4,6 +4,77 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import { VitePWA, cachePreset } from "vite-plugin-pwa";
 
+const chunkGroups = [
+  {
+    name: "react-vendor",
+    patterns: [
+      "/node_modules/react/",
+      "/node_modules/react-dom/",
+      "/node_modules/react-router/",
+      "/node_modules/react-error-boundary/",
+      "/node_modules/react-helmet-async/",
+      "/node_modules/@react-oauth/google/",
+    ],
+  },
+  {
+    name: "editor-vendor",
+    patterns: [
+      "/node_modules/@tiptap/",
+      "/node_modules/quill/",
+      "/node_modules/prosemirror-",
+    ],
+  },
+  {
+    name: "charts-vendor",
+    patterns: ["/node_modules/recharts/", "/node_modules/d3-"],
+  },
+  {
+    name: "ui-vendor",
+    patterns: [
+      "/node_modules/@radix-ui/",
+      "/node_modules/@base-ui/react/",
+      "/node_modules/cmdk/",
+      "/node_modules/sonner/",
+      "/node_modules/input-otp/",
+      "/node_modules/next-themes/",
+      "/node_modules/vaul/",
+      "/node_modules/react-day-picker/",
+      "/node_modules/react-resizable-panels/",
+      "/node_modules/react-icons/",
+    ],
+  },
+  {
+    name: "date-vendor",
+    patterns: ["/node_modules/date-fns/", "/node_modules/dayjs/"],
+  },
+  {
+    name: "markdown-vendor",
+    patterns: [
+      "/node_modules/react-markdown/",
+      "/node_modules/remark-gfm/",
+    ],
+  },
+  {
+    name: "icons-vendor",
+    patterns: ["/node_modules/lucide-react/", "/node_modules/react-icons/"],
+  },
+  {
+    name: "utility-vendor",
+    patterns: [
+      "/node_modules/axios/",
+      "/node_modules/class-variance-authority/",
+      "/node_modules/clsx/",
+      "/node_modules/@tanstack/react-query/",
+      "/node_modules/@tanstack/react-query-devtools/",
+      "/node_modules/react-hook-form/",
+      "/node_modules/@hookform/resolvers/",
+      "/node_modules/zod/",
+      "/node_modules/tailwind-merge/",
+      "/node_modules/embla-carousel-react/",
+    ],
+  },
+];
+
 export default defineConfig(({ mode }) => {
   const rawEnv = loadEnv(mode, process.cwd(), "");
   const apiBaseUrl = rawEnv.VITE_APP_API_URL ?? "";
@@ -54,6 +125,23 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes("node_modules")) {
+              return;
+            }
+
+            const matchedGroup = chunkGroups.find((group) =>
+              group.patterns.some((pattern) => id.includes(pattern))
+            );
+
+            return matchedGroup?.name;
+          },
+        },
+      },
+    },
     plugins: [
       react(),
       tailwindcss(),
