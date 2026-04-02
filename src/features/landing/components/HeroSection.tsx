@@ -71,7 +71,7 @@ export function HeroSection() {
           </div>
 
           {/* Right Content - Hero Illustration */}
-          <div className="relative">
+          <div className="relative hidden lg:block">
             <HeroIllustration className="min-h-[340px] lg:min-h-[560px]" />
           </div>
         </div>

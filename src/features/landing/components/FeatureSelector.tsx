@@ -1,4 +1,6 @@
+import { Link } from "react-router";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
 // Import icon images
@@ -36,64 +38,68 @@ const features = [
 
 const featureDetails = {
   application: {
-    title: "Lacak Semua Lamaran Sampai Dapat Penawaran Kerja",
+    title: "Kelola Semua Lamaran Kerja dari Satu Dasbor",
     description:
-      "Berhenti pakai Excel yang ribet. Kelola semua lamaran dalam satu dasbor yang rapi dan mudah diakses.",
+      "Catat setiap lowongan yang Anda lamar, pantau status prosesnya, dan simpan detail follow-up tanpa berpindah ke spreadsheet.",
     bullets: [
-      "Track 15+ tahapan: dari submit, screening, test, interview sampai offering",
-      "Simpan kontak HRD, jadwal interview & reminder follow-up otomatis",
-      "Filter berdasarkan: tipe pekerjaan, sistem kerja, status, hasil",
-      "Statistik lengkap untuk pantau progress lamaran",
+      "Lacak 15+ status proses, dari draft dan submitted sampai interview, offering, accepted, atau rejected",
+      "Simpan detail perusahaan, posisi, sumber lowongan, kontak rekruter, tanggal follow-up, dan catatan penting",
+      "Filter berdasarkan status, tipe kerja, sistem kerja, tanggal, lokasi, perusahaan, dan rentang gaji",
+      "Pantau statistik lamaran untuk tahu mana yang perlu ditindaklanjuti lebih cepat",
     ],
-    cta: "Mulai Catat Lamaran Gratis →",
+    cta: "Kelola Lamaran Sekarang",
+    href: "/applications",
     image: "/images/placeholder.png",
     imageAlt: "Dasbor Pelacak Lamaran KarirKit",
     bgColor: "bg-gradient-to-br from-secondary via-secondary/50 to-background",
   },
 
   applicationletter: {
-    title: "Surat Lamaran Profesional dengan Mudah dan Cepat",
+    title: "Buat Surat Lamaran yang Siap Kirim dalam Hitungan Menit",
     description:
-      "Pilih template, isi informasi pelamar dan perusahaan, gunakan template paragraf siap pakai. Download langsung!",
+      "Pilih template yang sesuai, isi data pelamar dan perusahaan, gunakan paragraf siap pakai, lalu unduh hasilnya dalam format DOCX atau PDF.",
     bullets: [
-      "Template profesional siap pakai (Bahasa Indonesia & Inggris)",
-      "Informasi lengkap: data diri, pendidikan, detail perusahaan",
-      "Gunakan template paragraf: pembuka, isi, dan penutup",
-      "Download ke DOCX atau PDF, simpan untuk dipakai lagi",
+      "Template surat lamaran dalam Bahasa Indonesia dan Inggris, termasuk opsi premium",
+      "Isi data diri, pendidikan, perusahaan tujuan, dan rincian kontak dari satu form",
+      "Gunakan template paragraf untuk pembuka, isi, dan penutup agar lebih konsisten",
+      "Tambahkan tanda tangan digital, gandakan surat, lalu unduh ke DOCX atau PDF",
     ],
-    cta: "Buat Surat Lamaran Sekarang →",
+    cta: "Buat Surat Lamaran",
+    href: "/application-letters",
     image: "/images/placeholder.png",
     imageAlt: "Template Surat Lamaran KarirKit",
     bgColor: "bg-gradient-to-br from-primary/10 via-primary/5 to-background",
   },
 
   cv: {
-    title: "CV yang Bikin Recruiter Langsung Tertarik",
+    title: "Bangun CV Profesional yang Lengkap dan Mudah Dibaca",
     description:
-      "Pilih template CV (Indonesia/Inggris), isi form lengkap dari informasi pribadi sampai media sosial. Semua terstruktur rapi!",
+      "Susun foto, ringkasan, pendidikan, pengalaman, skill, proyek, dan tautan sosial dalam template CV yang rapi.",
     bullets: [
-      "Template modern & rapi (Bahasa Indonesia & Inggris)",
-      "Lengkap: info pribadi, pendidikan, pengalaman, skill, sertifikat",
-      "Tambahkan keahlian, penghargaan, organisasi, dan proyek",
-      "Download DOCX atau PDF, buat banyak versi CV berbeda",
+      "Template CV dalam Bahasa Indonesia dan Inggris, termasuk pilihan premium",
+      "Lengkapi profil, foto, about, pendidikan, pengalaman, skill, sertifikat, penghargaan, organisasi, proyek, dan tautan sosial",
+      "Atur slug dan visibilitas CV menjadi private, public, atau unlisted sesuai kebutuhan",
+      "Bagikan CV publik lewat link unik, lalu unduh ke DOCX atau PDF atau duplikasi untuk versi lain",
     ],
-    cta: "Buat CV Profesional Gratis →",
+    cta: "Buat CV Profesional",
+    href: "/cvs",
     image: "/images/placeholder.png",
     imageAlt: "CV Builder KarirKit",
     bgColor: "bg-gradient-to-br from-accent via-accent/50 to-background",
   },
 
   portfolio: {
-    title: "Portfolio yang Bikin Klien & Recruiter Terkesan",
+    title: "Portfolio Digital untuk Menampilkan Proyek Terbaik",
     description:
-      "Punya karya bagus tapi belum punya website? Buat portfolio digital dengan mudah dan bagikan linknya.",
+      "Tampilkan proyek kerja, freelance, personal, atau akademik dalam satu halaman publik dengan detail yang mudah dibagikan.",
     bullets: [
-      "Halaman portfolio publik dengan URL unik & SEO-friendly",
-      "Showcase project dengan gambar, link demo & source code",
-      "Cantumkan tech stack, role, timeline, dan tipe project",
-      "Cocok untuk developer, designer, dan profesional kreatif",
+      "Halaman portfolio publik dengan slug unik yang siap dibagikan",
+      "Isi judul, deskripsi singkat, detail proyek, role, industri, dan timeline pengerjaan",
+      "Tambahkan cover, galeri media, daftar tools, live demo, dan source code",
+      "Cocok untuk proyek kerja, freelance, personal, maupun tugas akademik",
     ],
-    cta: "Buat Portfolio & Bagikan Link →",
+    cta: "Buat Portfolio Digital",
+    href: "/portfolios",
     image: "/images/placeholder.png",
     imageAlt: "Portfolio Digital KarirKit",
     bgColor: "bg-gradient-to-br from-muted via-muted/50 to-background",
@@ -169,6 +175,7 @@ interface FeatureDetailProps {
   description: string;
   bullets: string[];
   cta: string;
+  href: string;
   image: string;
   imageAlt: string;
   bgColor: string;
@@ -178,6 +185,8 @@ function FeatureDetail({
   title,
   description,
   bullets,
+  cta,
+  href,
   image,
   imageAlt,
   bgColor,
@@ -203,10 +212,13 @@ function FeatureDetail({
             </li>
           ))}
         </ul>
+        <Button asChild className="mt-2 w-fit">
+          <Link to={href}>{cta}</Link>
+        </Button>
       </div>
 
       <div className="order-first lg:order-last">
-        <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-border/20 transform hover:scale-[1.02] transition-transform duration-300">
+        <div className="transform hover:scale-[1.02] transition-transform duration-300">
           <img
             src={image}
             alt={imageAlt}
