@@ -399,13 +399,13 @@ export default function JobDetail() {
 
               {/* Company Card */}
               <Card>
-                <CardContent>
+                <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <Avatar className="h-12 w-12 rounded-lg shrink-0">
+                    <Avatar className="h-12 w-12 rounded-lg shrink-0 border border-border/60 bg-muted/30 p-1.5">
                       <AvatarImage
                         src={buildImageUrl(job.company?.logo)}
                         alt={job.company?.name}
-                        className="object-cover"
+                        className="rounded-md object-contain"
                       />
                       <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold">
                         {job.company?.name?.substring(0, 2).toUpperCase() ||

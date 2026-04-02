@@ -28,6 +28,7 @@ import {
   Briefcase,
   FolderOpen,
   Globe,
+  ExternalLink,
   Sun,
   Moon,
   LayoutDashboard,
@@ -45,6 +46,12 @@ const navLinks = [
   { href: paths.home.getHref(), label: "Beranda", icon: Home },
   { href: paths.jobs.list.getHref(), label: "Lowongan", icon: Briefcase },
   { href: paths.blog.list.getHref(), label: "Blog", icon: Globe },
+  {
+    href: "https://cbtpro.web.id/",
+    label: "CBT Pro",
+    icon: ExternalLink,
+    external: true,
+  },
 ];
 
 interface NavbarProps {
@@ -72,12 +79,31 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
           {/* Logo */}
           <Link to={paths.home.getHref()} className="flex items-center gap-2">
-            <img src={logo} alt="KarirKit Logo" className="h-8 w-auto" />
+            <img
+              src={logo}
+              alt="KarirKit Logo"
+              className="h-8 w-auto transition-opacity hover:opacity-90"
+            />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => {
+              if (link.external) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <span>{link.label}</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                );
+              }
+
               return (
                 <Link
                   key={link.href}
@@ -354,6 +380,22 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
 
               {/* Navigation Links */}
               {navLinks.map((link) => {
+                if (link.external) {
+                  return (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                    >
+                      <span>{link.label}</span>
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  );
+                }
+
                 return (
                   <Link
                     key={link.href}
