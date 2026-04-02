@@ -2,6 +2,10 @@ import { Link } from "react-router";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import {
+  FeatureIllustration,
+  type FeatureIllustrationVariant,
+} from "@/features/landing/components/FeatureIllustration";
 
 // Import icon images
 import iconTracker from "@/assets/images/icon-tracker.png";
@@ -49,8 +53,7 @@ const featureDetails = {
     ],
     cta: "Kelola Lamaran Sekarang",
     href: "/applications",
-    image: "/images/placeholder.png",
-    imageAlt: "Dasbor Pelacak Lamaran KarirKit",
+    illustration: "application" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-secondary via-secondary/50 to-background",
   },
 
@@ -66,8 +69,7 @@ const featureDetails = {
     ],
     cta: "Buat Surat Lamaran",
     href: "/application-letters",
-    image: "/images/placeholder.png",
-    imageAlt: "Template Surat Lamaran KarirKit",
+    illustration: "applicationletter" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-primary/10 via-primary/5 to-background",
   },
 
@@ -83,8 +85,7 @@ const featureDetails = {
     ],
     cta: "Buat CV Profesional",
     href: "/cvs",
-    image: "/images/placeholder.png",
-    imageAlt: "CV Builder KarirKit",
+    illustration: "cv" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-accent via-accent/50 to-background",
   },
 
@@ -100,8 +101,7 @@ const featureDetails = {
     ],
     cta: "Buat Portfolio Digital",
     href: "/portfolios",
-    image: "/images/placeholder.png",
-    imageAlt: "Portfolio Digital KarirKit",
+    illustration: "portfolio" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-muted via-muted/50 to-background",
   },
 };
@@ -176,8 +176,7 @@ interface FeatureDetailProps {
   bullets: string[];
   cta: string;
   href: string;
-  image: string;
-  imageAlt: string;
+  illustration: FeatureIllustrationVariant;
   bgColor: string;
 }
 
@@ -187,8 +186,7 @@ function FeatureDetail({
   bullets,
   cta,
   href,
-  image,
-  imageAlt,
+  illustration,
   bgColor,
 }: FeatureDetailProps) {
   return (
@@ -218,12 +216,8 @@ function FeatureDetail({
       </div>
 
       <div className="order-first lg:order-last">
-        <div className="transform hover:scale-[1.02] transition-transform duration-300">
-          <img
-            src={image}
-            alt={imageAlt}
-            className="w-full h-auto object-cover"
-          />
+        <div className="transform transition-transform duration-300 hover:scale-[1.02]">
+          <FeatureIllustration variant={illustration} />
         </div>
       </div>
     </div>
