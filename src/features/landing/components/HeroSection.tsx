@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
+import { HeroIllustration } from "@/features/landing/components/HeroIllustration";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "react-router";
 
@@ -7,7 +8,7 @@ export function HeroSection() {
   return (
     <section
       id="beranda"
-      className="hero-gradient py-16 lg:py-24 relative overflow-hidden"
+      className="hero-gradient relative overflow-hidden pt-8 pb-16 lg:pt-12 lg:pb-24"
     >
       {/* Decorative Elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
@@ -15,7 +16,7 @@ export function HeroSection() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)] lg:gap-8 xl:gap-10">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-8 xl:gap-10">
           {/* Left Content */}
           <div className="space-y-5 lg:space-y-7">
             <div className="space-y-3">
@@ -69,15 +70,9 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right Content - Hero Illustration - Hidden on mobile */}
-          <div className="relative hidden lg:block">
-            <div className="ml-auto overflow-hidden rounded-3xl aspect-[4/3]">
-              <img
-                src="/images/placeholder.png"
-                alt="KarirKit - Platform manajemen lamaran kerja dengan Application Tracker, CV Builder, Portfolio, dan Surat Lamaran"
-                className="w-full h-full object-cover"
-              />
-            </div>
+          {/* Right Content - Hero Illustration */}
+          <div className="relative">
+            <HeroIllustration className="min-h-[340px] lg:min-h-[560px]" />
           </div>
         </div>
       </div>
