@@ -3,6 +3,7 @@ import {
   Clock,
   RefreshCw,
   Bell,
+  Crown,
   Users,
   FileText,
   Send,
@@ -59,7 +60,7 @@ export function BenefitsSection() {
     {
       icon: Bell,
       value: getDisplayValue(stats?.total_applications, "5.800+"),
-      label: "Lamaran Terkirim",
+      label: "Lamaran Tercatat",
       color: "bg-secondary",
     },
     {
@@ -84,30 +85,36 @@ export function BenefitsSection() {
                 Keunggulan
               </p>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                Kelola Proses Job Hunting dengan Lebih Terorganisir
+                Satu Tempat untuk Lamaran, Dokumen, dan Langganan
               </h2>
             </div>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Dari melacak lamaran sampai bikin CV profesional, semua ada dalam
-              satu platform. Fokus ke persiapan interview, biar tracking-nya
-              KarirKit yang urus.
+              Dari melacak lamaran sampai membuat CV, surat lamaran, portfolio,
+              dan dokumen, semua ada dalam satu platform. Saat butuh akses
+              tambahan, kamu juga bisa upgrade ke paket langganan yang sesuai
+              kebutuhan.
             </p>
             <div className="space-y-5">
               {[
                 {
                   icon: Clock,
-                  text: "Track semua lamaran dari satu dashboard",
+                  text: "Track semua lamaran, status, dan follow-up dari satu dashboard",
                   color: "bg-primary/20",
                 },
                 {
                   icon: RefreshCw,
-                  text: "CV, surat lamaran, dan portfolio dalam satu tempat",
+                  text: "Buat CV, surat lamaran, portfolio, dan dokumen tanpa pindah alat",
                   color: "bg-secondary",
                 },
                 {
                   icon: Bell,
-                  text: "Reminder otomatis untuk follow-up recruiter",
+                  text: "Atur reminder follow-up, template, filter, dan catatan dalam satu alur",
                   color: "bg-accent",
+                },
+                {
+                  icon: Crown,
+                  text: "Upgrade langganan untuk membuka template premium dan limit yang lebih besar",
+                  color: "bg-primary/20",
                 },
               ].map((item, index) => (
                 <div

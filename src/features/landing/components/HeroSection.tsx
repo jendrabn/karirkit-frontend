@@ -23,10 +23,13 @@ export function HeroSection() {
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary/75 sm:text-sm">
                 Semua Proses Lamaran, Satu Tempat
               </p>
-              <h1 className="text-balance text-[2.85rem] font-bold leading-[1.05] tracking-[-0.028em] text-primary sm:text-[3.35rem] sm:tracking-[-0.03em] lg:leading-[1.02] lg:text-[3.65rem] lg:tracking-[-0.032em] xl:text-[3.95rem]">
+              {/* <h1 className="text-balanced font-bold leading-[1.05] tracking-[-0.028em] text-primary sm:text-[3.35rem] sm:tracking-[-0.03em] lg:leading-[1.02] lg:text-[3.65rem] lg:tracking-[-0.032em] xl:text-[3.95rem]">
+                Kelola Lamaran Kerja Lebih Rapi Dalam Satu Platform
+              </h1> */}
+              <h1 className="text-balanced font-bold text-primary tracking-wide leading-[1.05] lg:leading-[1.02] text-5xl lg:text-6xl">
                 Kelola Lamaran Kerja Lebih Rapi Dalam Satu Platform
               </h1>
-              <p className="text-base leading-7 text-foreground/82 sm:text-lg lg:text-[1.12rem] lg:leading-8">
+              <p className="text-sm md:text-base leading-7 text-foreground/82 lg:leading-8">
                 Lacak lamaran, buat CV profesional, susun surat lamaran, simpan
                 dokumen penting, dan bangun portofolio digital dengan alur yang
                 lebih ringkas.

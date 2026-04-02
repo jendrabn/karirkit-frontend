@@ -9,52 +9,42 @@ const faqs = [
   {
     question: "Apa itu KarirKit?",
     answer:
-      "KarirKit adalah platform lengkap untuk pencari kerja yang menyediakan fitur Pelacak Lamaran, CV Builder, Surat Lamaran, dan Portfolio Digital. Semua tools yang kamu butuhkan untuk kelola proses lamaran kerja dalam satu tempat.",
+      "KarirKit adalah platform untuk mengelola proses mencari kerja dalam satu tempat. Di dalamnya ada Pelacak Lamaran, Surat Lamaran, CV Builder, Portfolio Digital, Dokumen, dan Langganan.",
   },
   {
-    question: "Apakah saya bisa download CV dan Surat Lamaran?",
+    question: "Fitur apa saja yang tersedia di KarirKit?",
     answer:
-      "Tentu! Kamu bisa download CV dan Surat Lamaran dalam format DOCX atau PDF. File yang dihasilkan berkualitas tinggi dan siap dikirim ke recruiter atau diunggah ke portal lowongan kerja.",
+      "Fitur utamanya meliputi pelacakan lamaran, pembuatan surat lamaran, CV Builder, portfolio digital, pengelolaan dokumen, dan paket langganan untuk membuka akses tambahan sesuai kebutuhan.",
   },
   {
     question: "Bagaimana cara mulai menggunakan Pelacak Lamaran?",
     answer:
-      "Mudah! Daftar akun gratis, masuk ke menu Lamaran, lalu klik 'Tambah Lamaran'. Isi nama perusahaan, posisi, status, dan detail lainnya. Semua data tersimpan otomatis dan bisa kamu pantau kapan saja.",
+      "Masuk ke menu Pelacak Lamaran, lalu tambahkan data perusahaan, posisi, status, sumber lowongan, kontak, catatan, dan jadwal follow-up. Kamu juga bisa memakai filter, statistik, dan bulk action untuk mengelola daftar lamaran lebih cepat.",
   },
   {
-    question: "Apakah KarirKit cocok untuk fresh graduate?",
+    question: "Apakah CV Builder dan Surat Lamaran mendukung Bahasa Indonesia dan Inggris?",
     answer:
-      "Sangat cocok! KarirKit menyediakan template CV dan surat lamaran yang cocok untuk fresh graduate. Kamu juga bisa menambahkan pengalaman organisasi, proyek, dan sertifikat untuk memperkuat CV.",
+      "Ya. CV Builder dan Surat Lamaran mendukung Bahasa Indonesia dan Bahasa Inggris, termasuk pilihan template premium yang bisa dibuka melalui paket langganan.",
   },
   {
-    question: "Berapa banyak CV yang bisa saya buat?",
+    question: "Apakah saya bisa download dan mengelola dokumen?",
     answer:
-      "Tidak ada batasan! Kamu bisa membuat banyak versi CV untuk posisi yang berbeda. Misalnya: satu CV untuk posisi software engineer, satu lagi untuk data analyst.",
+      "Bisa. CV dan Surat Lamaran dapat diunduh dalam format DOCX atau PDF, lalu diduplikasi untuk versi lain. Di menu Dokumen, kamu juga bisa upload, cari, filter, download, dan hapus file seperti PDF atau DOCX.",
   },
   {
-    question: "Apakah CV Builder mendukung bahasa Inggris?",
+    question: "Bagaimana cara membagikan Portfolio Digital?",
     answer:
-      "Ya! CV Builder dan Surat Lamaran mendukung Bahasa Indonesia dan Bahasa Inggris. Kamu bisa pilih bahasa sesuai kebutuhan saat membuat dokumen.",
+      "Setiap portfolio bisa dibuat publik dengan slug unik, lalu dibagikan lewat link. Kamu juga bisa menambahkan cover, galeri media, tools yang dipakai, live demo, dan source code agar tampil lebih lengkap.",
   },
   {
-    question: "Bagaimana cara membuat Portfolio Digital?",
+    question: "Apakah saya harus berlangganan untuk mulai memakai KarirKit?",
     answer:
-      "Masuk ke menu Portfolio, klik 'Tambah Portfolio', lalu isi detail project kamu seperti judul, deskripsi, tech stack, dan upload gambar. Setelah selesai, kamu akan dapat link unik untuk dibagikan ke recruiter atau client.",
+      "Tidak harus. Kamu bisa mulai dengan plan Free untuk memakai fitur inti. Jika butuh akses tambahan, kamu bisa upgrade ke Pro atau Max kapan saja dari halaman Langganan.",
   },
   {
-    question: "Apakah ada limit download CV dan Surat Lamaran?",
+    question: "Apa yang didapat dari fitur Langganan?",
     answer:
-      "Ada limit harian untuk download gratis, tapi cukup untuk penggunaan normal. Kamu bisa download hingga 10 dokumen per hari.",
-  },
-  {
-    question: "Bagaimana cara melacak status lamaran saya?",
-    answer:
-      "Di halaman Pelacak Lamaran, kamu bisa update status setiap lamaran dari 'Submit' sampai 'Offering'. Ada 15+ tahapan yang bisa kamu track, termasuk screening, test, interview, dan lainnya. Kamu juga bisa tambahkan catatan dan reminder follow-up.",
-  },
-  {
-    question: "Apakah KarirKit menyediakan template surat lamaran?",
-    answer:
-      "Ya! Kami menyediakan berbagai template profesional untuk paragraf pembuka, isi, dan penutup surat lamaran. Kamu tinggal pilih template, isi data, dan surat lamaran siap digunakan.",
+      "Langganan menyediakan plan Free, Pro, dan Max dengan batas penggunaan, akses template premium, serta capability tambahan seperti pengelolaan dokumen dan limit yang lebih besar. Pembayaran dilakukan lewat alur checkout yang terhubung dengan Midtrans, dan status langganan bisa dipantau dari halaman Langganan.",
   },
 ];
 
