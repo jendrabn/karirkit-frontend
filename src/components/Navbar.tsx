@@ -171,7 +171,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.jobs.savedJobs.getHref()}>
                       <Bookmark className="mr-2 h-4 w-4" />
-                      Pekerjaan Tersimpan
+                      Lowongan Tersimpan
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -307,7 +307,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Bookmark className="h-4 w-4" />
-                        Pekerjaan Tersimpan
+                        Lowongan Tersimpan
                       </Link>
 
                       {/* Language Submenu */}

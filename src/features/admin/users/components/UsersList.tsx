@@ -526,7 +526,7 @@ export const UsersList = () => {
                 )}
                 {columnVisibility.subscription_plan && (
                   <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Paket
+                    Plan
                   </TableHead>
                 )}
                 {columnVisibility.subscription_expires_at && (
