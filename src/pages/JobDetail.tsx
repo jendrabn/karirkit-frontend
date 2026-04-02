@@ -39,6 +39,7 @@ import {
 // import { toast } from "sonner";
 import { useJob } from "@/features/jobs/api/get-job";
 import { dayjs } from "@/lib/date";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const formatSalary = (min: number, max: number): string => {
   const formatNumber = (num: number) =>
@@ -202,11 +203,23 @@ export default function JobDetail() {
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary">
+                        <Badge
+                          variant="outline"
+                          className={getEnumBadgeClassName(
+                            "jobType",
+                            job.job_type,
+                          )}
+                        >
                           <Briefcase className="h-3 w-3 mr-1" />
                           {JOB_TYPE_LABELS[job.job_type]}
                         </Badge>
-                        <Badge variant="outline">
+                        <Badge
+                          variant="outline"
+                          className={getEnumBadgeClassName(
+                            "workSystem",
+                            job.work_system,
+                          )}
+                        >
                           <Building2 className="h-3 w-3 mr-1" />
                           {WORK_SYSTEM_LABELS[job.work_system]}
                         </Badge>

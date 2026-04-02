@@ -66,16 +66,3 @@ export const BLOG_STATUS_OPTIONS: { value: BlogStatus; label: string }[] = [
   { value: "published", label: "Dipublikasi" },
   { value: "archived", label: "Diarsipkan" },
 ];
-
-export const getStatusBadgeVariant = (status: BlogStatus) => {
-  switch (status) {
-    case "draft":
-      return "secondary";
-    case "published":
-      return "default";
-    case "archived":
-      return "destructive";
-    default:
-      return "secondary";
-  }
-};

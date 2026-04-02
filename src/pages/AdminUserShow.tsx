@@ -48,7 +48,7 @@ import {
 import { dayjs, formatDate, formatDateTime } from "@/lib/date";
 import { formatNumber } from "@/lib/utils";
 import { SOCIAL_PLATFORM_LABELS } from "@/types/social";
-import type { User, UserRole } from "@/types/user";
+import type { User } from "@/types/user";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserStatus } from "@/features/admin/users/api/update-user-status";
 import { useForm, useWatch } from "react-hook-form";
@@ -75,6 +75,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ContactItem, InfoItem, RichText } from "@/components/ui/display-info";
 import { SUBSCRIPTION_PLAN_LABELS } from "@/features/subscriptions/utils";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const userStatusSchema = z
   .object({
@@ -91,23 +92,6 @@ const userStatusSchema = z
       });
     }
   });
-
-const getRoleBadgeVariant = (role: UserRole) => {
-  return role === "admin" ? "default" : "secondary";
-};
-
-const getStatusBadgeVariant = (status: User["status"]) => {
-  switch (status) {
-    case "active":
-      return "default";
-    case "suspended":
-      return "secondary";
-    case "banned":
-      return "destructive";
-    default:
-      return "outline";
-  }
-};
 
 const STATUS_ICON_MAP: Partial<
   Record<User["status"], typeof CheckCircle>
@@ -320,15 +304,15 @@ const AdminUserShow = () => {
                 <CardTitle className="text-lg">Profil Pengguna</CardTitle>
                 <div className="flex flex-wrap gap-2">
                   <Badge
-                    variant={getRoleBadgeVariant(user.role)}
-                    className="gap-1 text-xs"
+                    variant="outline"
+                    className={getEnumBadgeClassName("userRole", user.role)}
                   >
                     <Shield className="h-3 w-3" />
                     {roleLabel}
                   </Badge>
                   <Badge
-                    variant={getStatusBadgeVariant(user.status)}
-                    className="gap-1 text-xs"
+                    variant="outline"
+                    className={getEnumBadgeClassName("userStatus", user.status)}
                   >
                     {createElement(statusIconComponent, {
                       className: "h-3 w-3",
@@ -424,7 +408,17 @@ const AdminUserShow = () => {
                 />
                 <InfoItem
                   label="Email Terverifikasi"
-                  value={emailVerifiedLabel}
+                  value={
+                    <Badge
+                      variant="outline"
+                      className={getEnumBadgeClassName(
+                        "verificationStatus",
+                        user.email_verified_at ? "true" : "false",
+                      )}
+                    >
+                      {emailVerifiedLabel}
+                    </Badge>
+                  }
                   icon={Shield}
                 />
               </div>
@@ -486,12 +480,32 @@ const AdminUserShow = () => {
                 />
                 <InfoItem
                   label="Plan Langganan"
-                  value={subscriptionPlanLabel}
+                  value={
+                    <Badge
+                      variant="outline"
+                      className={getEnumBadgeClassName(
+                        "subscriptionPlan",
+                        user.subscription_plan,
+                      )}
+                    >
+                      {subscriptionPlanLabel}
+                    </Badge>
+                  }
                   icon={Briefcase}
                 />
                 <InfoItem
                   label="Email Terverifikasi"
-                  value={emailVerifiedLabel}
+                  value={
+                    <Badge
+                      variant="outline"
+                      className={getEnumBadgeClassName(
+                        "verificationStatus",
+                        user.email_verified_at ? "true" : "false",
+                      )}
+                    >
+                      {emailVerifiedLabel}
+                    </Badge>
+                  }
                   icon={CheckCircle}
                 />
                 <InfoItem

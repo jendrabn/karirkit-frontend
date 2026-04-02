@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import type { AdminDashboardStatistics } from "@/types/dashboard";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 interface RecentBlogsTableProps {
   blogs: NonNullable<AdminDashboardStatistics["recent_blogs"]>;
@@ -19,19 +20,6 @@ interface RecentBlogsTableProps {
 
 export const RecentBlogsTable = ({ blogs }: RecentBlogsTableProps) => {
   const navigate = useNavigate();
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case "published":
-        return "default";
-      case "draft":
-        return "secondary";
-      case "archived":
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
 
   return (
     <div className="bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm">
@@ -82,7 +70,10 @@ export const RecentBlogsTable = ({ blogs }: RecentBlogsTableProps) => {
                     {blog.user?.name || "System"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeVariant(blog.status)}>
+                    <Badge
+                      variant="outline"
+                      className={getEnumBadgeClassName("blogStatus", blog.status)}
+                    >
                       {blog.status}
                     </Badge>
                   </TableCell>

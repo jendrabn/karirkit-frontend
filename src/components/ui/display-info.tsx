@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, ExternalLink } from "lucide-react";
 import { getContactLink, formatValue } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 // ============================================
 // INFO ITEM COMPONENT
@@ -8,7 +9,7 @@ import { getContactLink, formatValue } from "@/lib/utils";
 
 type InfoItemProps = {
   label: string;
-  value?: string | number | null;
+  value?: string | number | ReactNode | null;
   icon?: React.ComponentType<{ className?: string }>;
   className?: string;
 };
@@ -26,7 +27,10 @@ export const InfoItem = ({
   icon: Icon,
   className = "",
 }: InfoItemProps) => {
-  const displayValue = formatValue(value);
+  const displayValue =
+    typeof value === "string" || typeof value === "number"
+      ? formatValue(value)
+      : value ?? "-";
 
   return (
     <div className={`space-y-2 ${className}`}>
@@ -36,7 +40,7 @@ export const InfoItem = ({
           {label}
         </p>
       </div>
-      <p className="text-sm font-medium pl-6">{displayValue}</p>
+      <div className="pl-6 text-sm font-medium">{displayValue}</div>
     </div>
   );
 };

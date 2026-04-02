@@ -91,6 +91,7 @@ import {
 } from "@/types/user";
 import { cn } from "@/lib/utils";
 import { SUBSCRIPTION_PLAN_LABELS } from "@/features/subscriptions/utils";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 import { useUsers } from "../api/get-users";
 import { useDeleteUser } from "../api/delete-user";
 import { useMassDeleteUsers } from "../api/mass-delete-users";
@@ -113,19 +114,6 @@ type SortField =
   | "created_at"
   | "updated_at"
   | "download_total_count";
-
-const getStatusBadgeVariant = (status: User["status"]) => {
-  switch (status) {
-    case "active":
-      return "default";
-    case "suspended":
-      return "secondary";
-    case "banned":
-      return "destructive";
-    default:
-      return "outline";
-  }
-};
 
 const getUserTodayDownloads = (user: User) =>
   user.download_today_count ?? user.download_stats?.today_count ?? 0;
@@ -737,9 +725,8 @@ export const UsersList = () => {
                     {columnVisibility.role && (
                       <TableCell>
                         <Badge
-                          variant={
-                            user.role === "admin" ? "default" : "secondary"
-                          }
+                          variant="outline"
+                          className={getEnumBadgeClassName("userRole", user.role)}
                         >
                           {
                             USER_ROLE_OPTIONS.find(
@@ -755,7 +742,11 @@ export const UsersList = () => {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Badge
-                                variant={getStatusBadgeVariant(user.status)}
+                                variant="outline"
+                                className={getEnumBadgeClassName(
+                                  "userStatus",
+                                  user.status,
+                                )}
                               >
                                 {
                                   USER_STATUS_OPTIONS.find(
@@ -772,7 +763,13 @@ export const UsersList = () => {
                             </TooltipContent>
                           </Tooltip>
                         ) : (
-                          <Badge variant={getStatusBadgeVariant(user.status)}>
+                          <Badge
+                            variant="outline"
+                            className={getEnumBadgeClassName(
+                              "userStatus",
+                              user.status,
+                            )}
+                          >
                             {
                               USER_STATUS_OPTIONS.find(
                                 (opt) => opt.value === user.status,
@@ -787,7 +784,15 @@ export const UsersList = () => {
                         {user.email_verified_at ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Badge variant="default">Terverifikasi</Badge>
+                              <Badge
+                                variant="outline"
+                                className={getEnumBadgeClassName(
+                                  "verificationStatus",
+                                  "true",
+                                )}
+                              >
+                                Terverifikasi
+                              </Badge>
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>
@@ -798,7 +803,15 @@ export const UsersList = () => {
                             </TooltipContent>
                           </Tooltip>
                         ) : (
-                          <Badge variant="outline">Belum</Badge>
+                          <Badge
+                            variant="outline"
+                            className={getEnumBadgeClassName(
+                              "verificationStatus",
+                              "false",
+                            )}
+                          >
+                            Belum
+                          </Badge>
                         )}
                       </TableCell>
                     )}
@@ -813,7 +826,13 @@ export const UsersList = () => {
                     )}
                     {columnVisibility.subscription_plan && (
                       <TableCell className="whitespace-nowrap">
-                        <Badge variant="outline">
+                        <Badge
+                          variant="outline"
+                          className={getEnumBadgeClassName(
+                            "subscriptionPlan",
+                            user.subscription_plan,
+                          )}
+                        >
                           {getSubscriptionPlanLabel(user)}
                         </Badge>
                       </TableCell>

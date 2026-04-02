@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
@@ -68,10 +68,6 @@ export function ApplicationLetterForm({
   const { data: user } = useUser();
   const { data: mySubscription } = useMySubscription();
   const subscriptionFeatures = getPlanFeatureAccess(mySubscription?.current_features);
-  const [selectedTemplate, setSelectedTemplate] = useState(
-    initialData?.template_id || "",
-  );
-
   const form = useForm<CreateApplicationLetterInput>({
     resolver: zodResolver(applicationLetterSchema),
     defaultValues: {
@@ -116,6 +112,7 @@ export function ApplicationLetterForm({
     name: "closing_paragraph",
   });
   const signatureValue = useWatch({ control: form.control, name: "signature" });
+  const templateIdValue = useWatch({ control: form.control, name: "template_id" });
 
   const selectedTemplateLanguage =
     languageValue === "en" || languageValue === "id"
@@ -130,19 +127,22 @@ export function ApplicationLetterForm({
       queryConfig: { enabled: !!selectedTemplateLanguage },
     });
 
-  const templates = selectedTemplateLanguage
-    ? templatesResponse?.items.map((t) => ({
-        ...t,
-        previewImage: buildImageUrl(t.preview),
-      })) || []
-    : [];
+  const templates = useMemo(
+    () =>
+      selectedTemplateLanguage
+        ? templatesResponse?.items.map((t) => ({
+            ...t,
+            previewImage: buildImageUrl(t.preview),
+          })) || []
+        : [],
+    [selectedTemplateLanguage, templatesResponse?.items],
+  );
 
   useEffect(() => {
-    if (templates.length > 0 && !selectedTemplate) {
-      setSelectedTemplate(templates[0].id);
+    if (templates.length > 0 && !templateIdValue) {
       form.setValue("template_id", templates[0].id);
     }
-  }, [templates, selectedTemplate, form]);
+  }, [form, templateIdValue, templates]);
 
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [activeParagraphType, setActiveParagraphType] =
@@ -199,7 +199,6 @@ export function ApplicationLetterForm({
                           onValueChange={(value) => {
                             field.onChange(value);
                             form.setValue("template_id", "");
-                            setSelectedTemplate("");
                           }}
                           value={field.value ?? ""}
                         >
@@ -246,9 +245,8 @@ export function ApplicationLetterForm({
                       </FieldLabel>
                       <TemplateSelector
                         templates={templates}
-                        value={selectedTemplate}
+                        value={templateIdValue || ""}
                         onChange={(value: string) => {
-                          setSelectedTemplate(value);
                           form.setValue("template_id", value);
                         }}
                         getTemplateDisabledReason={(template) =>

@@ -73,7 +73,6 @@ import {
   type Blog,
   type BlogStatus,
   BLOG_STATUS_OPTIONS,
-  getStatusBadgeVariant,
 } from "@/types/blog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -89,6 +88,7 @@ import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { SortableHeader } from "@/components/SortableHeader";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type SortField =
   | "created_at"
@@ -486,7 +486,13 @@ export const BlogsList = () => {
                        )}
                       {columnVisibility.status && (
                         <TableCell className="whitespace-nowrap">
-                          <Badge variant={getStatusBadgeVariant(blog.status)}>
+                          <Badge
+                            variant="outline"
+                            className={getEnumBadgeClassName(
+                              "blogStatus",
+                              blog.status,
+                            )}
+                          >
                             {
                               BLOG_STATUS_OPTIONS.find(
                                 (s) => s.value === blog.status,

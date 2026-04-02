@@ -13,10 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import type { User } from "@/types/user";
-
-const getRoleBadgeVariant = (role: string) => {
-  return role === "admin" ? "default" : "secondary";
-};
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 interface RecentUsersTableProps {
   users: User[];
@@ -80,7 +77,10 @@ export const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
                     {user.email}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getRoleBadgeVariant(user.role)}>
+                    <Badge
+                      variant="outline"
+                      className={getEnumBadgeClassName("userRole", user.role)}
+                    >
                       {user.role}
                     </Badge>
                   </TableCell>

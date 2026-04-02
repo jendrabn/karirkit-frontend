@@ -42,6 +42,7 @@ import {
 import { paths } from "@/config/paths";
 import { Separator } from "@/components/ui/separator";
 import { InfoItem, RichText } from "@/components/ui/display-info";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const AdminTemplateShow = () => {
   const navigate = useNavigate();
@@ -169,11 +170,23 @@ const AdminTemplateShow = () => {
             <CardHeader className="space-y-3">
               <CardTitle className="text-lg">Informasi Template</CardTitle>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="gap-1.5">
+                <Badge
+                  variant="outline"
+                  className={getEnumBadgeClassName(
+                    "templateType",
+                    template.type,
+                  )}
+                >
                   <Tag className="h-3 w-3" />
                   {getTemplateTypeLabel(template.type)}
                 </Badge>
-                <Badge variant="outline" className="gap-1.5 uppercase">
+                <Badge
+                  variant="outline"
+                  className={getEnumBadgeClassName(
+                    "language",
+                    template.language,
+                  )}
+                >
                   <FileText className="h-3 w-3" />
                   {template.language}
                 </Badge>

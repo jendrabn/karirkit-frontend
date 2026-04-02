@@ -43,6 +43,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ENUM_BADGE_TONES, getEnumBadgeClassName } from "@/lib/enum-badges";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -445,20 +446,37 @@ export const TemplatesList = () => {
                     )}
                     {visibility.type && (
                       <TableCell className="whitespace-nowrap">
-                        <Badge variant="outline">
+                        <Badge
+                          variant="outline"
+                          className={getEnumBadgeClassName(
+                            "templateType",
+                            template.type,
+                          )}
+                        >
                           {getTemplateTypeLabel(template.type)}
                         </Badge>
                       </TableCell>
                     )}
                     {visibility.language && (
                       <TableCell className="whitespace-nowrap uppercase">
-                        <Badge variant="secondary">{template.language}</Badge>
+                        <Badge
+                          variant="outline"
+                          className={getEnumBadgeClassName(
+                            "language",
+                            template.language,
+                          )}
+                        >
+                          {template.language}
+                        </Badge>
                       </TableCell>
                     )}
                     {visibility.is_premium && (
                       <TableCell>
                         {template.is_premium ? (
-                          <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
+                          <Badge
+                            variant="outline"
+                            className={`rounded-full ${ENUM_BADGE_TONES.amber}`}
+                          >
                             <Crown className="h-3 w-3 mr-1" />
                             Premium
                           </Badge>

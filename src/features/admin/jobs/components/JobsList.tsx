@@ -53,6 +53,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type JobSortField =
   | "title"
@@ -81,19 +82,6 @@ interface JobsListProps {
   onSort: (field: JobSortField) => void;
   columnVisibility: ColumnVisibility;
 }
-
-const getStatusBadgeVariant = (status: JobStatus) => {
-  const variants: Record<
-    JobStatus,
-    "default" | "secondary" | "destructive" | "outline"
-  > = {
-    published: "default",
-    draft: "secondary",
-    closed: "destructive",
-    archived: "outline",
-  };
-  return variants[status];
-};
 
 const STATUS_LABELS: Record<JobStatus, string> = {
   published: "Published",
@@ -383,7 +371,10 @@ export function JobsList({
                   )}
                   {columnVisibility.status && (
                     <TableCell>
-                      <Badge variant={getStatusBadgeVariant(job.status)}>
+                      <Badge
+                        variant="outline"
+                        className={getEnumBadgeClassName("jobStatus", job.status)}
+                      >
                         {STATUS_LABELS[job.status]}
                       </Badge>
                     </TableCell>

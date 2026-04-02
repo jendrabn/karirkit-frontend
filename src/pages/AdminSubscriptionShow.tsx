@@ -39,21 +39,7 @@ import {
   SUBSCRIPTION_PLAN_LABELS,
   SUBSCRIPTION_STATUS_LABELS,
 } from "@/features/subscriptions/utils";
-import type { SubscriptionStatus } from "@/types/subscription";
-
-const getStatusBadgeVariant = (status: SubscriptionStatus) => {
-  switch (status) {
-    case "active":
-    case "paid":
-      return "default";
-    case "pending":
-      return "secondary";
-    case "failed":
-      return "destructive";
-    default:
-      return "outline";
-  }
-};
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type ConfirmAction = "approve" | "cancel" | "fail" | "downgrade" | null;
 
@@ -219,7 +205,13 @@ export default function AdminSubscriptionShow() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between gap-3">
                 <span>Ringkasan Subscription</span>
-                <Badge variant={getStatusBadgeVariant(subscription.status)}>
+                <Badge
+                  variant="outline"
+                  className={getEnumBadgeClassName(
+                    "subscriptionStatus",
+                    subscription.status,
+                  )}
+                >
                   {SUBSCRIPTION_STATUS_LABELS[subscription.status]}
                 </Badge>
               </CardTitle>
@@ -321,7 +313,7 @@ export default function AdminSubscriptionShow() {
                     navigate(paths.admin.users.detail.getHref(subscription.user!.id))
                   }
                 >
-                  Buka Detail User
+                  Lihat Detail User
                 </Button>
               ) : null}
             </CardContent>

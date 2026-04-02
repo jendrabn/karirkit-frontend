@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Select,
@@ -68,6 +68,7 @@ import { buildImageUrl } from "@/lib/utils";
 import { env } from "@/config/env";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type SortField =
   | "created_at"
@@ -77,10 +78,6 @@ type SortField =
   | "title"
   | "industry";
 type SortOrder = "asc" | "desc";
-
-const getProjectTypeBadgeVariant = (): BadgeProps["variant"] => {
-  return "secondary"; // Consistent styling for all project types
-};
 
 const monthNames = [
   "Januari",
@@ -518,7 +515,13 @@ const PortfoliosList = () => {
 
                 {/* Project Type Badge */}
                 <div className="absolute bottom-2 left-2">
-                  <Badge variant={getProjectTypeBadgeVariant()}>
+                  <Badge
+                    variant="outline"
+                    className={getEnumBadgeClassName(
+                      "projectType",
+                      portfolio.project_type,
+                    )}
+                  >
                     {projectTypeLabels[portfolio.project_type]}
                   </Badge>
                 </div>

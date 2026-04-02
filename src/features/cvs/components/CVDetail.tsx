@@ -30,6 +30,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type SkillGroup = {
   label: string;
@@ -198,7 +199,10 @@ export function CVDetail({
                           {exp.company_name}
                         </p>
                       </div>
-                      <Badge variant="secondary">
+                      <Badge
+                        variant="outline"
+                        className={getEnumBadgeClassName("jobType", exp.job_type)}
+                      >
                         {getLabel(exp.job_type, JOB_TYPE_OPTIONS)}
                       </Badge>
                     </div>
@@ -283,7 +287,13 @@ export function CVDetail({
                           {org.role_title}
                         </p>
                       </div>
-                      <Badge variant="secondary">
+                      <Badge
+                        variant="outline"
+                        className={getEnumBadgeClassName(
+                          "organizationType",
+                          org.organization_type,
+                        )}
+                      >
                         {getLabel(
                           org.organization_type,
                           ORGANIZATION_TYPE_OPTIONS
@@ -522,10 +532,11 @@ export function CVDetail({
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Visibilitas</span>
                   <Badge
-                    variant={
-                      cv.visibility === "public" ? "default" : "secondary"
-                    }
-                    className="gap-1"
+                    variant="outline"
+                    className={getEnumBadgeClassName(
+                      "cvVisibility",
+                      cv.visibility,
+                    )}
                   >
                     {cv.visibility === "public" ? (
                       <Globe className="h-3 w-3" />

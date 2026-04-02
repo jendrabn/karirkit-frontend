@@ -44,34 +44,21 @@ import { useApplication } from "@/features/applications/api/get-application";
 import { useDeleteApplication } from "@/features/applications/api/delete-application";
 import { toast } from "sonner";
 import { formatDate, formatDateTime } from "@/lib/date";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { InfoItem, ContactItem, RichText } from "@/components/ui/display-info";
 import {
   JOB_TYPE_OPTIONS,
   WORK_SYSTEM_OPTIONS,
   STATUS_OPTIONS,
   RESULT_STATUS_OPTIONS,
-  type Application,
 } from "@/types/application";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const getLabel = (
   value: string,
   options: { value: string; label: string }[],
 ) => {
   return options.find((opt) => opt.value === value)?.label || value;
-};
-
-const getResultBadgeVariant = (result: Application["result_status"]) => {
-  if (result === "passed") return "default";
-  if (result === "failed") return "destructive";
-  return "outline";
-};
-
-const getStatusBadgeVariant = (status: Application["status"]) => {
-  if (status === "draft" || status === "submitted") return "secondary";
-  if (status === "accepted") return "default";
-  if (status === "rejected") return "destructive";
-  return "outline";
 };
 
 const ApplicationShow = () => {
@@ -147,12 +134,12 @@ const ApplicationShow = () => {
     {
       label: getLabel(application.job_type, JOB_TYPE_OPTIONS),
       icon: Briefcase,
-      variant: "outline" as const,
+      className: getEnumBadgeClassName("jobType", application.job_type),
     },
     {
       label: getLabel(application.work_system, WORK_SYSTEM_OPTIONS),
       icon: Clock,
-      variant: "outline" as const,
+      className: getEnumBadgeClassName("workSystem", application.work_system),
     },
   ];
 
@@ -204,15 +191,27 @@ const ApplicationShow = () => {
                 <CardTitle className="text-lg">Informasi Lamaran</CardTitle>
                 <div className="flex flex-wrap gap-2">
                   <Badge
-                    variant={getStatusBadgeVariant(application.status)}
-                    className="text-xs uppercase gap-1"
+                    variant="outline"
+                    className={cn(
+                      getEnumBadgeClassName(
+                        "applicationStatus",
+                        application.status,
+                      ),
+                      "text-xs uppercase gap-1",
+                    )}
                   >
                     <AlertCircle className="h-3 w-3" />
                     {statusLabel}
                   </Badge>
                   <Badge
-                    variant={getResultBadgeVariant(application.result_status)}
-                    className="text-xs uppercase gap-1"
+                    variant="outline"
+                    className={cn(
+                      getEnumBadgeClassName(
+                        "applicationResultStatus",
+                        application.result_status,
+                      ),
+                      "text-xs uppercase gap-1",
+                    )}
                   >
                     <CheckCircle className="h-3 w-3" />
                     {resultLabel}
@@ -223,8 +222,11 @@ const ApplicationShow = () => {
                 {badges.map((badge) => (
                   <Badge
                     key={badge.label}
-                    variant={badge.variant}
-                    className="gap-1.5 text-[10px] uppercase"
+                    variant="outline"
+                    className={cn(
+                      badge.className,
+                      "gap-1.5 text-[10px] uppercase",
+                    )}
                   >
                     <badge.icon className="h-3 w-3" />
                     {badge.label}

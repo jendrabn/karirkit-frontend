@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
@@ -95,64 +95,24 @@ import {
   STATUS_OPTIONS,
   RESULT_STATUS_OPTIONS,
 } from "@/types/application";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type FilterParams = Omit<
   GetApplicationsParams,
   "page" | "per_page" | "q" | "sort_by" | "sort_order"
 >;
 
-const getJobTypeBadgeVariant = (jobType: JobType) => {
-  const variants: Record<
-    JobType,
-    "fullTime" | "partTime" | "contract" | "internship" | "freelance"
-  > = {
-    full_time: "fullTime",
-    part_time: "partTime",
-    contract: "contract",
-    internship: "internship",
-    freelance: "freelance",
-  };
-  return variants[jobType];
-};
+const getJobTypeBadgeClassName = (jobType: JobType) =>
+  getEnumBadgeClassName("jobType", jobType);
 
-const getWorkSystemBadgeVariant = (workSystem: WorkSystem) => {
-  const variants: Record<WorkSystem, "onsite" | "remote" | "hybrid"> = {
-    onsite: "onsite",
-    remote: "remote",
-    hybrid: "hybrid",
-  };
-  return variants[workSystem];
-};
+const getWorkSystemBadgeClassName = (workSystem: WorkSystem) =>
+  getEnumBadgeClassName("workSystem", workSystem);
 
-const getResultStatusBadgeVariant = (resultStatus: ResultStatus) => {
-  const variants: Record<ResultStatus, "pending" | "passed" | "failed"> = {
-    pending: "pending",
-    passed: "passed",
-    failed: "failed",
-  };
-  return variants[resultStatus];
-};
+const getResultStatusBadgeClassName = (resultStatus: ResultStatus) =>
+  getEnumBadgeClassName("applicationResultStatus", resultStatus);
 
-const getStatusBadgeVariant = (status: ApplicationStatus) => {
-  const screeningStatuses = ["administration_screening", "hr_screening"];
-  const testStatuses = ["online_test", "psychological_test", "technical_test"];
-  const interviewStatuses = [
-    "hr_interview",
-    "user_interview",
-    "final_interview",
-  ];
-
-  if (status === "draft") return "draft";
-  if (status === "submitted") return "submitted";
-  if (screeningStatuses.includes(status)) return "screening";
-  if (testStatuses.includes(status)) return "test";
-  if (interviewStatuses.includes(status)) return "interview";
-  if (status === "offering" || status === "mcu" || status === "onboarding")
-    return "offering";
-  if (status === "accepted") return "accepted";
-  if (status === "rejected") return "rejected";
-  return "default";
-};
+const getStatusBadgeClassName = (status: ApplicationStatus) =>
+  getEnumBadgeClassName("applicationStatus", status);
 
 const formatSalaryRange = (
   min: number | undefined | null,
@@ -419,20 +379,21 @@ export const ApplicationsList = () => {
 
     if (type === "select") {
       let options: { value: string; label: string }[] = [];
-      let getBadgeVariant: () => BadgeProps["variant"] = () => "default";
+      let getBadgeClassName = () => "";
 
       if (field === "job_type") {
         options = JOB_TYPE_OPTIONS;
-        getBadgeVariant = () => getJobTypeBadgeVariant(app.job_type);
+        getBadgeClassName = () => getJobTypeBadgeClassName(app.job_type);
       } else if (field === "work_system") {
         options = WORK_SYSTEM_OPTIONS;
-        getBadgeVariant = () => getWorkSystemBadgeVariant(app.work_system);
+        getBadgeClassName = () => getWorkSystemBadgeClassName(app.work_system);
       } else if (field === "status") {
         options = STATUS_OPTIONS;
-        getBadgeVariant = () => getStatusBadgeVariant(app.status);
+        getBadgeClassName = () => getStatusBadgeClassName(app.status);
       } else if (field === "result_status") {
         options = RESULT_STATUS_OPTIONS;
-        getBadgeVariant = () => getResultStatusBadgeVariant(app.result_status);
+        getBadgeClassName = () =>
+          getResultStatusBadgeClassName(app.result_status);
       }
 
       return (
@@ -443,8 +404,11 @@ export const ApplicationsList = () => {
         >
           <SelectTrigger className="h-auto w-full border-0 bg-transparent p-0 shadow-none focus:ring-0">
             <Badge
-              variant={getBadgeVariant()}
-              className="cursor-pointer w-full justify-center text-center py-1"
+              variant="outline"
+              className={cn(
+                getBadgeClassName(),
+                "cursor-pointer w-full justify-center py-1 text-center",
+              )}
             >
               {options.find((opt) => opt.value === app[field])?.label ||
                 app[field]}

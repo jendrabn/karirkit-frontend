@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { env } from "@/config/env";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 import { getContactLink } from "@/lib/utils";
 import { useCancelSubscription } from "@/features/subscriptions/api/cancel-subscription";
 import { useCreateSubscriptionOrder } from "@/features/subscriptions/api/create-subscription-order";
@@ -327,8 +328,11 @@ export function SubscriptionManager() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-3">
               <Badge
-                variant="secondary"
-                className="w-fit rounded-full bg-amber-100 dark:bg-amber-900 px-3 py-1 text-amber-800 dark:text-amber-200"
+                variant="outline"
+                className={`w-fit rounded-full ${getEnumBadgeClassName(
+                  "subscriptionStatus",
+                  "pending",
+                )} px-3 py-1`}
               >
                 Menunggu Pembayaran
               </Badge>
@@ -614,7 +618,7 @@ export function SubscriptionManager() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-foreground">
-                  Butuh bantuan?
+                  Butuh Bantuan?
                 </h3>
                 <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
                   Hubungi support jika butuh bantuan terkait paket, pembayaran,
@@ -625,7 +629,10 @@ export function SubscriptionManager() {
 
             <div className="flex flex-col gap-3 sm:flex-row md:shrink-0">
               {env.SUPPORT_WHATSAPP ? (
-                <Button asChild className="justify-between sm:min-w-52">
+                <Button
+                  asChild
+                  className="justify-between bg-[#25D366] text-white hover:bg-[#1ebe5d] hover:text-white focus-visible:ring-[#25D366]/40 sm:min-w-52"
+                >
                   <a
                     href={getContactLink(
                       "phone",

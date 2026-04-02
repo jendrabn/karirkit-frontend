@@ -48,6 +48,7 @@ import {
   LANGUAGE_OPTIONS,
 } from "@/types/applicationLetter";
 import { toast } from "sonner";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const getLabel = (value: string, options: { value: string; label: string }[]) =>
   options.find((opt) => opt.value === value)?.label || value;
@@ -208,13 +209,25 @@ const ApplicationLetterShow = () => {
       </PageHeader>
 
       <div className="flex gap-2 mb-6">
-        <Badge variant="outline">
+        <Badge
+          variant="outline"
+          className={getEnumBadgeClassName("language", letter.language || "id")}
+        >
           {getLabel(letter.language || "id", LANGUAGE_OPTIONS)}
         </Badge>
-        <Badge variant="secondary">
+        <Badge
+          variant="outline"
+          className={getEnumBadgeClassName("gender", letter.gender)}
+        >
           {getLabel(letter.gender, GENDER_OPTIONS)}
         </Badge>
-        <Badge variant="secondary">
+        <Badge
+          variant="outline"
+          className={getEnumBadgeClassName(
+            "maritalStatus",
+            letter.marital_status,
+          )}
+        >
           {getLabel(letter.marital_status, MARITAL_STATUS_OPTIONS)}
         </Badge>
       </div>

@@ -16,32 +16,16 @@ import { Separator } from "@/components/ui/separator";
 import {
   USER_ROLE_OPTIONS,
   USER_STATUS_OPTIONS,
-  type UserRole,
 } from "@/types/user";
 import type { User } from "@/types/user";
 import { SUBSCRIPTION_PLAN_LABELS } from "@/features/subscriptions/utils";
-
-const getRoleBadgeVariant = (role: UserRole) => {
-  return role === "admin" ? "default" : "secondary";
-};
-
-const getStatusBadgeVariant = (status: User["status"]) => {
-  switch (status) {
-    case "active":
-      return "default";
-    case "suspended":
-      return "secondary";
-    case "banned":
-      return "destructive";
-    default:
-      return "outline";
-  }
-};
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 export const UserDetail = ({ user }: { user: User }) => {
   const subscriptionPlanLabel = user.subscription_plan
     ? SUBSCRIPTION_PLAN_LABELS[user.subscription_plan]
     : "-";
+  const emailVerifiedLabel = user.email_verified_at ? "Terverifikasi" : "Belum";
   const lastLoginLabel = user.last_login_at
     ? dayjs(user.last_login_at).format("DD MMMM YYYY, HH:mm")
     : "Belum pernah login";
@@ -65,7 +49,10 @@ export const UserDetail = ({ user }: { user: User }) => {
             <h2 className="text-2xl font-bold">{user.name}</h2>
             <p className="text-muted-foreground">@{user.username}</p>
             <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
-              <Badge variant={getRoleBadgeVariant(user.role)} className="gap-1">
+              <Badge
+                variant="outline"
+                className={getEnumBadgeClassName("userRole", user.role)}
+              >
                 <Shield className="h-3 w-3" />
                 {
                   USER_ROLE_OPTIONS.find((opt) => opt.value === user.role)
@@ -73,8 +60,8 @@ export const UserDetail = ({ user }: { user: User }) => {
                 }
               </Badge>
               <Badge
-                variant={getStatusBadgeVariant(user.status)}
-                className="gap-1"
+                variant="outline"
+                className={getEnumBadgeClassName("userStatus", user.status)}
               >
                 {user.status === "active" ? (
                   <UserCheck className="h-3 w-3" />
@@ -147,6 +134,25 @@ export const UserDetail = ({ user }: { user: User }) => {
                   </p>
                 </div>
               </div>
+              <div className="flex items-center gap-3 text-sm">
+                <div className="p-2 rounded-lg bg-muted">
+                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-xs">
+                    Email Terverifikasi
+                  </p>
+                  <Badge
+                    variant="outline"
+                    className={getEnumBadgeClassName(
+                      "verificationStatus",
+                      user.email_verified_at ? "true" : "false",
+                    )}
+                  >
+                    {emailVerifiedLabel}
+                  </Badge>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -157,7 +163,15 @@ export const UserDetail = ({ user }: { user: User }) => {
             </div>
             <div>
               <p className="text-muted-foreground text-xs">Plan Langganan</p>
-              <p className="font-medium">{subscriptionPlanLabel}</p>
+              <Badge
+                variant="outline"
+                className={getEnumBadgeClassName(
+                  "subscriptionPlan",
+                  user.subscription_plan,
+                )}
+              >
+                {subscriptionPlanLabel}
+              </Badge>
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm">

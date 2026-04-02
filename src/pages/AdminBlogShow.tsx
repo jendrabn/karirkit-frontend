@@ -29,15 +29,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { BLOG_STATUS_OPTIONS, getStatusBadgeVariant } from "@/types/blog";
+import { BLOG_STATUS_OPTIONS } from "@/types/blog";
 import { toast } from "sonner";
 import { paths } from "@/config/paths";
 import { useBlog } from "@/features/admin/blogs/api/get-blog";
 import { useDeleteBlog } from "@/features/admin/blogs/api/delete-blog";
-import { buildImageUrl, formatNumber } from "@/lib/utils";
+import { buildImageUrl, formatNumber, cn } from "@/lib/utils";
 import { useState } from "react";
 import { formatDateTime } from "@/lib/date";
 import { InfoItem, RichText } from "@/components/ui/display-info";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const AdminBlogShow = () => {
   const navigate = useNavigate();
@@ -154,8 +155,11 @@ const AdminBlogShow = () => {
               <div className="flex items-center justify-between gap-3">
                 <CardTitle className="text-lg">Informasi Blog</CardTitle>
                 <Badge
-                  variant={getStatusBadgeVariant(blog.status)}
-                  className="text-xs"
+                  variant="outline"
+                  className={cn(
+                    getEnumBadgeClassName("blogStatus", blog.status),
+                    "text-xs",
+                  )}
                 >
                   {statusLabel}
                 </Badge>

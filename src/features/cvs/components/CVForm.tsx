@@ -169,12 +169,16 @@ export function CVForm({
     queryConfig: { enabled: !!selectedTemplateLanguage },
   });
 
-  const apiTemplates = selectedTemplateLanguage
-    ? templatesData?.items.map((t) => ({
-        ...t,
-        previewImage: buildImageUrl(t.preview),
-      })) || []
-    : [];
+  const apiTemplates = useMemo(
+    () =>
+      selectedTemplateLanguage
+        ? templatesData?.items.map((t) => ({
+            ...t,
+            previewImage: buildImageUrl(t.preview),
+          })) || []
+        : [],
+    [selectedTemplateLanguage, templatesData?.items],
+  );
 
   useEffect(() => {
     if (apiTemplates.length > 0 && !templateIdValue) {

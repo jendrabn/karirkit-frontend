@@ -84,6 +84,7 @@ import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { SortableHeader } from "@/components/SortableHeader";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type SortField =
   | "application_date"
@@ -499,9 +500,11 @@ export function ApplicationLetterList() {
                       {columnVisibility.language && (
                         <TableCell>
                           <Badge
-                            variant={
-                              letter.language === "id" ? "default" : "secondary"
-                            }
+                            variant="outline"
+                            className={getEnumBadgeClassName(
+                              "language",
+                              letter.language,
+                            )}
                           >
                             {letter.language === "id" ? "ID" : "EN"}
                           </Badge>

@@ -42,6 +42,7 @@ import { env } from "@/config/env";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDateTime } from "@/lib/date";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const monthNames = [
   "Januari",
@@ -345,7 +346,13 @@ export default function PortfolioShow() {
           <Card>
             <CardHeader className="space-y-3">
               <CardTitle className="text-lg">Informasi Proyek</CardTitle>
-              <Badge variant="secondary" className="text-xs uppercase gap-1">
+              <Badge
+                variant="outline"
+                className={getEnumBadgeClassName(
+                  "projectType",
+                  portfolio.project_type,
+                )}
+              >
                 <Briefcase className="h-3 w-3" />
                 {projectTypeLabels[portfolio.project_type]}
               </Badge>

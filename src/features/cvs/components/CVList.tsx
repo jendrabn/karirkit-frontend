@@ -83,6 +83,7 @@ import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { SortableHeader } from "@/components/SortableHeader";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type SortField = "updated_at" | "name" | "created_at" | "views" | "headline";
 type SortOrder = "asc" | "desc";
@@ -591,9 +592,11 @@ const CVList = () => {
                         {columnVisibility.language && (
                           <TableCell>
                             <Badge
-                              variant={
-                                cv.language === "id" ? "default" : "secondary"
-                              }
+                              variant="outline"
+                              className={getEnumBadgeClassName(
+                                "language",
+                                cv.language,
+                              )}
                             >
                               {cv.language === "id" ? "ID" : "EN"}
                             </Badge>
@@ -602,12 +605,14 @@ const CVList = () => {
                         {columnVisibility.visibility && (
                           <TableCell>
                             <Badge
-                              variant={
-                                cv.visibility === "public"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                              className="gap-1"
+                              variant="outline"
+                              className={cn(
+                                getEnumBadgeClassName(
+                                  "cvVisibility",
+                                  cv.visibility,
+                                ),
+                                "gap-1",
+                              )}
                             >
                               {cv.visibility === "public" ? (
                                 <Globe className="h-3 w-3" />

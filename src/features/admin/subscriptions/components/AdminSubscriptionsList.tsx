@@ -50,6 +50,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Field,
   FieldError,
   FieldLabel,
@@ -100,6 +106,7 @@ import type {
   SubscriptionPlanId,
   SubscriptionStatus,
 } from "@/types/subscription";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 type ConfirmAction = "approve" | "cancel" | "fail" | "downgrade";
 
@@ -113,20 +120,6 @@ const STATUS_OPTIONS: SubscriptionStatus[] = [
 ];
 
 const PLAN_OPTIONS: SubscriptionPlanId[] = ["free", "pro", "max"];
-
-const getSubscriptionStatusBadgeVariant = (status: SubscriptionStatus) => {
-  switch (status) {
-    case "active":
-    case "paid":
-      return "default";
-    case "pending":
-      return "secondary";
-    case "failed":
-      return "destructive";
-    default:
-      return "outline";
-  }
-};
 
 const getSubscriptionUserLabel = (subscription: AdminSubscription) => {
   if (subscription.user?.name) {
@@ -328,7 +321,7 @@ export function AdminSubscriptionsList() {
           : "User akan dipaksa kembali ke plan Free.";
 
   return (
-    <>
+    <TooltipProvider>
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="relative w-full max-w-sm md:min-w-[300px]">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -422,8 +415,11 @@ export function AdminSubscriptionsList() {
                     Nominal
                   </SortableHeader>
                 </TableHead>
-                <TableHead className="uppercase text-xs font-medium tracking-wide min-w-[260px]">
-                  Pembayaran
+                <TableHead className="uppercase text-xs font-medium tracking-wide">
+                  Tipe Pembayaran
+                </TableHead>
+                <TableHead className="uppercase text-xs font-medium tracking-wide min-w-[250px]">
+                  Order ID
                 </TableHead>
                 <TableHead>
                   <SortableHeader
@@ -451,7 +447,7 @@ export function AdminSubscriptionsList() {
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={8} className="py-14 text-center">
+                  <TableCell colSpan={9} className="py-14 text-center">
                     <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
                       <Loader2 className="h-5 w-5 animate-spin text-primary" />
                       <span className="text-sm font-medium text-muted-foreground">
@@ -463,7 +459,7 @@ export function AdminSubscriptionsList() {
               ) : items.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="text-center py-16 text-muted-foreground"
                   >
                     <div className="flex flex-col items-center gap-2">
@@ -504,13 +500,21 @@ export function AdminSubscriptionsList() {
                         </div>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
-                        <Badge variant="outline">
+                        <Badge
+                          variant="outline"
+                          className={getEnumBadgeClassName(
+                            "subscriptionPlan",
+                            subscription.plan,
+                          )}
+                        >
                           {SUBSCRIPTION_PLAN_LABELS[subscription.plan]}
                         </Badge>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <Badge
-                          variant={getSubscriptionStatusBadgeVariant(
+                          variant="outline"
+                          className={getEnumBadgeClassName(
+                            "subscriptionStatus",
                             subscription.status,
                           )}
                         >
@@ -520,17 +524,31 @@ export function AdminSubscriptionsList() {
                       <TableCell className="whitespace-nowrap font-medium">
                         {formatSubscriptionPrice(subscription.amount)}
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground max-w-[260px]">
-                        <div className="space-y-1">
-                          {subscription.midtrans_payment_type ? (
-                            <p className="truncate text-sm">
-                              {subscription.midtrans_payment_type}
-                            </p>
-                          ) : null}
-                          <p className="truncate text-xs">
-                            {subscription.midtrans_order_id || subscription.id}
-                          </p>
-                        </div>
+                      <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                        {subscription.midtrans_payment_type ? (
+                          <span className="truncate">
+                            {subscription.midtrans_payment_type}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground max-w-[250px]">
+                        {(() => {
+                          const orderId =
+                            subscription.midtrans_order_id || subscription.id;
+
+                          return (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <p className="truncate font-mono">{orderId}</p>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="font-mono text-xs">{orderId}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
                         {subscription.expires_at
@@ -587,7 +605,7 @@ export function AdminSubscriptionsList() {
                                 }
                               >
                                 <User className="mr-2 h-4 w-4" />
-                                Buka Detail User
+                                Lihat Detail User
                               </DropdownMenuItem>
                             )}
 
@@ -840,6 +858,6 @@ export function AdminSubscriptionsList() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </TooltipProvider>
   );
 }

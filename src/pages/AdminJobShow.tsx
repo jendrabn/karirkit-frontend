@@ -25,8 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { buildImageUrl } from "@/lib/utils";
-import { formatCurrency, formatYears } from "@/lib/utils";
+import { buildImageUrl, formatCurrency, formatYears, cn } from "@/lib/utils";
 import { formatDateTime } from "@/lib/date";
 import { InfoItem, ContactItem, RichText } from "@/components/ui/display-info";
 import {
@@ -50,19 +49,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { MinimalSEO } from "@/components/MinimalSEO";
-
-const getStatusBadgeVariant = (status: JobStatus) => {
-  const variants: Record<
-    JobStatus,
-    "default" | "secondary" | "destructive" | "outline"
-  > = {
-    published: "default",
-    draft: "secondary",
-    closed: "destructive",
-    archived: "outline",
-  };
-  return variants[status];
-};
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const STATUS_LABELS: Record<JobStatus, string> = {
   published: "Published",
@@ -194,8 +181,11 @@ export default function AdminJobShow() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Informasi Lowongan</CardTitle>
                 <Badge
-                  variant={getStatusBadgeVariant(job.status)}
-                  className="text-xs"
+                  variant="outline"
+                  className={cn(
+                    getEnumBadgeClassName("jobStatus", job.status),
+                    "text-xs",
+                  )}
                 >
                   {STATUS_LABELS[job.status]}
                 </Badge>
@@ -204,15 +194,33 @@ export default function AdminJobShow() {
             <CardContent className="space-y-6">
               {/* Badges */}
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="gap-1.5">
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    getEnumBadgeClassName("jobType", job.job_type),
+                    "gap-1.5",
+                  )}
+                >
                   <Briefcase className="h-3 w-3" />
                   {JOB_TYPE_LABELS[job.job_type]}
                 </Badge>
-                <Badge variant="outline" className="gap-1.5">
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    getEnumBadgeClassName("workSystem", job.work_system),
+                    "gap-1.5",
+                  )}
+                >
                   <Building2 className="h-3 w-3" />
                   {WORK_SYSTEM_LABELS[job.work_system]}
                 </Badge>
-                <Badge variant="outline" className="gap-1.5">
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    getEnumBadgeClassName("degreeType", job.education_level),
+                    "gap-1.5",
+                  )}
+                >
                   <GraduationCap className="h-3 w-3" />
                   {EDUCATION_LEVEL_LABELS[job.education_level]}
                 </Badge>
