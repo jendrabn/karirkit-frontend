@@ -18,7 +18,7 @@ export function TrustedBySection() {
     },
     {
       name: "Apple",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/100px-Apple_logo_black.svg.png",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/500px-Apple_logo_black.svg.png?_=20250629104141",
     },
     {
       name: "Netflix",
@@ -26,7 +26,7 @@ export function TrustedBySection() {
     },
     {
       name: "Spotify",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/100px-Spotify_logo_without_text.svg.png",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Spotify_logo_with_text.svg/250px-Spotify_logo_with_text.svg.png",
     },
     {
       name: "Uber",
