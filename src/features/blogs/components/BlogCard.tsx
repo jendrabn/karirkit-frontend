@@ -44,9 +44,9 @@ export function BlogCard({ blog }: BlogCardProps) {
 
         {/* Title */}
         <Link to={paths.blog.detail.getHref(blog.slug)}>
-          <h4 className="text-xl font-semibold leading-tight hover:text-primary transition-colors line-clamp-2">
+          <h3 className="text-xl font-semibold leading-tight hover:text-primary transition-colors line-clamp-2">
             {blog.title}
-          </h4>
+          </h3>
         </Link>
 
         {/* Excerpt */}

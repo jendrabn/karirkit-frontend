@@ -136,59 +136,60 @@
   background-image: linear-gradient(
     135deg,
     hsl(var(--primary)) 0%,
-    hsl(142 71% 35%) 100%
+    hsl(150 30% 34%) 56%,
+    hsl(36 38% 54%) 100%
   );
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 160 6% 16%;
+    --background: 0 0% 100%; /* #FFFFFF - base background */
+    --foreground: 150 12% 12%; /* #1B221D - deep forest ink */
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 6% 16%;
+    --card: 0 0% 100%; /* #FFFFFF - card surface */
+    --card-foreground: 150 12% 12%; /* #1B221D - card text */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 160 6% 16%;
+    --popover: 0 0% 100%; /* #FFFFFF - popover surface */
+    --popover-foreground: 150 12% 12%; /* #1B221D - popover text */
 
-    --primary: 142 71% 45%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 153 47% 27%; /* #25724F - forest green primary */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF - text on primary */
 
-    --secondary: 140 52% 95%;
-    --secondary-foreground: 142 71% 35%;
+    --secondary: 38 40% 94%; /* #F4F0E8 - soft sand surface */
+    --secondary-foreground: 154 34% 24%; /* #29523E - forest text */
 
-    --muted: 140 20% 96%;
-    --muted-foreground: 160 6% 45%;
+    --muted: 40 30% 94%; /* #F2EFEA - muted sand */
+    --muted-foreground: 150 8% 30%; /* #46534B - muted forest text */
 
-    --accent: 140 52% 94%;
-    --accent-foreground: 142 71% 35%;
+    --accent: 42 34% 90%; /* #E8E1D7 - warm sand accent */
+    --accent-foreground: 154 34% 22%; /* #25503B - accent text */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 140 20% 90%;
-    --input: 140 20% 90%;
-    --ring: 142 71% 45%;
+    --border: 38 18% 84%; /* #DED7CF - sand border */
+    --input: 38 18% 84%; /* #DED7CF - input border */
+    --ring: 153 36% 34%; /* #388060 - forest focus ring */
 
     --radius: 0.75rem;
 
     --hero-gradient: linear-gradient(
       135deg,
-      hsl(142 60% 92%) 0%,
-      hsl(142 70% 96%) 50%,
-      hsl(200 60% 96%) 100%
+      hsl(0 0% 100%) 0%, /* #FFFFFF - white */
+      hsl(40 44% 97%) 48%, /* #FAF7F1 - pale sand */
+      hsl(134 22% 93%) 100% /* #EAEFEA - soft sage */
     );
-    --card-shadow: 0 4px 20px -4px hsl(142 71% 45% / 0.15);
-    --card-shadow-hover: 0 8px 30px -4px hsl(142 71% 45% / 0.25);
+    --card-shadow: 0 12px 32px -18px hsl(153 47% 27% / 0.16);
+    --card-shadow-hover: 0 24px 58px -22px hsl(153 47% 27% / 0.22);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 142 71% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 140 52% 95%;
-    --sidebar-accent-foreground: 142 71% 35%;
-    --sidebar-border: 140 20% 90%;
-    --sidebar-ring: 142 71% 45%;
+    --sidebar-background: 0 0% 100%; /* #FFFFFF - sidebar base */
+    --sidebar-foreground: 150 11% 18%; /* #29332D - sidebar text */
+    --sidebar-primary: 153 47% 27%; /* #25724F - sidebar primary */
+    --sidebar-primary-foreground: 0 0% 100%; /* #FFFFFF - text on sidebar primary */
+    --sidebar-accent: 40 30% 94%; /* #F2EFEA - sidebar accent */
+    --sidebar-accent-foreground: 154 34% 22%; /* #25503B - sidebar accent text */
+    --sidebar-border: 38 18% 84%; /* #DED7CF - sidebar border */
+    --sidebar-ring: 153 36% 34%; /* #388060 - sidebar focus ring */
 
     --sonner-default-bg: var(--card);
     --sonner-default-fg: var(--card-foreground);
@@ -208,51 +209,51 @@
   }
 
   .dark {
-    --background: 160 15% 6%;
-    --foreground: 140 15% 95%;
+    --background: 155 18% 10%; /* #151E18 - dark forest background */
+    --foreground: 40 28% 93%; /* #F1EDE7 - soft sand text */
 
-    --card: 160 12% 10%;
-    --card-foreground: 140 15% 95%;
+    --card: 155 16% 13%; /* #1C261F - elevated forest card */
+    --card-foreground: 40 28% 93%; /* #F1EDE7 - card text */
 
-    --popover: 160 12% 10%;
-    --popover-foreground: 140 15% 95%;
+    --popover: 155 16% 13%; /* #1C261F - dark popover */
+    --popover-foreground: 40 28% 93%; /* #F1EDE7 - popover text */
 
-    --primary: 142 71% 45%;
-    --primary-foreground: 160 15% 6%;
+    --primary: 41 38% 80%; /* #D8CCBF - sand primary on dark */
+    --primary-foreground: 150 20% 12%; /* #18251E - text on sand */
 
-    --secondary: 160 15% 15%;
-    --secondary-foreground: 142 50% 80%;
+    --secondary: 154 12% 18%; /* #28332E - muted forest layer */
+    --secondary-foreground: 40 24% 88%; /* #E5DED4 - secondary text */
 
-    --muted: 160 12% 14%;
-    --muted-foreground: 140 10% 55%;
+    --muted: 154 12% 17%; /* #26312C - muted forest */
+    --muted-foreground: 40 14% 74%; /* #C8BFB5 - muted sand text */
 
-    --accent: 160 15% 15%;
-    --accent-foreground: 142 50% 80%;
+    --accent: 42 18% 24%; /* #484036 - dark sand accent */
+    --accent-foreground: 40 28% 88%; /* #ECE7DF - accent text */
 
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 12% 18%;
-    --input: 160 12% 18%;
-    --ring: 142 71% 45%;
+    --border: 154 9% 26%; /* #3C4842 - dark border */
+    --input: 154 9% 26%; /* #3C4842 - dark input border */
+    --ring: 41 38% 80%; /* #D8CCBF - sand focus ring */
 
     --hero-gradient: linear-gradient(
       135deg,
-      hsl(160 15% 8%) 0%,
-      hsl(160 12% 12%) 50%,
-      hsl(142 20% 10%) 100%
+      hsl(154 20% 10%) 0%, /* #141F19 - dark forest */
+      hsl(153 17% 14%) 54%, /* #1E2A23 - forest midtone */
+      hsl(40 12% 18%) 100% /* #342F28 - deep sand */
     );
     --card-shadow: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
-    --card-shadow-hover: 0 8px 30px -4px hsl(142 71% 45% / 0.15);
+    --card-shadow-hover: 0 8px 30px -4px hsl(41 38% 80% / 0.18);
 
-    --sidebar-background: 160 15% 8%;
-    --sidebar-foreground: 140 15% 95%;
-    --sidebar-primary: 142 71% 45%;
-    --sidebar-primary-foreground: 160 15% 6%;
-    --sidebar-accent: 160 15% 15%;
-    --sidebar-accent-foreground: 142 50% 80%;
-    --sidebar-border: 160 12% 18%;
-    --sidebar-ring: 142 71% 45%;
+    --sidebar-background: 154 18% 11%; /* #17211B - dark sidebar base */
+    --sidebar-foreground: 40 28% 93%; /* #F1EDE7 - sidebar text */
+    --sidebar-primary: 41 38% 80%; /* #D8CCBF - sidebar primary */
+    --sidebar-primary-foreground: 150 20% 12%; /* #18251E - text on sidebar primary */
+    --sidebar-accent: 42 18% 24%; /* #484036 - sidebar accent */
+    --sidebar-accent-foreground: 40 28% 88%; /* #ECE7DF - sidebar accent text */
+    --sidebar-border: 154 9% 26%; /* #3C4842 - sidebar border */
+    --sidebar-ring: 41 38% 80%; /* #D8CCBF - sidebar focus ring */
 
     --sonner-default-bg: var(--card);
     --sonner-default-fg: var(--card-foreground);
@@ -292,14 +293,14 @@
 */
 
 :root {
-  --sidebar: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar: hsl(42 38% 96%);
+  --sidebar-foreground: hsl(150 11% 18%);
+  --sidebar-primary: hsl(153 47% 27%);
   --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar-accent: hsl(40 30% 94%);
+  --sidebar-accent-foreground: hsl(154 34% 22%);
+  --sidebar-border: hsl(38 18% 84%);
+  --sidebar-ring: hsl(153 36% 34%);
 }
 
 /*
@@ -307,14 +308,14 @@
 */
 
 .dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(154 18% 11%);
+  --sidebar-foreground: hsl(40 28% 93%);
+  --sidebar-primary: hsl(41 38% 80%);
+  --sidebar-primary-foreground: hsl(150 20% 12%);
+  --sidebar-accent: hsl(42 18% 24%);
+  --sidebar-accent-foreground: hsl(40 28% 88%);
+  --sidebar-border: hsl(154 9% 26%);
+  --sidebar-ring: hsl(41 38% 80%);
 }
 
 /*

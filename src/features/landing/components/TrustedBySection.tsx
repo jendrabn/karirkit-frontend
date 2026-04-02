@@ -35,7 +35,7 @@ export function TrustedBySection() {
   ];
 
   return (
-    <section className="py-16 bg-muted/30">
+    <section className="bg-muted/30 py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <p className="mb-8 text-center text-sm text-muted-foreground">
           Dipercaya oleh pencari kerja dan profesional dari berbagai perusahaan

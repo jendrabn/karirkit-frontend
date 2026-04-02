@@ -1,19 +1,8 @@
-# robots.txt for KarirKit
-# https://karirkit.id/
-
 User-agent: *
-
-# =========================
-# Allow public pages
-# =========================
 Allow: /
 Allow: /blog/
 Allow: /blog/*
 Allow: /u/*
-
-# =========================
-# Disallow private & protected pages
-# =========================
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /profile/
@@ -23,13 +12,5 @@ Disallow: /applications/
 Disallow: /application-letters/
 Disallow: /cvs/
 Disallow: /portfolios/
-
-# =========================
-# Disallow API endpoints
-# =========================
 Disallow: /api/
-
-# =========================
-# Sitemap
-# =========================
 Sitemap: https://karirkit.id/sitemap.xml

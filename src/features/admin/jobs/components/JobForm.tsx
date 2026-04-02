@@ -61,6 +61,15 @@ const toDateTimeLocalValue = (value?: string | null) => {
     : "";
 };
 
+const toIsoDateTimeValue = (value?: string | null) => {
+  if (!value) return undefined;
+
+  const parsedValue = new Date(value);
+  return Number.isNaN(parsedValue.getTime())
+    ? value
+    : parsedValue.toISOString();
+};
+
 const ensureSelectedItemExists = (
   items: string[] | undefined,
   selectedValue?: string | null,
@@ -156,9 +165,16 @@ export function JobForm({
 
   useServerValidation(error, form);
 
+  const handleSubmit = (values: JobFormValues) => {
+    onSubmit({
+      ...values,
+      expiration_date: toIsoDateTimeValue(values.expiration_date),
+    });
+  };
+
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}
+      onSubmit={form.handleSubmit(handleSubmit, displayFormErrors)}
       className="space-y-6"
     >
       <FieldSet disabled={isLoading} className="space-y-6">
