@@ -155,7 +155,7 @@ function HeroCard({
   return (
     <div
       className={cn(
-        "rounded-[22px] border border-[#d7e2db] bg-white/96 p-3.5 shadow-[0_24px_60px_-36px_rgba(36,101,69,0.36)] backdrop-blur-sm",
+        "rounded-[22px] border border-[#d7e2db] bg-white p-3.5 shadow-[0_24px_60px_-36px_rgba(36,101,69,0.36)]",
         className,
       )}
     >
@@ -570,12 +570,6 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-2rem] top-12 h-28 w-28 rounded-full bg-[#246545]/5 blur-3xl" />
-        <div className="absolute right-6 top-3 h-28 w-28 rounded-full bg-[#d9eadf]/80 blur-3xl" />
-        <div className="absolute bottom-6 left-1/3 h-24 w-36 rounded-full bg-[#f0eadc]/80 blur-3xl" />
-      </div>
-
       <div className="relative lg:hidden">
         <div className="grid gap-3 sm:grid-cols-2">
           <TrackerCard />
