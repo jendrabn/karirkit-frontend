@@ -41,7 +41,6 @@ const RegisterForm = () => {
     resolver: zodResolver(registerInputSchema),
     defaultValues: {
       name: "",
-      username: "",
       email: "",
       password: "",
       confirm_password: "",
@@ -101,21 +100,6 @@ const RegisterForm = () => {
                   {...form.register("name")}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="username">
-                  Username <span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  id="username"
-                  placeholder="Masukkan username"
-                  className={cn("h-12", form.formState.errors.username && "border-destructive")}
-                  {...form.register("username")}
-                />
-                <FieldError>
-                  {form.formState.errors.username?.message}
-                </FieldError>
               </Field>
 
               <Field>

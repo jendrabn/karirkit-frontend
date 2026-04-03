@@ -101,15 +101,6 @@ export const registerInputSchema = z
       .min(2, "Nama minimal 2 karakter")
       .max(100, "Nama maksimal 100 karakter"),
 
-    username: z
-      .string()
-      .min(3, "Username minimal 3 karakter")
-      .max(50, "Username maksimal 50 karakter")
-      .regex(
-        /^[a-zA-Z0-9_]+$/,
-        "Username hanya boleh huruf, angka, dan underscore"
-      ),
-
     email: z.string().email("Email tidak valid"),
 
     password: z
