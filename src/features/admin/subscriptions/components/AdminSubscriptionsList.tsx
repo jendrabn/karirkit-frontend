@@ -94,6 +94,7 @@ import { useDowngradeAdminSubscriptionUser } from "@/features/admin/subscription
 import { useFailAdminSubscription } from "@/features/admin/subscriptions/api/fail-subscription";
 import { displayFormErrors } from "@/lib/form-errors";
 import { useServerValidation } from "@/hooks/use-server-validation";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { cn } from "@/lib/utils";
 import {
@@ -107,6 +108,11 @@ import type {
   SubscriptionStatus,
 } from "@/types/subscription";
 import { getEnumBadgeClassName } from "@/lib/enum-badges";
+import {
+  SubscriptionColumnToggle,
+  type ColumnVisibility,
+} from "./SubscriptionColumnToggle";
+import { defaultColumnVisibility } from "../types/subscription-column-toggle.constants";
 
 type ConfirmAction = "approve" | "cancel" | "fail" | "downgrade";
 
@@ -156,6 +162,11 @@ export function AdminSubscriptionsList() {
     action: ConfirmAction;
     subscription: AdminSubscription;
   } | null>(null);
+  const [columnVisibility, setColumnVisibility] =
+    useLocalStorage<ColumnVisibility>(
+      "admin-subscriptions-table-columns",
+      defaultColumnVisibility,
+    );
   const normalizedSortBy = normalizeAdminSubscriptionSortField;
 
   const {
@@ -253,6 +264,8 @@ export function AdminSubscriptionsList() {
     total_items: 0,
     total_pages: 1,
   };
+  const visibleColumnsCount = Object.values(columnVisibility).filter(Boolean).length;
+  const tableColumnCount = visibleColumnsCount + 1;
   const hasActiveFilters = params.plan || params.status;
   const isPendingAction =
     approveMutation.isPending ||
@@ -384,6 +397,11 @@ export function AdminSubscriptionsList() {
             </Button>
           ) : null}
 
+          <SubscriptionColumnToggle
+            visibility={columnVisibility}
+            onVisibilityChange={setColumnVisibility}
+          />
+
           <Button size="sm" onClick={() => setCreateDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Manual Subscription
@@ -396,58 +414,74 @@ export function AdminSubscriptionsList() {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="uppercase text-xs font-medium tracking-wide min-w-[240px]">
-                  Pengguna
-                </TableHead>
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Plan
-                </TableHead>
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Status
-                </TableHead>
-                <TableHead>
-                  <SortableHeader
-                    field="amount"
-                    onSort={handleSort}
-                    activeField={currentSortBy}
-                    sortOrder={params.sort_order}
-                  >
-                    Nominal
-                  </SortableHeader>
-                </TableHead>
-                <TableHead className="uppercase text-xs font-medium tracking-wide">
-                  Tipe Pembayaran
-                </TableHead>
-                <TableHead className="uppercase text-xs font-medium tracking-wide min-w-[250px]">
-                  Order ID
-                </TableHead>
-                <TableHead>
-                  <SortableHeader
-                    field="expires_at"
-                    onSort={handleSort}
-                    activeField={currentSortBy}
-                    sortOrder={params.sort_order}
-                  >
-                    Aktif Sampai
-                  </SortableHeader>
-                </TableHead>
-                <TableHead>
-                  <SortableHeader
-                    field="created_at"
-                    onSort={handleSort}
-                    activeField={currentSortBy}
-                    sortOrder={params.sort_order}
-                  >
-                    Dibuat
-                  </SortableHeader>
-                </TableHead>
+                {columnVisibility.user && (
+                  <TableHead className="min-w-[240px] uppercase text-xs font-medium tracking-wide">
+                    Pengguna
+                  </TableHead>
+                )}
+                {columnVisibility.plan && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Plan
+                  </TableHead>
+                )}
+                {columnVisibility.status && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Status
+                  </TableHead>
+                )}
+                {columnVisibility.amount && (
+                  <TableHead>
+                    <SortableHeader
+                      field="amount"
+                      onSort={handleSort}
+                      activeField={currentSortBy}
+                      sortOrder={params.sort_order}
+                    >
+                      Nominal
+                    </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.payment_type && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Tipe Pembayaran
+                  </TableHead>
+                )}
+                {columnVisibility.order_id && (
+                  <TableHead className="min-w-[250px] uppercase text-xs font-medium tracking-wide">
+                    Order ID
+                  </TableHead>
+                )}
+                {columnVisibility.expires_at && (
+                  <TableHead>
+                    <SortableHeader
+                      field="expires_at"
+                      onSort={handleSort}
+                      activeField={currentSortBy}
+                      sortOrder={params.sort_order}
+                    >
+                      Aktif Sampai
+                    </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.created_at && (
+                  <TableHead>
+                    <SortableHeader
+                      field="created_at"
+                      onSort={handleSort}
+                      activeField={currentSortBy}
+                      sortOrder={params.sort_order}
+                    >
+                      Dibuat
+                    </SortableHeader>
+                  </TableHead>
+                )}
                 <TableHead className="w-[60px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={9} className="py-14 text-center">
+                  <TableCell colSpan={tableColumnCount} className="py-14 text-center">
                     <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
                       <Loader2 className="h-5 w-5 animate-spin text-primary" />
                       <span className="text-sm font-medium text-muted-foreground">
@@ -459,7 +493,7 @@ export function AdminSubscriptionsList() {
               ) : items.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
-                    colSpan={9}
+                    colSpan={tableColumnCount}
                     className="text-center py-16 text-muted-foreground"
                   >
                     <div className="flex flex-col items-center gap-2">
@@ -489,81 +523,97 @@ export function AdminSubscriptionsList() {
                         index % 2 === 0 ? "bg-background" : "bg-muted/20",
                       )}
                     >
-                      <TableCell className="max-w-[240px]">
-                        <div className="space-y-1">
-                          <p className="font-medium truncate">
-                            {getSubscriptionUserLabel(subscription)}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {getSubscriptionUserMeta(subscription)}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <Badge
-                          variant="outline"
-                          className={getEnumBadgeClassName(
-                            "subscriptionPlan",
-                            subscription.plan,
+                      {columnVisibility.user && (
+                        <TableCell className="max-w-[240px]">
+                          <div className="space-y-1">
+                            <p className="font-medium truncate">
+                              {getSubscriptionUserLabel(subscription)}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {getSubscriptionUserMeta(subscription)}
+                            </p>
+                          </div>
+                        </TableCell>
+                      )}
+                      {columnVisibility.plan && (
+                        <TableCell className="whitespace-nowrap">
+                          <Badge
+                            variant="outline"
+                            className={getEnumBadgeClassName(
+                              "subscriptionPlan",
+                              subscription.plan,
+                            )}
+                          >
+                            {SUBSCRIPTION_PLAN_LABELS[subscription.plan]}
+                          </Badge>
+                        </TableCell>
+                      )}
+                      {columnVisibility.status && (
+                        <TableCell className="whitespace-nowrap">
+                          <Badge
+                            variant="outline"
+                            className={getEnumBadgeClassName(
+                              "subscriptionStatus",
+                              subscription.status,
+                            )}
+                          >
+                            {SUBSCRIPTION_STATUS_LABELS[subscription.status]}
+                          </Badge>
+                        </TableCell>
+                      )}
+                      {columnVisibility.amount && (
+                        <TableCell className="whitespace-nowrap font-medium">
+                          {formatSubscriptionPrice(subscription.amount)}
+                        </TableCell>
+                      )}
+                      {columnVisibility.payment_type && (
+                        <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                          {subscription.midtrans_payment_type ? (
+                            <span className="truncate">
+                              {subscription.midtrans_payment_type}
+                            </span>
+                          ) : (
+                            "-"
                           )}
-                        >
-                          {SUBSCRIPTION_PLAN_LABELS[subscription.plan]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <Badge
-                          variant="outline"
-                          className={getEnumBadgeClassName(
-                            "subscriptionStatus",
-                            subscription.status,
-                          )}
-                        >
-                          {SUBSCRIPTION_STATUS_LABELS[subscription.status]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap font-medium">
-                        {formatSubscriptionPrice(subscription.amount)}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                        {subscription.midtrans_payment_type ? (
-                          <span className="truncate">
-                            {subscription.midtrans_payment_type}
-                          </span>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground max-w-[250px]">
-                        {(() => {
-                          const orderId =
-                            subscription.midtrans_order_id || subscription.id;
+                        </TableCell>
+                      )}
+                      {columnVisibility.order_id && (
+                        <TableCell className="max-w-[250px] text-sm text-muted-foreground">
+                          {(() => {
+                            const orderId =
+                              subscription.midtrans_order_id || subscription.id;
 
-                          return (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <p className="truncate font-mono">{orderId}</p>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="font-mono text-xs">{orderId}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                        {subscription.expires_at
-                          ? dayjs(subscription.expires_at).format(
-                              "DD MMM YYYY, HH:mm",
-                            )
-                          : "-"}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                        {subscription.created_at
-                          ? dayjs(subscription.created_at).format(
-                              "DD MMM YYYY, HH:mm",
-                            )
-                          : "-"}
-                      </TableCell>
+                            return (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <p className="truncate font-mono">{orderId}</p>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="font-mono text-xs">{orderId}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            );
+                          })()}
+                        </TableCell>
+                      )}
+                      {columnVisibility.expires_at && (
+                        <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                          {subscription.expires_at
+                            ? dayjs(subscription.expires_at).format(
+                                "DD MMM YYYY, HH:mm",
+                              )
+                            : "-"}
+                        </TableCell>
+                      )}
+                      {columnVisibility.created_at && (
+                        <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                          {subscription.created_at
+                            ? dayjs(subscription.created_at).format(
+                                "DD MMM YYYY, HH:mm",
+                              )
+                            : "-"}
+                        </TableCell>
+                      )}
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
