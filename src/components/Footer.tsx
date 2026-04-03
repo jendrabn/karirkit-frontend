@@ -22,7 +22,7 @@ export function Footer() {
               <img
                 src={logo}
                 alt="KarirKit"
-                className="h-8 w-auto brightness-0 invert dark:brightness-100 dark:invert-0"
+                className="h-8 w-auto transition-opacity hover:opacity-90 dark:[filter:brightness(0)_invert(1)_sepia(1)_saturate(0.75)_hue-rotate(355deg)_brightness(1.12)_contrast(0.92)]"
               />
             </div>
             <p className="text-sm text-background/70 dark:text-muted-foreground leading-relaxed">

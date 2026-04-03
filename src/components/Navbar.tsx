@@ -82,7 +82,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
             <img
               src={logo}
               alt="KarirKit Logo"
-              className="h-8 w-auto transition-opacity hover:opacity-90"
+              className="h-8 w-auto transition-opacity hover:opacity-90 dark:[filter:brightness(0)_invert(1)_sepia(1)_saturate(0.75)_hue-rotate(355deg)_brightness(1.12)_contrast(0.92)]"
             />
           </Link>
 
