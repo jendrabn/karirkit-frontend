@@ -4,6 +4,11 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import { VitePWA, cachePreset } from "vite-plugin-pwa";
 
+const brandTheme = {
+  primary: "#25724F",
+  splash: "#FAF7F1",
+} as const;
+
 const chunkGroups = [
   {
     name: "react-vendor",
@@ -153,12 +158,13 @@ export default defineConfig(({ mode }) => {
           short_name: "KarirKit",
           description:
             "Platform all-in-one untuk mengelola lamaran kerja, membuat CV, surat lamaran, dan portofolio digital",
-          theme_color: "#2bb95e",
-          background_color: "#ffffff",
+          theme_color: brandTheme.primary,
+          background_color: brandTheme.splash,
           display: "standalone",
           orientation: "portrait",
           scope: "/",
           start_url: "/",
+          categories: ["business", "productivity", "education"],
           icons: [
             {
               src: "favicon-32x32.png",
@@ -169,12 +175,19 @@ export default defineConfig(({ mode }) => {
               src: "images/pwa-192x192.png",
               sizes: "192x192",
               type: "image/png",
+              purpose: "any",
             },
             {
               src: "images/pwa-512x512.png",
               sizes: "512x512",
               type: "image/png",
-              purpose: "any maskable",
+              purpose: "any",
+            },
+            {
+              src: "images/maskable-icon-512x512.png",
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "maskable",
             },
           ],
         },

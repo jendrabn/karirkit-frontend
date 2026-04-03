@@ -70,9 +70,54 @@
     <meta name="author" content="KarirKit" />
     <meta name="application-name" content="KarirKit" />
     <meta name="robots" content="index, follow" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="language" content="Indonesian" />
     <meta name="revisit-after" content="7 days" />
-    <meta name="theme-color" content="#2bb95e" />
+    <meta
+      name="theme-color"
+      content="#faf7f1"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#151e18"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#faf7f1"
+      data-karirkit-theme="active"
+    />
+    <script>
+      (function () {
+        var storageKey = "karirkit-ui-theme";
+        var lightThemeColor = "#faf7f1";
+        var darkThemeColor = "#151e18";
+        var resolvedTheme = "light";
+
+        try {
+          var savedTheme = localStorage.getItem(storageKey);
+          if (savedTheme === "dark" || savedTheme === "light") {
+            resolvedTheme = savedTheme;
+          }
+        } catch (_) {}
+
+        var root = document.documentElement;
+        root.classList.remove("light", "dark");
+        root.classList.add(resolvedTheme);
+
+        var themeColorMeta = document.querySelector(
+          'meta[name="theme-color"][data-karirkit-theme="active"]'
+        );
+
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute(
+            "content",
+            resolvedTheme === "dark" ? darkThemeColor : lightThemeColor
+          );
+        }
+      })();
+    </script>
 
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
