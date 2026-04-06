@@ -292,7 +292,7 @@ function CvBuilderIllustration() {
           <Chip>EN</Chip>
         </div>
         <div className="rounded-xl border border-[#dce8df] bg-[#f8fbf9] px-2.5 py-2 text-[9px] text-[#6f8477]">
-          karirkit.app/cv/raka-ui
+          karirkit.id/cv/raka-ui
         </div>
       </div>
 
@@ -362,7 +362,7 @@ function PortfolioIllustration() {
           <Link2 className="h-3.5 w-3.5 text-[#246545]" />
         </div>
         <div className="rounded-xl border border-[#dce8df] bg-[#f8fbf9] px-2.5 py-2 text-[9px] text-[#6d8378]">
-          karirkit.app/u/raka
+          karirkit.id/u/raka
         </div>
       </div>
 
