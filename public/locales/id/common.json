@@ -1,0 +1,17 @@
+{
+  "appName": "KarirKit",
+  "welcome": "Selamat datang",
+  "loading": "Memuat...",
+  "save": "Simpan",
+  "cancel": "Batal",
+  "delete": "Hapus",
+  "edit": "Edit",
+  "create": "Buat",
+  "search": "Cari",
+  "noData": "Tidak ada data",
+  "error": "Terjadi kesalahan",
+  "success": "Berhasil",
+  "confirmDelete": "Apakah Anda yakin ingin menghapus?",
+  "yes": "Ya",
+  "no": "Tidak"
+}

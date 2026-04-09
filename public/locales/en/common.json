@@ -1,0 +1,17 @@
+{
+  "appName": "KarirKit",
+  "welcome": "Welcome",
+  "loading": "Loading...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "create": "Create",
+  "search": "Search",
+  "noData": "No data available",
+  "error": "An error occurred",
+  "success": "Success",
+  "confirmDelete": "Are you sure you want to delete?",
+  "yes": "Yes",
+  "no": "No"
+}

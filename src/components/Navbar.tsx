@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import logo from "@/assets/images/logo.png";
 import { ThemeToggle } from "./ThemeToggle";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTheme } from "@/hooks/use-theme";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
@@ -117,6 +118,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
 
           {/* Desktop Auth Buttons / User Menu */}
           <div className="hidden lg:flex items-center gap-3">
+            <LanguageSwitcher />
             <ThemeToggle />
             {isAuthenticated && user ? (
               <DropdownMenu>
@@ -230,6 +232,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
 
           {/* Mobile Theme Toggle & Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
             <button
               className="p-2"
