@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +39,6 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useTheme } from "@/hooks/use-theme";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
-import { buildImageUrl } from "@/lib/utils";
 import { Link } from "react-router";
 
 const navLinks = [
@@ -123,14 +122,11 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage
-                        src={buildImageUrl(user.avatar)}
-                        alt={user.name}
-                        className="object-cover"
-                      />
-                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
+                    <UserAvatar
+                      src={user.avatar}
+                      name={user.name}
+                      className="h-9 w-9"
+                    />
                     <span className="text-sm font-medium text-foreground">
                       {user.name}
                     </span>
@@ -261,14 +257,11 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                   >
                     <CollapsibleTrigger className="flex items-center justify-between w-full py-2">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage
-                            src={buildImageUrl(user.avatar)}
-                            alt={user.name}
-                            className="object-cover"
-                          />
-                          <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                        <UserAvatar
+                          src={user.avatar}
+                          name={user.name}
+                          className="h-10 w-10"
+                        />
                         <div className="text-left">
                           <p className="text-sm font-medium text-foreground">
                             {user.name}

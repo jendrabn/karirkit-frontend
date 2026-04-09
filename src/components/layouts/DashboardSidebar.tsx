@@ -49,12 +49,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
-import { buildImageUrl } from "@/lib/utils";
 import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
 import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
 
@@ -121,10 +120,10 @@ export function DashboardSidebar() {
   const isCollapsed = state === "collapsed";
   const [blogOpen, setBlogOpen] = useState(
     location.pathname.startsWith("/admin/blogs") ||
-      location.pathname.startsWith("/admin/blogs/m")
+      location.pathname.startsWith("/admin/blogs/m"),
   );
   const [jobOpen, setJobOpen] = useState(
-    location.pathname.startsWith("/admin/jobs")
+    location.pathname.startsWith("/admin/jobs"),
   );
   const [donationOpen, setDonationOpen] = useState(false);
 
@@ -132,7 +131,9 @@ export function DashboardSidebar() {
     isAuthenticated &&
     user &&
     (user.role === "admin" || (user.role as string) === "superadmin");
-  const subscriptionFeatures = getPlanFeatureAccess(mySubscription?.current_features);
+  const subscriptionFeatures = getPlanFeatureAccess(
+    mySubscription?.current_features,
+  );
   const menuItems = baseMenuItems;
 
   const handleLogout = () => {
@@ -162,23 +163,17 @@ export function DashboardSidebar() {
               <button
                 className={cn(
                   "flex items-center w-full rounded-lg hover:bg-muted transition-colors",
-                  isCollapsed ? "justify-center p-2" : "gap-3 p-2"
+                  isCollapsed ? "justify-center p-2" : "gap-3 p-2",
                 )}
               >
-                <Avatar
+                <UserAvatar
+                  src={user.avatar}
+                  name={user.name}
                   className={cn(
                     "shrink-0",
-                    isCollapsed ? "h-8 w-8" : "h-10 w-10"
+                    isCollapsed ? "h-8 w-8" : "h-10 w-10",
                   )}
-                >
-                  <AvatarImage
-                    src={buildImageUrl(user.avatar)}
-                    className="object-cover"
-                  />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {user.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
+                />
                 {!isCollapsed && (
                   <>
                     <div className="flex-1 text-left min-w-0">
@@ -269,7 +264,7 @@ export function DashboardSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {menuItems.map((item) =>
                 (() => {
                   const isSubscriptionLocked =
                     item.requiresSubscription &&
@@ -314,7 +309,7 @@ export function DashboardSidebar() {
                               : "gap-3 px-3 py-3",
                             isActive(item.url)
                               ? "bg-primary text-primary-foreground"
-                              : "hover:bg-muted text-foreground"
+                              : "hover:bg-muted text-foreground",
                           )}
                         >
                           <item.icon className="h-5 w-5 shrink-0" />
@@ -325,8 +320,8 @@ export function DashboardSidebar() {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
-                })()
-              ))}
+                })(),
+              )}
 
               {/* Admin Section Divider */}
               {isAdmin && !isCollapsed && (
@@ -355,7 +350,7 @@ export function DashboardSidebar() {
                           : "gap-3 px-3 py-3",
                         isActive(paths.admin.dashboard.getHref())
                           ? "bg-primary text-primary-foreground"
-                          : "hover:bg-muted text-foreground"
+                          : "hover:bg-muted text-foreground",
                       )}
                     >
                       <LayoutDashboard className="h-5 w-5 shrink-0" />
@@ -380,7 +375,7 @@ export function DashboardSidebar() {
                           : "gap-3 px-3 py-3",
                         isActive(paths.admin.users.list.getHref())
                           ? "bg-primary text-primary-foreground"
-                          : "hover:bg-muted text-foreground"
+                          : "hover:bg-muted text-foreground",
                       )}
                     >
                       <Users className="h-5 w-5 shrink-0" />
@@ -407,7 +402,7 @@ export function DashboardSidebar() {
                             : "gap-3 px-3 py-3",
                           isJobActive
                             ? "bg-primary text-primary-foreground"
-                            : "hover:bg-muted text-foreground"
+                            : "hover:bg-muted text-foreground",
                         )}
                       >
                         <Briefcase className="h-5 w-5 shrink-0" />
@@ -435,7 +430,7 @@ export function DashboardSidebar() {
                               "flex items-center gap-3 py-2 pl-8 pr-3 rounded-lg text-sm transition-colors",
                               location.pathname === item.url
                                 ? "text-foreground font-medium"
-                                : "hover:bg-muted/50 text-muted-foreground"
+                                : "hover:bg-muted/50 text-muted-foreground",
                             )}
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-current" />
@@ -463,7 +458,7 @@ export function DashboardSidebar() {
                             : "gap-3 px-3 py-3",
                           isBlogActive
                             ? "bg-primary text-primary-foreground"
-                            : "hover:bg-muted text-foreground"
+                            : "hover:bg-muted text-foreground",
                         )}
                       >
                         <BookOpen className="h-5 w-5 shrink-0" />
@@ -491,7 +486,7 @@ export function DashboardSidebar() {
                               "flex items-center gap-3 py-2 pl-8 pr-3 rounded-lg text-sm transition-colors",
                               location.pathname === item.url
                                 ? "text-foreground font-medium"
-                                : "hover:bg-muted/50 text-muted-foreground"
+                                : "hover:bg-muted/50 text-muted-foreground",
                             )}
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-current" />
@@ -517,7 +512,7 @@ export function DashboardSidebar() {
                           : "gap-3 px-3 py-3",
                         isActive(paths.admin.templates.list.getHref())
                           ? "bg-primary text-primary-foreground"
-                          : "hover:bg-muted text-foreground"
+                          : "hover:bg-muted text-foreground",
                       )}
                     >
                       <FileStack className="h-5 w-5 shrink-0" />
@@ -541,7 +536,7 @@ export function DashboardSidebar() {
                           : "gap-3 px-3 py-3",
                         isActive(paths.admin.subscriptions.list.getHref())
                           ? "bg-primary text-primary-foreground"
-                          : "hover:bg-muted text-foreground"
+                          : "hover:bg-muted text-foreground",
                       )}
                     >
                       <Crown className="h-5 w-5 shrink-0" />
@@ -562,7 +557,7 @@ export function DashboardSidebar() {
           onClick={() => setDonationOpen(true)}
           className={cn(
             "w-full bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer",
-            isCollapsed ? "p-2" : "gap-2"
+            isCollapsed ? "p-2" : "gap-2",
           )}
           size={isCollapsed ? "icon" : "default"}
         >

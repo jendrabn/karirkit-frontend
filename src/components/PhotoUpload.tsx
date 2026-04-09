@@ -25,10 +25,19 @@ export function PhotoUpload({
   webp,
   format,
   hasError,
-  label
+  label,
 }: PhotoUploadProps) {
-  const preview = value ? buildImageUrl(value) : "";
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const getAvatarSrc = () => {
+    if (!value) return "";
+    if (value.startsWith("data:") || value.startsWith("http")) {
+      return value;
+    }
+    return buildImageUrl(value);
+  };
+
+  const preview = getAvatarSrc();
 
   const uploadMutation = useUploadFile({
     mutationConfig: {
@@ -93,7 +102,7 @@ export function PhotoUpload({
         >
           <AvatarImage src={preview} className="object-cover" />
           <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
-            {name?.charAt(0).toUpperCase() || "U"}
+            {name?.charAt(0)?.toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>
 
