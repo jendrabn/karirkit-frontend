@@ -19,7 +19,7 @@ export default function NotificationSettings() {
       />
       <PageHeader
         title="Pengaturan Notifikasi"
-        subtitle="Atur notifikasi WhatsApp dan Telegram untuk pengingat lamaran."
+        subtitle="Atur notifikasi untuk deadline lamaran, jadwal tes, interview, dan update status melalui WhatsApp atau Telegram."
       />
 
       <div className="max-w-3xl">

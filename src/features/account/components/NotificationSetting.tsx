@@ -5,13 +5,7 @@ import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldSet } from "@/components/ui/field";
 
 // Notification settings type
@@ -59,7 +53,7 @@ const NotificationSetting = () => {
 
   const updateWhatsappSetting = (
     key: keyof NotificationSettings["whatsapp"],
-    value: boolean | string
+    value: boolean | string,
   ) => {
     setNotifications((prev) => ({
       ...prev,
@@ -72,7 +66,7 @@ const NotificationSetting = () => {
 
   const updateTelegramSetting = (
     key: keyof NotificationSettings["telegram"],
-    value: boolean | string
+    value: boolean | string,
   ) => {
     setNotifications((prev) => ({
       ...prev,
@@ -93,14 +87,10 @@ const NotificationSetting = () => {
       onSubmit={handleSubmit}
       className="pointer-events-none opacity-60 select-none"
     >
-      <FieldSet disabled={isLoading} className="space-y-6 mb-6">
+      <FieldSet disabled={isLoading} className="mb-6">
         <Card>
           <CardHeader>
             <CardTitle>Pengaturan Notifikasi</CardTitle>
-            <CardDescription>
-              Atur notifikasi untuk deadline lamaran, jadwal tes, interview, dan
-              update status melalui WhatsApp atau Telegram.
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pt-4">
             {/* WhatsApp Settings */}

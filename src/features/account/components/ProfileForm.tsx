@@ -22,7 +22,6 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { dayjs } from "@/lib/date";
 import {
   updateProfileInputSchema,
   useUpdateProfile,
@@ -107,20 +106,13 @@ const ProfileForm = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Informasi Profil</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-4">
-        <form
-          onSubmit={handleSubmit(onSubmit, displayFormErrors)}
-          className="space-y-6"
-        >
-          <FieldSet disabled={updateProfileMutation.isPending}>
-            <FieldDescription>
-              Perbarui informasi profil dan kontak Anda di sini.
-            </FieldDescription>
-
+    <form onSubmit={handleSubmit(onSubmit, displayFormErrors)}>
+      <FieldSet disabled={updateProfileMutation.isPending} className="mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Informasi Profil</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-4">
             <FieldGroup className="grid gap-6 lg:grid-cols-[auto,1fr]">
               <div className="flex flex-col items-center gap-4">
                 <Controller
@@ -373,39 +365,23 @@ const ProfileForm = () => {
                 </div>
               )}
             </div>
+          </CardContent>
+        </Card>
+      </FieldSet>
 
-            <div className="pt-4 border-t">
-              <div className="flex items-center justify-center">
-                <div className="bg-muted/50 rounded-full px-4 py-2">
-                  <p className="text-sm text-muted-foreground">
-                    Bergabung sejak{" "}
-                    <span className="font-medium text-foreground">
-                      {dayjs
-                        .utc(user?.created_at)
-                        .local()
-                        .format("DD MMMM YYYY") || "-"}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </FieldSet>
-
-          <div className="flex justify-end gap-3 pt-6 border-t">
-            <Button type="submit" disabled={updateProfileMutation.isPending}>
-              {updateProfileMutation.isPending ? (
-                <>
-                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Menyimpan...
-                </>
-              ) : (
-                "Simpan Perubahan"
-              )}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+      <div className="flex justify-end gap-3">
+        <Button type="submit" disabled={updateProfileMutation.isPending}>
+          {updateProfileMutation.isPending ? (
+            <>
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              Menyimpan...
+            </>
+          ) : (
+            "Simpan Perubahan"
+          )}
+        </Button>
+      </div>
+    </form>
   );
 };
 

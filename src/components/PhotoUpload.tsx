@@ -14,6 +14,7 @@ interface PhotoUploadProps {
   webp?: boolean;
   format?: string;
   hasError?: boolean;
+  label?: string
 }
 
 export function PhotoUpload({
@@ -24,6 +25,7 @@ export function PhotoUpload({
   webp,
   format,
   hasError,
+  label
 }: PhotoUploadProps) {
   const preview = value ? buildImageUrl(value) : "";
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,7 +83,7 @@ export function PhotoUpload({
 
   return (
     <Field className="w-fit flex flex-col items-center gap-4">
-      <FieldLabel className="self-start">Foto</FieldLabel>
+      {label && <FieldLabel className="self-start">{label}</FieldLabel>}
       <div className="relative group cursor-pointer" onClick={triggerUpload}>
         <Avatar
           className={cn(

@@ -61,7 +61,7 @@ const ChangePasswordForm = () => {
           <CardHeader>
             <CardTitle>Ubah Password</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 pt-4">
+          <CardContent className="space-y-6 pt-4">
             {/* Current Password */}
             <Field>
               <FieldLabel htmlFor="current_password">
