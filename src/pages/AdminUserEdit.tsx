@@ -35,7 +35,21 @@ const AdminUserEdit = () => {
 
   const handleSubmit = (data: CreateUserInput | UpdateUserInput) => {
     if (id) {
-      updateUserMutation.mutate({ id, data: data as UpdateUserInput });
+      const updateData: UpdateUserInput = {
+        name: data.name,
+        username: data.username,
+        email: data.email,
+        role: data.role,
+        phone: data.phone,
+        avatar: data.avatar,
+        status: (data as UpdateUserInput).status,
+        status_reason: (data as UpdateUserInput).status_reason,
+        suspended_until: (data as UpdateUserInput).suspended_until,
+      };
+      if (data.password) {
+        updateData.password = data.password;
+      }
+      updateUserMutation.mutate({ id, data: updateData });
     }
   };
 

@@ -1,7 +1,6 @@
 import {
   Controller,
   useForm,
-  useWatch,
   type FieldErrors,
   type Resolver,
 } from "react-hook-form";
@@ -11,12 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { PhotoUpload } from "@/components/PhotoUpload";
 import {
   Select,
   SelectContent,
@@ -59,21 +58,22 @@ export function UserForm({
   const schema = isEdit ? updateUserInputSchema : createUserInputSchema;
 
   const form = useForm<UserFormValues, unknown, UserFormValues>({
-    resolver: zodResolver(schema) as Resolver<UserFormValues, unknown, UserFormValues>,
+    resolver: zodResolver(schema) as Resolver<
+      UserFormValues,
+      unknown,
+      UserFormValues
+    >,
     defaultValues: {
       name: initialData?.name || "",
       username: initialData?.username || "",
       email: initialData?.email || "",
       phone: initialData?.phone || "",
       role: initialData?.role ?? undefined,
-      avatar: initialData?.avatar || "",
-      ...(isEdit ? {} : { password: "" }),
+      password: "",
     },
   });
 
   useServerValidation(error, form);
-
-  const nameValue = useWatch({ control: form.control, name: "name" }) ?? "";
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit, displayFormErrors)}>
@@ -82,25 +82,8 @@ export function UserForm({
           <CardHeader>
             <CardTitle>{isEdit ? "Edit User" : "Tambah User"}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6 pt-4">
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <Controller
-                control={form.control}
-                name="avatar"
-                render={({ field }) => (
-                  <div className="md:col-span-2">
-                    <PhotoUpload
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                      name={nameValue}
-                    />
-                    <FieldError className="mt-2">
-                      {form.formState.errors.avatar?.message}
-                    </FieldError>
-                  </div>
-                )}
-              />
-
               <Field>
                 <FieldLabel>
                   Nama Lengkap <span className="text-destructive">*</span>
@@ -108,7 +91,9 @@ export function UserForm({
                 <Input
                   placeholder="Masukkan nama lengkap"
                   {...form.register("name")}
-                  className={cn(form.formState.errors.name && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.name && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>
@@ -120,9 +105,13 @@ export function UserForm({
                 <Input
                   placeholder="Masukkan username"
                   {...form.register("username")}
-                  className={cn(form.formState.errors.username && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.username && "border-destructive",
+                  )}
                 />
-                <FieldError>{form.formState.errors.username?.message}</FieldError>
+                <FieldError>
+                  {form.formState.errors.username?.message}
+                </FieldError>
               </Field>
 
               <Field>
@@ -133,38 +122,48 @@ export function UserForm({
                   type="email"
                   placeholder="Masukkan email"
                   {...form.register("email")}
-                  className={cn(form.formState.errors.email && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.email && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.email?.message}</FieldError>
               </Field>
 
-              {!isEdit ? (
-                <Field>
-                  <FieldLabel>
-                    Password <span className="text-destructive">*</span>
-                  </FieldLabel>
-                  <Input
-                    type="password"
-                    placeholder="Masukkan password"
-                    {...form.register("password")}
-                    className={cn(
-                      (form.formState.errors as FieldErrors<CreateUserInput>).password &&
-                        "border-destructive",
-                    )}
-                  />
-                  <FieldError>
-                    {(form.formState.errors as FieldErrors<CreateUserInput>).password
-                      ?.message}
-                  </FieldError>
-                </Field>
-              ) : null}
+              <Field>
+                <FieldLabel>
+                  Password{" "}
+                  {isEdit ? "" : <span className="text-destructive">*</span>}
+                </FieldLabel>
+                <Input
+                  type="password"
+                  placeholder="Masukkan password"
+                  {...form.register("password")}
+                  className={cn(
+                    (form.formState.errors as FieldErrors<CreateUserInput>)
+                      .password && "border-destructive",
+                  )}
+                />
+                {isEdit && (
+                  <FieldDescription>
+                    Kosongkan jika tidak ingin mengubah password
+                  </FieldDescription>
+                )}
+                <FieldError>
+                  {
+                    (form.formState.errors as FieldErrors<CreateUserInput>)
+                      .password?.message
+                  }
+                </FieldError>
+              </Field>
 
               <Field>
                 <FieldLabel>Nomor Telepon</FieldLabel>
                 <Input
                   placeholder="Masukkan nomor telepon"
                   {...form.register("phone")}
-                  className={cn(form.formState.errors.phone && "border-destructive")}
+                  className={cn(
+                    form.formState.errors.phone && "border-destructive",
+                  )}
                 />
                 <FieldError>{form.formState.errors.phone?.message}</FieldError>
               </Field>
@@ -177,9 +176,14 @@ export function UserForm({
                     <FieldLabel>
                       Role <span className="text-destructive">*</span>
                     </FieldLabel>
-                    <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value ?? ""}
+                    >
                       <SelectTrigger
-                        className={cn(form.formState.errors.role && "border-destructive")}
+                        className={cn(
+                          form.formState.errors.role && "border-destructive",
+                        )}
                       >
                         <SelectValue placeholder="Pilih Role" />
                       </SelectTrigger>
@@ -191,7 +195,9 @@ export function UserForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FieldError>{form.formState.errors.role?.message}</FieldError>
+                    <FieldError>
+                      {form.formState.errors.role?.message}
+                    </FieldError>
                   </Field>
                 )}
               />

@@ -23,9 +23,16 @@ const AdminUserCreate = () => {
   });
 
   const handleSubmit = (data: CreateUserInput | UpdateUserInput) => {
-    if ("password" in data) {
-      createUserMutation.mutate(data);
-    }
+    const createData: CreateUserInput = {
+      name: data.name,
+      username: data.username,
+      email: data.email,
+      password: data.password ?? "",
+      role: data.role,
+      phone: data.phone,
+      avatar: data.avatar,
+    };
+    createUserMutation.mutate(createData);
   };
 
   return (

@@ -13,6 +13,7 @@ export const updateUserInputSchema = z.object({
     message: "Role wajib dipilih",
   }),
   avatar: z.string().optional().nullable(),
+  password: z.string().optional(),
   status: z.enum(["active", "suspended", "banned"]).optional(),
   status_reason: z.string().optional().nullable(),
   suspended_until: z.string().optional().nullable(),
