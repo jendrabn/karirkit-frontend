@@ -11,9 +11,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useStats } from "@/features/landing/api/get-stats";
+import { useTranslation } from "react-i18next";
 
 export function BenefitsSection() {
   const { data: stats } = useStats();
+  const { t } = useTranslation("landing");
 
   const getDisplayValue = (
     realValue: number | undefined,
@@ -31,19 +33,19 @@ export function BenefitsSection() {
     {
       icon: Users,
       value: getDisplayValue(stats?.total_users, "1.250+"),
-      label: "Pengguna Aktif",
+      label: t("benefits.stats.users"),
       color: "bg-primary/20",
     },
     {
       icon: FileText,
       value: getDisplayValue(stats?.total_cvs, "3.400+"),
-      label: "CV Dibuat",
+      label: t("benefits.stats.cvs"),
       color: "bg-secondary",
     },
     {
       icon: Send,
       value: getDisplayValue(stats?.total_application_letters, "2.100+"),
-      label: "Surat Lamaran",
+      label: t("benefits.stats.letters"),
       color: "bg-accent",
     },
     {
@@ -54,19 +56,19 @@ export function BenefitsSection() {
           : undefined,
         "50+"
       ),
-      label: "Template Tersedia",
+      label: t("benefits.stats.templates"),
       color: "bg-primary/20",
     },
     {
       icon: Bell,
       value: getDisplayValue(stats?.total_applications, "5.800+"),
-      label: "Lamaran Tercatat",
+      label: t("benefits.stats.applications"),
       color: "bg-secondary",
     },
     {
       icon: TrendingUp,
       value: "89%",
-      label: "Tingkat Kepuasan",
+      label: t("benefits.stats.satisfaction"),
       color: "bg-accent",
     },
   ];
@@ -82,38 +84,35 @@ export function BenefitsSection() {
           <div className="space-y-8">
             <div>
               <p className="text-sm text-primary font-medium mb-2 uppercase tracking-wider">
-                Keunggulan
+                {t("benefits.eyebrow")}
               </p>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                Satu Tempat untuk Lamaran, Dokumen, dan Langganan
+                {t("benefits.title")}
               </h2>
             </div>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Dari melacak lamaran sampai membuat CV, surat lamaran, portfolio,
-              dan dokumen, semua ada dalam satu platform. Saat butuh akses
-              tambahan, kamu juga bisa upgrade ke paket langganan yang sesuai
-              kebutuhan.
+              {t("benefits.description")}
             </p>
             <div className="space-y-5">
               {[
                 {
                   icon: Clock,
-                  text: "Track semua lamaran, status, dan follow-up dari satu dashboard",
+                  text: t("benefits.items.0"),
                   color: "bg-primary/20",
                 },
                 {
                   icon: RefreshCw,
-                  text: "Buat CV, surat lamaran, portfolio, dan dokumen tanpa pindah alat",
+                  text: t("benefits.items.1"),
                   color: "bg-secondary",
                 },
                 {
                   icon: Bell,
-                  text: "Atur reminder follow-up, template, filter, dan catatan dalam satu alur",
+                  text: t("benefits.items.2"),
                   color: "bg-accent",
                 },
                 {
                   icon: Crown,
-                  text: "Upgrade langganan untuk membuka template premium dan limit yang lebih besar",
+                  text: t("benefits.items.3"),
                   color: "bg-primary/20",
                 },
               ].map((item, index) => (

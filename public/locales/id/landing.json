@@ -1,0 +1,271 @@
+{
+  "hero": {
+    "eyebrow": "Semua Kebutuhan Lamaran, Satu Tempat",
+    "title": "Lacak & Kelola Semua Lamaran Kerjamu Tanpa Ribet",
+    "description": "Lacak setiap lamaran, buat CV profesional, susun surat lamaran, simpan dokumen penting, dan bangun portofolio digital dalam satu workflow yang rapi.",
+    "features": {
+      "tracker": "Pelacak Lamaran",
+      "cv": "CV",
+      "coverLetter": "Surat Lamaran",
+      "portfolio": "Portofolio Digital"
+    },
+    "primaryCta": "Mulai Gratis Sekarang",
+    "secondaryCta": "Lihat Fitur"
+  },
+  "benefits": {
+    "eyebrow": "Keunggulan",
+    "title": "Satu Tempat untuk Lamaran, Dokumen, dan Langganan",
+    "description": "Dari melacak lamaran sampai membuat CV, surat lamaran, portfolio, dan dokumen, semua ada dalam satu platform. Saat butuh akses tambahan, kamu juga bisa upgrade ke paket langganan yang sesuai kebutuhan.",
+    "stats": {
+      "users": "Pengguna Aktif",
+      "cvs": "CV Dibuat",
+      "letters": "Surat Lamaran",
+      "templates": "Template Tersedia",
+      "applications": "Lamaran Tercatat",
+      "satisfaction": "Tingkat Kepuasan"
+    },
+    "items": [
+      "Track semua lamaran, status, dan follow-up dari satu dashboard",
+      "Buat CV, surat lamaran, portfolio, dan dokumen tanpa pindah alat",
+      "Atur reminder follow-up, template, filter, dan catatan dalam satu alur",
+      "Upgrade langganan untuk membuka template premium dan limit yang lebih besar"
+    ]
+  },
+  "cta": {
+    "title": "Mulai dari Free, Upgrade Saat Butuh Lebih",
+    "description": "Kelola lamaran, buat CV dan surat lamaran, simpan dokumen, lalu upgrade ke Pro atau Max untuk membuka template premium dan limit yang lebih besar.",
+    "benefits": [
+      "Mulai dari plan Free",
+      "Upgrade ke Pro atau Max",
+      "Template premium untuk CV dan surat lamaran"
+    ],
+    "primaryCta": "Daftar Gratis Sekarang",
+    "secondaryCta": "Lihat Paket Langganan"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Pertanyaan yang Sering Diajukan",
+    "items": [
+      {
+        "question": "Apa itu KarirKit?",
+        "answer": "KarirKit adalah platform untuk mengelola proses mencari kerja dalam satu tempat. Di dalamnya ada Pelacak Lamaran, Surat Lamaran, CV Builder, Portfolio Digital, Dokumen, dan Langganan."
+      },
+      {
+        "question": "Fitur apa saja yang tersedia di KarirKit?",
+        "answer": "Fitur utamanya meliputi pelacakan lamaran, pembuatan surat lamaran, CV Builder, portfolio digital, pengelolaan dokumen, dan paket langganan untuk membuka akses tambahan sesuai kebutuhan."
+      },
+      {
+        "question": "Bagaimana cara mulai menggunakan Pelacak Lamaran?",
+        "answer": "Masuk ke menu Pelacak Lamaran, lalu tambahkan data perusahaan, posisi, status, sumber lowongan, kontak, catatan, dan jadwal follow-up. Kamu juga bisa memakai filter, statistik, dan bulk action untuk mengelola daftar lamaran lebih cepat."
+      },
+      {
+        "question": "Apakah CV Builder dan Surat Lamaran mendukung Bahasa Indonesia dan Inggris?",
+        "answer": "Ya. CV Builder dan Surat Lamaran mendukung Bahasa Indonesia dan Bahasa Inggris, termasuk pilihan template premium yang bisa dibuka melalui paket langganan."
+      },
+      {
+        "question": "Apakah saya bisa download dan mengelola dokumen?",
+        "answer": "Bisa. CV dan Surat Lamaran dapat diunduh dalam format DOCX atau PDF, lalu diduplikasi untuk versi lain. Di menu Dokumen, kamu juga bisa upload, cari, filter, download, dan hapus file seperti PDF atau DOCX."
+      },
+      {
+        "question": "Bagaimana cara membagikan Portfolio Digital?",
+        "answer": "Setiap portfolio bisa dibuat publik dengan slug unik, lalu dibagikan lewat link. Kamu juga bisa menambahkan cover, galeri media, tools yang dipakai, live demo, dan source code agar tampil lebih lengkap."
+      },
+      {
+        "question": "Apakah saya harus berlangganan untuk mulai memakai KarirKit?",
+        "answer": "Tidak harus. Kamu bisa mulai dengan plan Free untuk memakai fitur inti. Jika butuh akses tambahan, kamu bisa upgrade ke Pro atau Max kapan saja dari halaman Langganan."
+      },
+      {
+        "question": "Apa yang didapat dari fitur Langganan?",
+        "answer": "Langganan menyediakan plan Free, Pro, dan Max dengan batas penggunaan, akses template premium, serta capability tambahan seperti pengelolaan dokumen dan limit yang lebih besar. Pembayaran dilakukan lewat alur checkout yang terhubung dengan Midtrans, dan status langganan bisa dipantau dari halaman Langganan."
+      }
+    ]
+  },
+  "templateSlider": {
+    "title": "Desain profesional, siap pakai untuk karir impianmu!",
+    "templateAlt": "Template {index}"
+  },
+  "testimonials": {
+    "eyebrow": "Testimoni",
+    "title": "Dengar Cerita Pengguna KarirKit",
+    "description": "Ribuan pencari kerja sudah merasakan manfaat KarirKit untuk karier mereka",
+    "items": [
+      {
+        "name": "Andi Wijaya",
+        "role": "Software Engineer",
+        "quote": "Pernah lamar 30+ perusahaan tapi lupa tracking mana yang udah interview, mana yang belum. Sejak pakai KarirKit jadi lebih teratur, ada reminder follow-up juga."
+      },
+      {
+        "name": "Sari Wulandari",
+        "role": "UI/UX Designer",
+        "quote": "Bikin CV sendiri susah banget layoutnya. Di sini tinggal isi form, pilih template, jadi deh. Hasilnya lebih rapi dari yang biasa aku buat di Word."
+      },
+      {
+        "name": "Reza Pratama",
+        "role": "Fresh Graduate",
+        "quote": "Lagi nyari kerja pertama, bingung mau bikin CV gimana. Template di KarirKit cocok buat fresh grad, ada bagian buat project & organisasi kampus juga."
+      },
+      {
+        "name": "Dinda Amelia",
+        "role": "Marketing Specialist",
+        "quote": "Surat lamaran selalu jadi PR banget. Sekarang tinggal pilih template paragraf, ganti dikit, langsung jadi. Ngirit waktu banget!"
+      },
+      {
+        "name": "Firman Hidayat",
+        "role": "Backend Developer",
+        "quote": "Portfolio ku lumayan banyak project, tapi ga punya website sendiri. Pakai KarirKit jadi punya link portfolio yang bisa di-share ke recruiter. Keren!"
+      },
+      {
+        "name": "Mega Kusuma",
+        "role": "Content Writer",
+        "quote": "Paling suka fitur tracking lamaran. Bisa liat statistik berapa yang pending, berapa yang udah interview. Jadi tahu harus follow-up kemana aja."
+      },
+      {
+        "name": "Fajar Nugroho",
+        "role": "Data Analyst",
+        "quote": "Sempet ragu mau pakai atau nggak, eh ternyata gratis semua fiturnya. CV bisa download PDF, surat lamaran juga. Worth it banget!"
+      },
+      {
+        "name": "Rika Sari",
+        "role": "HR Generalist",
+        "quote": "Dulu aku kerjain Excel buat track lamaran. Ribet banget. KarirKit lebih praktis, UI-nya juga bagus, enak dipandang."
+      },
+      {
+        "name": "Agus Setiawan",
+        "role": "Full Stack Developer",
+        "quote": "Bisa bikin banyak versi CV untuk posisi yang beda-beda. Satu buat frontend, satu buat fullstack. Flexibel banget."
+      },
+      {
+        "name": "Nina Anggraini",
+        "role": "Graphic Designer",
+        "quote": "Portfolio-nya simpel tapi tetep kelihatan profesional. Client gampang liat hasil kerja aku lewat link yang aku share."
+      },
+      {
+        "name": "Bayu Kusnandar",
+        "role": "Product Manager",
+        "quote": "Fitur follow-up reminder ngebantu banget. Sering lupa mau follow-up kapan, sekarang ada notif jadi ga kelewat."
+      },
+      {
+        "name": "Dewi Lestari",
+        "role": "Business Analyst",
+        "quote": "Awalnya skeptis sama CV builder online, tapi hasil download-nya bagus. Format-nya rapi, tinggal print atau kirim email."
+      },
+      {
+        "name": "Hendra Gunawan",
+        "role": "Mobile Developer",
+        "quote": "Bisa masukin link GitHub sama demo project di CV. Recruiter langsung bisa cek skill aku tanpa perlu tanya-tanya lagi."
+      },
+      {
+        "name": "Lina Puspita",
+        "role": "Digital Marketing",
+        "quote": "Templatenya ada Indonesia sama Inggris. Jadi pas apply ke perusahaan luar tinggal ganti bahasa aja, praktis!"
+      },
+      {
+        "name": "Yoga Aditya",
+        "role": "QA Engineer",
+        "quote": "Dashboard-nya clean, ga ribet. Semua info lamaran keliatan jelas: mana yang pending, mana yang udah offering."
+      },
+      {
+        "name": "Putri Maharani",
+        "role": "Customer Success",
+        "quote": "Suka banget sama fitur statistik lamaran. Jadi tahu tingkat keberhasilan apply aku berapa persen. Motivasi buat terus coba!"
+      },
+      {
+        "name": "Arief Rahman",
+        "role": "DevOps Engineer",
+        "quote": "Download limit 10 per hari cukup kok buat daily use. Jarang banget butuh download lebih dari itu dalam sehari."
+      },
+      {
+        "name": "Sinta Permata",
+        "role": "Sales Executive",
+        "quote": "Ga perlu install aplikasi, buka browser langsung bisa. Bisa akses dari HP atau laptop, datanya tetep sinkron."
+      },
+      {
+        "name": "Irfan Hakim",
+        "role": "System Administrator",
+        "quote": "Paling berguna buat aku yang lagi job hunting. Semua lamaran tercatat, kontak HRD-nya juga kesimpan. Tinggal buka kapan aja butuh."
+      },
+      {
+        "name": "Ayu Rahmawati",
+        "role": "Project Coordinator",
+        "quote": "Template surat lamarannya profesional banget. Aku tinggal edit dikit sesuai posisi yang dilamar, sisanya udah oke."
+      }
+    ]
+  },
+  "tips": {
+    "eyebrow": "Blog & Tips",
+    "title": "Temukan Panduan dan Tips Karir",
+    "cta": "Lihat Semua Artikel"
+  },
+  "trustedBy": {
+    "description": "Dipercaya oleh pencari kerja dan profesional dari berbagai perusahaan"
+  },
+  "featureSelector": {
+    "eyebrow": "Fitur Utama",
+    "title": "Semua yang Anda Butuhkan untuk Karier Impian",
+    "description": "Kelola lamaran kerja, buat CV profesional, surat lamaran yang meyakinkan, dan portofolio digital dalam satu platform.",
+    "features": {
+      "application": {
+        "title": "Pelacak Lamaran",
+        "subtitle": "Pantau semua lamaran dari satu tempat."
+      },
+      "applicationletter": {
+        "title": "Surat Lamaran",
+        "subtitle": "Buat surat lamaran profesional dengan cepat."
+      },
+      "cv": {
+        "title": "CV Builder",
+        "subtitle": "Buat CV menarik yang mudah dibaca recruiter."
+      },
+      "portfolio": {
+        "title": "Portfolio Digital",
+        "subtitle": "Tampilkan karya terbaik dengan link siap bagikan."
+      }
+    },
+    "details": {
+      "application": {
+        "title": "Kelola Semua Lamaran Kerja dari Satu Dasbor",
+        "description": "Catat setiap lowongan yang Anda lamar, pantau status prosesnya, dan simpan detail follow-up tanpa berpindah ke spreadsheet.",
+        "bullets": [
+          "Lacak 15+ status proses, dari draft dan submitted sampai interview, offering, accepted, atau rejected",
+          "Simpan detail perusahaan, posisi, sumber lowongan, kontak rekruter, tanggal follow-up, dan catatan penting",
+          "Filter berdasarkan status, tipe kerja, sistem kerja, tanggal, lokasi, perusahaan, dan rentang gaji",
+          "Pantau statistik lamaran untuk tahu mana yang perlu ditindaklanjuti lebih cepat"
+        ],
+        "cta": "Kelola Lamaran Sekarang"
+      },
+      "applicationletter": {
+        "title": "Buat Surat Lamaran yang Siap Kirim dalam Hitungan Menit",
+        "description": "Pilih template yang sesuai, isi data pelamar dan perusahaan, gunakan paragraf siap pakai, lalu unduh hasilnya dalam format DOCX atau PDF.",
+        "bullets": [
+          "Template surat lamaran dalam Bahasa Indonesia dan Inggris, termasuk opsi premium",
+          "Isi data diri, pendidikan, perusahaan tujuan, dan rincian kontak dari satu form",
+          "Gunakan template paragraf untuk pembuka, isi, dan penutup agar lebih konsisten",
+          "Tambahkan tanda tangan digital, gandakan surat, lalu unduh ke DOCX atau PDF"
+        ],
+        "cta": "Buat Surat Lamaran"
+      },
+      "cv": {
+        "title": "Bangun CV Profesional yang Lengkap dan Mudah Dibaca",
+        "description": "Susun foto, ringkasan, pendidikan, pengalaman, skill, proyek, dan tautan sosial dalam template CV yang rapi.",
+        "bullets": [
+          "Template CV dalam Bahasa Indonesia dan Inggris, termasuk pilihan premium",
+          "Lengkapi profil, foto, about, pendidikan, pengalaman, skill, sertifikat, penghargaan, organisasi, proyek, dan tautan sosial",
+          "Atur slug dan visibilitas CV menjadi private, public, atau unlisted sesuai kebutuhan",
+          "Bagikan CV publik lewat link unik, lalu unduh ke DOCX atau PDF atau duplikasi untuk versi lain"
+        ],
+        "cta": "Buat CV Profesional"
+      },
+      "portfolio": {
+        "title": "Portfolio Digital untuk Menampilkan Proyek Terbaik",
+        "description": "Tampilkan proyek kerja, freelance, personal, atau akademik dalam satu halaman publik dengan detail yang mudah dibagikan.",
+        "bullets": [
+          "Halaman portfolio publik dengan slug unik yang siap dibagikan",
+          "Isi judul, deskripsi singkat, detail proyek, role, industri, dan timeline pengerjaan",
+          "Tambahkan cover, galeri media, daftar tools, live demo, dan source code",
+          "Cocok untuk proyek kerja, freelance, personal, maupun tugas akademik"
+        ],
+        "cta": "Buat Portfolio Digital"
+      }
+    }
+  }
+}

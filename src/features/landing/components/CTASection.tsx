@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export function CTASection() {
+  const { t } = useTranslation("landing");
+
   return (
     <section className="py-16 lg:py-24 bg-gradient-to-br from-primary via-primary to-primary/90 relative overflow-hidden">
       {/* Decorative elements */}
@@ -16,21 +19,19 @@ export function CTASection() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground leading-tight">
-            Mulai dari Free, Upgrade Saat Butuh Lebih
+            {t("cta.title")}
           </h2>
 
           <p className="text-primary-foreground/90 text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed">
-            Kelola lamaran, buat CV dan surat lamaran, simpan dokumen, lalu
-            upgrade ke Pro atau Max untuk membuka template premium dan limit
-            yang lebih besar.
+            {t("cta.description")}
           </p>
 
           {/* Benefits list */}
           <div className="flex flex-wrap justify-center gap-4 lg:gap-6">
             {[
-              "Mulai dari plan Free",
-              "Upgrade ke Pro atau Max",
-              "Template premium untuk CV dan surat lamaran",
+              t("cta.benefits.0"),
+              t("cta.benefits.1"),
+              t("cta.benefits.2"),
             ].map((benefit, index) => (
               <div
                 key={index}
@@ -49,7 +50,7 @@ export function CTASection() {
               asChild
             >
               <Link to={paths.auth.register.getHref()}>
-                Daftar Gratis Sekarang
+                {t("cta.primaryCta")}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
@@ -59,7 +60,7 @@ export function CTASection() {
               className="border-2 border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 h-14 px-10 text-base font-medium"
               asChild
             >
-              <Link to={paths.subscriptions.list.getHref()}>Lihat Paket Langganan</Link>
+              <Link to={paths.subscriptions.list.getHref()}>{t("cta.secondaryCta")}</Link>
             </Button>
           </div>
         </div>

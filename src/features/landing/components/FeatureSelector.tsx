@@ -2,130 +2,73 @@ import { Link } from "react-router";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   FeatureIllustration,
   type FeatureIllustrationVariant,
 } from "@/features/landing/components/FeatureIllustration";
 
-// Import icon images
 import iconTracker from "@/assets/images/icon-tracker.png";
 import iconSurat from "@/assets/images/icon-surat.png";
 import iconCV from "@/assets/images/icon-cv.png";
 import iconPortfolio from "@/assets/images/icon-portfolio.png";
 
-const features = [
+const featureMeta = [
   {
     id: "application",
     image: iconTracker,
-    title: "Pelacak Lamaran",
-    subtitle: "Pantau semua lamaran dari satu tempat.",
-  },
-  {
-    id: "applicationletter",
-    image: iconSurat,
-    title: "Surat Lamaran",
-    subtitle: "Buat surat lamaran profesional dengan cepat.",
-  },
-  {
-    id: "cv",
-    image: iconCV,
-    title: "CV Builder",
-    subtitle: "Buat CV menarik yang mudah dibaca recruiter.",
-  },
-  {
-    id: "portfolio",
-    image: iconPortfolio,
-    title: "Portfolio Digital",
-    subtitle: "Tampilkan karya terbaik dengan link siap bagikan.",
-  },
-];
-
-const featureDetails = {
-  application: {
-    title: "Kelola Semua Lamaran Kerja dari Satu Dasbor",
-    description:
-      "Catat setiap lowongan yang Anda lamar, pantau status prosesnya, dan simpan detail follow-up tanpa berpindah ke spreadsheet.",
-    bullets: [
-      "Lacak 15+ status proses, dari draft dan submitted sampai interview, offering, accepted, atau rejected",
-      "Simpan detail perusahaan, posisi, sumber lowongan, kontak rekruter, tanggal follow-up, dan catatan penting",
-      "Filter berdasarkan status, tipe kerja, sistem kerja, tanggal, lokasi, perusahaan, dan rentang gaji",
-      "Pantau statistik lamaran untuk tahu mana yang perlu ditindaklanjuti lebih cepat",
-    ],
-    cta: "Kelola Lamaran Sekarang",
     href: "/applications",
     illustration: "application" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-secondary via-secondary/50 to-background",
   },
-
-  applicationletter: {
-    title: "Buat Surat Lamaran yang Siap Kirim dalam Hitungan Menit",
-    description:
-      "Pilih template yang sesuai, isi data pelamar dan perusahaan, gunakan paragraf siap pakai, lalu unduh hasilnya dalam format DOCX atau PDF.",
-    bullets: [
-      "Template surat lamaran dalam Bahasa Indonesia dan Inggris, termasuk opsi premium",
-      "Isi data diri, pendidikan, perusahaan tujuan, dan rincian kontak dari satu form",
-      "Gunakan template paragraf untuk pembuka, isi, dan penutup agar lebih konsisten",
-      "Tambahkan tanda tangan digital, gandakan surat, lalu unduh ke DOCX atau PDF",
-    ],
-    cta: "Buat Surat Lamaran",
+  {
+    id: "applicationletter",
+    image: iconSurat,
     href: "/application-letters",
     illustration: "applicationletter" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-primary/10 via-primary/5 to-background",
   },
-
-  cv: {
-    title: "Bangun CV Profesional yang Lengkap dan Mudah Dibaca",
-    description:
-      "Susun foto, ringkasan, pendidikan, pengalaman, skill, proyek, dan tautan sosial dalam template CV yang rapi.",
-    bullets: [
-      "Template CV dalam Bahasa Indonesia dan Inggris, termasuk pilihan premium",
-      "Lengkapi profil, foto, about, pendidikan, pengalaman, skill, sertifikat, penghargaan, organisasi, proyek, dan tautan sosial",
-      "Atur slug dan visibilitas CV menjadi private, public, atau unlisted sesuai kebutuhan",
-      "Bagikan CV publik lewat link unik, lalu unduh ke DOCX atau PDF atau duplikasi untuk versi lain",
-    ],
-    cta: "Buat CV Profesional",
+  {
+    id: "cv",
+    image: iconCV,
     href: "/cvs",
     illustration: "cv" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-accent via-accent/50 to-background",
   },
-
-  portfolio: {
-    title: "Portfolio Digital untuk Menampilkan Proyek Terbaik",
-    description:
-      "Tampilkan proyek kerja, freelance, personal, atau akademik dalam satu halaman publik dengan detail yang mudah dibagikan.",
-    bullets: [
-      "Halaman portfolio publik dengan slug unik yang siap dibagikan",
-      "Isi judul, deskripsi singkat, detail proyek, role, industri, dan timeline pengerjaan",
-      "Tambahkan cover, galeri media, daftar tools, live demo, dan source code",
-      "Cocok untuk proyek kerja, freelance, personal, maupun tugas akademik",
-    ],
-    cta: "Buat Portfolio Digital",
+  {
+    id: "portfolio",
+    image: iconPortfolio,
     href: "/portfolios",
     illustration: "portfolio" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-muted via-muted/50 to-background",
   },
-};
+] as const;
 
 export function FeatureSelector() {
+  const { t } = useTranslation("landing");
+
+  const features = featureMeta.map((feature) => ({
+    ...feature,
+    title: t(`featureSelector.features.${feature.id}.title`),
+    subtitle: t(`featureSelector.features.${feature.id}.subtitle`),
+  }));
+
   return (
     <section id="application-tracker" className="py-16 lg:py-24 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
-        {/* Section Header */}
         <div className="text-center mb-12">
           <p className="text-sm text-primary font-medium mb-2 uppercase tracking-wider">
-            Fitur Utama
+            {t("featureSelector.eyebrow")}
           </p>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
-            Semua yang Anda Butuhkan untuk Karier Impian
+            {t("featureSelector.title")}
           </h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Kelola lamaran kerja, buat CV profesional, surat lamaran yang
-            meyakinkan, dan portofolio digital dalam satu platform.
+            {t("featureSelector.description")}
           </p>
         </div>
 
         <Tabs defaultValue="application" className="w-full">
-          {/* Feature Cards */}
           <TabsList className="grid grid-cols-2 lg:grid-cols-4 auto-rows-fr gap-4 lg:gap-6 h-auto bg-transparent p-0 mb-12">
             {features.map((feature) => (
               <TabsTrigger
@@ -155,15 +98,29 @@ export function FeatureSelector() {
             ))}
           </TabsList>
 
-          {Object.entries(featureDetails).map(([key, detail]) => (
-            <TabsContent
-              key={key}
-              value={key}
-              className="mt-0 animate-in fade-in-50 duration-500"
-            >
-              <FeatureDetail {...detail} />
-            </TabsContent>
-          ))}
+          {featureMeta.map((feature) => {
+            const detail = {
+              title: t(`featureSelector.details.${feature.id}.title`),
+              description: t(`featureSelector.details.${feature.id}.description`),
+              bullets: t(`featureSelector.details.${feature.id}.bullets`, {
+                returnObjects: true,
+              }) as string[],
+              cta: t(`featureSelector.details.${feature.id}.cta`),
+              href: feature.href,
+              illustration: feature.illustration,
+              bgColor: feature.bgColor,
+            };
+
+            return (
+              <TabsContent
+                key={feature.id}
+                value={feature.id}
+                className="mt-0 animate-in fade-in-50 duration-500"
+              >
+                <FeatureDetail {...detail} />
+              </TabsContent>
+            );
+          })}
         </Tabs>
       </div>
     </section>
