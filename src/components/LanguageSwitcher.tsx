@@ -13,7 +13,7 @@ const languages = [
 ];
 
 export function LanguageSwitcher({ className }: { className?: string }) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation("common");
 
   const currentLang =
     languages.find((l) => l.code === i18n.language) || languages[0];
@@ -32,7 +32,9 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             onClick={() => i18n.changeLanguage(lang.code)}
             className={currentLang.code === lang.code ? "bg-accent" : ""}
           >
-            <span>{lang.label}</span>
+            <span>
+              {lang.code === "id" ? t("userMenu.languageId") : t("userMenu.languageEn")}
+            </span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

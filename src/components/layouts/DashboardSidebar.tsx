@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { NavLink, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard,
@@ -59,58 +60,59 @@ import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
 
 const baseMenuItems = [
   {
-    title: "Dashboard",
+    titleKey: "sidebar.dashboard",
     url: paths.dashboard.getHref(),
     icon: LayoutDashboard,
   },
   {
-    title: "Lamaran",
+    titleKey: "sidebar.applications",
     url: paths.applications.list.getHref(),
     icon: Briefcase,
   },
   {
-    title: "Surat Lamaran",
+    titleKey: "sidebar.letters",
     url: paths.applicationLetters.list.getHref(),
     icon: FileText,
   },
   {
-    title: "CV",
+    titleKey: "sidebar.cv",
     url: paths.cvs.list.getHref(),
     icon: FileText,
   },
   {
-    title: "Portofolio",
+    titleKey: "sidebar.portfolio",
     url: paths.portfolios.list.getHref(),
     icon: FolderOpen,
   },
   {
-    title: "Dokumen",
+    titleKey: "sidebar.documents",
     url: paths.documents.list.getHref(),
     icon: Files,
     requiresSubscription: true,
   },
   {
-    title: "Langganan",
+    titleKey: "sidebar.subscriptions",
     url: paths.subscriptions.list.getHref(),
     icon: Crown,
   },
 ];
 
 const blogMenuItems = [
-  { title: "Blog", url: paths.admin.blogs.list.getHref() },
-  { title: "Kategori", url: paths.admin.blogs.categories.getHref() },
-  { title: "Tag", url: paths.admin.blogs.tags.getHref() },
+  { titleKey: "sidebar.blog", url: paths.admin.blogs.list.getHref() },
+  { titleKey: "sidebar.categories", url: paths.admin.blogs.categories.getHref() },
+  { titleKey: "sidebar.tags", url: paths.admin.blogs.tags.getHref() },
 ];
 
 const jobMenuItems = [
-  { title: "Lowongan Kerja", url: paths.admin.jobs.list.getHref() },
-  { title: "Perusahaan", url: paths.admin.jobs.companies.getHref() },
-  { title: "Role Pekerjaan", url: paths.admin.jobs.roles.getHref() },
+  { titleKey: "sidebar.jobs", url: paths.admin.jobs.list.getHref() },
+  { titleKey: "sidebar.companies", url: paths.admin.jobs.companies.getHref() },
+  { titleKey: "sidebar.roles", url: paths.admin.jobs.roles.getHref() },
 ];
 
 export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation("common");
   const { state } = useSidebar();
   const { theme, setTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
@@ -199,29 +201,31 @@ export function DashboardSidebar() {
                 onClick={() => navigate(paths.account.profile.getHref())}
               >
                 <User className="h-4 w-4 mr-2" />
-                Profil
+                {t("sidebar.profile")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigate(paths.account.notifications.getHref())}
               >
                 <Bell className="h-4 w-4 mr-2" />
-                Pengaturan Notifikasi
+                {t("sidebar.notifications")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigate(paths.account.changePassword.getHref())}
               >
                 <Lock className="h-4 w-4 mr-2" />
-                Ubah Password
+                {t("sidebar.changePassword")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigate(paths.jobs.savedJobs.getHref())}
               >
                 <Bookmark className="h-4 w-4 mr-2" />
-                Lowongan Tersimpan
+                {t("sidebar.savedJobs")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <div className="px-2 py-1.5">
-                <p className="text-xs text-muted-foreground mb-2">Tema</p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  {t("userMenu.theme")}
+                </p>
                 <div className="flex gap-1">
                   <button
                     onClick={() => setTheme("light")}
@@ -232,7 +236,7 @@ export function DashboardSidebar() {
                     }`}
                   >
                     <Sun className="h-3 w-3" />
-                    Terang
+                    {t("userMenu.themeLight")}
                   </button>
                   <button
                     onClick={() => setTheme("dark")}
@@ -243,7 +247,7 @@ export function DashboardSidebar() {
                     }`}
                   >
                     <Moon className="h-3 w-3" />
-                    Gelap
+                    {t("userMenu.themeDark")}
                   </button>
                 </div>
               </div>
@@ -253,7 +257,7 @@ export function DashboardSidebar() {
                 className="text-destructive"
               >
                 <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                {t("action.logout")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -272,10 +276,10 @@ export function DashboardSidebar() {
 
                   if (isSubscriptionLocked) {
                     return (
-                      <SidebarMenuItem key={item.title}>
+                      <SidebarMenuItem key={item.titleKey}>
                         <SidebarMenuButton
                           size="lg"
-                          tooltip={`${item.title} • butuh langganan`}
+                          tooltip={`${t(item.titleKey)} - ${t("sidebar.requiresSubscription")}`}
                           className={cn(
                             "flex w-full items-center rounded-lg text-muted-foreground/70",
                             isCollapsed
@@ -288,7 +292,7 @@ export function DashboardSidebar() {
                           <item.icon className="h-5 w-5 shrink-0" />
                           {!isCollapsed && (
                             <>
-                              <span className="font-medium">{item.title}</span>
+                              <span className="font-medium">{t(item.titleKey)}</span>
                               <Crown className="ml-auto h-4 w-4 text-amber-500" />
                             </>
                           )}
@@ -298,8 +302,8 @@ export function DashboardSidebar() {
                   }
 
                   return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild size="lg" tooltip={item.title}>
+                    <SidebarMenuItem key={item.titleKey}>
+                      <SidebarMenuButton asChild size="lg" tooltip={t(item.titleKey)}>
                         <NavLink
                           to={item.url}
                           className={cn(
@@ -314,7 +318,7 @@ export function DashboardSidebar() {
                         >
                           <item.icon className="h-5 w-5 shrink-0" />
                           {!isCollapsed && (
-                            <span className="font-medium">{item.title}</span>
+                            <span className="font-medium">{t(item.titleKey)}</span>
                           )}
                         </NavLink>
                       </SidebarMenuButton>
@@ -330,7 +334,7 @@ export function DashboardSidebar() {
                     <Separator className="flex-1" />
                     <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
                       <Shield className="h-3 w-3" />
-                      ADMIN
+                      {t("sidebar.admin")}
                     </span>
                     <Separator className="flex-1" />
                   </div>
@@ -340,7 +344,7 @@ export function DashboardSidebar() {
               {/* Admin Dashboard */}
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild size="lg" tooltip="Dashboard">
+                  <SidebarMenuButton asChild size="lg" tooltip={t("sidebar.dashboard")}>
                     <NavLink
                       to={paths.admin.dashboard.getHref()}
                       className={cn(
@@ -355,7 +359,7 @@ export function DashboardSidebar() {
                     >
                       <LayoutDashboard className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
-                        <span className="font-medium">Dashboard</span>
+                        <span className="font-medium">{t("sidebar.dashboard")}</span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
@@ -365,7 +369,7 @@ export function DashboardSidebar() {
               {/* Users Management */}
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild size="lg" tooltip="Users">
+                  <SidebarMenuButton asChild size="lg" tooltip={t("sidebar.members")}>
                     <NavLink
                       to={paths.admin.users.list.getHref()}
                       className={cn(
@@ -380,7 +384,7 @@ export function DashboardSidebar() {
                     >
                       <Users className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
-                        <span className="font-medium">Users</span>
+                        <span className="font-medium">{t("sidebar.members")}</span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
@@ -394,7 +398,7 @@ export function DashboardSidebar() {
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         size="lg"
-                        tooltip="Lowongan Kerja"
+                        tooltip={t("sidebar.jobs")}
                         className={cn(
                           "flex items-center rounded-lg transition-colors w-full",
                           isCollapsed
@@ -409,7 +413,7 @@ export function DashboardSidebar() {
                         {!isCollapsed && (
                           <>
                             <span className="font-medium flex-1 text-left">
-                              Lowongan Kerja
+                              {t("sidebar.jobs")}
                             </span>
                             {jobOpen ? (
                               <ChevronDown className="h-4 w-4" />
@@ -434,7 +438,7 @@ export function DashboardSidebar() {
                             )}
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                            {item.title}
+                            {t(item.titleKey)}
                           </NavLink>
                         ))}
                       </CollapsibleContent>
@@ -450,7 +454,7 @@ export function DashboardSidebar() {
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         size="lg"
-                        tooltip="Blog"
+                        tooltip={t("sidebar.blog")}
                         className={cn(
                           "flex items-center rounded-lg transition-colors w-full",
                           isCollapsed
@@ -465,7 +469,7 @@ export function DashboardSidebar() {
                         {!isCollapsed && (
                           <>
                             <span className="font-medium flex-1 text-left">
-                              Blog
+                              {t("sidebar.blog")}
                             </span>
                             {blogOpen ? (
                               <ChevronDown className="h-4 w-4" />
@@ -490,7 +494,7 @@ export function DashboardSidebar() {
                             )}
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                            {item.title}
+                            {t(item.titleKey)}
                           </NavLink>
                         ))}
                       </CollapsibleContent>
@@ -502,7 +506,7 @@ export function DashboardSidebar() {
               {/* Template Menu - Changed to regular button */}
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild size="lg" tooltip="Template">
+                  <SidebarMenuButton asChild size="lg" tooltip={t("sidebar.template")}>
                     <NavLink
                       to={paths.admin.templates.list.getHref()}
                       className={cn(
@@ -517,7 +521,7 @@ export function DashboardSidebar() {
                     >
                       <FileStack className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
-                        <span className="font-medium">Template</span>
+                        <span className="font-medium">{t("sidebar.template")}</span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
@@ -526,7 +530,7 @@ export function DashboardSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild size="lg" tooltip="Langganan">
+                  <SidebarMenuButton asChild size="lg" tooltip={t("sidebar.subscriptions")}>
                     <NavLink
                       to={paths.admin.subscriptions.list.getHref()}
                       className={cn(
@@ -541,7 +545,7 @@ export function DashboardSidebar() {
                     >
                       <Crown className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
-                        <span className="font-medium">Langganan</span>
+                        <span className="font-medium">{t("sidebar.subscriptions")}</span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
@@ -563,7 +567,7 @@ export function DashboardSidebar() {
         >
           <Heart className="h-5 w-5 fill-white" />
           {!isCollapsed && (
-            <span className="font-semibold">Donasi Sekarang</span>
+            <span className="font-semibold">{t("sidebar.donateNow")}</span>
           )}
         </Button>
       </SidebarFooter>

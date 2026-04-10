@@ -5,11 +5,13 @@ import {
   MapPin,
   Twitter,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import logo from "@/assets/images/logo.png";
 import { env } from "@/config/env";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const { t } = useTranslation("common");
 
   return (
     <footer className="bg-foreground dark:bg-muted text-background dark:text-foreground">
@@ -21,17 +23,16 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <img
                 src={logo}
-                alt="KarirKit"
+                alt={t("appName")}
                 className="h-8 w-auto transition-opacity hover:opacity-90 [filter:brightness(0)_invert(1)_sepia(1)_saturate(0.75)_hue-rotate(355deg)_brightness(1.12)_contrast(0.92)]"
               />
             </div>
             <p className="text-sm text-background/70 dark:text-muted-foreground leading-relaxed">
-              Platform all-in-one untuk mengelola lamaran kerja, membuat CV
-              profesional, dan membangun portofolio digital.
+              {t("footer.brandDescription")}
             </p>
             <div className="flex items-center gap-2 text-sm text-background/70 dark:text-muted-foreground">
               <MapPin className="w-4 h-4 flex-shrink-0" />
-              <span>Jakarta, Indonesia</span>
+              <span>{t("footer.location")}</span>
             </div>
             <a
               href={`mailto:${env.SUPPORT_EMAIL}`}
@@ -45,7 +46,7 @@ export function Footer() {
           {/* Quick Links */}
           <div className="lg:col-span-2">
             <h3 className="font-semibold mb-4 text-background dark:text-foreground">
-              KarirKit
+              {t("footer.companyTitle")}
             </h3>
             <ul className="space-y-3">
               <li>
@@ -53,7 +54,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Tentang Kami
+                  {t("footer.aboutUs")}
                 </a>
               </li>
               <li>
@@ -61,7 +62,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Karier
+                  {t("footer.career")}
                 </a>
               </li>
               <li>
@@ -69,7 +70,7 @@ export function Footer() {
                   href="/blog"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Blog
+                  {t("nav.blog")}
                 </a>
               </li>
               <li>
@@ -77,7 +78,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Kontak
+                  {t("footer.contact")}
                 </a>
               </li>
             </ul>
@@ -86,7 +87,7 @@ export function Footer() {
           {/* Products */}
           <div className="lg:col-span-2">
             <h3 className="font-semibold mb-4 text-background dark:text-foreground">
-              Produk
+              {t("footer.productsTitle")}
             </h3>
             <ul className="space-y-3">
               <li>
@@ -94,7 +95,7 @@ export function Footer() {
                   href="#application-tracker"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Application Tracker
+                  {t("footer.applicationTracker")}
                 </a>
               </li>
               <li>
@@ -102,7 +103,7 @@ export function Footer() {
                   href="#cv"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  CV Builder
+                  {t("footer.cvBuilder")}
                 </a>
               </li>
               <li>
@@ -110,7 +111,7 @@ export function Footer() {
                   href="#surat-lamaran"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Surat Lamaran
+                  {t("footer.coverLetter")}
                 </a>
               </li>
               <li>
@@ -118,7 +119,7 @@ export function Footer() {
                   href="#portofolio"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Portofolio
+                  {t("footer.portfolio")}
                 </a>
               </li>
             </ul>
@@ -127,7 +128,7 @@ export function Footer() {
           {/* Support */}
           <div className="lg:col-span-2">
             <h3 className="font-semibold mb-4 text-background dark:text-foreground">
-              Bantuan
+              {t("footer.supportTitle")}
             </h3>
             <ul className="space-y-3">
               <li>
@@ -135,7 +136,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Pusat Bantuan
+                  {t("footer.helpCenter")}
                 </a>
               </li>
               <li>
@@ -143,7 +144,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  FAQ
+                  {t("footer.faq")}
                 </a>
               </li>
               <li>
@@ -151,7 +152,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Kebijakan Privasi
+                  {t("footer.privacyPolicy")}
                 </a>
               </li>
               <li>
@@ -159,7 +160,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  Syarat & Ketentuan
+                  {t("footer.terms")}
                 </a>
               </li>
             </ul>
@@ -168,7 +169,7 @@ export function Footer() {
           {/* Social Media */}
           <div className="lg:col-span-2">
             <h3 className="font-semibold mb-4 text-background dark:text-foreground">
-              Ikuti Kami
+              {t("footer.followUs")}
             </h3>
             <div className="flex gap-3">
               <a
@@ -208,7 +209,7 @@ export function Footer() {
         <div className="container mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <p className="text-sm text-background/60 dark:text-muted-foreground text-center">
-              © {currentYear} KarirKit. Semua hak dilindungi.
+              © {currentYear} {t("appName")}. {t("footer.copyright")}
             </p>
           </div>
         </div>

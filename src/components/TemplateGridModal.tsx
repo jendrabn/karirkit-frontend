@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Lock } from "lucide-react";
 import {
   Dialog,
@@ -31,10 +32,13 @@ export function TemplateGridModal({
   value,
   onSelect,
   getTemplateDisabledReason,
-  title = "Pilih Template",
-  description = "Template yang dipilih akan secara otomatis dilengkapi dengan informasi yang tersedia pada profil Anda.",
+  title,
+  description,
 }: TemplateGridModalProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const { t } = useTranslation("common");
+  const resolvedTitle = title ?? t("template.choose");
+  const resolvedDescription = description ?? t("template.gridDescription");
   const handleSelect = (templateId: string) => {
     onSelect(templateId);
     onOpenChange(false);
@@ -42,10 +46,10 @@ export function TemplateGridModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!max-w-7xl">
+        <DialogContent className="!max-w-7xl">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>{resolvedTitle}</DialogTitle>
+          <DialogDescription>{resolvedDescription}</DialogDescription>
         </DialogHeader>
 
         <div className="no-scrollbar -mx-4 max-h-[65vh] overflow-y-auto px-4 py-4">
@@ -96,15 +100,15 @@ export function TemplateGridModal({
                       {isSelected ? (
                         <>
                           <Check className="mr-1 h-4 w-4" />
-                          Terpilih
+                          {t("template.selected")}
                         </>
                       ) : isDisabled ? (
                         <>
                           <Lock className="mr-1 h-4 w-4" />
-                          Terkunci
+                          {t("template.locked")}
                         </>
                       ) : (
-                        "Pilih template"
+                        t("template.selectTemplate")
                       )}
                     </Button>
                   </div>
@@ -134,7 +138,7 @@ export function TemplateGridModal({
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="outline">
-              Tutup
+              {t("action.close")}
             </Button>
           </DialogClose>
         </DialogFooter>

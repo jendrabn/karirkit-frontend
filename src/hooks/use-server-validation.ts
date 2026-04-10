@@ -1,6 +1,7 @@
 import { useEffect, createElement } from "react";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
+import i18n from "@/i18n";
 
 export interface ServerError {
   response?: {
@@ -48,10 +49,15 @@ export function useServerValidation<T extends FieldValues>(
           ),
         );
 
-        toast.error(`Gagal memproses data (${errorMessages.length} error)`, {
+        toast.error(
+          i18n.t("common:error.serverProcessingFailed", {
+            count: errorMessages.length,
+          }),
+          {
           description: createElement("div", null, errorElements),
           duration: 5000,
-        });
+          },
+        );
       }
     } else {
       form.clearErrors();

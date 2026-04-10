@@ -2,20 +2,16 @@ import Axios, {
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
 } from "axios";
+import i18n from "@/i18n";
 import { env } from "@/config/env";
 import { toast } from "sonner";
 
 const SUBSCRIPTION_ERROR_MESSAGES: Record<string, string> = {
-  CV_LIMIT_REACHED:
-    "Batas CV Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
-  APPLICATION_LIMIT_REACHED:
-    "Batas application tracker Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
-  APP_LETTER_LIMIT_REACHED:
-    "Batas surat lamaran Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
-  PREMIUM_TEMPLATE_REQUIRED:
-    "Template premium hanya tersedia untuk pengguna Pro atau Max. Upgrade paket di halaman Langganan untuk melanjutkan.",
-  DOCUMENT_ACCESS_DENIED:
-    "Fitur dokumen hanya tersedia untuk pengguna Pro atau Max. Upgrade paket di halaman Langganan untuk membuka akses.",
+  CV_LIMIT_REACHED: i18n.t("common:subscription.cvLimitReached"),
+  APPLICATION_LIMIT_REACHED: i18n.t("common:subscription.applicationLimitReached"),
+  APP_LETTER_LIMIT_REACHED: i18n.t("common:subscription.appLetterLimitReached"),
+  PREMIUM_TEMPLATE_REQUIRED: i18n.t("common:subscription.premiumTemplateRequired"),
+  DOCUMENT_ACCESS_DENIED: i18n.t("common:subscription.documentAccessDenied"),
 };
 
 declare module "axios" {
@@ -71,16 +67,18 @@ api.interceptors.response.use(
       if (payload?.status && typeof payload.status === "string") {
         const reason =
           typeof payload.status_reason === "string" && payload.status_reason
-            ? `Alasan: ${payload.status_reason}`
+            ? `${i18n.t("common:error.reasonLabel")} ${payload.status_reason}`
             : "";
         const until =
           typeof payload.suspended_until === "string" && payload.suspended_until
-            ? `Berlaku sampai: ${new Date(
+            ? `${i18n.t("common:error.validUntilLabel")} ${new Date(
                 payload.suspended_until,
               ).toLocaleString("id-ID")}`
             : "";
         const messageParts = [
-          `Akun ${payload.status === "banned" ? "diblokir" : "disuspend"}.`,
+          payload.status === "banned"
+            ? i18n.t("common:error.accountBlocked")
+            : i18n.t("common:error.accountSuspended"),
           reason,
           until,
         ].filter(Boolean);

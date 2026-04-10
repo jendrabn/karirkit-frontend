@@ -1,6 +1,7 @@
 import z from "zod";
 import { api } from "./api-client";
 import { isAxiosError } from "axios";
+import i18n from "@/i18n";
 import type { User } from "@/types/user";
 import type {
   LoginResponse,
@@ -98,19 +99,21 @@ export const registerInputSchema = z
   .object({
     name: z
       .string()
-      .min(2, "Nama minimal 2 karakter")
-      .max(100, "Nama maksimal 100 karakter"),
+      .min(2, i18n.t("common:validation.nameMin"))
+      .max(100, i18n.t("common:validation.nameMax")),
 
-    email: z.string().email("Email tidak valid"),
+    email: z.string().email(i18n.t("common:validation.emailInvalid")),
 
     password: z
       .string()
-      .min(8, "Password minimal 8 karakter")
-      .regex(/[A-Z]/, "Password harus mengandung huruf besar")
-      .regex(/[a-z]/, "Password harus mengandung huruf kecil")
-      .regex(/[0-9]/, "Password harus mengandung angka"),
+      .min(8, i18n.t("common:validation.passwordMin"))
+      .regex(/[A-Z]/, i18n.t("common:validation.passwordUppercase"))
+      .regex(/[a-z]/, i18n.t("common:validation.passwordLowercase"))
+      .regex(/[0-9]/, i18n.t("common:validation.passwordNumber")),
 
-    confirm_password: z.string().min(1, "Konfirmasi password wajib diisi"),
+    confirm_password: z
+      .string()
+      .min(1, i18n.t("common:validation.confirmPasswordRequired")),
 
     phone: z
       .string()
@@ -121,12 +124,12 @@ export const registerInputSchema = z
           return /^(\+62|62|0)8[1-9][0-9]{6,9}$/.test(value);
         },
         {
-          message: "Nomor HP tidak valid",
+          message: i18n.t("common:validation.phoneInvalid"),
         }
       ),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: "Konfirmasi password tidak cocok",
+    message: i18n.t("common:validation.confirmPasswordMismatch"),
     path: ["confirm_password"],
   });
 
@@ -148,7 +151,7 @@ export const useRegister = ({ onSuccess }: { onSuccess?: () => void }) => {
 export const loginInputSchema = z.object({
   identifier: z
     .string()
-    .min(1, "Username atau email wajib diisi")
+    .min(1, i18n.t("common:validation.usernameOrEmailRequired"))
     .refine(
       (value) => {
         const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -156,11 +159,11 @@ export const loginInputSchema = z.object({
         return isEmail || isUsername;
       },
       {
-        message: "Masukkan username atau email yang valid",
+        message: i18n.t("common:validation.usernameOrEmailValid"),
       }
     ),
 
-  password: z.string().min(1, "Password wajib diisi"),
+  password: z.string().min(1, i18n.t("common:validation.passwordRequired")),
 });
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
@@ -193,12 +196,12 @@ export const useLogin = ({
 
 // OTP Verification APIs
 export const verifyOtpInputSchema = z.object({
-  identifier: z.string().min(1, "Identifier wajib diisi"),
+  identifier: z.string().min(1, i18n.t("common:validation.identifierRequired")),
   otp_code: z
     .string()
-    .min(6, "Kode OTP minimal 6 digit")
-    .max(6, "Kode OTP maksimal 6 digit"),
-  password: z.string().min(1, "Password wajib diisi"),
+    .min(6, i18n.t("common:validation.otpCodeMin"))
+    .max(6, i18n.t("common:validation.otpCodeMax")),
+  password: z.string().min(1, i18n.t("common:validation.passwordRequired")),
 });
 
 export type VerifyOtpInput = z.infer<typeof verifyOtpInputSchema>;
@@ -220,7 +223,7 @@ export const useVerifyOtp = ({ onSuccess }: { onSuccess?: () => void }) => {
 };
 
 export const resendOtpInputSchema = z.object({
-  identifier: z.string().min(1, "Identifier wajib diisi"),
+  identifier: z.string().min(1, i18n.t("common:validation.identifierRequired")),
 });
 
 export type ResendOtpInput = z.infer<typeof resendOtpInputSchema>;
@@ -241,7 +244,7 @@ export const useResendOtp = ({
 };
 
 export const checkOtpStatusInputSchema = z.object({
-  identifier: z.string().min(1, "Identifier wajib diisi"),
+  identifier: z.string().min(1, i18n.t("common:validation.identifierRequired")),
 });
 
 export type CheckOtpStatusInput = z.infer<typeof checkOtpStatusInputSchema>;
@@ -259,7 +262,7 @@ export const useCheckOtpStatus = () => {
 };
 
 export const forgotPasswordInputSchema = z.object({
-  identifier: z.string().min(1, "Username atau email wajib diisi"),
+  identifier: z.string().min(1, i18n.t("common:validation.usernameOrEmailRequired")),
 });
 
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordInputSchema>;
@@ -283,21 +286,23 @@ export const useForgotPassword = ({
 
 export const resetPasswordInputSchema = z
   .object({
-    identifier: z.string().min(1, "Identifier wajib diisi"),
+    identifier: z.string().min(1, i18n.t("common:validation.identifierRequired")),
     otp_code: z
       .string()
-      .min(6, "OTP harus 6 digit")
-      .max(6, "OTP harus 6 digit"),
+      .min(6, i18n.t("common:validation.otpCodeExact"))
+      .max(6, i18n.t("common:validation.otpCodeExact")),
     password: z
       .string()
-      .min(8, "Password minimal 8 karakter")
-      .regex(/[A-Z]/, "Password harus mengandung huruf besar")
-      .regex(/[a-z]/, "Password harus mengandung huruf kecil")
-      .regex(/[0-9]/, "Password harus mengandung angka"),
-    confirm_password: z.string().min(1, "Konfirmasi password wajib diisi"),
+      .min(8, i18n.t("common:validation.passwordMin"))
+      .regex(/[A-Z]/, i18n.t("common:validation.passwordUppercase"))
+      .regex(/[a-z]/, i18n.t("common:validation.passwordLowercase"))
+      .regex(/[0-9]/, i18n.t("common:validation.passwordNumber")),
+    confirm_password: z
+      .string()
+      .min(1, i18n.t("common:validation.confirmPasswordRequired")),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: "Konfirmasi password tidak cocok",
+    message: i18n.t("common:validation.confirmPasswordMismatch"),
     path: ["confirm_password"],
   });
 

@@ -1,4 +1,5 @@
 import { useRegisterSW } from "virtual:pwa-register/react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,6 +11,7 @@ import {
 import { RefreshCw } from "lucide-react";
 
 function PWAUpdatePromptContent() {
+  const { t } = useTranslation("common");
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -34,22 +36,22 @@ function PWAUpdatePromptContent() {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">
-            {needRefresh ? "Update Tersedia" : "Siap untuk Offline"}
+            {needRefresh ? t("pwa.updateTitle") : t("pwa.offlineReadyTitle")}
           </CardTitle>
           <CardDescription>
             {needRefresh
-              ? "Versi baru aplikasi tersedia. Muat ulang untuk update."
-              : "Aplikasi siap bekerja secara offline."}
+              ? t("pwa.updateDescription")
+              : t("pwa.offlineReadyDescription")}
           </CardDescription>
         </CardHeader>
         <CardFooter className="gap-2">
           <Button variant="outline" onClick={close} className="flex-1">
-            {needRefresh ? "Nanti" : "Tutup"}
+            {needRefresh ? t("action.later") : t("action.close")}
           </Button>
           {needRefresh && (
             <Button onClick={reload} className="flex-1">
               <RefreshCw className="mr-2 h-4 w-4" />
-              Muat Ulang
+              {t("action.reload")}
             </Button>
           )}
         </CardFooter>

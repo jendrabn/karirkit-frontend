@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TemplateGridModal } from "./TemplateGridModal";
@@ -25,6 +26,7 @@ export function TemplateSelector({
   const [modalOpen, setModalOpen] = useState(false);
   const selectedTemplate = templates.find((t) => t.id === value);
   const canOpen = !disabled;
+  const { t } = useTranslation("common");
 
   return (
     <div className="space-y-2">
@@ -47,7 +49,7 @@ export function TemplateSelector({
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
             <span className="text-sm font-medium text-white">
-              Ganti Template
+              {t("template.change")}
             </span>
           </div>
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
@@ -79,7 +81,7 @@ export function TemplateSelector({
           >
             <FileText className="h-8 w-8 text-muted-foreground" />
             <span className="text-sm font-medium text-muted-foreground">
-              Pilih Template
+              {t("template.choose")}
             </span>
           </Button>
         </div>
@@ -96,7 +98,7 @@ export function TemplateSelector({
           }}
           disabled={disabled}
         >
-          Lihat semua template
+          {t("template.seeAll")}
         </Button>
       )}
 

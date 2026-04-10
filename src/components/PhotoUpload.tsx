@@ -5,6 +5,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { buildImageUrl, cn } from "@/lib/utils";
 import { useUploadFile } from "@/lib/upload";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface PhotoUploadProps {
   value: string;
@@ -28,6 +29,7 @@ export function PhotoUpload({
   label,
 }: PhotoUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation("common");
 
   const getAvatarSrc = () => {
     if (!value) return "";
@@ -43,7 +45,7 @@ export function PhotoUpload({
     mutationConfig: {
       onSuccess: (data) => {
         onChange(data.path);
-        toast.success("Foto berhasil diunggah");
+        toast.success(t("upload.photoUploaded"));
       },
       onError: (error) => {
         console.error("Error: ", error);
@@ -59,12 +61,12 @@ export function PhotoUpload({
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("File harus berupa gambar");
+      toast.error(t("upload.fileMustBeImage"));
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("Ukuran file maksimal 2MB");
+      toast.error(t("upload.maxFileSize"));
       return;
     }
 
