@@ -1,11 +1,9 @@
 import { Link } from "react-router";
-import { Clock } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buildImageUrl } from "@/lib/utils";
 import type { Blog } from "@/features/blogs/api/get-blogs";
 import { paths } from "@/config/paths";
-import { Button } from "@/components/ui/button";
 
 interface BlogCardProps {
   blog: Blog;
@@ -13,56 +11,49 @@ interface BlogCardProps {
 
 export function BlogCard({ blog }: BlogCardProps) {
   return (
-    <Card className="flex flex-col gap-6 rounded-xl border shadow-sm w-full overflow-hidden pt-0 hover:shadow-lg transition-shadow duration-300">
-      {/* Featured Image */}
-      {blog.featured_image && (
-        <figure className="relative aspect-video w-full">
+    <Link
+      to={paths.blog.detail.getHref(blog.slug)}
+      className="group flex flex-col rounded-2xl border bg-card overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+    >
+      {/* Thumbnail */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+        {blog.featured_image ? (
           <img
             src={buildImageUrl(blog.featured_image)}
             alt={blog.title}
-            className="object-cover absolute h-full w-full left-0 top-0 right-0 bottom-0"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        </figure>
-      )}
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-muted to-muted-foreground/10" />
+        )}
 
-      <CardContent className="px-6 space-y-4">
-        {/* Category Badge and Read Time */}
-        <div className="flex items-start justify-between">
-          {blog.category && (
-            <Badge
-              variant="outline"
-              className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap"
-            >
+        {blog.category && (
+          <div className="absolute top-3 left-3">
+            <Badge className="bg-background/90 text-foreground backdrop-blur-sm border-0 shadow-sm text-xs font-medium px-2.5 py-1 rounded-lg">
               {blog.category.name}
             </Badge>
-          )}
-          <div className="text-muted-foreground flex items-center text-xs">
-            <Clock className="me-1 size-3" aria-hidden="true" />
-            {blog.read_time} menit baca
           </div>
-        </div>
+        )}
+      </div>
 
-        {/* Title */}
-        <Link to={paths.blog.detail.getHref(blog.slug)}>
-          <h3 className="text-xl font-semibold leading-tight hover:text-primary transition-colors line-clamp-2">
-            {blog.title}
-          </h3>
-        </Link>
+      {/* Content */}
+      <div className="flex flex-col flex-1 gap-2.5 p-5">
+        <h3 className="text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200">
+          {blog.title}
+        </h3>
 
-        {/* Excerpt */}
         {blog.excerpt && (
-          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 flex-1">
             {blog.excerpt}
           </p>
         )}
 
-        {/* Read More Button */}
-        <Button variant="outline" className="w-full h-9" asChild>
-          <Link to={paths.blog.detail.getHref(blog.slug)}>
-            Baca Selengkapnya
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+        <div className="flex items-center gap-1 text-sm font-medium text-primary mt-2 group-hover:gap-2 transition-all duration-200">
+          <span>Baca selengkapnya</span>
+          <ArrowRight className="size-3.5 shrink-0" />
+        </div>
+      </div>
+    </Link>
   );
 }
