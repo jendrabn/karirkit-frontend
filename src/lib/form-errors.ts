@@ -1,7 +1,6 @@
 import { toast } from "sonner";
 import type { FieldErrors, FieldValues } from "react-hook-form";
 import { createElement } from "react";
-import i18n from "@/i18n";
 
 /**
  * Display form validation errors (from Zod/client-side) as a single toast notification
@@ -76,7 +75,7 @@ export function displayFormErrors<T extends FieldValues>(
   );
 
   // Display single toast with all errors
-  toast.error(i18n.t("common:error.validationTitle"), {
+  toast.error("Kesalahan Validasi", {
     description: createElement("div", null, errorElements),
     duration: 3000,
   });

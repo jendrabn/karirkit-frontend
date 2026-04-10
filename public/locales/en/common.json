@@ -120,48 +120,12 @@
   "error": {
     "generic": "Something went wrong",
     "contactSupportPrefix": "Still having issues? Please",
-    "validationTitle": "Validation Error",
-    "serverProcessingFailed": "Failed to process data ({count} errors)",
-    "accountBlocked": "Account is blocked.",
-    "accountSuspended": "Account is suspended.",
-    "reasonLabel": "Reason:",
-    "validUntilLabel": "Valid until:",
     "unknown": "Unknown error",
     "unexpected": "Sorry, something unexpected happened. Our team has been notified.",
     "loadImageFailed": "Failed to load image"
   },
-  "subscription": {
-    "cvLimitReached": "You’ve reached your CV limit. Upgrade your plan on the Subscription page to increase your quota.",
-    "applicationLimitReached": "You’ve reached your application tracker limit. Upgrade your plan on the Subscription page to increase your quota.",
-    "appLetterLimitReached": "You’ve reached your cover letter limit. Upgrade your plan on the Subscription page to increase your quota.",
-    "premiumTemplateRequired": "Premium templates are only available for Pro or Max users. Upgrade your plan on the Subscription page to continue.",
-    "documentAccessDenied": "Document features are only available for Pro or Max users. Upgrade your plan to unlock access."
-  },
-  "context": {
-    "authProvider": "useAuth must be used within an AuthProvider",
-    "themeProvider": "useTheme must be used within a ThemeProvider"
-  },
   "confirmationDialog": {
     "confirmDelete": "Are you sure you want to delete this?"
-  },
-  "validation": {
-    "nameMin": "Name must be at least 2 characters",
-    "nameMax": "Name must be at most 100 characters",
-    "emailInvalid": "Invalid email",
-    "passwordMin": "Password must be at least 8 characters",
-    "passwordUppercase": "Password must include an uppercase letter",
-    "passwordLowercase": "Password must include a lowercase letter",
-    "passwordNumber": "Password must include a number",
-    "confirmPasswordRequired": "Password confirmation is required",
-    "confirmPasswordMismatch": "Password confirmation does not match",
-    "phoneInvalid": "Invalid phone number",
-    "identifierRequired": "Identifier is required",
-    "usernameOrEmailRequired": "Username or email is required",
-    "usernameOrEmailValid": "Enter a valid username or email",
-    "passwordRequired": "Password is required",
-    "otpCodeMin": "OTP must be at least 6 digits",
-    "otpCodeMax": "OTP must be at most 6 digits",
-    "otpCodeExact": "OTP must be exactly 6 digits"
   },
   "theme": {
     "light": "Light",

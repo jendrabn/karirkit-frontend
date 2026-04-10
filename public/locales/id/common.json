@@ -120,48 +120,12 @@
   "error": {
     "generic": "Terjadi kesalahan",
     "contactSupportPrefix": "Masalah berlanjut? Silakan",
-    "validationTitle": "Kesalahan Validasi",
-    "serverProcessingFailed": "Gagal memproses data ({count} error)",
-    "accountBlocked": "Akun diblokir.",
-    "accountSuspended": "Akun disuspend.",
-    "reasonLabel": "Alasan:",
-    "validUntilLabel": "Berlaku sampai:",
     "unknown": "Kesalahan tidak diketahui",
     "unexpected": "Maaf, terjadi kesalahan yang tidak terduga. Tim kami telah diberitahu tentang masalah ini.",
     "loadImageFailed": "Gagal memuat gambar"
   },
-  "subscription": {
-    "cvLimitReached": "Batas CV Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
-    "applicationLimitReached": "Batas application tracker Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
-    "appLetterLimitReached": "Batas surat lamaran Anda sudah tercapai. Upgrade paket di halaman Langganan untuk menambah kuota.",
-    "premiumTemplateRequired": "Template premium hanya tersedia untuk pengguna Pro atau Max. Upgrade paket di halaman Langganan untuk melanjutkan.",
-    "documentAccessDenied": "Fitur dokumen hanya tersedia untuk pengguna Pro atau Max. Upgrade paket di halaman Langganan untuk membuka akses."
-  },
-  "context": {
-    "authProvider": "useAuth must be used within an AuthProvider",
-    "themeProvider": "useTheme must be used within a ThemeProvider"
-  },
   "confirmationDialog": {
     "confirmDelete": "Apakah Anda yakin ingin menghapus?"
-  },
-  "validation": {
-    "nameMin": "Nama minimal 2 karakter",
-    "nameMax": "Nama maksimal 100 karakter",
-    "emailInvalid": "Email tidak valid",
-    "passwordMin": "Password minimal 8 karakter",
-    "passwordUppercase": "Password harus mengandung huruf besar",
-    "passwordLowercase": "Password harus mengandung huruf kecil",
-    "passwordNumber": "Password harus mengandung angka",
-    "confirmPasswordRequired": "Konfirmasi password wajib diisi",
-    "confirmPasswordMismatch": "Konfirmasi password tidak cocok",
-    "phoneInvalid": "Nomor HP tidak valid",
-    "identifierRequired": "Identifier wajib diisi",
-    "usernameOrEmailRequired": "Username atau email wajib diisi",
-    "usernameOrEmailValid": "Masukkan username atau email yang valid",
-    "passwordRequired": "Password wajib diisi",
-    "otpCodeMin": "Kode OTP minimal 6 digit",
-    "otpCodeMax": "Kode OTP maksimal 6 digit",
-    "otpCodeExact": "OTP harus 6 digit"
   },
   "theme": {
     "light": "Terang",
