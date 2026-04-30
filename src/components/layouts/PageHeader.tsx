@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import { ArrowLeft } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
 interface PageHeaderProps {
@@ -18,8 +17,6 @@ export function PageHeader({
   showBackButton,
   backButtonUrl,
 }: PageHeaderProps) {
-  const { t } = useTranslation("common");
-
   return (
     <div className="mb-8">
       {showBackButton && backButtonUrl && (
@@ -31,7 +28,7 @@ export function PageHeader({
         >
           <Link to={backButtonUrl} className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
-            <span>{t("action.back")}</span>
+            <span>Kembali</span>
           </Link>
         </Button>
       )}

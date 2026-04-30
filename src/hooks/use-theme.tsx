@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import i18n from "@/i18n";
 
 type Theme = "dark" | "light";
 
@@ -58,7 +57,7 @@ export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
 
   if (context === undefined)
-    throw new Error(i18n.t("common:context.themeProvider"));
+    throw new Error("ThemeProvider tidak tersedia.");
 
   return context;
 };

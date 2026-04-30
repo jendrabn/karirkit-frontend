@@ -1,38 +1,28 @@
-import {
-  Instagram,
-  Linkedin,
-  Mail,
-  MapPin,
-  Twitter,
-} from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { Instagram, Linkedin, Mail, MapPin, Twitter } from "lucide-react";
 import logo from "@/assets/images/logo.png";
 import { env } from "@/config/env";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
-  const { t } = useTranslation("common");
 
   return (
     <footer className="bg-foreground dark:bg-muted text-background dark:text-foreground">
-      {/* Main Footer Content */}
       <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
-          {/* Brand Column */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-2">
               <img
                 src={logo}
-                alt={t("appName")}
+                alt="KarirKit"
                 className="h-8 w-auto transition-opacity hover:opacity-90 [filter:brightness(0)_invert(1)_sepia(1)_saturate(0.75)_hue-rotate(355deg)_brightness(1.12)_contrast(0.92)]"
               />
             </div>
             <p className="text-sm text-background/70 dark:text-muted-foreground leading-relaxed">
-              {t("footer.brandDescription")}
+              Platform all-in-one untuk mengelola lamaran kerja, membuat CV profesional, dan membangun portofolio digital.
             </p>
             <div className="flex items-center gap-2 text-sm text-background/70 dark:text-muted-foreground">
               <MapPin className="w-4 h-4 flex-shrink-0" />
-              <span>{t("footer.location")}</span>
+              <span>Jakarta, Indonesia</span>
             </div>
             <a
               href={`mailto:${env.SUPPORT_EMAIL}`}
@@ -43,10 +33,9 @@ export function Footer() {
             </a>
           </div>
 
-          {/* Quick Links */}
           <div className="lg:col-span-2">
             <h3 className="font-semibold mb-4 text-background dark:text-foreground">
-              {t("footer.companyTitle")}
+              KarirKit
             </h3>
             <ul className="space-y-3">
               <li>
@@ -54,7 +43,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.aboutUs")}
+                  Tentang Kami
                 </a>
               </li>
               <li>
@@ -62,7 +51,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.career")}
+                  Karier
                 </a>
               </li>
               <li>
@@ -70,7 +59,7 @@ export function Footer() {
                   href="/blog"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("nav.blog")}
+                  Blog
                 </a>
               </li>
               <li>
@@ -78,16 +67,15 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.contact")}
+                  Kontak
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Products */}
           <div className="lg:col-span-2">
             <h3 className="font-semibold mb-4 text-background dark:text-foreground">
-              {t("footer.productsTitle")}
+              Produk
             </h3>
             <ul className="space-y-3">
               <li>
@@ -95,7 +83,7 @@ export function Footer() {
                   href="#application-tracker"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.applicationTracker")}
+                  Pelacak Lamaran
                 </a>
               </li>
               <li>
@@ -103,7 +91,7 @@ export function Footer() {
                   href="#cv"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.cvBuilder")}
+                  Pembuat CV
                 </a>
               </li>
               <li>
@@ -111,7 +99,7 @@ export function Footer() {
                   href="#surat-lamaran"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.coverLetter")}
+                  Surat Lamaran
                 </a>
               </li>
               <li>
@@ -119,16 +107,15 @@ export function Footer() {
                   href="#portofolio"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.portfolio")}
+                  Portofolio
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Support */}
           <div className="lg:col-span-2">
             <h3 className="font-semibold mb-4 text-background dark:text-foreground">
-              {t("footer.supportTitle")}
+              Bantuan
             </h3>
             <ul className="space-y-3">
               <li>
@@ -136,7 +123,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.helpCenter")}
+                  Pusat Bantuan
                 </a>
               </li>
               <li>
@@ -144,7 +131,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.faq")}
+                  FAQ
                 </a>
               </li>
               <li>
@@ -152,7 +139,7 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.privacyPolicy")}
+                  Kebijakan Privasi
                 </a>
               </li>
               <li>
@@ -160,16 +147,15 @@ export function Footer() {
                   href="#"
                   className="text-sm text-background/70 dark:text-muted-foreground hover:text-background dark:hover:text-foreground transition-colors"
                 >
-                  {t("footer.terms")}
+                  Syarat & Ketentuan
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Social Media */}
           <div className="lg:col-span-2">
             <h3 className="font-semibold mb-4 text-background dark:text-foreground">
-              {t("footer.followUs")}
+              Ikuti Kami
             </h3>
             <div className="flex gap-3">
               <a
@@ -204,12 +190,11 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
       <div className="border-t border-background/10 dark:border-foreground/10">
         <div className="container mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <p className="text-sm text-background/60 dark:text-muted-foreground text-center">
-              © {currentYear} {t("appName")}. {t("footer.copyright")}
+              © {currentYear} KarirKit. Semua hak dilindungi.
             </p>
           </div>
         </div>

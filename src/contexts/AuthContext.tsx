@@ -1,5 +1,4 @@
 import React, { createContext, useContext } from "react";
-import i18n from "@/i18n";
 import { useUser, useLogout } from "@/lib/auth";
 import type { User } from "@/types/user";
 
@@ -16,7 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error(i18n.t("common:context.authProvider"));
+    throw new Error("AuthProvider tidak tersedia.");
   }
   return context;
 };

@@ -4,30 +4,27 @@ import { useLatestBlogs } from "@/features/blogs/api/get-latest-blogs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router";
 import { BlogCard } from "@/features/blogs/components/BlogCard";
-import { useTranslation } from "react-i18next";
 
 export function TipsSection() {
   const { data: articles, isLoading } = useLatestBlogs({ limit: 4 });
-  const { t } = useTranslation("landing");
 
   return (
     <section className="py-16 lg:py-24 bg-background relative overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
           <div>
             <p className="text-sm text-primary font-medium mb-2 uppercase tracking-wider">
-              {t("tips.eyebrow")}
+              Blog & Tips
             </p>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
-              {t("tips.title")}
+              Temukan Panduan dan Tips Karir
             </h2>
           </div>
           <Button variant="outline" asChild className="w-fit group">
             <Link to="/blog" className="inline-flex items-center gap-2">
-              {t("tips.cta")}
+              Lihat Semua Artikel
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>

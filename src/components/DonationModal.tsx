@@ -6,7 +6,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "react-i18next";
 
 interface DonationModalProps {
   open: boolean;
@@ -14,8 +13,6 @@ interface DonationModalProps {
 }
 
 export function DonationModal({ open, onOpenChange }: DonationModalProps) {
-  const { t } = useTranslation("common");
-
   const handleDonate = () => {
     window.open("https://saweria.co/karirkit", "_blank");
     onOpenChange(false);
@@ -26,11 +23,9 @@ export function DonationModal({ open, onOpenChange }: DonationModalProps) {
       <DialogContent className="sm:max-w-[500px] p-0 gap-0">
         <div className="flex flex-col max-h-[85vh]">
           <DialogHeader className="px-6 pt-6 pb-4 md:text-left text-center">
-            <DialogTitle className="text-xl">
-              {t("donationModal.title")}
-            </DialogTitle>
+            <DialogTitle className="text-xl">Dukung Operasional KarirKit</DialogTitle>
             <DialogDescription className="text-base leading-relaxed mt-2">
-              {t("donationModal.description")}
+              KarirKit berjalan tanpa iklan untuk mendukung pencari kerja di Indonesia, dan donasi Anda membantu kami membiayai server, pemeliharaan sistem, serta pengembangan fitur agar layanan ini terus berjalan dan berkembang.
             </DialogDescription>
           </DialogHeader>
 
@@ -44,10 +39,10 @@ export function DonationModal({ open, onOpenChange }: DonationModalProps) {
               onClick={() => onOpenChange(false)}
               className="w-full sm:w-auto mt-2 sm:mt-0"
             >
-              {t("donationModal.later")}
+              Nanti Saja
             </Button>
             <Button onClick={handleDonate} className="w-full sm:w-auto">
-              {t("donationModal.donateViaSaweria")}
+              Donasi via Saweria
             </Button>
           </div>
         </div>

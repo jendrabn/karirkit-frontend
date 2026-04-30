@@ -9,24 +9,16 @@ import cv1 from "@/assets/images/templates/cv-1.webp";
 import cv2 from "@/assets/images/templates/cv-2.webp";
 import cv3 from "@/assets/images/templates/cv-3.webp";
 import letter1 from "@/assets/images/templates/letter-1.webp";
-import { useTranslation } from "react-i18next";
 
-const templates = [
-  cv1,
-  cv2,
-  cv3,
-  letter1,
-];
+const templates = [cv1, cv2, cv3, letter1];
 
 export function TemplateSliderSection() {
-  const { t } = useTranslation("landing");
-
   return (
     <section className="py-16 lg:py-24 bg-secondary">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            {t("templateSlider.title")}
+            Desain profesional, siap pakai untuk karir impianmu!
           </h2>
         </div>
 
@@ -47,7 +39,7 @@ export function TemplateSliderSection() {
                   <div className="aspect-[3/4]">
                     <img
                       src={template}
-                      alt={t("templateSlider.templateAlt", { index: index + 1 })}
+                      alt={`Template ${index + 1}`}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>

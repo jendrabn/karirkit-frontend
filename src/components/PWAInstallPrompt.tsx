@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,7 +19,6 @@ function PWAInstallPromptContent() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
-  const { t } = useTranslation("common");
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -69,36 +67,34 @@ function PWAInstallPromptContent() {
             onClick={handleDismiss}
           >
             <X className="h-4 w-4" />
-            <span className="sr-only">{t("action.close")}</span>
+            <span className="sr-only">Tutup</span>
           </Button>
-          <CardTitle className="text-lg">{t("pwa.installTitle")}</CardTitle>
-          <CardDescription>
-            {t("pwa.installDescription")}
-          </CardDescription>
+          <CardTitle className="text-lg">Install KarirKit</CardTitle>
+          <CardDescription>Install aplikasi untuk pengalaman yang lebih baik</CardDescription>
         </CardHeader>
         <CardContent className="pb-3">
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              {t("pwa.installBenefitFast")}
+              Akses lebih cepat dari home screen
             </li>
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              {t("pwa.installBenefitOffline")}
+              Bekerja secara offline
             </li>
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              {t("pwa.installBenefitNative")}
+              Pengalaman seperti aplikasi native
             </li>
           </ul>
         </CardContent>
         <CardFooter className="gap-2">
           <Button variant="outline" onClick={handleDismiss} className="flex-1">
-            {t("action.later")}
+            Nanti
           </Button>
           <Button onClick={handleInstall} className="flex-1">
             <Download className="mr-2 h-4 w-4" />
-            {t("action.install")}
+            Install
           </Button>
         </CardFooter>
       </Card>

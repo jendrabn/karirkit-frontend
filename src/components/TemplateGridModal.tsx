@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Check, Lock } from "lucide-react";
 import {
   Dialog,
@@ -36,9 +35,10 @@ export function TemplateGridModal({
   description,
 }: TemplateGridModalProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const { t } = useTranslation("common");
-  const resolvedTitle = title ?? t("template.choose");
-  const resolvedDescription = description ?? t("template.gridDescription");
+  const resolvedTitle = title ?? "Pilih Template";
+  const resolvedDescription =
+    description ??
+    "Template yang dipilih akan secara otomatis dilengkapi dengan informasi yang tersedia pada profil Anda.";
   const handleSelect = (templateId: string) => {
     onSelect(templateId);
     onOpenChange(false);
@@ -100,15 +100,15 @@ export function TemplateGridModal({
                       {isSelected ? (
                         <>
                           <Check className="mr-1 h-4 w-4" />
-                          {t("template.selected")}
+                          Terpilih
                         </>
                       ) : isDisabled ? (
                         <>
                           <Lock className="mr-1 h-4 w-4" />
-                          {t("template.locked")}
+                          Terkunci
                         </>
                       ) : (
-                        t("template.selectTemplate")
+                        <>Pilih template</>
                       )}
                     </Button>
                   </div>
@@ -138,7 +138,7 @@ export function TemplateGridModal({
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="outline">
-              {t("action.close")}
+              Tutup
             </Button>
           </DialogClose>
         </DialogFooter>

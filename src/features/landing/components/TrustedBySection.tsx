@@ -1,8 +1,4 @@
-import { useTranslation } from "react-i18next";
-
 export function TrustedBySection() {
-  const { t } = useTranslation("landing");
-
   const companies = [
     {
       name: "Google",
@@ -42,7 +38,7 @@ export function TrustedBySection() {
     <section className="bg-muted/30 py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <p className="mb-8 text-center text-sm text-muted-foreground">
-          {t("trustedBy.description")}
+          Dipercaya oleh pencari kerja dan profesional dari berbagai perusahaan
         </p>
 
         <div className="grid grid-cols-2 items-center gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 lg:gap-8">

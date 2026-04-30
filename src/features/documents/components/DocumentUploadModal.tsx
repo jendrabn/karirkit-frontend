@@ -1,4 +1,6 @@
-import { useState, useRef } from "react";
+import * as React from "react";
+import * as SwitchPrimitives from "@radix-ui/react-switch";
+import { useRef } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
 import {
   Dialog,
@@ -31,10 +33,30 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { toast } from "sonner";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { getFileIconFromFile } from "@/features/documents/utils/file-icons";
 import { cn } from "@/lib/utils";
+
+function Switch({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>) {
+  return (
+    <SwitchPrimitives.Root
+      className={cn(
+        "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
+        className,
+      )}
+      {...props}
+    >
+      <SwitchPrimitives.Thumb
+        className={cn(
+          "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
+        )}
+      />
+    </SwitchPrimitives.Root>
+  );
+}
 
 export type CompressionLevel = DocumentCompressionLevel;
 
@@ -62,15 +84,15 @@ export function DocumentUploadModal({
   onOpenChange,
   onUpload,
 }: DocumentUploadModalProps) {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [selectedType, setSelectedType] = useState<DocumentType | "">("");
-  const [compression, setCompression] = useState<CompressionLevel | "">("");
-  const [mergeFiles, setMergeFiles] = useState(false);
-  const [customName, setCustomName] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-  const [fileError, setFileError] = useState<string | null>(null);
-  const [typeError, setTypeError] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
+  const [selectedType, setSelectedType] = React.useState<DocumentType | "">("");
+  const [compression, setCompression] = React.useState<CompressionLevel | "">("");
+  const [mergeFiles, setMergeFiles] = React.useState(false);
+  const [customName, setCustomName] = React.useState("");
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [dragActive, setDragActive] = React.useState(false);
+  const [fileError, setFileError] = React.useState<string | null>(null);
+  const [typeError, setTypeError] = React.useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const hasFiles = selectedFiles.length > 0;

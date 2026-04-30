@@ -11,18 +11,14 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useStats } from "@/features/landing/api/get-stats";
-import { useTranslation } from "react-i18next";
 
 export function BenefitsSection() {
   const { data: stats } = useStats();
-  const { t } = useTranslation("landing");
 
   const getDisplayValue = (
     realValue: number | undefined,
-    dummyValue: string
+    dummyValue: string,
   ) => {
-    // Logic: if realValue is missing or less than 1000, return dummyValue.
-    // Otherwise return formatted realValue.
     if (realValue === undefined || realValue < 1000) {
       return dummyValue;
     }
@@ -33,19 +29,19 @@ export function BenefitsSection() {
     {
       icon: Users,
       value: getDisplayValue(stats?.total_users, "1.250+"),
-      label: t("benefits.stats.users"),
+      label: "Pengguna Aktif",
       color: "bg-primary/20",
     },
     {
       icon: FileText,
       value: getDisplayValue(stats?.total_cvs, "3.400+"),
-      label: t("benefits.stats.cvs"),
+      label: "CV Dibuat",
       color: "bg-secondary",
     },
     {
       icon: Send,
       value: getDisplayValue(stats?.total_application_letters, "2.100+"),
-      label: t("benefits.stats.letters"),
+      label: "Surat Lamaran",
       color: "bg-accent",
     },
     {
@@ -54,68 +50,68 @@ export function BenefitsSection() {
         stats
           ? stats.total_cv_templates + stats.total_application_letter_templates
           : undefined,
-        "50+"
+        "50+",
       ),
-      label: t("benefits.stats.templates"),
+      label: "Template Tersedia",
       color: "bg-primary/20",
     },
     {
       icon: Bell,
       value: getDisplayValue(stats?.total_applications, "5.800+"),
-      label: t("benefits.stats.applications"),
+      label: "Lamaran Tercatat",
       color: "bg-secondary",
     },
     {
       icon: TrendingUp,
       value: "89%",
-      label: t("benefits.stats.satisfaction"),
+      label: "Tingkat Kepuasan",
       color: "bg-accent",
+    },
+  ];
+
+  const items = [
+    {
+      icon: Clock,
+      text: "Track semua lamaran, status, dan follow-up dari satu dashboard",
+      color: "bg-primary/20",
+    },
+    {
+      icon: RefreshCw,
+      text: "Buat CV, surat lamaran, portfolio, dan dokumen tanpa pindah alat",
+      color: "bg-secondary",
+    },
+    {
+      icon: Bell,
+      text: "Atur reminder follow-up, template, filter, dan catatan dalam satu alur",
+      color: "bg-accent",
+    },
+    {
+      icon: Crown,
+      text: "Upgrade langganan untuk membuka template premium dan limit yang lebih besar",
+      color: "bg-primary/20",
     },
   ];
 
   return (
     <section className="py-16 lg:py-24 bg-background relative overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left Content */}
           <div className="space-y-8">
             <div>
               <p className="text-sm text-primary font-medium mb-2 uppercase tracking-wider">
-                {t("benefits.eyebrow")}
+                Keunggulan
               </p>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                {t("benefits.title")}
+                Satu Tempat untuk Lamaran, Dokumen, dan Langganan
               </h2>
             </div>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              {t("benefits.description")}
+              Dari melacak lamaran sampai membuat CV, surat lamaran, portfolio, dan dokumen, semua ada dalam satu platform. Saat butuh akses tambahan, kamu juga bisa upgrade ke paket langganan yang sesuai kebutuhan.
             </p>
             <div className="space-y-5">
-              {[
-                {
-                  icon: Clock,
-                  text: t("benefits.items.0"),
-                  color: "bg-primary/20",
-                },
-                {
-                  icon: RefreshCw,
-                  text: t("benefits.items.1"),
-                  color: "bg-secondary",
-                },
-                {
-                  icon: Bell,
-                  text: t("benefits.items.2"),
-                  color: "bg-accent",
-                },
-                {
-                  icon: Crown,
-                  text: t("benefits.items.3"),
-                  color: "bg-primary/20",
-                },
-              ].map((item, index) => (
+              {items.map((item, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-4 group hover:translate-x-2 transition-transform cursor-default"
@@ -133,7 +129,6 @@ export function BenefitsSection() {
             </div>
           </div>
 
-          {/* Right Content - Stats Grid */}
           <div className="grid grid-cols-2 gap-4 lg:gap-5">
             {statsList.map((stat, index) => (
               <Card

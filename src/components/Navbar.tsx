@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/UserAvatar";
 import {
@@ -8,10 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import {
   Collapsible,
@@ -28,7 +23,6 @@ import {
   FileText,
   Briefcase,
   FolderOpen,
-  Globe,
   ExternalLink,
   Sun,
   Moon,
@@ -37,19 +31,18 @@ import {
 } from "lucide-react";
 import logo from "@/assets/images/logo.png";
 import { ThemeToggle } from "./ThemeToggle";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTheme } from "@/hooks/use-theme";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router";
 
 const navLinks = [
-  { href: paths.home.getHref(), labelKey: "nav.home", icon: Home },
-  { href: paths.jobs.list.getHref(), labelKey: "nav.jobs", icon: Briefcase },
-  { href: paths.blog.list.getHref(), labelKey: "nav.blog", icon: Globe },
+  { href: paths.home.getHref(), label: "Beranda", icon: Home },
+  { href: paths.jobs.list.getHref(), label: "Lowongan", icon: Briefcase },
+  { href: paths.blog.list.getHref(), label: "Blog", icon: FileText },
   {
     href: "https://cbtpro.web.id/",
-    labelKey: "nav.externalCbt",
+    label: "CBT Pro",
     icon: ExternalLink,
     external: true,
   },
@@ -63,10 +56,8 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileUserMenuOpen, setMobileUserMenuOpen] = useState(false);
-  const [mobileLanguageOpen] = useState(false);
   const [mobileThemeOpen, setMobileThemeOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { t } = useTranslation("common");
 
   const handleLogout = () => {
     logout();
@@ -79,16 +70,14 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
-          {/* Logo */}
           <Link to={paths.home.getHref()} className="flex items-center gap-2">
             <img
               src={logo}
-              alt={t("appName")}
+              alt="KarirKit"
               className="h-8 w-auto transition-opacity hover:opacity-90 dark:[filter:brightness(0)_invert(1)_sepia(1)_saturate(0.75)_hue-rotate(355deg)_brightness(1.12)_contrast(0.92)]"
             />
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => {
               if (link.external) {
@@ -100,7 +89,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                   >
-                    <span>{t(link.labelKey)}</span>
+                    <span>{link.label}</span>
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 );
@@ -112,15 +101,13 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                   to={link.href}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {t(link.labelKey)}
+                  {link.label}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Desktop Auth Buttons / User Menu */}
           <div className="hidden lg:flex items-center gap-3">
-            <LanguageSwitcher />
             <ThemeToggle />
             {isAuthenticated && user ? (
               <DropdownMenu>
@@ -141,62 +128,46 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.dashboard.getHref()}>
                       <LayoutDashboard className="mr-2 h-4 w-4" />
-                      {t("sidebar.dashboard")}
+                      Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.applications.list.getHref()}>
                       <Briefcase className="mr-2 h-4 w-4" />
-                      {t("sidebar.applications")}
+                      Lamaran
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.applicationLetters.list.getHref()}>
                       <FileText className="mr-2 h-4 w-4" />
-                      {t("sidebar.letters")}
+                      Surat Lamaran
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.cvs.list.getHref()}>
                       <FileText className="mr-2 h-4 w-4" />
-                      {t("sidebar.cv")}
+                      CV
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.portfolios.list.getHref()}>
                       <FolderOpen className="mr-2 h-4 w-4" />
-                      {t("sidebar.portfolio")}
+                      Portofolio
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.jobs.savedJobs.getHref()}>
                       <Bookmark className="mr-2 h-4 w-4" />
-                      {t("sidebar.savedJobs")}
+                      Lowongan Tersimpan
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer" asChild>
                     <Link to={paths.account.profile.getHref()}>
                       <User className="mr-2 h-4 w-4" />
-                      {t("userMenu.account")}
+                      Akun
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="pointer-events-none opacity-60 select-none">
-                      <Globe className="mr-2 h-4 w-4" />
-                      {t("userMenu.languageId")}
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuPortal>
-                      <DropdownMenuSubContent className="bg-popover">
-                        <DropdownMenuItem className="cursor-pointer">
-                          {t("userMenu.languageId")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
-                          {t("userMenu.languageEn")}
-                        </DropdownMenuItem>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuPortal>
-                  </DropdownMenuSub>
                   <DropdownMenuItem
                     className="cursor-pointer"
                     onClick={() =>
@@ -208,9 +179,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     ) : (
                       <Moon className="mr-2 h-4 w-4" />
                     )}
-                    {theme === "dark"
-                      ? t("userMenu.themeLight")
-                      : t("userMenu.themeDark")}
+                    {theme === "dark" ? "Terang" : "Gelap"}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -218,27 +187,23 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     onClick={handleLogout}
                   >
                     <LogOut className="mr-2 h-4 w-4" />
-                    {t("action.logout")}
+                    Keluar
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <>
                 <Button variant="outline" asChild>
-                  <Link to={paths.auth.login.getHref()}>{t("action.login")}</Link>
+                  <Link to={paths.auth.login.getHref()}>Masuk</Link>
                 </Button>
                 <Button variant="default" asChild>
-                  <Link to={paths.auth.register.getHref()}>
-                    {t("action.register")}
-                  </Link>
+                  <Link to={paths.auth.register.getHref()}>Daftar</Link>
                 </Button>
               </>
             )}
           </div>
 
-          {/* Mobile Theme Toggle & Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
-            <LanguageSwitcher />
             <ThemeToggle />
             <button
               className="p-2"
@@ -253,11 +218,9 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background">
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
-              {/* Mobile User Profile Section - When Logged In */}
               {isAuthenticated && user && (
                 <div className="pb-4 mb-2 border-b border-border">
                   <Collapsible
@@ -293,7 +256,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <User className="h-4 w-4" />
-                        {t("userMenu.account")}
+                        Akun
                       </Link>
                       <Link
                         to={paths.portfolios.list.getHref()}
@@ -301,7 +264,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <FolderOpen className="h-4 w-4" />
-                        {t("sidebar.portfolio")}
+                        Portofolio
                       </Link>
                       <Link
                         to={paths.jobs.savedJobs.getHref()}
@@ -309,36 +272,9 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Bookmark className="h-4 w-4" />
-                        {t("sidebar.savedJobs")}
+                        Lowongan Tersimpan
                       </Link>
 
-                      {/* Language Submenu */}
-                      <Collapsible
-                        open={mobileLanguageOpen}
-                        className="pointer-events-none opacity-60 select-none"
-                      >
-                        <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors">
-                          <div className="flex items-center gap-3">
-                            <Globe className="h-4 w-4" />
-                            {t("userMenu.languageId")}
-                          </div>
-                          <ChevronDown
-                            className={`h-4 w-4 transition-transform ${
-                              mobileLanguageOpen ? "rotate-180" : ""
-                            }`}
-                          />
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="pl-10 pt-1 space-y-1">
-                          <button className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors">
-                            {t("userMenu.languageId")}
-                          </button>
-                          <button className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors">
-                            {t("userMenu.languageEn")}
-                          </button>
-                        </CollapsibleContent>
-                      </Collapsible>
-
-                      {/* Theme Submenu */}
                       <Collapsible
                         open={mobileThemeOpen}
                         onOpenChange={setMobileThemeOpen}
@@ -350,7 +286,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                             ) : (
                               <Sun className="h-4 w-4" />
                             )}
-                            {t("userMenu.theme")}
+                            Tema
                           </div>
                           <ChevronDown
                             className={`h-4 w-4 transition-transform ${
@@ -364,14 +300,14 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                             className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors flex items-center gap-2"
                           >
                             <Sun className="h-4 w-4" />
-                            {t("userMenu.themeLight")}
+                            Terang
                           </button>
                           <button
                             onClick={() => setTheme("dark")}
                             className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors flex items-center gap-2"
                           >
                             <Moon className="h-4 w-4" />
-                            {t("userMenu.themeDark")}
+                            Gelap
                           </button>
                         </CollapsibleContent>
                       </Collapsible>
@@ -380,7 +316,6 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                 </div>
               )}
 
-              {/* Navigation Links */}
               {navLinks.map((link) => {
                 if (link.external) {
                   return (
@@ -392,7 +327,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                     >
-                      <span>{t(link.labelKey)}</span>
+                      <span>{link.label}</span>
                       <ExternalLink className="h-4 w-4" />
                     </a>
                   );
@@ -405,12 +340,11 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                   >
-                    {t(link.labelKey)}
+                    {link.label}
                   </Link>
                 );
               })}
 
-              {/* Auth Section */}
               <div className="flex gap-3 pt-4 mt-2 border-t border-border">
                 {isAuthenticated && user ? (
                   <Button
@@ -422,19 +356,15 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     }}
                   >
                     <LogOut className="mr-2 h-4 w-4" />
-                    {t("action.logout")}
+                    Keluar
                   </Button>
                 ) : (
                   <>
                     <Button variant="outline" className="flex-1" asChild>
-                      <Link to={paths.auth.login.getHref()}>
-                        {t("action.login")}
-                      </Link>
+                      <Link to={paths.auth.login.getHref()}>Masuk</Link>
                     </Button>
                     <Button variant="default" className="flex-1" asChild>
-                      <Link to={paths.auth.register.getHref()}>
-                        {t("action.register")}
-                      </Link>
+                      <Link to={paths.auth.register.getHref()}>Daftar</Link>
                     </Button>
                   </>
                 )}
