@@ -19,12 +19,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { env } from "@/config/env";
+import { useAuth } from "@/contexts/AuthContext";
 import { getEnumBadgeClassName } from "@/lib/enum-badges";
 import { getContactLink } from "@/lib/utils";
 import { useCancelSubscription } from "@/features/subscriptions/api/cancel-subscription";
 import { useCreateSubscriptionOrder } from "@/features/subscriptions/api/create-subscription-order";
 import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
 import { useSubscriptionPlans } from "@/features/subscriptions/api/get-subscription-plans";
+import { ManualPaymentDialog } from "@/features/subscriptions/components/ManualPaymentDialog";
 import {
   formatSubscriptionLimit,
   formatSubscriptionPrice,
@@ -32,6 +34,7 @@ import {
   getPlanFeatureAccess,
   SUBSCRIPTION_PLAN_LABELS,
 } from "@/features/subscriptions/utils";
+import type { SubscriptionPlan } from "@/types/subscription";
 
 const planIconMap = {
   free: Zap,
@@ -171,6 +174,9 @@ declare global {
 
 export function SubscriptionManager() {
   const [isResumingPayment, setIsResumingPayment] = useState(false);
+  const [manualPaymentPlan, setManualPaymentPlan] =
+    useState<SubscriptionPlan | null>(null);
+  const { user } = useAuth();
   const {
     data: plans = [],
     isLoading: isPlansLoading,
@@ -183,7 +189,12 @@ export function SubscriptionManager() {
   } = useMySubscription();
 
   useEffect(() => {
-    if (typeof window === "undefined" || window.snap || !env.MIDTRANS_CLIENT_KEY) {
+    if (
+      typeof window === "undefined" ||
+      !env.PAYMENT_GATEWAY_ENABLED ||
+      window.snap ||
+      !env.MIDTRANS_CLIENT_KEY
+    ) {
       return;
     }
 
@@ -318,6 +329,7 @@ export function SubscriptionManager() {
         locale: indonesianLocale,
       })
     : "Tidak tersedia";
+  const isPaymentGatewayEnabled = env.PAYMENT_GATEWAY_ENABLED;
   const supportWhatsAppMessage = `Halo ${env.APP_NAME}, saya ingin konsultasi paket langganan. Mohon bantuannya untuk memilih plan yang paling sesuai dengan kebutuhan saya.`;
   const supportEmailMessage = `Halo ${env.APP_NAME} Support,\n\nSaya ingin konsultasi paket langganan. Mohon bantuannya untuk memilih plan yang paling sesuai dengan kebutuhan saya.\n\nTerima kasih.`;
 
@@ -341,8 +353,9 @@ export function SubscriptionManager() {
                   Lanjutkan pembayaran paket {pendingPlanLabel}
                 </h3>
                 <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                  Anda masih memiliki order subscription berstatus pending. Order
-                  ini bisa dilanjutkan kembali tanpa membuat transaksi baru.
+                  {isPaymentGatewayEnabled
+                    ? "Anda masih memiliki order subscription berstatus pending. Order ini bisa dilanjutkan kembali tanpa membuat transaksi baru."
+                    : "Anda masih memiliki order subscription berstatus pending. Payment gateway sedang dinonaktifkan; batalkan order pending jika ingin menggunakan pembayaran manual."}
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -355,7 +368,7 @@ export function SubscriptionManager() {
                   Pending upgrade: {pendingPlanLabel}
                 </div>
               </div>
-              {!env.MIDTRANS_CLIENT_KEY ? (
+              {isPaymentGatewayEnabled && !env.MIDTRANS_CLIENT_KEY ? (
                 <p className="text-xs text-muted-foreground">
                   Midtrans client key belum diisi di frontend. Sistem akan fallback
                   ke `snap_url` jika backend masih mengirimkannya.
@@ -380,6 +393,7 @@ export function SubscriptionManager() {
                   }
                 }}
                 disabled={
+                  !isPaymentGatewayEnabled ||
                   isResumingPayment ||
                   orderMutation.isPending ||
                   cancelMutation.isPending
@@ -417,7 +431,9 @@ export function SubscriptionManager() {
           const Icon = planIconMap[plan.id];
           const features = getPlanFeatureAccess(undefined, plan);
           const isOrdering =
-            orderMutation.isPending && orderMutation.variables?.planId === plan.id;
+            isPaymentGatewayEnabled &&
+            orderMutation.isPending &&
+            orderMutation.variables?.planId === plan.id;
           const currentPlanExpiresAtLabel =
             isCurrent && currentSubscription.expires_at ? expiresAtLabel : null;
 
@@ -576,6 +592,11 @@ export function SubscriptionManager() {
                       return;
                     }
 
+                    if (!isPaymentGatewayEnabled) {
+                      setManualPaymentPlan(plan);
+                      return;
+                    }
+
                     orderMutation.mutate({ planId: plan.id });
                   }}
                 >
@@ -666,6 +687,17 @@ export function SubscriptionManager() {
           </div>
         </Card>
       ) : null}
+
+      <ManualPaymentDialog
+        open={manualPaymentPlan !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setManualPaymentPlan(null);
+          }
+        }}
+        plan={manualPaymentPlan}
+        user={user}
+      />
     </div>
   );
 }

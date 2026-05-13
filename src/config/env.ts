@@ -18,7 +18,16 @@ const createEnv = () => {
       .default(false),
     APP_MOCK_API_PORT: z.string().optional().default("8080"),
     GOOGLE_CLIENT_ID: z.string().optional().default("YOUR_GOOGLE_CLIENT_ID"),
+    PAYMENT_GATEWAY_ENABLED: z
+      .string()
+      .refine((s) => s === "true" || s === "false")
+      .transform((s) => s === "true")
+      .optional()
+      .default(true),
     MIDTRANS_CLIENT_KEY: z.string().optional().default(""),
+    EWALLET_SHOPEEPAY_PHONE: z.string().optional().default(""),
+    EWALLET_GOPAY_PHONE: z.string().optional().default(""),
+    EWALLET_OVO_PHONE: z.string().optional().default(""),
     SUPPORT_EMAIL: z.string().optional().default("karirkitid@gmail.com"),
     SUPPORT_WHATSAPP: z.string().optional().default(""),
   });
