@@ -585,7 +585,7 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
         </div>
       </div>
 
-      <div className="relative hidden min-h-[540px] lg:block xl:min-h-[580px]">
+      <div className="relative hidden min-h-[520px] lg:block lg:origin-center lg:scale-[0.97] xl:min-h-[560px] xl:scale-[0.94]">
         <div className="absolute left-0 top-14 z-10 w-[220px] rotate-[-2.5deg] xl:w-[240px]">
           <JobCard />
         </div>

@@ -61,7 +61,7 @@ export function HeroSection() {
           </div>
 
           <div className="relative hidden lg:block">
-            <HeroIllustration className="min-h-[340px] lg:min-h-[560px]" />
+            <HeroIllustration className="min-h-[340px] lg:min-h-[540px]" />
           </div>
         </div>
       </div>
