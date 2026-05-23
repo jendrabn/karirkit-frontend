@@ -47,7 +47,7 @@ export function CTASection() {
               asChild
             >
               <Link to={paths.auth.getHref()}>
-                Lanjutkan dengan Google
+                Buat Akun Gratis
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>

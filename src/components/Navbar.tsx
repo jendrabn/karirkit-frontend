@@ -34,7 +34,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useTheme } from "@/hooks/use-theme";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 const navLinks = [
   { href: paths.home.getHref(), label: "Beranda", icon: Home },
@@ -58,6 +58,8 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
   const [mobileUserMenuOpen, setMobileUserMenuOpen] = useState(false);
   const [mobileThemeOpen, setMobileThemeOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const location = useLocation();
+  const redirectTo = `${location.pathname}${location.search}`;
 
   const handleLogout = () => {
     logout();
@@ -192,8 +194,12 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="default" asChild>
-                <Link to={paths.auth.getHref()}>Masuk</Link>
+              <Button
+                variant="outline"
+                className="rounded-full px-5"
+                asChild
+              >
+                <Link to={paths.auth.getHref(redirectTo)}>Masuk / Daftar</Link>
               </Button>
             )}
           </div>
@@ -354,8 +360,14 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     Keluar
                   </Button>
                 ) : (
-                  <Button variant="default" className="w-full" asChild>
-                    <Link to={paths.auth.getHref()}>Masuk</Link>
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-full"
+                    asChild
+                  >
+                    <Link to={paths.auth.getHref(redirectTo)}>
+                      Masuk / Daftar
+                    </Link>
                   </Button>
                 )}
               </div>

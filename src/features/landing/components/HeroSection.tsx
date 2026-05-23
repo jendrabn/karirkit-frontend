@@ -50,7 +50,7 @@ export function HeroSection() {
                 asChild
                 className="group h-14 min-w-[204px] px-8 text-base"
               >
-                <Link to={paths.auth.getHref()}>Lanjutkan dengan Google</Link>
+                <Link to={paths.auth.getHref()}>Coba Sekarang</Link>
               </Button>
               <Button
                 variant="outline"
