@@ -7,9 +7,9 @@ import logo from "@/assets/images/logo.png";
 import GoogleLoginButton from "@/features/auth/components/GoogleLoginButton";
 
 const facebookLogoSrc =
-  "https://commons.wikimedia.org/wiki/Special:FilePath/2021_Facebook_icon.svg";
+  "/images/auth/facebook.svg";
 const appleLogoSrc =
-  "https://commons.wikimedia.org/wiki/Special:FilePath/Apple_logo_black.svg";
+  "/images/auth/apple.svg";
 
 const socialButtons = [
   {

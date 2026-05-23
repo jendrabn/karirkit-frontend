@@ -11,7 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { paths } from "@/config/paths";
 
 const googleLogoSrc =
-  "https://commons.wikimedia.org/wiki/Special:FilePath/Google_%22G%22_logo.svg";
+  "/images/auth/google.svg";
 
 type GoogleLoginButtonProps = {
   onSuccess?: () => void;

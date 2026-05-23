@@ -11,7 +11,6 @@ import {
   BookOpen,
   FileStack,
   Shield,
-  Heart,
   Users,
   Sun,
   Moon,
@@ -26,7 +25,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
@@ -34,7 +32,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useSidebar } from "@/components/ui/sidebar-context";
-import { Button } from "@/components/ui/button";
 import { DonationModal } from "@/components/DonationModal";
 import {
   DropdownMenu,
@@ -58,7 +55,7 @@ import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
 
 const baseMenuItems = [
   {
-    title: "Dasbor",
+    title: "Dashboard",
     url: paths.dashboard.getHref(),
     icon: LayoutDashboard,
   },
@@ -331,7 +328,7 @@ export function DashboardSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild size="lg" tooltip="Dasbor">
+                  <SidebarMenuButton asChild size="lg" tooltip="Dashboard">
                     <NavLink
                       to={paths.admin.dashboard.getHref()}
                       className={cn(
@@ -346,7 +343,7 @@ export function DashboardSidebar() {
                     >
                       <LayoutDashboard className="h-5 w-5 shrink-0" />
                       {!isCollapsed && (
-                        <span className="font-medium">Dasbor</span>
+                        <span className="font-medium">Dashboard</span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
@@ -539,20 +536,7 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className={cn(isCollapsed ? "p-2" : "p-4")}>
-        <Button
-          onClick={() => setDonationOpen(true)}
-          className={cn(
-            "w-full bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer",
-            isCollapsed ? "p-2" : "gap-2",
-          )}
-          size={isCollapsed ? "icon" : "default"}
-        >
-          <Heart className="h-5 w-5 fill-white" />
-          {!isCollapsed && <span className="font-semibold">Donasi Sekarang</span>}
-        </Button>
-      </SidebarFooter>
-
+      {/* Legacy donation modal: retained intentionally, but no sidebar trigger is rendered. */}
       <DonationModal open={donationOpen} onOpenChange={setDonationOpen} />
     </Sidebar>
   );
