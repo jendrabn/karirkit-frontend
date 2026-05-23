@@ -21,10 +21,7 @@ export function HeroSection() {
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-8 xl:gap-10">
           <div className="space-y-5 lg:space-y-7">
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary/75 sm:text-sm">
-                Semua Kebutuhan Lamaran, Satu Tempat
-              </p>
-              <h1 className="text-balanced font-bold leading-[1.05] tracking-[-0.028em] text-primary sm:text-[3.35rem] sm:tracking-[-0.03em] lg:leading-[1.02] text-[3.45rem] lg:text-[3.65rem] lg:tracking-[-0.032em] xl:text-[3.95rem]">
+              <h1 className="text-balanced font-bold leading-[1.16] tracking-[-0.028em] text-primary sm:text-[3.35rem] sm:tracking-[-0.03em] lg:leading-[1.12] text-[3.45rem] lg:text-[3.65rem] lg:tracking-[-0.032em] xl:text-[3.95rem]">
                 Lacak & Kelola Semua Lamaran Kerjamu Tanpa Ribet
               </h1>
               <p className="text-sm md:text-base leading-7 text-foreground/82 lg:leading-8">
