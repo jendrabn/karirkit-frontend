@@ -1,60 +1,129 @@
-export function TrustedBySection() {
-  const companies = [
-    {
-      name: "Google",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/200px-Google_2015_logo.svg.png",
-    },
-    {
-      name: "Microsoft",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/200px-Microsoft_logo_%282012%29.svg.png",
-    },
-    {
-      name: "Amazon",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/200px-Amazon_logo.svg.png",
-    },
-    {
-      name: "Meta",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/200px-Meta_Platforms_Inc._logo.svg.png",
-    },
-    {
-      name: "Apple",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/500px-Apple_logo_black.svg.png?_=20250629104141",
-    },
-    {
-      name: "Netflix",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/200px-Netflix_2015_logo.svg.png",
-    },
-    {
-      name: "Spotify",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Spotify_logo_with_text.svg/250px-Spotify_logo_with_text.svg.png",
-    },
-    {
-      name: "Uber",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/200px-Uber_logo_2018.svg.png",
-    },
-  ];
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
+const companies = [
+  {
+    name: "Pertamina",
+    logo: "/images/companies/pertamina-logo.svg",
+  },
+  {
+    name: "Bank Mandiri",
+    logo: "/images/companies/bank-mandiri-logo.svg",
+  },
+  {
+    name: "Telkom Indonesia",
+    logo: "/images/companies/telkom-indonesia-logo.svg",
+  },
+  {
+    name: "Bank BRI",
+    logo: "/images/companies/bank-bri-logo.svg",
+  },
+  {
+    name: "Bank BNI",
+    logo: "/images/companies/bank-bni-logo.png",
+  },
+  {
+    name: "Bank BTN",
+    logo: "/images/companies/bank-btn-logo.svg",
+  },
+  {
+    name: "PLN",
+    logo: "/images/companies/pln-logo.svg",
+  },
+  {
+    name: "KAI",
+    logo: "/images/companies/kai-logo.svg",
+  },
+  {
+    name: "Garuda Indonesia",
+    logo: "/images/companies/garuda-indonesia-logo.png",
+  },
+  {
+    name: "Pupuk Indonesia",
+    logo: "/images/companies/pupuk-indonesia-logo.png",
+  },
+  {
+    name: "Bank Central Asia",
+    logo: "/images/companies/bank-central-asia-logo.svg",
+  },
+  {
+    name: "Google Indonesia",
+    logo: "/images/companies/google-indonesia-logo.svg",
+  },
+  {
+    name: "Shopee",
+    logo: "/images/companies/shopee-logo.svg",
+  },
+  {
+    name: "Tokopedia",
+    logo: "/images/companies/tokopedia-logo.svg",
+  },
+  {
+    name: "Gojek",
+    logo: "/images/companies/gojek-logo.svg",
+  },
+  {
+    name: "Traveloka",
+    logo: "/images/companies/traveloka-logo.png",
+  },
+  {
+    name: "Grab",
+    logo: "/images/companies/grab-logo.svg",
+  },
+  {
+    name: "Astra International",
+    logo: "/images/companies/astra-international-logo.svg",
+  },
+  {
+    name: "Indofood",
+    logo: "/images/companies/indofood-logo.svg",
+  },
+  {
+    name: "Unilever",
+    logo: "/images/companies/unilever-logo.svg",
+  },
+] as const;
+
+export function TrustedBySection() {
   return (
-    <section className="bg-muted/30 py-16">
+    <section className="border-y border-border/40 bg-muted/30 py-16 dark:border-border/60 dark:bg-background/95">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <p className="mb-8 text-center text-sm text-muted-foreground">
           Dipercaya oleh pencari kerja dan profesional dari berbagai perusahaan
         </p>
 
-        <div className="grid grid-cols-2 items-center gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 lg:gap-8">
-          {companies.map((company) => (
-            <div
-              key={company.name}
-              className="flex h-12 items-center justify-center opacity-60 transition-opacity duration-300 hover:opacity-100"
-            >
-              <img
-                src={company.logo}
-                alt={`Logo ${company.name}`}
-                className="max-h-8 w-auto object-contain grayscale transition-all duration-300 hover:grayscale-0 dark:invert dark:hover:invert-0"
-              />
-            </div>
-          ))}
-        </div>
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-4">
+            {companies.map((company) => (
+              <CarouselItem
+                key={company.name}
+                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
+              >
+                <div className="flex h-12 items-center justify-center">
+                  <img
+                    src={company.logo}
+                    alt={`Logo ${company.name}`}
+                    loading="lazy"
+                    className="max-h-8 w-auto object-contain"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex -left-4 border-border bg-card hover:bg-secondary dark:bg-card dark:hover:bg-secondary" />
+          <CarouselNext className="hidden md:flex -right-4 border-border bg-card hover:bg-secondary dark:bg-card dark:hover:bg-secondary" />
+        </Carousel>
       </div>
     </section>
   );
