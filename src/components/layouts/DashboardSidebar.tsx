@@ -6,7 +6,6 @@ import {
   ChevronDown,
   ChevronRight,
   User,
-  Lock,
   LogOut,
   FolderOpen,
   BookOpen,
@@ -138,7 +137,7 @@ export function DashboardSidebar() {
 
   const handleLogout = () => {
     logout();
-    navigate(paths.auth.login.getHref());
+    navigate(paths.auth.getHref());
   };
 
   const isActive = (path: string) => {
@@ -206,12 +205,6 @@ export function DashboardSidebar() {
               >
                 <Bell className="h-4 w-4 mr-2" />
                 Pengaturan Notifikasi
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate(paths.account.changePassword.getHref())}
-              >
-                <Lock className="h-4 w-4 mr-2" />
-                Ubah Password
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigate(paths.jobs.savedJobs.getHref())}

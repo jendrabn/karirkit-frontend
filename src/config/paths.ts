@@ -25,6 +25,8 @@ export const paths = {
   },
 
   auth: {
+    getHref: (redirectTo?: string | null) =>
+      `/auth${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""}`,
     login: {
       getHref: (redirectTo?: string | null) =>
         `/auth/login${

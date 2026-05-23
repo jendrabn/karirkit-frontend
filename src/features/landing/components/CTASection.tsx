@@ -46,8 +46,8 @@ export function CTASection() {
               className="bg-background text-primary hover:bg-background/90 h-14 px-10 text-base font-semibold shadow-2xl group"
               asChild
             >
-              <Link to={paths.auth.register.getHref()}>
-                Daftar Gratis Sekarang
+              <Link to={paths.auth.getHref()}>
+                Lanjutkan dengan Google
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>

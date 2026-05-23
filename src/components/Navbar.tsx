@@ -192,14 +192,9 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <>
-                <Button variant="outline" asChild>
-                  <Link to={paths.auth.login.getHref()}>Masuk</Link>
-                </Button>
-                <Button variant="default" asChild>
-                  <Link to={paths.auth.register.getHref()}>Daftar</Link>
-                </Button>
-              </>
+              <Button variant="default" asChild>
+                <Link to={paths.auth.getHref()}>Masuk</Link>
+              </Button>
             )}
           </div>
 
@@ -359,14 +354,9 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     Keluar
                   </Button>
                 ) : (
-                  <>
-                    <Button variant="outline" className="flex-1" asChild>
-                      <Link to={paths.auth.login.getHref()}>Masuk</Link>
-                    </Button>
-                    <Button variant="default" className="flex-1" asChild>
-                      <Link to={paths.auth.register.getHref()}>Daftar</Link>
-                    </Button>
-                  </>
+                  <Button variant="default" className="w-full" asChild>
+                    <Link to={paths.auth.getHref()}>Masuk</Link>
+                  </Button>
                 )}
               </div>
             </nav>

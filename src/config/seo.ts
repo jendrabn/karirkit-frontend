@@ -14,6 +14,11 @@ export const seoConfig = {
   },
 
   // Auth Pages
+  auth: {
+    title: "Masuk ke KarirKit",
+    description:
+      "Lanjutkan ke KarirKit dengan Google untuk mengakses dashboard, lamaran kerja, CV, surat lamaran, dan portofolio digital Anda.",
+  },
   login: {
     title: "Masuk ke Akun Anda",
     description:

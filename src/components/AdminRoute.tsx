@@ -18,7 +18,7 @@ export const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    return <Navigate to={paths.auth.login.getHref()} state={{ from: location }} replace />;
+    return <Navigate to={paths.auth.getHref()} state={{ from: location }} replace />;
   }
 
   // Redirect to dashboard if authenticated but not admin

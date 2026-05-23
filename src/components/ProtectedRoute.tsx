@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  redirectTo = paths.auth.login.getHref(),
+  redirectTo = paths.auth.getHref(),
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();

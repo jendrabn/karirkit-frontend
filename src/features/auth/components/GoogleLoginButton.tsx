@@ -7,9 +7,11 @@ import { useState, useRef, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { syncAuthenticatedUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import googleLogo from "@/assets/images/google_g_logo.png";
+import { Spinner } from "@/components/ui/spinner";
 import { paths } from "@/config/paths";
+
+const googleLogoSrc =
+  "https://commons.wikimedia.org/wiki/Special:FilePath/Google_%22G%22_logo.svg";
 
 type GoogleLoginButtonProps = {
   onSuccess?: () => void;
@@ -68,16 +70,14 @@ const GoogleLoginButton = ({
   };
 
   const handleCustomButtonClick = () => {
-    // Cari dan klik button Google yang tersembunyi
     const googleButton = hiddenButtonRef.current?.querySelector(
-      'div[role="button"]',
+      'div[role="button"]'
     ) as HTMLElement;
     if (googleButton) {
       googleButton.click();
     }
   };
 
-  // Monitor untuk memastikan Google button sudah render
   useEffect(() => {
     if (hiddenButtonRef.current) {
       const observer = new MutationObserver(() => {
@@ -100,22 +100,25 @@ const GoogleLoginButton = ({
   return (
     <>
       <Button
-        variant="outline"
-        className="w-full h-12 text-base font-medium gap-3"
+        variant="auth"
+        size="default"
+        className="relative w-full justify-center"
         onClick={handleCustomButtonClick}
         disabled={disabled || isSubmitting}
       >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            Memproses...
-          </>
-        ) : (
-          <>
-            <img src={googleLogo} alt="Google" className="w-5 h-5" />
-            {text}
-          </>
-        )}
+        <span className="absolute left-4 inline-flex size-4 items-center justify-center">
+          {isSubmitting ? (
+            <Spinner size="sm" />
+          ) : (
+            <img
+              src={googleLogoSrc}
+              alt=""
+              aria-hidden="true"
+              className="size-4 shrink-0"
+            />
+          )}
+        </span>
+        <span>{isSubmitting ? "Memproses..." : text}</span>
       </Button>
 
       {/* Hidden Google Login Button */}

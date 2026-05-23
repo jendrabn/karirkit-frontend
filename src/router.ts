@@ -102,37 +102,44 @@ export const createAppRouter = (queryClient: QueryClient) =>
         },
         // Auth routes (only for non-authenticated users)
         {
+          path: "/auth",
+          lazy: () =>
+            import("./pages/Auth").then(
+              convertWithPublicProtection(queryClient)
+            ),
+        },
+        {
           path: "/auth/login",
           lazy: () =>
-            import("./pages/Login").then(
+            import("./pages/Auth").then(
               convertWithPublicProtection(queryClient)
             ),
         },
         {
           path: "/auth/register",
           lazy: () =>
-            import("./pages/Register").then(
+            import("./pages/Auth").then(
               convertWithPublicProtection(queryClient)
             ),
         },
         {
           path: "/auth/forgot-password",
           lazy: () =>
-            import("./pages/ForgotPassword").then(
+            import("./pages/Auth").then(
               convertWithPublicProtection(queryClient)
             ),
         },
         {
           path: "/auth/reset-password",
           lazy: () =>
-            import("./pages/ResetPassword").then(
+            import("./pages/Auth").then(
               convertWithPublicProtection(queryClient)
             ),
         },
         {
           path: "/auth/verify-otp",
           lazy: () =>
-            import("./pages/OTPVerification").then(
+            import("./pages/Auth").then(
               convertWithPublicProtection(queryClient)
             ),
         },
@@ -151,13 +158,6 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: "/notifications",
           lazy: () =>
             import("./pages/NotificationSettings").then(
-              convertWithProtection(queryClient)
-            ),
-        },
-        {
-          path: "/change-password",
-          lazy: () =>
-            import("./pages/ChangePassword").then(
               convertWithProtection(queryClient)
             ),
         },
