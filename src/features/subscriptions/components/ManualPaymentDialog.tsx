@@ -24,6 +24,10 @@ type ManualPaymentDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   plan: SubscriptionPlan | null;
+  order: {
+    order_id: string;
+    amount?: number | null;
+  } | null;
   user?: Pick<User, "name" | "email"> | null;
 };
 
@@ -46,6 +50,7 @@ export function ManualPaymentDialog({
   open,
   onOpenChange,
   plan,
+  order,
   user,
 }: ManualPaymentDialogProps) {
   const methods: PaymentMethod[] = [
@@ -69,10 +74,11 @@ export function ManualPaymentDialog({
     },
   ];
   const hasConfiguredMethod = methods.some((method) => method.phone);
-  const formattedAmount = formatSubscriptionPrice(plan?.price);
-  const whatsappMessage = plan
+  const formattedAmount = formatSubscriptionPrice(order?.amount ?? plan?.price);
+  const whatsappMessage = plan && order
     ? `Halo ${env.APP_NAME}, saya ingin konfirmasi pembayaran langganan.
 
+Order ID: ${order.order_id}
 Nama: ${user?.name || "-"}
 Email: ${user?.email || "-"}
 Paket: ${plan.name}
@@ -121,6 +127,12 @@ Saya akan melampirkan screenshot bukti transfer pada chat ini.`
                   <p className="text-sm text-muted-foreground">Nominal bayar</p>
                   <p className="text-2xl font-bold">{formattedAmount}</p>
                 </div>
+              </div>
+              <div className="mt-4 border-t pt-4">
+                <p className="text-sm text-muted-foreground">Order ID</p>
+                <p className="break-all font-mono text-sm font-semibold">
+                  {order?.order_id || "-"}
+                </p>
               </div>
             </Card>
 
@@ -206,7 +218,7 @@ Saya akan melampirkan screenshot bukti transfer pada chat ini.`
 
         <DialogFooter className="border-t px-6 py-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Batal
+            Tutup
           </Button>
           {whatsappLink ? (
             <Button asChild>

@@ -14,12 +14,12 @@ export default function AdminSubscriptions() {
     >
       <MinimalSEO
         title="Manajemen Langganan"
-        description="Kelola transaksi subscription user dan manual subscription."
+        description="Kelola dan approve transaksi subscription user."
         noIndex={true}
       />
       <PageHeader
         title="Manajemen Langganan"
-        subtitle="Pantau transaksi, buat manual subscription, dan buka detail tiap plan user."
+        subtitle="Pantau transaksi user, filter gateway, dan proses order pending."
       />
       <AdminSubscriptionsList />
     </DashboardLayout>

@@ -16,6 +16,7 @@ export interface ColumnVisibility {
   plan: boolean;
   status: boolean;
   amount: boolean;
+  gateway: boolean;
   payment_type: boolean;
   order_id: boolean;
   expires_at: boolean;
@@ -27,6 +28,7 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "plan",
   "status",
   "amount",
+  "gateway",
   "payment_type",
   "order_id",
   "expires_at",
@@ -38,6 +40,7 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   plan: "Plan",
   status: "Status",
   amount: "Nominal",
+  gateway: "Gateway",
   payment_type: "Tipe Pembayaran",
   order_id: "Order ID",
   expires_at: "Aktif Sampai",

@@ -5,6 +5,7 @@ export const defaultColumnVisibility: ColumnVisibility = {
   plan: true,
   status: true,
   amount: true,
+  gateway: true,
   payment_type: false,
   order_id: false,
   expires_at: true,

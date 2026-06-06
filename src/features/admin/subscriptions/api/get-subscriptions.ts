@@ -4,6 +4,7 @@ import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
 import type {
   AdminSubscriptionsResponse,
+  SubscriptionGateway,
   SubscriptionPlanId,
   SubscriptionStatus,
 } from "@/types/subscription";
@@ -23,6 +24,7 @@ export type GetAdminSubscriptionsParams = {
   sort_order?: "asc" | "desc";
   plan?: SubscriptionPlanId;
   status?: SubscriptionStatus;
+  gateway?: SubscriptionGateway | string;
 };
 
 const ADMIN_SUBSCRIPTION_SORT_FIELDS: AdminSubscriptionSortField[] = [

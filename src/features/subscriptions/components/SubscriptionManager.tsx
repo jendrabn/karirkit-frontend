@@ -34,7 +34,10 @@ import {
   getPlanFeatureAccess,
   SUBSCRIPTION_PLAN_LABELS,
 } from "@/features/subscriptions/utils";
-import type { SubscriptionPlan } from "@/types/subscription";
+import type {
+  SubscriptionGateway,
+  SubscriptionPlan,
+} from "@/types/subscription";
 
 const planIconMap = {
   free: Zap,
@@ -89,7 +92,12 @@ function resolveCheckoutUrl(payload: Record<string, unknown>) {
 }
 
 function resolveSnapToken(payload: Record<string, unknown>) {
-  const candidateKeys = ["snapToken", "snap_token", "token"];
+  const candidateKeys = [
+    "provider_token",
+    "snapToken",
+    "snap_token",
+    "token",
+  ];
 
   for (const key of candidateKeys) {
     const value = payload[key];
@@ -174,11 +182,16 @@ declare global {
 
 export function SubscriptionManager() {
   const [isResumingPayment, setIsResumingPayment] = useState(false);
-  const [manualPaymentPlan, setManualPaymentPlan] =
-    useState<SubscriptionPlan | null>(null);
+  const [manualPayment, setManualPayment] = useState<{
+    plan: SubscriptionPlan;
+    order: {
+      order_id: string;
+      amount?: number | null;
+    };
+  } | null>(null);
   const { user } = useAuth();
   const {
-    data: plans = [],
+    data: plansResponse,
     isLoading: isPlansLoading,
     error: plansError,
   } = useSubscriptionPlans();
@@ -187,11 +200,14 @@ export function SubscriptionManager() {
     isLoading: isSubscriptionLoading,
     error: subscriptionError,
   } = useMySubscription();
+  const plans = plansResponse?.plans ?? [];
+  const isPaymentGatewayEnabled =
+    plansResponse?.payment_gateway_enabled ?? false;
 
   useEffect(() => {
     if (
       typeof window === "undefined" ||
-      !env.PAYMENT_GATEWAY_ENABLED ||
+      !isPaymentGatewayEnabled ||
       window.snap ||
       !env.MIDTRANS_CLIENT_KEY
     ) {
@@ -212,7 +228,7 @@ export function SubscriptionManager() {
     script.setAttribute("data-client-key", env.MIDTRANS_CLIENT_KEY);
     script.setAttribute("data-midtrans-snap", "true");
     document.body.appendChild(script);
-  }, []);
+  }, [isPaymentGatewayEnabled]);
 
   async function openMidtransCheckout(
     payload: Record<string, unknown>,
@@ -274,11 +290,34 @@ export function SubscriptionManager() {
 
   const orderMutation = useCreateSubscriptionOrder({
     mutationConfig: {
-      onSuccess: (response) => {
-        void openMidtransCheckout(response as Record<string, unknown>, {
-          missingPaymentMessage:
-            "Order berhasil dibuat, tetapi data pembayaran tidak ditemukan.",
-        });
+      onSuccess: (response, variables) => {
+        const selectedPlan = plans.find(
+          (plan) => plan.id === (response.plan || variables.planId),
+        );
+
+        if (response.gateway === "manual") {
+          if (!selectedPlan) {
+            toast.error("Order dibuat, tetapi detail paket tidak ditemukan.");
+            return;
+          }
+
+          setManualPayment({
+            plan: selectedPlan,
+            order: {
+              order_id: response.order_id,
+              amount: response.amount,
+            },
+          });
+          return;
+        }
+
+        void openMidtransCheckout(
+          response as unknown as Record<string, unknown>,
+          {
+            missingPaymentMessage:
+              "Order berhasil dibuat, tetapi data pembayaran tidak ditemukan.",
+          },
+        );
       },
     },
   });
@@ -319,8 +358,22 @@ export function SubscriptionManager() {
   const activePlanId = currentSubscription.plan ?? "free";
   const pendingPlanId = resolvePendingPlan(currentSubscriptionPayload);
   const canResumePayment = resolveCanResumePayment(currentSubscriptionPayload);
+  const pendingGateway: SubscriptionGateway | null =
+    currentSubscription.gateway ??
+    (canResumePayment ||
+    resolveSnapToken(currentSubscriptionPayload) ||
+    resolveCheckoutUrl(currentSubscriptionPayload)
+      ? "midtrans"
+      : null);
   const hasPendingPayment =
-    currentSubscription.status === "pending" && canResumePayment && !!pendingPlanId;
+    currentSubscription.status === "pending" && !!pendingPlanId;
+  const pendingPlan = pendingPlanId
+    ? plans.find((plan) => plan.id === pendingPlanId) ?? null
+    : null;
+  const canConfirmManualPayment =
+    pendingGateway === "manual" &&
+    !!pendingPlan &&
+    !!currentSubscription.order_id;
   const pendingPlanLabel = pendingPlanId
     ? SUBSCRIPTION_PLAN_LABELS[pendingPlanId]
     : null;
@@ -329,7 +382,6 @@ export function SubscriptionManager() {
         locale: indonesianLocale,
       })
     : "Tidak tersedia";
-  const isPaymentGatewayEnabled = env.PAYMENT_GATEWAY_ENABLED;
   const supportWhatsAppMessage = `Halo ${env.APP_NAME}, saya ingin konsultasi paket langganan. Mohon bantuannya untuk memilih plan yang paling sesuai dengan kebutuhan saya.`;
   const supportEmailMessage = `Halo ${env.APP_NAME} Support,\n\nSaya ingin konsultasi paket langganan. Mohon bantuannya untuk memilih plan yang paling sesuai dengan kebutuhan saya.\n\nTerima kasih.`;
 
@@ -353,9 +405,9 @@ export function SubscriptionManager() {
                   Lanjutkan pembayaran paket {pendingPlanLabel}
                 </h3>
                 <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                  {isPaymentGatewayEnabled
-                    ? "Anda masih memiliki order subscription berstatus pending. Order ini bisa dilanjutkan kembali tanpa membuat transaksi baru."
-                    : "Anda masih memiliki order subscription berstatus pending. Payment gateway sedang dinonaktifkan; batalkan order pending jika ingin menggunakan pembayaran manual."}
+                  {pendingGateway === "manual"
+                    ? "Order pembayaran manual sudah dibuat. Transfer sesuai instruksi, lalu kirim konfirmasi beserta bukti pembayaran melalui WhatsApp."
+                    : "Anda masih memiliki order subscription berstatus pending. Order ini bisa dilanjutkan kembali tanpa membuat transaksi baru."}
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -368,7 +420,7 @@ export function SubscriptionManager() {
                   Pending upgrade: {pendingPlanLabel}
                 </div>
               </div>
-              {isPaymentGatewayEnabled && !env.MIDTRANS_CLIENT_KEY ? (
+              {pendingGateway === "midtrans" && !env.MIDTRANS_CLIENT_KEY ? (
                 <p className="text-xs text-muted-foreground">
                   Midtrans client key belum diisi di frontend. Sistem akan fallback
                   ke `snap_url` jika backend masih mengirimkannya.
@@ -379,6 +431,19 @@ export function SubscriptionManager() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 onClick={async () => {
+                  if (pendingGateway === "manual") {
+                    if (pendingPlan && currentSubscription.order_id) {
+                      setManualPayment({
+                        plan: pendingPlan,
+                        order: {
+                          order_id: currentSubscription.order_id,
+                          amount: currentSubscription.amount,
+                        },
+                      });
+                    }
+                    return;
+                  }
+
                   setIsResumingPayment(true);
 
                   try {
@@ -393,7 +458,9 @@ export function SubscriptionManager() {
                   }
                 }}
                 disabled={
-                  !isPaymentGatewayEnabled ||
+                  (pendingGateway === "manual"
+                    ? !canConfirmManualPayment
+                    : !canResumePayment) ||
                   isResumingPayment ||
                   orderMutation.isPending ||
                   cancelMutation.isPending
@@ -402,7 +469,9 @@ export function SubscriptionManager() {
                 {isResumingPayment ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : null}
-                Lanjutkan Pembayaran
+                {pendingGateway === "manual"
+                  ? "Konfirmasi via WhatsApp"
+                  : "Lanjutkan Pembayaran"}
               </Button>
               {currentSubscription.id ? (
                 <Button
@@ -431,7 +500,6 @@ export function SubscriptionManager() {
           const Icon = planIconMap[plan.id];
           const features = getPlanFeatureAccess(undefined, plan);
           const isOrdering =
-            isPaymentGatewayEnabled &&
             orderMutation.isPending &&
             orderMutation.variables?.planId === plan.id;
           const currentPlanExpiresAtLabel =
@@ -592,11 +660,6 @@ export function SubscriptionManager() {
                       return;
                     }
 
-                    if (!isPaymentGatewayEnabled) {
-                      setManualPaymentPlan(plan);
-                      return;
-                    }
-
                     orderMutation.mutate({ planId: plan.id });
                   }}
                 >
@@ -689,13 +752,14 @@ export function SubscriptionManager() {
       ) : null}
 
       <ManualPaymentDialog
-        open={manualPaymentPlan !== null}
+        open={manualPayment !== null}
         onOpenChange={(open) => {
           if (!open) {
-            setManualPaymentPlan(null);
+            setManualPayment(null);
           }
         }}
-        plan={manualPaymentPlan}
+        plan={manualPayment?.plan ?? null}
+        order={manualPayment?.order ?? null}
         user={user}
       />
     </div>

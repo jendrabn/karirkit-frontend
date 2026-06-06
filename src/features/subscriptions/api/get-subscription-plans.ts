@@ -2,9 +2,9 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { SubscriptionPlan } from "@/types/subscription";
+import type { SubscriptionPlansResponse } from "@/types/subscription";
 
-export const getSubscriptionPlans = (): Promise<SubscriptionPlan[]> => {
+export const getSubscriptionPlans = (): Promise<SubscriptionPlansResponse> => {
   return api.get("/subscriptions/plans");
 };
 

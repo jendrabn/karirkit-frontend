@@ -40,8 +40,13 @@ import {
   SUBSCRIPTION_STATUS_LABELS,
 } from "@/features/subscriptions/utils";
 import { getEnumBadgeClassName } from "@/lib/enum-badges";
+import type { SubscriptionGateway } from "@/types/subscription";
 
 type ConfirmAction = "approve" | "cancel" | "fail" | "downgrade" | null;
+const GATEWAY_LABELS: Record<SubscriptionGateway, string> = {
+  manual: "Manual",
+  midtrans: "Midtrans",
+};
 
 export default function AdminSubscriptionShow() {
   const navigate = useNavigate();
@@ -133,7 +138,8 @@ export default function AdminSubscriptionShow() {
   const canApprove = subscription.status === "pending";
   const canFail = subscription.status === "pending";
   const canCancel = ["pending", "paid"].includes(subscription.status);
-  const canDowngrade = !!subscription.user?.id;
+  const subscriptionUserId = subscription.user?.id || subscription.user_id;
+  const canDowngrade = !!subscriptionUserId;
 
   const confirmDescription =
     confirmAction === "approve"
@@ -159,7 +165,11 @@ export default function AdminSubscriptionShow() {
       />
       <PageHeader
         title="Detail Subscription"
-        subtitle={subscription.midtrans_order_id || subscription.id}
+        subtitle={
+          subscription.order_id ||
+          subscription.midtrans_order_id ||
+          subscription.id
+        }
         showBackButton
         backButtonUrl={paths.admin.subscriptions.list.getHref()}
       >
@@ -235,16 +245,42 @@ export default function AdminSubscriptionShow() {
               </div>
               <div className="space-y-1">
                 <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Gateway
+                </p>
+                <p>
+                  {subscription.gateway
+                    ? GATEWAY_LABELS[subscription.gateway]
+                    : "-"}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
                   Payment Type
                 </p>
-                <p>{subscription.midtrans_payment_type || "-"}</p>
+                <p>
+                  {subscription.payment_type ||
+                    subscription.midtrans_payment_type ||
+                    "-"}
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs uppercase tracking-wide text-muted-foreground">
                   Order ID
                 </p>
                 <p className="break-all font-mono text-sm">
-                  {subscription.midtrans_order_id || "-"}
+                  {subscription.order_id ||
+                    subscription.midtrans_order_id ||
+                    "-"}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Provider Token
+                </p>
+                <p className="break-all font-mono text-sm">
+                  {subscription.provider_token ||
+                    subscription.midtrans_token ||
+                    "-"}
                 </p>
               </div>
             </CardContent>
@@ -305,12 +341,14 @@ export default function AdminSubscriptionShow() {
                   </p>
                 </div>
               </div>
-              {subscription.user?.id ? (
+              {subscriptionUserId ? (
                 <Button
                   variant="outline"
                   className="w-full"
                   onClick={() =>
-                    navigate(paths.admin.users.detail.getHref(subscription.user!.id))
+                    navigate(
+                      paths.admin.users.detail.getHref(subscriptionUserId),
+                    )
                   }
                 >
                   Lihat Detail User
@@ -424,8 +462,8 @@ export default function AdminSubscriptionShow() {
                   return;
                 }
 
-                if (confirmAction === "downgrade" && subscription.user?.id) {
-                  downgradeMutation.mutate({ userId: subscription.user.id });
+                if (confirmAction === "downgrade" && subscriptionUserId) {
+                  downgradeMutation.mutate({ userId: subscriptionUserId });
                 }
               }}
             >

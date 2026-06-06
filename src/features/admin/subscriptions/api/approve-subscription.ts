@@ -2,13 +2,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { AdminSubscription } from "@/types/subscription";
+import type { MessageResponse } from "@/types/api";
 
 export const approveAdminSubscription = ({
   id,
 }: {
   id: string;
-}): Promise<AdminSubscription> => {
+}): Promise<MessageResponse> => {
   return api.patch(`/admin/subscriptions/${id}/approve`);
 };
 
@@ -24,15 +24,12 @@ export const useApproveAdminSubscription = ({
 
   return useMutation({
     mutationFn: approveAdminSubscription,
-    onSuccess: async (data, ...args) => {
+    onSuccess: async (...args) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["admin-subscriptions"] }),
-        queryClient.invalidateQueries({
-          queryKey: ["admin-subscriptions", data.id],
-        }),
         queryClient.invalidateQueries({ queryKey: ["users"] }),
       ]);
-      await onSuccess?.(data, ...args);
+      await onSuccess?.(...args);
     },
     ...restConfig,
   });

@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router";
 import {
   ArrowDownToLine,
@@ -13,7 +11,6 @@ import {
   FileStack,
   Loader2,
   MoreVertical,
-  Plus,
   Search,
   ShieldAlert,
   User,
@@ -24,14 +21,6 @@ import { toast } from "sonner";
 import { SortableHeader } from "@/components/SortableHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,15 +44,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -79,11 +64,6 @@ import {
 import { paths } from "@/config/paths";
 import { dayjs } from "@/lib/date";
 import {
-  createAdminSubscriptionInputSchema,
-  useCreateAdminSubscription,
-  type CreateAdminSubscriptionInput,
-} from "@/features/admin/subscriptions/api/create-subscription";
-import {
   normalizeAdminSubscriptionSortField,
   useAdminSubscriptions,
   type AdminSubscriptionSortField,
@@ -92,8 +72,6 @@ import { useApproveAdminSubscription } from "@/features/admin/subscriptions/api/
 import { useCancelAdminSubscription } from "@/features/admin/subscriptions/api/cancel-subscription";
 import { useDowngradeAdminSubscriptionUser } from "@/features/admin/subscriptions/api/downgrade-user-subscription";
 import { useFailAdminSubscription } from "@/features/admin/subscriptions/api/fail-subscription";
-import { displayFormErrors } from "@/lib/form-errors";
-import { useServerValidation } from "@/hooks/use-server-validation";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { cn } from "@/lib/utils";
@@ -104,6 +82,7 @@ import {
 } from "@/features/subscriptions/utils";
 import type {
   AdminSubscription,
+  SubscriptionGateway,
   SubscriptionPlanId,
   SubscriptionStatus,
 } from "@/types/subscription";
@@ -126,6 +105,11 @@ const STATUS_OPTIONS: SubscriptionStatus[] = [
 ];
 
 const PLAN_OPTIONS: SubscriptionPlanId[] = ["free", "pro", "max"];
+const GATEWAY_OPTIONS: SubscriptionGateway[] = ["manual", "midtrans"];
+const GATEWAY_LABELS: Record<SubscriptionGateway, string> = {
+  manual: "Manual",
+  midtrans: "Midtrans",
+};
 
 const getSubscriptionUserLabel = (subscription: AdminSubscription) => {
   if (subscription.user?.name) {
@@ -157,16 +141,19 @@ const getSubscriptionActionAvailability = (subscription: AdminSubscription) => (
 
 export function AdminSubscriptionsList() {
   const navigate = useNavigate();
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [confirmState, setConfirmState] = useState<{
     action: ConfirmAction;
     subscription: AdminSubscription;
   } | null>(null);
-  const [columnVisibility, setColumnVisibility] =
+  const [storedColumnVisibility, setColumnVisibility] =
     useLocalStorage<ColumnVisibility>(
       "admin-subscriptions-table-columns",
       defaultColumnVisibility,
     );
+  const columnVisibility = {
+    ...defaultColumnVisibility,
+    ...storedColumnVisibility,
+  };
   const normalizedSortBy = normalizeAdminSubscriptionSortField;
 
   const {
@@ -182,6 +169,7 @@ export function AdminSubscriptionsList() {
     q: "",
     plan: "",
     status: "",
+    gateway: "",
     sort_by: "created_at" as AdminSubscriptionSortField,
     sort_order: "desc" as "asc" | "desc",
   });
@@ -195,26 +183,9 @@ export function AdminSubscriptionsList() {
       q: params.q || undefined,
       plan: (params.plan as SubscriptionPlanId) || undefined,
       status: (params.status as SubscriptionStatus) || undefined,
+      gateway: (params.gateway as SubscriptionGateway) || undefined,
       sort_by: currentSortBy,
       sort_order: params.sort_order,
-    },
-  });
-
-  const form = useForm<CreateAdminSubscriptionInput>({
-    resolver: zodResolver(createAdminSubscriptionInputSchema),
-    defaultValues: {
-      user_id: "",
-      plan: "pro",
-    },
-  });
-
-  const createMutation = useCreateAdminSubscription({
-    mutationConfig: {
-      onSuccess: () => {
-        toast.success("Subscription manual berhasil dibuat");
-        setCreateDialogOpen(false);
-        form.reset({ user_id: "", plan: "pro" });
-      },
     },
   });
 
@@ -254,9 +225,6 @@ export function AdminSubscriptionsList() {
     },
   });
 
-  useServerValidation(createMutation.error, form);
-
-  const selectedPlan = useWatch({ control: form.control, name: "plan" }) ?? "pro";
   const items = data?.items || [];
   const pagination = data?.pagination || {
     page: 1,
@@ -266,7 +234,7 @@ export function AdminSubscriptionsList() {
   };
   const visibleColumnsCount = Object.values(columnVisibility).filter(Boolean).length;
   const tableColumnCount = visibleColumnsCount + 1;
-  const hasActiveFilters = params.plan || params.status;
+  const hasActiveFilters = params.plan || params.status || params.gateway;
   const isPendingAction =
     approveMutation.isPending ||
     cancelMutation.isPending ||
@@ -339,7 +307,7 @@ export function AdminSubscriptionsList() {
         <div className="relative w-full max-w-sm md:min-w-[300px]">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Cari user, email, order ID, payment type..."
+            placeholder="Cari user, email, order ID..."
             value={searchInput}
             onChange={(event) => handleSearchInput(event.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -358,12 +326,14 @@ export function AdminSubscriptionsList() {
               <SelectValue placeholder="Pilih plan" />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
-              <SelectItem value="all">Semua Plan</SelectItem>
-              {PLAN_OPTIONS.map((plan) => (
-                <SelectItem key={plan} value={plan}>
-                  {SUBSCRIPTION_PLAN_LABELS[plan]}
-                </SelectItem>
-              ))}
+              <SelectGroup>
+                <SelectItem value="all">Semua Plan</SelectItem>
+                {PLAN_OPTIONS.map((plan) => (
+                  <SelectItem key={plan} value={plan}>
+                    {SUBSCRIPTION_PLAN_LABELS[plan]}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             </SelectContent>
           </Select>
 
@@ -377,12 +347,35 @@ export function AdminSubscriptionsList() {
               <SelectValue placeholder="Pilih status" />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
-              <SelectItem value="all">Semua Status</SelectItem>
-              {STATUS_OPTIONS.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {SUBSCRIPTION_STATUS_LABELS[status]}
-                </SelectItem>
-              ))}
+              <SelectGroup>
+                <SelectItem value="all">Semua Status</SelectItem>
+                {STATUS_OPTIONS.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {SUBSCRIPTION_STATUS_LABELS[status]}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={params.gateway || "all"}
+            onValueChange={(value) =>
+              setParam("gateway", value === "all" ? "" : value, true)
+            }
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Pilih gateway" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-50">
+              <SelectGroup>
+                <SelectItem value="all">Semua Gateway</SelectItem>
+                {GATEWAY_OPTIONS.map((gateway) => (
+                  <SelectItem key={gateway} value={gateway}>
+                    {GATEWAY_LABELS[gateway]}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             </SelectContent>
           </Select>
 
@@ -390,7 +383,9 @@ export function AdminSubscriptionsList() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setParams({ plan: "", status: "" }, true)}
+              onClick={() =>
+                setParams({ plan: "", status: "", gateway: "" }, true)
+              }
               className="text-muted-foreground"
             >
               Reset Filter
@@ -401,11 +396,6 @@ export function AdminSubscriptionsList() {
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
           />
-
-          <Button size="sm" onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Manual Subscription
-          </Button>
         </div>
       </div>
 
@@ -439,6 +429,11 @@ export function AdminSubscriptionsList() {
                     >
                       Nominal
                     </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.gateway && (
+                  <TableHead className="uppercase text-xs font-medium tracking-wide">
+                    Gateway
                   </TableHead>
                 )}
                 {columnVisibility.payment_type && (
@@ -566,11 +561,24 @@ export function AdminSubscriptionsList() {
                           {formatSubscriptionPrice(subscription.amount)}
                         </TableCell>
                       )}
+                      {columnVisibility.gateway && (
+                        <TableCell className="whitespace-nowrap">
+                          {subscription.gateway ? (
+                            <Badge variant="secondary">
+                              {GATEWAY_LABELS[subscription.gateway]}
+                            </Badge>
+                          ) : (
+                            "-"
+                          )}
+                        </TableCell>
+                      )}
                       {columnVisibility.payment_type && (
                         <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                          {subscription.midtrans_payment_type ? (
+                          {subscription.payment_type ||
+                          subscription.midtrans_payment_type ? (
                             <span className="truncate">
-                              {subscription.midtrans_payment_type}
+                              {subscription.payment_type ||
+                                subscription.midtrans_payment_type}
                             </span>
                           ) : (
                             "-"
@@ -581,7 +589,9 @@ export function AdminSubscriptionsList() {
                         <TableCell className="max-w-[250px] text-sm text-muted-foreground">
                           {(() => {
                             const orderId =
-                              subscription.midtrans_order_id || subscription.id;
+                              subscription.order_id ||
+                              subscription.midtrans_order_id ||
+                              subscription.id;
 
                             return (
                               <Tooltip>
@@ -742,11 +752,13 @@ export function AdminSubscriptionsList() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover z-50">
-                  {[10, 20, 50].map((size) => (
-                    <SelectItem key={size} value={String(size)}>
-                      {size}
-                    </SelectItem>
-                  ))}
+                  <SelectGroup>
+                    {[10, 20, 50].map((size) => (
+                      <SelectItem key={size} value={String(size)}>
+                        {size}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 </SelectContent>
               </Select>
               <span>dari {pagination.total_items} data</span>
@@ -796,82 +808,6 @@ export function AdminSubscriptionsList() {
           </div>
         ) : null}
       </div>
-
-      <Dialog
-        open={createDialogOpen}
-        onOpenChange={(open) => {
-          setCreateDialogOpen(open);
-
-          if (!open) {
-            form.reset({ user_id: "", plan: "pro" });
-          }
-        }}
-      >
-        <DialogContent className="sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle>Buat Manual Subscription</DialogTitle>
-            <DialogDescription>
-              Masukkan User ID dan pilih plan untuk membuat transaksi subscription manual.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form
-            onSubmit={form.handleSubmit(
-              (values) => createMutation.mutate(values),
-              displayFormErrors,
-            )}
-            className="space-y-4"
-          >
-            <Field>
-              <FieldLabel>User ID</FieldLabel>
-              <Input
-                {...form.register("user_id")}
-                placeholder="Masukkan ID user"
-              />
-              <FieldError>{form.formState.errors.user_id?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel>Plan</FieldLabel>
-              <Select
-                value={selectedPlan}
-                onValueChange={(value) =>
-                  form.setValue("plan", value as "pro" | "max", {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih plan" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover z-50">
-                  <SelectItem value="pro">Pro</SelectItem>
-                  <SelectItem value="max">Max</SelectItem>
-                </SelectContent>
-              </Select>
-              <FieldError>{form.formState.errors.plan?.message}</FieldError>
-            </Field>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCreateDialogOpen(false)}
-                disabled={createMutation.isPending}
-              >
-                Batal
-              </Button>
-              <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : null}
-                Simpan
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       <AlertDialog
         open={confirmState !== null}

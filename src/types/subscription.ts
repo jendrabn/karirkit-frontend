@@ -1,6 +1,7 @@
 import type { ListResponse } from "@/types/api";
 
 export type SubscriptionPlanId = "free" | "pro" | "max";
+export type SubscriptionGateway = "midtrans" | "manual";
 
 export type SubscriptionStatus =
   | "active"
@@ -37,6 +38,11 @@ export interface SubscriptionPlan {
   can_download_application_letter_docx: boolean;
   can_download_cv_pdf: boolean;
   can_download_application_letter_pdf: boolean;
+}
+
+export interface SubscriptionPlansResponse {
+  payment_gateway_enabled: boolean;
+  plans: SubscriptionPlan[];
 }
 
 export interface SubscriptionDownloadLimits {
@@ -78,6 +84,10 @@ export interface MySubscription {
   expires_at?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  gateway?: SubscriptionGateway | null;
+  order_id?: string | null;
+  provider_token?: string | null;
+  payment_type?: string | null;
   midtrans_order_id?: string | null;
   midtrans_payment_type?: string | null;
   snap_token?: string | null;
@@ -91,21 +101,13 @@ export interface MySubscription {
 }
 
 export interface SubscriptionOrderResponse {
-  id?: string;
-  subscription_id?: string;
-  order_id?: string;
-  amount?: number;
-  plan?: SubscriptionPlanId;
-  redirectUrl?: string | null;
-  redirect_url?: string | null;
-  paymentUrl?: string | null;
-  payment_url?: string | null;
-  snapUrl?: string | null;
-  snap_url?: string | null;
-  snapToken?: string | null;
-  snap_token?: string | null;
-  token?: string | null;
-  [key: string]: unknown;
+  subscription_id: string;
+  order_id: string;
+  gateway: SubscriptionGateway;
+  snap_token: string | null;
+  snap_url: string | null;
+  amount: number;
+  plan: SubscriptionPlanId;
 }
 
 export interface SubscriptionUserSummary {
@@ -128,7 +130,12 @@ export interface AdminSubscription {
   expires_at?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  gateway?: SubscriptionGateway | null;
+  order_id?: string | null;
+  provider_token?: string | null;
+  payment_type?: string | null;
   midtrans_order_id?: string | null;
+  midtrans_token?: string | null;
   midtrans_payment_type?: string | null;
   notes?: string | null;
   user?: SubscriptionUserSummary | null;
