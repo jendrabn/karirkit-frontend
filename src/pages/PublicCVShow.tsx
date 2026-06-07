@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -52,9 +52,17 @@ export default function PublicCVShow() {
       <div className="mx-auto max-w-5xl space-y-8">
         <CVDetail cv={cv} />
 
-        <div className="text-center text-xs text-muted-foreground">
-          <p>Dibuat dengan KarirKit</p>
-        </div>
+        <footer className="text-center text-xs text-muted-foreground">
+          <p>
+            Dibuat dengan{" "}
+            <Link
+              to="/"
+              className="font-medium text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              KarirKit
+            </Link>
+          </p>
+        </footer>
       </div>
     </div>
   );

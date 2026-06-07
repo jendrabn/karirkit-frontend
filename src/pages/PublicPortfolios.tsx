@@ -10,8 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { usePublicPortfolios } from "@/features/public/api/get-public-portfolios";
 import { projectTypeLabels } from "@/types/portfolio";
 import type { SocialPlatform } from "@/types/social";
@@ -45,11 +43,9 @@ export default function PublicPortfolios() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
         </div>
-        <Footer />
       </div>
     );
   }
@@ -57,7 +53,6 @@ export default function PublicPortfolios() {
   if (error || !data) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground">
@@ -68,7 +63,6 @@ export default function PublicPortfolios() {
             </p>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -114,8 +108,6 @@ export default function PublicPortfolios() {
       />
 
       <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
-
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-primary/5 to-background" />
           <div
@@ -323,7 +315,17 @@ export default function PublicPortfolios() {
           </div>
         </section>
 
-        <Footer />
+        <footer className="pb-8 text-center text-xs text-muted-foreground">
+          <p>
+            Dibuat dengan{" "}
+            <Link
+              to="/"
+              className="font-medium text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              KarirKit
+            </Link>
+          </p>
+        </footer>
       </div>
     </>
   );

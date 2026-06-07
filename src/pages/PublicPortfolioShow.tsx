@@ -16,8 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { usePublicPortfolio } from "@/features/public/api/get-public-portfolio";
 import { projectTypeLabels } from "@/types/portfolio";
 import { buildImageUrl } from "@/lib/utils";
@@ -54,11 +52,9 @@ export default function PublicPortfolioShow() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
         </div>
-        <Footer />
       </div>
     );
   }
@@ -66,7 +62,6 @@ export default function PublicPortfolioShow() {
   if (error || !data) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground">
@@ -83,7 +78,6 @@ export default function PublicPortfolioShow() {
             </Button>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -141,8 +135,6 @@ export default function PublicPortfolioShow() {
       />
 
       <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
-
         {/* Main Content */}
         <main className="flex-1 py-8 lg:py-12">
           <div className="container mx-auto px-4">
@@ -444,7 +436,17 @@ export default function PublicPortfolioShow() {
           </div>
         </main>
 
-        <Footer />
+        <footer className="pb-8 text-center text-xs text-muted-foreground">
+          <p>
+            Dibuat dengan{" "}
+            <Link
+              to="/"
+              className="font-medium text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              KarirKit
+            </Link>
+          </p>
+        </footer>
       </div>
     </>
   );
