@@ -3,11 +3,9 @@ import { Controller, useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "@/lib/auth";
 import {
-  Plus,
   Trash2,
   GraduationCap,
   Briefcase,
-  FileText,
   Wrench,
   Award,
   Trophy,
@@ -18,6 +16,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { TemplateActionButtonContent } from "@/components/TemplateActionButtonContent";
+import { AddActionButtonContent } from "@/components/AddActionButtonContent";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
@@ -434,8 +434,7 @@ export function CVForm({
                       size="sm"
                       onClick={() => handleOpenTemplateModal("about")}
                     >
-                      <FileText className="h-4 w-4 mr-1" />
-                      Gunakan Template
+                      <TemplateActionButtonContent />
                     </Button>
                   </div>
                   <Textarea
@@ -475,7 +474,7 @@ export function CVForm({
                   })
                 }
               >
-                <Plus className="h-4 w-4 mr-1" /> Tambah
+                <AddActionButtonContent />
               </Button>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -912,7 +911,7 @@ export function CVForm({
                   })
                 }
               >
-                <Plus className="h-4 w-4 mr-1" /> Tambah
+                <AddActionButtonContent />
               </Button>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -1295,8 +1294,7 @@ export function CVForm({
                                 handleOpenTemplateModal("experience", index)
                               }
                             >
-                              <FileText className="h-4 w-4 mr-1" />
-                              Gunakan Template
+                              <TemplateActionButtonContent />
                             </Button>
                           </div>
                           <Textarea
@@ -1340,7 +1338,7 @@ export function CVForm({
                   })
                 }
               >
-                <Plus className="h-4 w-4 mr-1" /> Tambah
+                <AddActionButtonContent />
               </Button>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -1506,7 +1504,7 @@ export function CVForm({
                   })
                 }
               >
-                <Plus className="h-4 w-4 mr-1" /> Tambah
+                <AddActionButtonContent />
               </Button>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -1900,7 +1898,7 @@ export function CVForm({
                   })
                 }
               >
-                <Plus className="h-4 w-4 mr-1" /> Tambah
+                <AddActionButtonContent />
               </Button>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -2047,7 +2045,7 @@ export function CVForm({
                   })
                 }
               >
-                <Plus className="h-4 w-4 mr-1" /> Tambah
+                <AddActionButtonContent />
               </Button>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -2437,8 +2435,7 @@ export function CVForm({
                                 handleOpenTemplateModal("organization", index)
                               }
                             >
-                              <FileText className="h-4 w-4 mr-1" />
-                              Gunakan Template
+                              <TemplateActionButtonContent />
                             </Button>
                           </div>
                           <Textarea
@@ -2487,7 +2484,7 @@ export function CVForm({
                   })
                 }
               >
-                <Plus className="h-4 w-4 mr-1" /> Tambah
+                <AddActionButtonContent />
               </Button>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -2617,8 +2614,7 @@ export function CVForm({
                                 handleOpenTemplateModal("project", index)
                               }
                             >
-                              <FileText className="h-4 w-4 mr-1" />
-                              Gunakan Template
+                              <TemplateActionButtonContent />
                             </Button>
                           </div>
                           <Textarea
@@ -2657,7 +2653,7 @@ export function CVForm({
                   })
                 }
               >
-                <Plus className="h-4 w-4 mr-1" /> Tambah
+                <AddActionButtonContent />
               </Button>
             </CardHeader>
 

@@ -21,7 +21,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
-import GoogleLoginButton from "./GoogleLoginButton";
+import { SocialAuthButtons } from "./SocialAuthButtons";
 import { useLogin, loginInputSchema, type LoginInput } from "@/lib/auth";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
@@ -82,7 +82,12 @@ const LoginForm = () => {
       </CardHeader>
 
       <CardContent className="space-y-6">
-        <GoogleLoginButton disabled={isSubmitting} text="Masuk dengan Google" />
+        <SocialAuthButtons
+          disabled={isSubmitting}
+          googleText="Masuk dengan Google"
+          facebookText="Masuk dengan Facebook"
+          appleText="Masuk dengan Apple"
+        />
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">

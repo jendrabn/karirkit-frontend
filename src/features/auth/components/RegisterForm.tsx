@@ -21,7 +21,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
-import GoogleLoginButton from "./GoogleLoginButton";
+import { SocialAuthButtons } from "./SocialAuthButtons";
 import {
   useRegister,
   registerInputSchema,
@@ -72,9 +72,11 @@ const RegisterForm = () => {
       </CardHeader>
 
       <CardContent className="space-y-6">
-        <GoogleLoginButton
+        <SocialAuthButtons
           disabled={isSubmitting}
-          text="Daftar dengan Google"
+          googleText="Daftar dengan Google"
+          facebookText="Daftar dengan Facebook"
+          appleText="Daftar dengan Apple"
         />
 
         <div className="relative">

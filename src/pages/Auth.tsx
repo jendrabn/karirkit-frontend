@@ -1,76 +1,28 @@
 import { SEO } from "@/components/SEO";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import { seoConfig } from "@/config/seo";
 import logo from "@/assets/images/logo.png";
-import GoogleLoginButton from "@/features/auth/components/GoogleLoginButton";
-
-const facebookLogoSrc =
-  "/images/auth/facebook.svg";
-const appleLogoSrc =
-  "/images/auth/apple.svg";
-
-const socialButtons = [
-  {
-    label: "Lanjutkan dengan Facebook",
-    iconSrc: facebookLogoSrc,
-    disabled: true,
-  },
-  {
-    label: "Lanjutkan dengan Apple",
-    iconSrc: appleLogoSrc,
-    disabled: true,
-    iconClassName: "dark:invert",
-  },
-] as const;
+import { SocialAuthButtons } from "@/features/auth/components/SocialAuthButtons";
+import { Link } from "react-router";
 
 const policyLinks = [
   { label: "Ketentuan Layanan", href: "#" },
   { label: "Kebijakan Privasi", href: "#" },
 ] as const;
 
-type SocialButtonProps = {
-  label: string;
-  iconSrc: string;
-  disabled?: boolean;
-  iconClassName?: string;
-};
-
-function SocialButton({
-  label,
-  iconSrc,
-  disabled = false,
-  iconClassName,
-}: SocialButtonProps) {
-  return (
-    <Button
-      variant="auth"
-      size="default"
-      className="relative w-full justify-center"
-      disabled={disabled}
-      title={disabled ? "Coming soon" : undefined}
-    >
-      <span className="absolute left-4 inline-flex size-4 items-center justify-center">
-        <img
-          src={iconSrc}
-          alt=""
-          aria-hidden="true"
-          className={cn("size-4 shrink-0", iconClassName)}
-        />
-      </span>
-      <span>{label}</span>
-    </Button>
-  );
-}
-
 function AuthBrand() {
   return (
-    <img
-      src={logo}
-      alt="KarirKit"
-      className="h-8 w-auto sm:h-10 dark:[filter:brightness(0)_invert(1)]"
-    />
+    <Link
+      to={paths.home.getHref()}
+      aria-label="Kembali ke beranda KarirKit"
+      className="inline-flex rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      <img
+        src={logo}
+        alt="KarirKit"
+        className="h-8 w-auto sm:h-10 dark:[filter:brightness(0)_invert(1)]"
+      />
+    </Link>
   );
 }
 
@@ -89,12 +41,7 @@ function AuthCopy() {
 
 function AuthActions() {
   return (
-    <div className="flex w-full flex-col gap-3">
-      <GoogleLoginButton />
-      {socialButtons.map((button) => (
-        <SocialButton key={button.label} {...button} />
-      ))}
-    </div>
+    <SocialAuthButtons />
   );
 }
 

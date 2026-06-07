@@ -3,11 +3,12 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
 import { useUser } from "@/lib/auth";
-import { CalendarIcon, FileText } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { ParagraphTemplateModal } from "./ParagraphTemplateModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { TemplateActionButtonContent } from "@/components/TemplateActionButtonContent";
 import { type ParagraphType } from "@/types/template";
 import {
   Select,
@@ -648,8 +649,7 @@ export function ApplicationLetterForm({
                       size="sm"
                       onClick={() => handleOpenTemplateModal("opening")}
                     >
-                      <FileText className="h-4 w-4 mr-1" />
-                      Gunakan Template
+                      <TemplateActionButtonContent />
                     </Button>
                   </div>
                   <Textarea
@@ -678,8 +678,7 @@ export function ApplicationLetterForm({
                       size="sm"
                       onClick={() => handleOpenTemplateModal("body")}
                     >
-                      <FileText className="h-4 w-4 mr-1" />
-                      Gunakan Template
+                      <TemplateActionButtonContent />
                     </Button>
                   </div>
                   <Textarea
@@ -727,8 +726,7 @@ export function ApplicationLetterForm({
                       size="sm"
                       onClick={() => handleOpenTemplateModal("closing")}
                     >
-                      <FileText className="h-4 w-4 mr-1" />
-                      Gunakan Template
+                      <TemplateActionButtonContent />
                     </Button>
                   </div>
                   <Textarea

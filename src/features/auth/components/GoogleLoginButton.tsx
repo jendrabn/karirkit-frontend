@@ -101,7 +101,7 @@ const GoogleLoginButton = ({
     <>
       <Button
         variant="auth"
-        size="default"
+        size="auth"
         className="relative w-full justify-center"
         onClick={handleCustomButtonClick}
         disabled={disabled || isSubmitting}
