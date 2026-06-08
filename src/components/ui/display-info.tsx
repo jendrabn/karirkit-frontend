@@ -157,14 +157,16 @@ export const RichText = ({
   if (looksLikeHtml) {
     return (
       <div
-        className={`prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-0.5 prose-headings:font-semibold ${className}`}
+        className={`prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-0.5 prose-headings:font-semibold prose-p:break-words prose-li:break-words prose-a:break-all prose-code:break-words prose-pre:max-w-full prose-pre:overflow-x-auto prose-pre:whitespace-pre-wrap prose-img:max-w-full prose-table:block prose-table:max-w-full prose-td:break-words prose-th:break-words ${className}`}
         dangerouslySetInnerHTML={{ __html: trimmed }}
       />
     );
   }
 
   return (
-    <p className={`text-sm leading-relaxed whitespace-pre-line ${className}`}>
+    <p
+      className={`text-sm leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere] ${className}`}
+    >
       {trimmed}
     </p>
   );

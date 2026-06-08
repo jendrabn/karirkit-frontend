@@ -78,7 +78,7 @@ export default function SavedJobs() {
           </div>
 
           {isLoading ? (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-6 lg:grid-cols-3">
               {[...Array(4)].map((_, i) => (
                 <div
                   key={i}
@@ -101,7 +101,7 @@ export default function SavedJobs() {
               </Button>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-6 lg:grid-cols-3">
               {bookmarks.map((job: Job) => (
                 <JobCard key={job.id} job={job} />
               ))}

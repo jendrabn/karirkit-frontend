@@ -30,9 +30,14 @@ export function ShareMenu({ url, title }: ShareMenuProps) {
   };
 
   return (
-    <Button variant="outline" size="sm" onClick={handleShare}>
-      <Share2 className="h-4 w-4 mr-2" />
-      Bagikan
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={handleShare}
+      aria-label="Bagikan lowongan"
+      className="text-muted-foreground hover:text-foreground"
+    >
+      <Share2 className="h-4 w-4" />
     </Button>
   );
 }
