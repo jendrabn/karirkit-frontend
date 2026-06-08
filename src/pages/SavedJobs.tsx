@@ -1,4 +1,4 @@
-import { Briefcase, Trash2 } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import { Link } from "react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -8,20 +8,9 @@ import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
 import type { Job } from "@/types/job";
 import { MinimalSEO } from "@/components/MinimalSEO";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 export default function SavedJobs() {
-  const { bookmarks, clearBookmarks, isLoading } = useBookmarks();
+  const { bookmarks, isLoading } = useBookmarks();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -41,40 +30,6 @@ export default function SavedJobs() {
                 Daftar lowongan kerja yang telah Anda simpan.
               </p>
             </div>
-
-            {bookmarks.length > 0 && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Hapus Semua
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Hapus Semua Lowongan Tersimpan?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Tindakan ini akan menghapus semua lowongan kerja dari
-                      daftar simpan Anda. Tindakan ini tidak dapat dibatalkan.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Batal</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={clearBookmarks}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Hapus Semua
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
           </div>
 
           {isLoading ? (

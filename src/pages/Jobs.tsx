@@ -35,6 +35,8 @@ export default function Jobs() {
     city_id: string;
     company_id: string;
     experience_min: number | string;
+    salary_min: number | string;
+    education_level: string;
   }>({
     page: 1,
     q: "",
@@ -44,6 +46,8 @@ export default function Jobs() {
     city_id: "",
     company_id: "",
     experience_min: "",
+    salary_min: "",
+    education_level: "",
   });
 
   // Convert URL params to filter state
@@ -59,6 +63,10 @@ export default function Jobs() {
     company_ids: params.company_id ? [params.company_id] : undefined,
     experience_min: params.experience_min
       ? Number(params.experience_min)
+      : undefined,
+    salary_min: params.salary_min ? Number(params.salary_min) : undefined,
+    education_level: params.education_level
+      ? ([params.education_level] as JobFilterState["education_level"])
       : undefined,
   };
 
@@ -78,6 +86,10 @@ export default function Jobs() {
     company_id: params.company_id ? [params.company_id] : undefined,
     experience_min: params.experience_min
       ? Number(params.experience_min)
+      : undefined,
+    salary_min: params.salary_min ? Number(params.salary_min) : undefined,
+    education_level: params.education_level
+      ? ([params.education_level] as JobFilters["education_level"])
       : undefined,
   };
 
@@ -151,27 +163,20 @@ export default function Jobs() {
   };
 
   const handleFilterChange = (newFilters: JobFilterState) => {
-    const updates: Record<string, string> = {};
-
-    // Convert array filters to single values for URL
-    if (newFilters.job_types?.length) {
-      updates.job_type = newFilters.job_types[0];
-    }
-    if (newFilters.work_systems?.length) {
-      updates.work_system = newFilters.work_systems[0];
-    }
-    if (newFilters.job_role_ids?.length) {
-      updates.job_role_id = newFilters.job_role_ids[0];
-    }
-    if (newFilters.city_ids?.length) {
-      updates.city_id = newFilters.city_ids[0];
-    }
-    if (newFilters.company_ids?.length) {
-      updates.company_id = newFilters.company_ids[0];
-    }
-    if (newFilters.experience_min !== undefined) {
-      updates.experience_min = String(newFilters.experience_min);
-    }
+    const updates = {
+      job_type: newFilters.job_types?.[0] || "",
+      work_system: newFilters.work_systems?.[0] || "",
+      job_role_id: newFilters.job_role_ids?.[0] || "",
+      city_id: newFilters.city_ids?.[0] || "",
+      company_id: newFilters.company_ids?.[0] || "",
+      experience_min:
+        newFilters.experience_min !== undefined
+          ? String(newFilters.experience_min)
+          : "",
+      salary_min:
+        newFilters.salary_min !== undefined ? String(newFilters.salary_min) : "",
+      education_level: newFilters.education_level?.[0] || "",
+    };
 
     setParams(updates, true);
   };
@@ -185,6 +190,8 @@ export default function Jobs() {
         city_id: "",
         company_id: "",
         experience_min: "",
+        salary_min: "",
+        education_level: "",
       },
       true
     );

@@ -63,17 +63,22 @@ export default function Pricing() {
       <div className="flex min-h-screen flex-col bg-background">
         <Navbar />
 
-        <main className="flex-1">
-          <h1 className="sr-only">Harga Paket KarirKit</h1>
-
-          <section className="py-8 lg:py-12">
-            <div className="container mx-auto max-w-7xl px-4 lg:px-8">
-              <SubscriptionManager
-                publicMode
-                loginRedirectTo={paths.pricing.getHref()}
-              />
+        <main className="flex-1 py-12">
+          <div className="container mx-auto max-w-7xl px-4 lg:px-8">
+            <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <h1 className="mb-2 text-3xl font-bold">
+                  Harga Paket KarirKit
+                </h1>
+                <p className="text-muted-foreground">{pricingDescription}</p>
+              </div>
             </div>
-          </section>
+
+            <SubscriptionManager
+              publicMode
+              loginRedirectTo={paths.pricing.getHref()}
+            />
+          </div>
         </main>
 
         <Footer />

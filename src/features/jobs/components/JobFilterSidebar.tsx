@@ -55,6 +55,8 @@ interface JobFilterSidebarProps {
   onClearFilters: () => void;
 }
 
+type FilterCheckedState = boolean | "indeterminate";
+
 const experienceOptions = [
   { value: 0, label: "Kurang dari 1 tahun" },
   { value: 1, label: "1-3 tahun" },
@@ -152,10 +154,13 @@ function FilterContent({
     filters.salary_min !== undefined ||
     filters.experience_min !== undefined;
 
-  const handleJobTypeChange = (value: JobType, checked: boolean) => {
+  const handleJobTypeChange = (value: JobType, checked: FilterCheckedState) => {
     const current = filters.job_types || [];
-    const updated = checked
-      ? [...current, value]
+    const isChecked = checked === true;
+    const updated = isChecked
+      ? current.includes(value)
+        ? current
+        : [...current, value]
       : current.filter((v) => v !== value);
     onFilterChange({
       ...filters,
@@ -163,10 +168,13 @@ function FilterContent({
     });
   };
 
-  const handleJobRoleChange = (value: string, checked: boolean) => {
+  const handleJobRoleChange = (value: string, checked: FilterCheckedState) => {
     const current = filters.job_role_ids || [];
-    const updated = checked
-      ? [...current, value]
+    const isChecked = checked === true;
+    const updated = isChecked
+      ? current.includes(value)
+        ? current
+        : [...current, value]
       : current.filter((v) => v !== value);
     onFilterChange({
       ...filters,
@@ -174,10 +182,13 @@ function FilterContent({
     });
   };
 
-  const handleCityChange = (value: string, checked: boolean) => {
+  const handleCityChange = (value: string, checked: FilterCheckedState) => {
     const current = filters.city_ids || [];
-    const updated = checked
-      ? [...current, value]
+    const isChecked = checked === true;
+    const updated = isChecked
+      ? current.includes(value)
+        ? current
+        : [...current, value]
       : current.filter((v) => v !== value);
     onFilterChange({
       ...filters,
@@ -185,10 +196,13 @@ function FilterContent({
     });
   };
 
-  const handleCompanyChange = (value: string, checked: boolean) => {
+  const handleCompanyChange = (value: string, checked: FilterCheckedState) => {
     const current = filters.company_ids || [];
-    const updated = checked
-      ? [...current, value]
+    const isChecked = checked === true;
+    const updated = isChecked
+      ? current.includes(value)
+        ? current
+        : [...current, value]
       : current.filter((v) => v !== value);
     onFilterChange({
       ...filters,
@@ -196,17 +210,24 @@ function FilterContent({
     });
   };
 
-  const handleSalaryChange = (value: number, checked: boolean) => {
+  const handleSalaryChange = (value: number, checked: FilterCheckedState) => {
+    const isChecked = checked === true;
     onFilterChange({
       ...filters,
-      salary_min: checked ? value : undefined,
+      salary_min: isChecked ? value : undefined,
     });
   };
 
-  const handleEducationChange = (value: EducationLevel, checked: boolean) => {
+  const handleEducationChange = (
+    value: EducationLevel,
+    checked: FilterCheckedState
+  ) => {
     const current = filters.education_level || [];
-    const updated = checked
-      ? [...current, value]
+    const isChecked = checked === true;
+    const updated = isChecked
+      ? current.includes(value)
+        ? current
+        : [...current, value]
       : current.filter((v) => v !== value);
     onFilterChange({
       ...filters,
@@ -214,10 +235,14 @@ function FilterContent({
     });
   };
 
-  const handleExperienceChange = (value: number, checked: boolean) => {
+  const handleExperienceChange = (
+    value: number,
+    checked: FilterCheckedState
+  ) => {
+    const isChecked = checked === true;
     onFilterChange({
       ...filters,
-      experience_min: checked ? value : undefined,
+      experience_min: isChecked ? value : undefined,
     });
   };
 
@@ -277,7 +302,7 @@ function FilterContent({
                 id={`role-${role.id}`}
                 checked={filters.job_role_ids?.includes(role.id) || false}
                 onCheckedChange={(checked) =>
-                  handleJobRoleChange(role.id, checked as boolean)
+                  handleJobRoleChange(role.id, checked)
                 }
                 className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
@@ -309,7 +334,7 @@ function FilterContent({
                 id={`job-type-${value}`}
                 checked={filters.job_types?.includes(value as JobType) || false}
                 onCheckedChange={(checked) =>
-                  handleJobTypeChange(value as JobType, checked as boolean)
+                  handleJobTypeChange(value as JobType, checked)
                 }
                 className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
@@ -354,7 +379,7 @@ function FilterContent({
                   id={`city-${city.id}`}
                   checked={filters.city_ids?.includes(city.id) || false}
                   onCheckedChange={(checked) =>
-                    handleCityChange(city.id, checked as boolean)
+                    handleCityChange(city.id, checked)
                   }
                   className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
                 />
@@ -390,7 +415,7 @@ function FilterContent({
                 id={`exp-${option.value}`}
                 checked={filters.experience_min === option.value}
                 onCheckedChange={(checked) =>
-                  handleExperienceChange(option.value, checked as boolean)
+                  handleExperienceChange(option.value, checked)
                 }
                 className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
@@ -419,7 +444,7 @@ function FilterContent({
                 id={`salary-${option.value}`}
                 checked={filters.salary_min === option.value}
                 onCheckedChange={(checked) =>
-                  handleSalaryChange(option.value, checked as boolean)
+                  handleSalaryChange(option.value, checked)
                 }
                 className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
@@ -448,10 +473,7 @@ function FilterContent({
                   false
                 }
                 onCheckedChange={(checked) =>
-                  handleEducationChange(
-                    value as EducationLevel,
-                    checked as boolean
-                  )
+                  handleEducationChange(value as EducationLevel, checked)
                 }
                 className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
               />
@@ -497,7 +519,7 @@ function FilterContent({
                   id={`company-${company.id}`}
                   checked={filters.company_ids?.includes(company.id) || false}
                   onCheckedChange={(checked) =>
-                    handleCompanyChange(company.id, checked as boolean)
+                    handleCompanyChange(company.id, checked)
                   }
                   className="rounded border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
                 />
