@@ -8,6 +8,7 @@ import {
 } from "@/features/admin/jobs/api/create-job";
 import { JobForm } from "@/features/admin/jobs/components/JobForm";
 import { paths } from "@/config/paths";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function AdminJobCreate() {
   const navigate = useNavigate();
@@ -30,6 +31,10 @@ export default function AdminJobCreate() {
         { label: "Tambah Lowongan" },
       ]}
     >
+      <MinimalSEO
+        title="Tambah Lowongan Baru"
+        description="Buat lowongan pekerjaan baru di KarirKit."
+      />
       <PageHeader
         title="Tambah Lowongan Baru"
         subtitle="Buat lowongan pekerjaan baru."

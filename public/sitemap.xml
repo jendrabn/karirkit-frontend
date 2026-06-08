@@ -11,7 +11,7 @@
     <loc>https://karirkit.id/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-06-08</lastmod>
   </url>
 
   <!-- Lowongan Kerja -->
@@ -19,7 +19,7 @@
     <loc>https://karirkit.id/jobs</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-06-08</lastmod>
   </url>
 
   <!-- Blog List -->
@@ -27,23 +27,7 @@
     <loc>https://karirkit.id/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-    <lastmod>2025-12-30</lastmod>
-  </url>
-
-  <!-- Login -->
-  <url>
-    <loc>https://karirkit.id/auth/login</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <lastmod>2025-12-30</lastmod>
-  </url>
-
-  <!-- Register -->
-  <url>
-    <loc>https://karirkit.id/auth/register</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-06-08</lastmod>
   </url>
 
 </urlset>

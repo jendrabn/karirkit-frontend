@@ -26,27 +26,16 @@ export const paths = {
 
   auth: {
     getHref: (redirectTo?: string | null) =>
-      `/auth${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""}`,
+      `/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""}`,
     login: {
       getHref: (redirectTo?: string | null) =>
-        `/auth/login${
-          redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""
-        }`,
+        `/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""}`,
     },
     register: {
       getHref: (redirectTo?: string | null) =>
-        `/auth/register${
+        `/register${
           redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""
         }`,
-    },
-    forgotPassword: {
-      getHref: () => "/auth/forgot-password",
-    },
-    resetPassword: {
-      getHref: () => "/auth/reset-password",
-    },
-    verifyOtp: {
-      getHref: () => "/auth/verify-otp",
     },
   },
 

@@ -1,5 +1,6 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import { paths } from "@/config/paths";
 import { DocumentsList } from "@/features/documents/components/DocumentsList";
 
@@ -11,6 +12,11 @@ export default function Documents() {
         { label: "Dokumen", href: paths.documents.list.getHref() },
       ]}
     >
+      <MinimalSEO
+        title="Dokumen"
+        description="Kelola dan simpan dokumen penting Anda dengan aman di KarirKit."
+        noIndex
+      />
       <PageHeader
         title="Dokumen"
         subtitle="Kelola dan simpan dokumen penting Anda dengan aman."

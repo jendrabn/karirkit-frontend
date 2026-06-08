@@ -12,6 +12,8 @@ import {
 } from "@/features/jobs/components/JobFilterSidebar";
 import { JobPagination } from "@/features/jobs/components/JobPagination";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { SEO } from "@/components/SEO";
+import { env } from "@/config/env";
 
 export default function Jobs() {
   const perPage = 10;
@@ -90,6 +92,63 @@ export default function Jobs() {
   const jobs = jobsData?.items || [];
   const pagination = jobsData?.pagination;
   const totalPages = pagination?.total_pages || 0;
+  const seoTitle = params.q
+    ? `Lowongan Kerja ${params.q}`
+    : "Lowongan Kerja Terbaru";
+  const seoDescription = params.q
+    ? `Temukan lowongan kerja ${params.q} terbaru di Indonesia. Cari posisi, perusahaan, lokasi, dan sistem kerja yang sesuai dengan tujuan karir Anda.`
+    : "Temukan lowongan kerja terbaru di Indonesia dari berbagai perusahaan. Cari posisi, lokasi, sistem kerja, dan peluang karir yang sesuai dengan profil Anda.";
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        name: "Lowongan Kerja KarirKit",
+        description: seoDescription,
+        url: `${env.APP_URL}/jobs`,
+        isPartOf: {
+          "@type": "WebSite",
+          name: env.APP_NAME,
+          url: env.APP_URL,
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `${env.APP_URL}/jobs?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+          },
+        },
+      },
+      {
+        "@type": "ItemList",
+        name: "Daftar Lowongan Kerja",
+        itemListElement: jobs.map((job, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${env.APP_URL}/jobs/${job.slug}`,
+          name: `${job.title} di ${job.company?.name}`,
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Beranda",
+            item: env.APP_URL,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Lowongan Kerja",
+            item: `${env.APP_URL}/jobs`,
+          },
+        ],
+      },
+    ],
+  };
 
   const handleFilterChange = (newFilters: JobFilterState) => {
     const updates: Record<string, string> = {};
@@ -137,7 +196,17 @@ export default function Jobs() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <>
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        keywords="lowongan kerja, cari kerja, peluang karir, pekerjaan indonesia, job vacancy, loker terbaru, karir indonesia, kerja remote, kerja hybrid"
+        url="/jobs"
+        type="website"
+        structuredData={structuredData}
+      />
+
+      <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
       <main className="flex-1">
@@ -298,6 +367,7 @@ export default function Jobs() {
       </main>
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }

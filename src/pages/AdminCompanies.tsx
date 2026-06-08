@@ -32,6 +32,7 @@ import {
 } from "@/features/admin/companies/components/CompanyColumnToggle";
 import { defaultColumnVisibility } from "@/features/admin/companies/types/company-column-toggle.constants";
 import { paths } from "@/config/paths";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function AdminCompanies() {
   const queryClient = useQueryClient();
@@ -212,6 +213,10 @@ export default function AdminCompanies() {
         { label: "Perusahaan" },
       ]}
     >
+      <MinimalSEO
+        title="Manajemen Perusahaan"
+        description="Kelola data perusahaan untuk lowongan kerja KarirKit."
+      />
       <PageHeader
         title="Manajemen Perusahaan"
         subtitle="Kelola semua perusahaan."

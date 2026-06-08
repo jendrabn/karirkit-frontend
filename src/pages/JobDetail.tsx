@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { SEO } from "@/components/SEO";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +42,20 @@ import {
 import { useJob } from "@/features/jobs/api/get-job";
 import { dayjs } from "@/lib/date";
 import { getEnumBadgeClassName } from "@/lib/enum-badges";
+
+const stripHtml = (value: string) =>
+  value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const employmentTypeMap = {
+  full_time: "FULL_TIME",
+  part_time: "PART_TIME",
+  contract: "CONTRACTOR",
+  internship: "INTERN",
+  freelance: "CONTRACTOR",
+} as const;
 
 const formatSalary = (min: number, max: number): string => {
   const formatNumber = (num: number) =>
@@ -122,6 +138,11 @@ export default function JobDetail() {
   if (error || !job) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
+        <MinimalSEO
+          title="Lowongan Tidak Ditemukan"
+          description="Lowongan kerja yang Anda cari tidak tersedia atau telah ditutup."
+          noIndex
+        />
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -139,9 +160,85 @@ export default function JobDetail() {
   }
 
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+  const jobDescription = stripHtml(job.description);
+  const companyName = job.company?.name || "Perusahaan";
+  const locationText = job.city
+    ? `${job.city.name}, ${job.city.province?.name || "Indonesia"}`
+    : "Indonesia";
+  const seoDescription = `${job.title} di ${companyName}, ${locationText}. ${
+    jobDescription ||
+    "Lihat detail pekerjaan, persyaratan, lokasi, sistem kerja, dan cara melamar."
+  }`;
+  const companyLogo = job.company?.logo ? buildImageUrl(job.company.logo) : undefined;
+  const salaryMin = job.salary_min ?? undefined;
+  const salaryMax = job.salary_max ?? undefined;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: job.description,
+    datePosted: job.created_at,
+    validThrough: job.expiration_date || undefined,
+    employmentType: employmentTypeMap[job.job_type],
+    occupationalCategory: job.job_role?.name,
+    industry: job.company?.business_sector || undefined,
+    directApply: Boolean(job.job_url),
+    hiringOrganization: {
+      "@type": "Organization",
+      name: companyName,
+      sameAs: job.company?.website_url || undefined,
+      logo: companyLogo,
+    },
+    jobLocation: job.city
+      ? {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: job.city.name,
+            addressRegion: job.city.province?.name,
+            addressCountry: "ID",
+          },
+        }
+      : undefined,
+    applicantLocationRequirements:
+      job.work_system === "remote"
+        ? {
+            "@type": "Country",
+            name: "Indonesia",
+          }
+        : undefined,
+    baseSalary:
+      salaryMin || salaryMax
+        ? {
+            "@type": "MonetaryAmount",
+            currency: "IDR",
+            value: {
+              "@type": "QuantitativeValue",
+              minValue: salaryMin,
+              maxValue: salaryMax,
+              unitText: "MONTH",
+            },
+          }
+        : undefined,
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <>
+      <SEO
+        title={`${job.title} di ${companyName}`}
+        description={seoDescription}
+        keywords={`${job.title}, ${companyName}, ${job.job_role?.name}, lowongan kerja ${locationText}, ${JOB_TYPE_LABELS[job.job_type]}, ${WORK_SYSTEM_LABELS[job.work_system]}`}
+        image={companyLogo}
+        imageAlt={`Logo ${companyName}`}
+        url={`/jobs/${job.slug}`}
+        type="article"
+        publishedTime={job.created_at}
+        modifiedTime={job.updated_at}
+        section="Lowongan Kerja"
+        structuredData={structuredData}
+      />
+
+      <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
       <main className="flex-1 py-8">
@@ -523,6 +620,7 @@ export default function JobDetail() {
       )}
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }

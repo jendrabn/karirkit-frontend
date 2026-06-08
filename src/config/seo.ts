@@ -14,32 +14,15 @@ export const seoConfig = {
   },
 
   // Auth Pages
-  auth: {
+  login: {
     title: "Masuk ke KarirKit",
     description:
-      "Lanjutkan ke KarirKit dengan Google untuk mengakses dashboard, lamaran kerja, CV, surat lamaran, dan portofolio digital Anda.",
-  },
-  login: {
-    title: "Masuk ke Akun Anda",
-    description:
-      "Masuk ke akun KarirKit Anda untuk mengelola lamaran kerja, CV, surat lamaran, dan portofolio digital.",
+      "Masuk ke KarirKit dengan akun sosial untuk mengelola lamaran kerja, CV, surat lamaran, dan portofolio digital Anda.",
   },
   register: {
-    title: "Daftar Akun Baru",
+    title: "Daftar ke KarirKit",
     description:
-      "Daftar sekarang dan mulai kelola karir Anda dengan KarirKit. Gratis dan mudah digunakan.",
-  },
-  forgotPassword: {
-    title: "Lupa Password",
-    description: "Reset password akun KarirKit Anda dengan mudah dan aman.",
-  },
-  resetPassword: {
-    title: "Reset Password",
-    description: "Buat password baru untuk akun KarirKit Anda.",
-  },
-  verifyOTP: {
-    title: "Verifikasi OTP",
-    description: "Verifikasi kode OTP untuk melanjutkan proses autentikasi.",
+      "Daftar ke KarirKit dengan akun sosial dan mulai kelola karir, CV, surat lamaran, portofolio, dan lamaran kerja Anda.",
   },
 
   // Protected Pages

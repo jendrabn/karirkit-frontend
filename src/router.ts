@@ -102,42 +102,14 @@ export const createAppRouter = (queryClient: QueryClient) =>
         },
         // Auth routes (only for non-authenticated users)
         {
-          path: "/auth",
+          path: "/login",
           lazy: () =>
             import("./pages/Auth").then(
               convertWithPublicProtection(queryClient)
             ),
         },
         {
-          path: "/auth/login",
-          lazy: () =>
-            import("./pages/Auth").then(
-              convertWithPublicProtection(queryClient)
-            ),
-        },
-        {
-          path: "/auth/register",
-          lazy: () =>
-            import("./pages/Auth").then(
-              convertWithPublicProtection(queryClient)
-            ),
-        },
-        {
-          path: "/auth/forgot-password",
-          lazy: () =>
-            import("./pages/Auth").then(
-              convertWithPublicProtection(queryClient)
-            ),
-        },
-        {
-          path: "/auth/reset-password",
-          lazy: () =>
-            import("./pages/Auth").then(
-              convertWithPublicProtection(queryClient)
-            ),
-        },
-        {
-          path: "/auth/verify-otp",
+          path: "/register",
           lazy: () =>
             import("./pages/Auth").then(
               convertWithPublicProtection(queryClient)

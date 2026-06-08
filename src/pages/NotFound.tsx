@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 const NotFound = () => {
   const location = useLocation();
@@ -16,6 +17,11 @@ const NotFound = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+      <MinimalSEO
+        title="Halaman Tidak Ditemukan"
+        description="Halaman yang Anda cari tidak ada atau telah dipindahkan."
+        noIndex
+      />
       <div className="text-center space-y-6">
         <div className="space-y-2">
           <h1 className="text-8xl font-bold text-primary tracking-tighter">

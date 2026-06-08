@@ -10,6 +10,7 @@ import {
 } from "@/features/admin/jobs/api/update-job";
 import { JobForm } from "@/features/admin/jobs/components/JobForm";
 import { paths } from "@/config/paths";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function AdminJobEdit() {
   const navigate = useNavigate();
@@ -40,6 +41,10 @@ export default function AdminJobEdit() {
           { label: "Edit Lowongan" },
         ]}
       >
+        <MinimalSEO
+          title="Edit Lowongan"
+          description="Memuat data lowongan untuk diperbarui."
+        />
         <div className="flex flex-col items-center justify-center h-64 gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Memuat data lowongan...</p>
@@ -57,6 +62,10 @@ export default function AdminJobEdit() {
           { label: "Lowongan Tidak Ditemukan" },
         ]}
       >
+        <MinimalSEO
+          title="Lowongan Tidak Ditemukan"
+          description="Data lowongan yang ingin diedit tidak ditemukan."
+        />
         <div className="flex items-center justify-center h-64 text-muted-foreground">
           Lowongan tidak ditemukan
         </div>
@@ -72,6 +81,10 @@ export default function AdminJobEdit() {
         { label: "Edit Lowongan" },
       ]}
     >
+      <MinimalSEO
+        title={`Edit Lowongan - ${job.title}`}
+        description={`Perbarui data lowongan ${job.title}.`}
+      />
       <PageHeader
         title="Edit Lowongan"
         subtitle={`Memperbarui: ${job.title}`}

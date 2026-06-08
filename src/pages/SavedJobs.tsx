@@ -7,6 +7,7 @@ import { useBookmarks } from "@/features/jobs/hooks/use-bookmarks";
 import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
 import type { Job } from "@/types/job";
+import { MinimalSEO } from "@/components/MinimalSEO";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +25,11 @@ export default function SavedJobs() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <MinimalSEO
+        title="Lowongan Tersimpan"
+        description="Daftar lowongan kerja yang Anda simpan di KarirKit."
+        noIndex
+      />
       <Navbar />
 
       <main className="flex-1 py-12">

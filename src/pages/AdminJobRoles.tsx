@@ -31,6 +31,7 @@ import {
 } from "@/features/admin/job-roles/components/JobRoleColumnToggle";
 import { defaultColumnVisibility } from "@/features/admin/job-roles/types/job-role-column-toggle.constants";
 import { paths } from "@/config/paths";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 export default function AdminJobRoles() {
   const queryClient = useQueryClient();
@@ -187,6 +188,10 @@ export default function AdminJobRoles() {
         { label: "Role Pekerjaan" },
       ]}
     >
+      <MinimalSEO
+        title="Manajemen Role Pekerjaan"
+        description="Kelola kategori role pekerjaan untuk lowongan KarirKit."
+      />
       <PageHeader
         title="Manajemen Role Pekerjaan"
         subtitle="Kelola semua kategori role pekerjaan."

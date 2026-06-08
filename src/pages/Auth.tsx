@@ -3,7 +3,7 @@ import { paths } from "@/config/paths";
 import { seoConfig } from "@/config/seo";
 import logo from "@/assets/images/logo.png";
 import { SocialAuthButtons } from "@/features/auth/components/SocialAuthButtons";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 const policyLinks = [
   { label: "Ketentuan Layanan", href: "#" },
@@ -67,12 +67,16 @@ function AuthPolicyNotice() {
 }
 
 export default function Auth() {
+  const location = useLocation();
+  const isRegisterPage = location.pathname === paths.auth.register.getHref();
+  const seo = isRegisterPage ? seoConfig.register : seoConfig.login;
+
   return (
     <>
       <SEO
-        title={seoConfig.auth.title}
-        description={seoConfig.auth.description}
-        url={paths.auth.getHref()}
+        title={seo.title}
+        description={seo.description}
+        url={location.pathname}
         noIndex
       />
 

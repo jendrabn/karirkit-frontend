@@ -3,8 +3,11 @@ import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { MinimalSEO } from "@/components/MinimalSEO";
+import { SEO } from "@/components/SEO";
+import { env } from "@/config/env";
 import { usePublicCV } from "@/features/public/api/get-public-cv";
 import { CVDetail } from "@/features/cvs/components/CVDetail";
+import { buildImageUrl } from "@/lib/utils";
 
 export default function PublicCVShow() {
   const { slug } = useParams<{ slug: string }>();
@@ -42,11 +45,41 @@ export default function PublicCVShow() {
     );
   }
 
+  const cvUrl = `/cv/${cv.slug || slug}`;
+  const cvPhoto = cv.photo ? buildImageUrl(cv.photo) : undefined;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    mainEntity: {
+      "@type": "Person",
+      name: cv.name,
+      jobTitle: cv.headline,
+      description: cv.about || cv.headline,
+      image: cvPhoto,
+      url: `${env.APP_URL}${cvUrl}`,
+      email: cv.email,
+      telephone: cv.phone,
+      address: cv.address,
+      knowsAbout: cv.skills.map((skill) => skill.name),
+      sameAs: cv.social_links.map((link) => link.url),
+    },
+  };
+
   return (
     <div className="min-h-screen bg-slate-50/70 px-4 py-8 sm:px-6 lg:px-8">
-      <MinimalSEO
+      <SEO
         title={`${cv.name} - ${cv.headline}`}
-        description={`Lihat CV profesional ${cv.name}. ${cv.headline}`}
+        description={`Lihat CV profesional ${cv.name}. ${
+          cv.about || cv.headline
+        }`}
+        keywords={`cv ${cv.name}, resume ${cv.name}, ${cv.headline}, ${cv.skills
+          .map((skill) => skill.name)
+          .join(", ")}`}
+        image={cvPhoto}
+        imageAlt={`Foto profil ${cv.name}`}
+        url={cvUrl}
+        type="profile"
+        structuredData={structuredData}
       />
 
       <div className="mx-auto max-w-5xl space-y-8">

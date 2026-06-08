@@ -24,6 +24,7 @@ import {
   type ColumnVisibility,
 } from "@/features/admin/jobs/components/JobColumnToggle";
 import { defaultColumnVisibility } from "@/features/admin/jobs/types/job-column-toggle.constants";
+import { MinimalSEO } from "@/components/MinimalSEO";
 
 type SortField =
   | "created_at"
@@ -180,6 +181,10 @@ export default function AdminJobs() {
         { label: "Lowongan Kerja" },
       ]}
     >
+      <MinimalSEO
+        title="Manajemen Lowongan Kerja"
+        description="Kelola semua lowongan pekerjaan KarirKit."
+      />
       <PageHeader
         title="Manajemen Lowongan Kerja"
         subtitle="Kelola semua lowongan pekerjaan."
