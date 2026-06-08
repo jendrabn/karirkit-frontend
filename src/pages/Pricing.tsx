@@ -64,19 +64,9 @@ export default function Pricing() {
         <Navbar />
 
         <main className="flex-1">
-          <section className="border-b bg-muted/35">
-            <div className="container mx-auto max-w-4xl px-4 py-12 text-center lg:px-8 lg:py-16">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-                Harga Paket KarirKit
-              </h1>
-              <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-                Pilih paket yang sesuai untuk membuat CV, mengelola lamaran,
-                menyiapkan surat lamaran, dan membuka fitur premium KarirKit.
-              </p>
-            </div>
-          </section>
+          <h1 className="sr-only">Harga Paket KarirKit</h1>
 
-          <section className="py-10 lg:py-14">
+          <section className="py-8 lg:py-12">
             <div className="container mx-auto max-w-7xl px-4 lg:px-8">
               <SubscriptionManager
                 publicMode

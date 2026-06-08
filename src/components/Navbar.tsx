@@ -19,7 +19,6 @@ import {
   X,
   LogOut,
   User,
-  Home,
   FileText,
   Briefcase,
   FolderOpen,
@@ -38,10 +37,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Link, useLocation } from "react-router";
 
 const navLinks = [
-  { href: paths.home.getHref(), label: "Beranda", icon: Home },
+  { href: paths.pricing.getHref(), label: "Pricing", icon: CreditCard },
   { href: paths.jobs.list.getHref(), label: "Lowongan", icon: Briefcase },
   { href: paths.blog.list.getHref(), label: "Blog", icon: FileText },
-  { href: paths.pricing.getHref(), label: "Pricing", icon: CreditCard },
   {
     href: "https://cbtpro.web.id/",
     label: "CBT Pro",
@@ -82,7 +80,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-7">
             {navLinks.map((link) => {
               if (link.external) {
                 return (
@@ -91,7 +89,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                     href={link.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                    className="inline-flex items-center gap-1.5 text-[15px] font-medium leading-none text-muted-foreground transition-colors hover:text-foreground"
                   >
                     <span>{link.label}</span>
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -103,7 +101,7 @@ export function Navbar({ onLoginToggle }: NavbarProps) {
                 <Link
                   key={link.href}
                   to={link.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                  className="text-[15px] font-medium leading-none text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {link.label}
                 </Link>
