@@ -1,48 +1,76 @@
-import { Link } from "react-router";
+import type { KeyboardEvent, MouseEvent } from "react";
+import { useNavigate } from "react-router";
 import {
-  MapPin,
-  Briefcase,
-  Building2,
   Bookmark,
-  Banknote,
-  Clock,
-  GraduationCap,
-  Users,
+  Building2,
   Calendar,
-  ArrowRight,
+  Clock,
+  MapPin,
+  Users,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+
 import { Badge } from "@/components/ui/badge";
-import {
-  type Job,
-  JOB_TYPE_LABELS,
-  WORK_SYSTEM_LABELS,
-  EDUCATION_LEVEL_LABELS,
-} from "@/types/job";
-import { useBookmarks } from "../hooks/use-bookmarks";
+import { Card, CardContent } from "@/components/ui/card";
 import { dayjs } from "@/lib/date";
+import { buildImageUrl } from "@/lib/utils";
+import {
+  EDUCATION_LEVEL_LABELS,
+  JOB_TYPE_LABELS,
+  type Job,
+  WORK_SYSTEM_LABELS,
+} from "@/types/job";
+
+import { useBookmarks } from "../hooks/use-bookmarks";
 
 interface JobCardProps {
   job: Job;
 }
 
+const cardClassName =
+  "relative h-full cursor-pointer overflow-hidden border border-border/70 bg-card shadow-sm transition-[box-shadow,border-color,background-color,ring-color] duration-200 hover:border-primary/30 hover:bg-primary/5 hover:ring-1 hover:ring-primary/10 hover:shadow-[0_24px_60px_-24px_rgba(15,23,42,0.45)] dark:hover:bg-primary/10 dark:hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50";
+
+const badgeBaseClassName = "rounded-md px-2.5 py-1 text-xs font-medium";
+
+const bookmarkButtonBaseClassName =
+  "inline-flex h-5 w-5 shrink-0 items-center justify-center p-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50";
+
+const companyLogoWrapClassName =
+  "flex w-10 shrink-0 items-center justify-start sm:w-12";
+
+const companyTextClassName = "flex min-w-0 items-center gap-1.5";
+const footerMetaClassName =
+  "flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs leading-none text-muted-foreground";
+const footerMetaItemClassName = "flex items-center gap-1.5 leading-none";
+
 export function JobCard({ job }: JobCardProps) {
+  const navigate = useNavigate();
   const { isBookmarked, toggleBookmark, isToggling } = useBookmarks();
   const bookmarked = job.is_saved || isBookmarked(job.id);
+  const jobHref = `/jobs/${job.slug}`;
 
-  const handleBookmark = (e: React.MouseEvent) => {
+  const handleBookmark = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleBookmark(job);
+  };
+
+  const handleCardClick = () => {
+    navigate(jobHref);
+  };
+
+  const handleCardKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(jobHref);
+    }
   };
 
   const experienceLabel =
     job.min_years_of_experience === 0
       ? "Fresh Graduate"
       : job.max_years_of_experience
-      ? `${job.min_years_of_experience}-${job.max_years_of_experience} Tahun`
-      : `${job.min_years_of_experience}+ Tahun`;
+        ? `${job.min_years_of_experience}-${job.max_years_of_experience} Tahun`
+        : `${job.min_years_of_experience}+ Tahun`;
 
   const formatSalary = (min: number, max: number) => {
     const formatCompact = (num: number) => {
@@ -51,6 +79,7 @@ export function JobCard({ job }: JobCardProps) {
           maximumFractionDigits: 1,
         })}jt`;
       }
+
       return `Rp ${(num / 1000).toLocaleString("id-ID")}rb`;
     };
 
@@ -59,154 +88,143 @@ export function JobCard({ job }: JobCardProps) {
     if (max && max !== min) {
       return `${formatCompact(min)} - ${formatCompact(max)}`;
     }
+
     return `${formatCompact(min)}+`;
   };
 
   const daysUntilExpiration = dayjs(job.expiration_date).diff(dayjs(), "days");
   const isExpiringSoon = daysUntilExpiration <= 7 && daysUntilExpiration > 0;
+  const companyName = job.company?.name || "Perusahaan";
+  const companyLogoUrl = job.company?.logo ? buildImageUrl(job.company.logo) : "";
+
+  const jobBadges = [
+    {
+      key: "job-type",
+      variant: "secondary" as const,
+      content: JOB_TYPE_LABELS[job.job_type],
+    },
+    {
+      key: "work-system",
+      variant: "outline" as const,
+      content: WORK_SYSTEM_LABELS[job.work_system],
+    },
+    {
+      key: "role",
+      variant: "outline" as const,
+      content: job.job_role?.name || "Role",
+    },
+    {
+      key: "experience",
+      variant: "outline" as const,
+      content: experienceLabel,
+    },
+    {
+      key: "education",
+      variant: "outline" as const,
+      content: EDUCATION_LEVEL_LABELS[job.education_level],
+    },
+  ] as const;
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 relative group">
-      <CardContent className="p-5">
-        <div className="space-y-3">
-          {/* Header: Badges and Bookmark */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge
-                variant="secondary"
-                className="rounded-md px-2 py-0.5 text-xs font-medium"
-              >
-                {JOB_TYPE_LABELS[job.job_type]}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="rounded-md px-2 py-0.5 text-xs font-medium"
-              >
-                {WORK_SYSTEM_LABELS[job.work_system]}
-              </Badge>
-              {(job.talent_quota ?? 0) > 0 && (
-                <Badge
-                  variant="outline"
-                  className="rounded-md px-2 py-0.5 text-xs font-medium text-primary border-primary/30 inline-flex items-center gap-1"
-                >
-                  <Users className="h-3 w-3" />
-                  {job.talent_quota} posisi
-                </Badge>
-              )}
+    <Card
+      role="link"
+      tabIndex={0}
+      aria-label={`Lihat detail lowongan ${job.title}`}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      className={cardClassName}
+    >
+      <CardContent className="flex h-full flex-col p-4 sm:p-5">
+        <div className="flex flex-1 flex-col gap-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="line-clamp-2 text-base font-semibold leading-snug text-foreground sm:text-[17px]">
+                {job.title}
+              </h2>
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-10 w-10 rounded-full flex-shrink-0 transition-all z-10 relative ${
+            <button
+              type="button"
+              className={`${bookmarkButtonBaseClassName} ${
                 bookmarked
-                  ? "text-primary bg-primary/10 hover:bg-primary/20"
-                  : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               onClick={handleBookmark}
               disabled={isToggling}
             >
-              <Bookmark
-                className={`!size-5 ${bookmarked ? "fill-current" : ""}`}
-              />
+              <Bookmark className={`h-4 w-4 ${bookmarked ? "fill-current" : ""}`} />
               <span className="sr-only">Simpan Lowongan</span>
-            </Button>
+            </button>
           </div>
 
-          {/* Title */}
-          <div>
-            <Link to={`/jobs/${job.slug}`} className="block">
-              <h2 className="text-lg font-bold leading-tight hover:text-primary transition-colors line-clamp-2 mb-1.5 before:absolute before:inset-0 before:z-0">
-                {job.title}
-              </h2>
-            </Link>
-
-            {/* Company and Job Role */}
-            <div className="flex items-center gap-2.5 text-sm text-muted-foreground flex-wrap">
-              <div className="flex items-center gap-1.5">
-                <Building2 className="h-3.5 w-3.5 flex-shrink-0" />
-                <span className="font-medium hover:text-foreground transition-colors">
-                  {job.company?.name || "Perusahaan"}
-                </span>
-              </div>
-              <span className="text-muted-foreground/50">•</span>
-              <div className="flex items-center gap-1.5">
-                <Briefcase className="h-3.5 w-3.5 flex-shrink-0" />
-                <span>{job.job_role?.name || "Role"}</span>
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-1.5">
+            {jobBadges.map((badge) => (
+              <Badge
+                key={badge.key}
+                variant={badge.variant}
+                className={badgeBaseClassName}
+              >
+                {badge.content}
+              </Badge>
+            ))}
+            {(job.talent_quota ?? 0) > 0 ? (
+              <Badge
+                variant="outline"
+                className={`${badgeBaseClassName} inline-flex items-center gap-1 border-primary/25 text-primary`}
+              >
+                <Users className="h-3 w-3" />
+                {job.talent_quota} posisi
+              </Badge>
+            ) : null}
           </div>
 
-          {/* Job Details Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 py-2.5 border-y border-border/50">
-            {/* Location */}
-            <div className="flex items-center gap-1.5 text-sm">
-              <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-              <span className="text-foreground truncate">
-                {job.city?.name || "Lokasi"}
-              </span>
-            </div>
-
-            {/* Experience */}
-            <div className="flex items-center gap-1.5 text-sm">
-              <Briefcase className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-              <span className="text-foreground truncate">
-                {experienceLabel}
-              </span>
-            </div>
-
-            {/* Education */}
-            <div className="flex items-center gap-1.5 text-sm col-span-2 sm:col-span-1">
-              <GraduationCap className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-              <span className="text-foreground truncate">
-                {EDUCATION_LEVEL_LABELS[job.education_level]}
-              </span>
-            </div>
-          </div>
-
-          {/* Footer: Salary, Posted Date, and Action */}
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            {/* Left: Salary and Date */}
-            <div className="flex items-center gap-3 flex-wrap">
-              {/* Salary */}
-              <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400 text-sm">
-                <Banknote className="h-4 w-4 flex-shrink-0" />
-                <span className="whitespace-nowrap">
-                  {formatSalary(job.salary_min || 0, job.salary_max || 0)}
+          <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+            <div className={companyLogoWrapClassName}>
+              {companyLogoUrl ? (
+                <img
+                  src={companyLogoUrl}
+                  alt={companyName}
+                  className="h-auto w-full max-w-full object-contain"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-muted-foreground">
+                  {companyName.charAt(0)}
                 </span>
-              </div>
-
-              {/* Posted Time */}
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" />
-                <span className="whitespace-nowrap">
-                  {dayjs(job.created_at).fromNow()}
-                </span>
-              </div>
-
-              {/* Expiration Warning */}
-              {isExpiringSoon && (
-                <div className="flex items-center gap-1.5 text-xs text-orange-600 dark:text-orange-400 font-medium">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span className="whitespace-nowrap">
-                    {daysUntilExpiration} hari lagi
-                  </span>
-                </div>
               )}
             </div>
+            <div className="min-w-0">
+              <div className={companyTextClassName}>
+                <Building2 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <span className="truncate font-medium text-foreground">
+                  {companyName}
+                </span>
+              </div>
+              <div className="flex min-w-0 items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{job.city?.name || "Lokasi"}</span>
+              </div>
+            </div>
+          </div>
 
-            {/* Right: Action Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1 text-primary hover:text-primary hover:bg-primary/10 h-8 px-3 z-10 relative"
-              asChild
-            >
-              <Link to={`/jobs/${job.slug}`}>
-                Lihat Detail
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </Button>
+          <div className="mt-auto flex items-center justify-between gap-3 pt-1">
+            <div className={footerMetaClassName}>
+              <div className={footerMetaItemClassName}>
+                <Clock className="h-3.5 w-3.5" />
+                <span>{dayjs(job.created_at).fromNow()}</span>
+              </div>
+              {isExpiringSoon ? (
+                <div className={`${footerMetaItemClassName} font-medium text-orange-600 dark:text-orange-400`}>
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>{daysUntilExpiration} hari lagi</span>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="shrink-0 text-right text-[13px] font-semibold leading-none text-primary">
+              {formatSalary(job.salary_min || 0, job.salary_max || 0)}
+            </div>
           </div>
         </div>
       </CardContent>
