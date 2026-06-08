@@ -24,6 +24,10 @@ export const paths = {
     },
   },
 
+  pricing: {
+    getHref: () => "/pricing",
+  },
+
   auth: {
     getHref: (redirectTo?: string | null) =>
       `/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""}`,

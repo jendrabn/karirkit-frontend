@@ -87,6 +87,10 @@ export const createAppRouter = (queryClient: QueryClient) =>
           lazy: () => import("./pages/JobDetail").then(convert(queryClient)),
         },
         {
+          path: "/pricing",
+          lazy: () => import("./pages/Pricing").then(convert(queryClient)),
+        },
+        {
           path: "/u/:username",
           lazy: () =>
             import("./pages/PublicPortfolios").then(convert(queryClient)),

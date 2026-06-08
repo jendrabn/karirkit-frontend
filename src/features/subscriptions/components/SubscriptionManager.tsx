@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { id as indonesianLocale } from "date-fns/locale";
+import { useNavigate } from "react-router";
 import {
   ArrowRight,
   Check,
@@ -19,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { env } from "@/config/env";
+import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/AuthContext";
 import { getEnumBadgeClassName } from "@/lib/enum-badges";
 import { getContactLink } from "@/lib/utils";
@@ -44,6 +46,11 @@ const planIconMap = {
   pro: Crown,
   max: InfinityIcon,
 } as const;
+
+type SubscriptionManagerProps = {
+  publicMode?: boolean;
+  loginRedirectTo?: string;
+};
 
 function FeatureRow({
   enabled,
@@ -180,7 +187,11 @@ declare global {
   }
 }
 
-export function SubscriptionManager() {
+export function SubscriptionManager({
+  publicMode = false,
+  loginRedirectTo = paths.subscriptions.list.getHref(),
+}: SubscriptionManagerProps = {}) {
+  const navigate = useNavigate();
   const [isResumingPayment, setIsResumingPayment] = useState(false);
   const [manualPayment, setManualPayment] = useState<{
     plan: SubscriptionPlan;
@@ -189,7 +200,9 @@ export function SubscriptionManager() {
       amount?: number | null;
     };
   } | null>(null);
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const shouldFetchCurrentSubscription = !publicMode || isAuthenticated;
+  const shouldRequireCurrentSubscription = !publicMode || isAuthenticated;
   const {
     data: plansResponse,
     isLoading: isPlansLoading,
@@ -199,7 +212,11 @@ export function SubscriptionManager() {
     data: currentSubscription,
     isLoading: isSubscriptionLoading,
     error: subscriptionError,
-  } = useMySubscription();
+  } = useMySubscription({
+    queryConfig: {
+      enabled: shouldFetchCurrentSubscription,
+    },
+  });
   const plans = plansResponse?.plans ?? [];
   const isPaymentGatewayEnabled =
     plansResponse?.payment_gateway_enabled ?? false;
@@ -330,7 +347,10 @@ export function SubscriptionManager() {
     },
   });
 
-  if (isPlansLoading || isSubscriptionLoading) {
+  if (
+    isPlansLoading ||
+    (shouldFetchCurrentSubscription && isSubscriptionLoading)
+  ) {
     return (
       <div className="flex min-h-[320px] items-center justify-center rounded-2xl border bg-card">
         <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
@@ -343,7 +363,11 @@ export function SubscriptionManager() {
     );
   }
 
-  if (plansError || subscriptionError || !currentSubscription) {
+  if (
+    plansError ||
+    (shouldRequireCurrentSubscription &&
+      (subscriptionError || !currentSubscription))
+  ) {
     return (
       <Card className="border-destructive/20 bg-destructive/5 p-6">
         <p className="text-sm text-destructive">
@@ -353,31 +377,32 @@ export function SubscriptionManager() {
     );
   }
 
-  const currentSubscriptionPayload =
-    currentSubscription as unknown as Record<string, unknown>;
-  const activePlanId = currentSubscription.plan ?? "free";
+  const currentSubscriptionPayload = currentSubscription
+    ? (currentSubscription as unknown as Record<string, unknown>)
+    : {};
+  const activePlanId = currentSubscription?.plan ?? "free";
   const pendingPlanId = resolvePendingPlan(currentSubscriptionPayload);
   const canResumePayment = resolveCanResumePayment(currentSubscriptionPayload);
   const pendingGateway: SubscriptionGateway | null =
-    currentSubscription.gateway ??
+    currentSubscription?.gateway ??
     (canResumePayment ||
     resolveSnapToken(currentSubscriptionPayload) ||
     resolveCheckoutUrl(currentSubscriptionPayload)
       ? "midtrans"
       : null);
   const hasPendingPayment =
-    currentSubscription.status === "pending" && !!pendingPlanId;
+    currentSubscription?.status === "pending" && !!pendingPlanId;
   const pendingPlan = pendingPlanId
     ? plans.find((plan) => plan.id === pendingPlanId) ?? null
     : null;
   const canConfirmManualPayment =
     pendingGateway === "manual" &&
     !!pendingPlan &&
-    !!currentSubscription.order_id;
+    !!currentSubscription?.order_id;
   const pendingPlanLabel = pendingPlanId
     ? SUBSCRIPTION_PLAN_LABELS[pendingPlanId]
     : null;
-  const expiresAtLabel = currentSubscription.expires_at
+  const expiresAtLabel = currentSubscription?.expires_at
     ? format(new Date(currentSubscription.expires_at), "d MMM yyyy", {
         locale: indonesianLocale,
       })
@@ -432,7 +457,7 @@ export function SubscriptionManager() {
               <Button
                 onClick={async () => {
                   if (pendingGateway === "manual") {
-                    if (pendingPlan && currentSubscription.order_id) {
+                    if (pendingPlan && currentSubscription?.order_id) {
                       setManualPayment({
                         plan: pendingPlan,
                         order: {
@@ -473,7 +498,7 @@ export function SubscriptionManager() {
                   ? "Konfirmasi via WhatsApp"
                   : "Lanjutkan Pembayaran"}
               </Button>
-              {currentSubscription.id ? (
+              {currentSubscription?.id ? (
                 <Button
                   variant="outline"
                   onClick={() =>
@@ -503,7 +528,9 @@ export function SubscriptionManager() {
             orderMutation.isPending &&
             orderMutation.variables?.planId === plan.id;
           const currentPlanExpiresAtLabel =
-            isCurrent && currentSubscription.expires_at ? expiresAtLabel : null;
+            isCurrent && currentSubscription?.expires_at
+              ? expiresAtLabel
+              : null;
 
           return (
             <Card
@@ -652,11 +679,17 @@ export function SubscriptionManager() {
                     isCurrent ||
                     isPendingPlan ||
                     plan.id === "free" ||
+                    isAuthLoading ||
                     orderMutation.isPending ||
                     cancelMutation.isPending
                   }
                   onClick={() => {
                     if (plan.id === "free") {
+                      return;
+                    }
+
+                    if (!isAuthenticated) {
+                      navigate(paths.auth.getHref(loginRedirectTo));
                       return;
                     }
 

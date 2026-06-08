@@ -24,6 +24,7 @@ import {
   Briefcase,
   FolderOpen,
   ExternalLink,
+  CreditCard,
   Sun,
   Moon,
   LayoutDashboard,
@@ -40,6 +41,7 @@ const navLinks = [
   { href: paths.home.getHref(), label: "Beranda", icon: Home },
   { href: paths.jobs.list.getHref(), label: "Lowongan", icon: Briefcase },
   { href: paths.blog.list.getHref(), label: "Blog", icon: FileText },
+  { href: paths.pricing.getHref(), label: "Pricing", icon: CreditCard },
   {
     href: "https://cbtpro.web.id/",
     label: "CBT Pro",
