@@ -3,7 +3,6 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -15,7 +14,6 @@ import {
   ChevronsRight,
   Clock,
   Eye,
-  Search,
 } from "lucide-react";
 import { useBlogs, type GetBlogsParams } from "@/features/blogs/api/get-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
@@ -27,6 +25,7 @@ import { BlogSidebar } from "@/features/blogs/components/BlogSidebar";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { PublicPageHero } from "@/components/PublicPageHero";
 
 const Blog = () => {
   const perPage = 6;
@@ -114,62 +113,15 @@ const Blog = () => {
         <Navbar />
 
         <main className="flex-1">
-          {/* Hero Section with Pattern */}
-          <section className="relative py-16 lg:py-24 overflow-hidden">
-            {/* Background with geometric pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-              <div className="absolute inset-0 opacity-10">
-                <svg width="100%" height="100%">
-                  <defs>
-                    <pattern
-                      id="grid"
-                      width="40"
-                      height="40"
-                      patternUnits="userSpaceOnUse"
-                    >
-                      <path
-                        d="M 40 0 L 0 0 0 40"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1"
-                      />
-                    </pattern>
-                  </defs>
-                  <rect width="100%" height="100%" fill="url(#grid)" />
-                </svg>
-              </div>
-              {/* Decorative circles */}
-              <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl" />
-              <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-            </div>
-
-            <div className="container mx-auto px-4 lg:px-8 relative z-10">
-              <div className="max-w-3xl mx-auto text-center space-y-6">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-                  Blog & Artikel Karier
-                </h1>
-                <p className="text-muted-foreground text-lg md:text-xl">
-                  Tips, panduan, dan insight untuk membantu perjalanan karier
-                  Anda
-                </p>
-                <div className="max-w-xl mx-auto pt-6">
-                  <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-primary/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative">
-                      <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10 pointer-events-none" />
-                      <Input
-                        placeholder="Cari artikel..."
-                        className="w-full pl-14 pr-5 h-14 text-base bg-background border-2 rounded-full focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all"
-                        value={searchInput}
-                        onChange={(e) => handleSearchInput(e.target.value)}
-                        onKeyDown={handleSearchSubmit}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          <PublicPageHero
+            title="Blog & Artikel Karier"
+            description="Tips, panduan, dan insight untuk membantu perjalanan karier Anda"
+            searchId="blog-search"
+            searchPlaceholder="Cari artikel..."
+            searchValue={searchInput}
+            onSearchChange={handleSearchInput}
+            onSearchSubmit={handleSearchSubmit}
+          />
 
           {/* Main Content with Sidebar */}
           <section className="py-12 lg:py-16">

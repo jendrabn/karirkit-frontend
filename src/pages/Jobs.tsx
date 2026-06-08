@@ -1,7 +1,6 @@
-import { Briefcase, Loader2, Search } from "lucide-react";
+import { Briefcase, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Input } from "@/components/ui/input";
 import { useJobs } from "@/features/jobs/api/get-jobs";
 import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 import type { JobFilters } from "@/types/job";
@@ -14,6 +13,7 @@ import { JobPagination } from "@/features/jobs/components/JobPagination";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { SEO } from "@/components/SEO";
 import { env } from "@/config/env";
+import { PublicPageHero } from "@/components/PublicPageHero";
 
 export default function Jobs() {
   const perPage = 10;
@@ -206,71 +206,19 @@ export default function Jobs() {
         structuredData={structuredData}
       />
 
-      <div className="min-h-screen flex flex-col bg-background">
-      <Navbar />
+      <div className="flex min-h-screen flex-col bg-background">
+        <Navbar />
 
-      <main className="flex-1">
-        {/* Hero Section with Pattern */}
-        <section className="relative py-16 lg:py-24 overflow-hidden">
-          {/* Background with hexagon pattern */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-            <div className="absolute inset-0 opacity-10">
-              <svg width="100%" height="100%">
-                <defs>
-                  <pattern
-                    id="hexagon-pattern"
-                    width="56"
-                    height="100"
-                    patternUnits="userSpaceOnUse"
-                    patternTransform="scale(0.5)"
-                  >
-                    <path
-                      d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                    />
-                    <path
-                      d="M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                    />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#hexagon-pattern)" />
-              </svg>
-            </div>
-            {/* Decorative circles */}
-            <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          </div>
-
-          <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            <div className="max-w-3xl mx-auto text-center space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-                Temukan Karir Impianmu
-              </h1>
-              <p className="text-muted-foreground text-lg md:text-xl">
-                Jelajahi ribuan lowongan pekerjaan dari perusahaan-perusahaan
-                terbaik di Indonesia
-              </p>
-              <div className="max-w-xl mx-auto pt-6">
-                <form onSubmit={handleSearchSubmit}>
-                  <div className="relative">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10 pointer-events-none" />
-                    <Input
-                      placeholder="Cari posisi atau perusahaan..."
-                      className="w-full pl-14 pr-5 h-14 text-base bg-background border-2 rounded-full focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all shadow-sm hover:shadow-md"
-                      value={searchInput}
-                      onChange={(e) => handleSearchInput(e.target.value)}
-                    />
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
+        <main className="flex-1">
+          <PublicPageHero
+            title="Temukan Karir Impianmu"
+            description="Jelajahi ribuan lowongan pekerjaan dari perusahaan-perusahaan terbaik di Indonesia"
+            searchId="jobs-search"
+            searchPlaceholder="Cari posisi atau perusahaan..."
+            searchValue={searchInput}
+            onSearchChange={handleSearchInput}
+            onSearchSubmit={handleSearchSubmit}
+          />
 
         {/* Main Content */}
         <section className="py-12 lg:py-16">
