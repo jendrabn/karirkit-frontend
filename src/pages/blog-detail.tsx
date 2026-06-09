@@ -191,20 +191,13 @@ const BlogDetail = () => {
           {/* Article Header */}
           <section className="pb-12">
             <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
-              <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-12">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
                 <article className="min-w-0">
                   <div className="max-w-4xl">
                     {/* Title */}
                     <h1 className="text-3xl font-bold leading-tight tracking-tight text-foreground md:text-4xl lg:text-[3.15rem]">
                       {blog.title}
                     </h1>
-
-                    {/* Excerpt */}
-                    {blog.excerpt && (
-                      <p className="mt-5 text-base leading-7 text-muted-foreground md:text-lg">
-                        {blog.excerpt}
-                      </p>
-                    )}
 
                     {/* Author + Meta + Share */}
                     <div className="mt-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
@@ -244,23 +237,23 @@ const BlogDetail = () => {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                        <span className="inline-flex h-10 items-center gap-2 rounded-md border border-border/70 bg-background px-3.5 text-sm font-medium text-muted-foreground shadow-sm select-none">
-                          <Clock className="h-4 w-4 shrink-0" />
+                        <span className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border/70 bg-background px-3 text-xs font-medium text-muted-foreground shadow-sm select-none sm:h-10 sm:gap-2 sm:px-3.5 sm:text-sm">
+                          <Clock className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                           <span>{blog.read_time} min</span>
                         </span>
 
-                        <span className="inline-flex h-10 items-center gap-2 rounded-md border border-border/70 bg-background px-3.5 text-sm font-medium text-muted-foreground shadow-sm select-none">
-                          <Eye className="h-4 w-4 shrink-0" />
+                        <span className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border/70 bg-background px-3 text-xs font-medium text-muted-foreground shadow-sm select-none sm:h-10 sm:gap-2 sm:px-3.5 sm:text-sm">
+                          <Eye className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                           <span>{blog.views.toLocaleString()}</span>
                         </span>
 
                         <Button
                           variant="outline"
-                          className="h-10 gap-2 rounded-md border-border/70 bg-background px-3.5 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-foreground"
+                          className="h-9 gap-1.5 rounded-md border-border/70 bg-background px-3 text-xs font-medium text-foreground shadow-sm hover:bg-accent hover:text-foreground sm:h-10 sm:gap-2 sm:px-3.5 sm:text-sm"
                           onClick={handleShare}
                           aria-label="Bagikan artikel"
                         >
-                          <Share2 className="h-4 w-4" />
+                          <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           <span>Share</span>
                         </Button>
                       </div>
