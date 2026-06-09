@@ -53,7 +53,6 @@ export function FAQSection() {
     <section id="faq" className="py-16 lg:py-24 bg-muted/30">
       <div className="container mx-auto px-4 lg:px-8 max-w-3xl">
         <div className="text-center mb-12">
-          <p className="text-sm text-primary font-medium mb-2">FAQ</p>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
             Pertanyaan yang Sering Diajukan
           </h2>

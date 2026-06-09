@@ -15,9 +15,6 @@ export function TipsSection() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
           <div>
-            <p className="text-sm text-primary font-medium mb-2 uppercase tracking-wider">
-              Blog & Tips
-            </p>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
               Temukan Panduan dan Tips Karir
             </h2>

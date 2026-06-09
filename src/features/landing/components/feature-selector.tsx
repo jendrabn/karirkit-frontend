@@ -1,6 +1,4 @@
-import { Link } from "react-router";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import {
   FeatureIllustration,
@@ -16,7 +14,6 @@ const featureMeta = [
   {
     id: "application",
     image: iconTracker,
-    href: "/applications",
     illustration: "application" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-secondary via-secondary/50 to-background",
     title: "Pelacak Lamaran",
@@ -30,12 +27,10 @@ const featureMeta = [
       "Filter berdasarkan status, tipe kerja, sistem kerja, tanggal, lokasi, perusahaan, dan rentang gaji",
       "Pantau statistik lamaran untuk tahu mana yang perlu ditindaklanjuti lebih cepat",
     ],
-    cta: "Kelola Lamaran Sekarang",
   },
   {
     id: "applicationletter",
     image: iconSurat,
-    href: "/application-letters",
     illustration: "applicationletter" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-primary/10 via-primary/5 to-background",
     title: "Surat Lamaran",
@@ -49,12 +44,10 @@ const featureMeta = [
       "Gunakan template paragraf untuk pembuka, isi, dan penutup agar lebih konsisten",
       "Tambahkan tanda tangan digital, gandakan surat, lalu unduh ke DOCX atau PDF",
     ],
-    cta: "Buat Surat Lamaran",
   },
   {
     id: "cv",
     image: iconCV,
-    href: "/cvs",
     illustration: "cv" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-accent via-accent/50 to-background",
     title: "Pembuat CV",
@@ -68,12 +61,10 @@ const featureMeta = [
       "Atur slug dan visibilitas CV menjadi private, public, atau unlisted sesuai kebutuhan",
       "Bagikan CV publik lewat link unik, lalu unduh ke DOCX atau PDF atau duplikasi untuk versi lain",
     ],
-    cta: "Buat CV Profesional",
   },
   {
     id: "portfolio",
     image: iconPortfolio,
-    href: "/portfolios",
     illustration: "portfolio" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-muted via-muted/50 to-background",
     title: "Portofolio Digital",
@@ -87,7 +78,6 @@ const featureMeta = [
       "Tambahkan cover, galeri media, daftar tools, live demo, dan source code",
       "Cocok untuk proyek kerja, freelance, personal, maupun tugas akademik",
     ],
-    cta: "Buat Portofolio Digital",
   },
 ] as const;
 
@@ -96,9 +86,6 @@ export function FeatureSelector() {
     <section id="application-tracker" className="py-16 lg:py-24 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center mb-12">
-          <p className="text-sm text-primary font-medium mb-2 uppercase tracking-wider">
-            Fitur Utama
-          </p>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
             Semua yang Anda Butuhkan untuk Karier Impian
           </h2>
@@ -145,8 +132,6 @@ export function FeatureSelector() {
                 title={feature.detailTitle}
                 description={feature.description}
                 bullets={[...feature.bullets]}
-                cta={feature.cta}
-                href={feature.href}
                 illustration={feature.illustration}
                 bgColor={feature.bgColor}
               />
@@ -162,8 +147,6 @@ interface FeatureDetailProps {
   title: string;
   description: string;
   bullets: string[];
-  cta: string;
-  href: string;
   illustration: FeatureIllustrationVariant;
   bgColor: string;
 }
@@ -172,8 +155,6 @@ function FeatureDetail({
   title,
   description,
   bullets,
-  cta,
-  href,
   illustration,
   bgColor,
 }: FeatureDetailProps) {
@@ -198,15 +179,10 @@ function FeatureDetail({
             </li>
           ))}
         </ul>
-        <Button asChild className="mt-2 w-fit">
-          <Link to={href}>{cta}</Link>
-        </Button>
       </div>
 
       <div className="order-first lg:order-last">
-        <div className="transform transition-transform duration-300 hover:scale-[1.02]">
-          <FeatureIllustration variant={illustration} />
-        </div>
+        <FeatureIllustration variant={illustration} />
       </div>
     </div>
   );

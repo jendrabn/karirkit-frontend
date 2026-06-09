@@ -100,9 +100,6 @@ export function BenefitsSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="space-y-8">
             <div>
-              <p className="text-sm text-primary font-medium mb-2 uppercase tracking-wider">
-                Keunggulan
-              </p>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                 Satu Tempat untuk Lamaran, Dokumen, dan Langganan
               </h2>

@@ -146,9 +146,6 @@ export function TestimonialsSection() {
 
       <div className="container mx-auto relative z-10 px-4 lg:px-8">
         <div className="mb-12 text-center">
-          <p className="mb-2 text-sm font-medium uppercase tracking-wider text-primary">
-            Testimoni
-          </p>
           <h2 className="text-2xl font-bold text-foreground md:text-3xl lg:text-4xl">
             Dengar Cerita Pengguna KarirKit
           </h2>
