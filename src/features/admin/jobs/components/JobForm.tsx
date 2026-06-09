@@ -1,8 +1,15 @@
 import { useMemo } from "react";
 import { useForm, Controller, type DefaultValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -19,7 +26,13 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldLabel, FieldError, FieldSet } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+  FieldSet,
+} from "@/components/ui/field";
 import {
   JOB_TYPE_LABELS,
   WORK_SYSTEM_LABELS,
@@ -52,22 +65,11 @@ interface JobFormProps {
 
 type JobFormValues = CreateJobInput | UpdateJobInput;
 
-const toDateTimeLocalValue = (value?: string | null) => {
+const toDateInputValue = (value?: string | null) => {
   if (!value) return "";
 
   const parsedValue = dayjs(value);
-  return parsedValue.isValid()
-    ? parsedValue.utc().local().format("YYYY-MM-DDTHH:mm")
-    : "";
-};
-
-const toIsoDateTimeValue = (value?: string | null) => {
-  if (!value) return undefined;
-
-  const parsedValue = new Date(value);
-  return Number.isNaN(parsedValue.getTime())
-    ? value
-    : parsedValue.toISOString();
+  return parsedValue.isValid() ? parsedValue.format("YYYY-MM-DD") : "";
 };
 
 const ensureSelectedItemExists = (
@@ -92,19 +94,19 @@ const getDefaultValues = (initialData?: Job): DefaultValues<JobFormValues> => {
       work_system: initialData.work_system,
       education_level: initialData.education_level,
       min_years_of_experience: initialData.min_years_of_experience,
-      max_years_of_experience: initialData.max_years_of_experience,
+      max_years_of_experience: initialData.max_years_of_experience ?? null,
       description: initialData.description,
       requirements: initialData.requirements,
-      salary_min: initialData.salary_min,
-      salary_max: initialData.salary_max,
-      talent_quota: initialData.talent_quota,
+      salary_min: initialData.salary_min ?? null,
+      salary_max: initialData.salary_max ?? null,
+      talent_quota: initialData.talent_quota ?? null,
       job_url: initialData.job_url,
       contact_name: initialData.contact_name,
       contact_email: initialData.contact_email,
       contact_phone: initialData.contact_phone,
       medias: initialData.medias?.map((media) => ({ path: media.path })) || [],
       status: initialData.status,
-      expiration_date: toDateTimeLocalValue(initialData.expiration_date),
+      expiration_date: toDateInputValue(initialData.expiration_date),
     };
   }
 
@@ -117,8 +119,8 @@ const getDefaultValues = (initialData?: Job): DefaultValues<JobFormValues> => {
     max_years_of_experience: null,
     description: "",
     requirements: "",
-    salary_min: 0,
-    salary_max: 0,
+    salary_min: null,
+    salary_max: null,
     talent_quota: 1,
     job_url: "",
     contact_name: "",
@@ -168,24 +170,25 @@ export function JobForm({
   const handleSubmit = (values: JobFormValues) => {
     onSubmit({
       ...values,
-      expiration_date: toIsoDateTimeValue(values.expiration_date),
+      expiration_date: values.expiration_date || null,
     });
   };
 
   return (
     <form
       onSubmit={form.handleSubmit(handleSubmit, displayFormErrors)}
-      className="space-y-6"
+      className="flex flex-col gap-6"
     >
-      <FieldSet disabled={isLoading} className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <FieldSet disabled={isLoading} className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/*  Informasi Dasar  */}
           <Card>
             <CardHeader>
               <CardTitle>Informasi Dasar</CardTitle>
             </CardHeader>
 
-            <CardContent className="space-y-4">
+            <CardContent className="flex flex-col gap-4">
+              <FieldGroup className="grid gap-4">
               <Field>
                 <FieldLabel>
                   Judul Lowongan <span className="text-destructive">*</span>
@@ -223,7 +226,7 @@ export function JobForm({
                           : "")
                       }
                     >
-                    <ComboboxInput
+                      <ComboboxInput
                         className={cn(
                           "w-full",
                           form.formState.errors.company_id &&
@@ -348,11 +351,12 @@ export function JobForm({
                     <FieldError>
                       {form.formState.errors.city_id?.message}
                     </FieldError>
-                  </Field>
-                )}
+                    </Field>
+                  )}
               />
+              </FieldGroup>
 
-              <div className="grid grid-cols-2 gap-4">
+              <FieldGroup className="grid gap-4 sm:grid-cols-2">
                 <Controller
                   control={form.control}
                   name="job_type"
@@ -374,7 +378,7 @@ export function JobForm({
                         >
                           <SelectValue placeholder="Pilih Tipe Pekerjaan" />
                         </SelectTrigger>
-                        <SelectContent className="bg-popover z-50">
+                        <SelectContent>
                           {Object.entries(JOB_TYPE_LABELS).map(([v, l]) => (
                             <SelectItem key={v} value={v}>
                               {l}
@@ -409,7 +413,7 @@ export function JobForm({
                         >
                           <SelectValue placeholder="Pilih Sistem Kerja" />
                         </SelectTrigger>
-                        <SelectContent className="bg-popover z-50">
+                        <SelectContent>
                           {Object.entries(WORK_SYSTEM_LABELS).map(([v, l]) => (
                             <SelectItem key={v} value={v}>
                               {l}
@@ -423,7 +427,7 @@ export function JobForm({
                     </Field>
                   )}
                 />
-              </div>
+              </FieldGroup>
 
               <Controller
                 control={form.control}
@@ -446,7 +450,7 @@ export function JobForm({
                       >
                         <SelectValue placeholder="Pilih Pendidikan Minimal" />
                       </SelectTrigger>
-                      <SelectContent className="bg-popover z-50">
+                      <SelectContent>
                         {Object.entries(EDUCATION_LEVEL_LABELS).map(
                           ([v, l]) => (
                             <SelectItem key={v} value={v}>
@@ -463,7 +467,7 @@ export function JobForm({
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <FieldGroup className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>
                     Pengalaman Minimal (Tahun){" "}
@@ -474,7 +478,8 @@ export function JobForm({
                     min={0}
                     placeholder="Contoh: 2"
                     {...form.register("min_years_of_experience", {
-                      valueAsNumber: true,
+                      setValueAs: (value) =>
+                        value === "" ? null : Number(value),
                     })}
                     className={cn(
                       form.formState.errors.min_years_of_experience &&
@@ -493,7 +498,8 @@ export function JobForm({
                     min={0}
                     placeholder="Contoh: 5"
                     {...form.register("max_years_of_experience", {
-                      valueAsNumber: true,
+                      setValueAs: (value) =>
+                        value === "" ? null : Number(value),
                     })}
                     className={cn(
                       form.formState.errors.max_years_of_experience &&
@@ -504,7 +510,7 @@ export function JobForm({
                     {form.formState.errors.max_years_of_experience?.message}
                   </FieldError>
                 </Field>
-              </div>
+              </FieldGroup>
             </CardContent>
           </Card>
 
@@ -514,15 +520,18 @@ export function JobForm({
               <CardTitle>Gaji & Kontak</CardTitle>
             </CardHeader>
 
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <CardContent className="flex flex-col gap-4">
+              <FieldGroup className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Gaji Minimum</FieldLabel>
                   <Input
                     type="number"
                     min={0}
                     placeholder="Contoh: 8000000"
-                    {...form.register("salary_min", { valueAsNumber: true })}
+                    {...form.register("salary_min", {
+                      setValueAs: (value) =>
+                        value === "" ? null : Number(value),
+                    })}
                     className={cn(
                       form.formState.errors.salary_min && "border-destructive",
                     )}
@@ -538,7 +547,10 @@ export function JobForm({
                     type="number"
                     min={0}
                     placeholder="Contoh: 12000000"
-                    {...form.register("salary_max", { valueAsNumber: true })}
+                    {...form.register("salary_max", {
+                      setValueAs: (value) =>
+                        value === "" ? null : Number(value),
+                    })}
                     className={cn(
                       form.formState.errors.salary_max && "border-destructive",
                     )}
@@ -547,7 +559,7 @@ export function JobForm({
                     {form.formState.errors.salary_max?.message}
                   </FieldError>
                 </Field>
-              </div>
+              </FieldGroup>
 
               <Field>
                 <FieldLabel>Kuota Talenta</FieldLabel>
@@ -555,7 +567,10 @@ export function JobForm({
                   type="number"
                   min={1}
                   placeholder="Contoh: 3"
-                  {...form.register("talent_quota", { valueAsNumber: true })}
+                  {...form.register("talent_quota", {
+                    setValueAs: (value) =>
+                      value === "" ? null : Number(value),
+                  })}
                   className={cn(
                     form.formState.errors.talent_quota &&
                       "border-destructive",
@@ -646,7 +661,7 @@ export function JobForm({
                       >
                         <SelectValue placeholder="Pilih Status Lowongan" />
                       </SelectTrigger>
-                      <SelectContent className="bg-popover z-50">
+                      <SelectContent>
                         <SelectItem value="draft">Draft</SelectItem>
                         <SelectItem value="published">Published</SelectItem>
                         <SelectItem value="closed">Closed</SelectItem>
@@ -660,20 +675,53 @@ export function JobForm({
                 )}
               />
 
-              <Field>
-                <FieldLabel>Tanggal Kadaluarsa</FieldLabel>
-                <Input
-                  type="datetime-local"
-                  {...form.register("expiration_date")}
-                  className={cn(
-                    form.formState.errors.expiration_date &&
-                      "border-destructive",
-                  )}
-                />
-                <FieldError>
-                  {form.formState.errors.expiration_date?.message}
-                </FieldError>
-              </Field>
+              <Controller
+                control={form.control}
+                name="expiration_date"
+                render={({ field }) => (
+                  <Field data-invalid={!!form.formState.errors.expiration_date}>
+                    <FieldLabel>Tanggal Kadaluarsa</FieldLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !field.value && "text-muted-foreground",
+                            form.formState.errors.expiration_date &&
+                              "border-destructive",
+                          )}
+                          aria-invalid={
+                            !!form.formState.errors.expiration_date
+                          }
+                        >
+                          <CalendarIcon data-icon="inline-start" />
+                          {field.value
+                            ? dayjs(field.value).format("DD MMMM YYYY")
+                            : "Pilih Tanggal Kadaluarsa"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value ? dayjs(field.value).toDate() : undefined
+                          }
+                          onSelect={(date) =>
+                            field.onChange(
+                              date ? dayjs(date).format("YYYY-MM-DD") : null,
+                            )
+                          }
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FieldError>
+                      {form.formState.errors.expiration_date?.message}
+                    </FieldError>
+                  </Field>
+                )}
+              />
             </CardContent>
           </Card>
         </div>
@@ -711,7 +759,7 @@ export function JobForm({
             <CardTitle>Deskripsi & Persyaratan</CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="flex flex-col gap-4">
             <Controller
               control={form.control}
               name="description"
@@ -773,7 +821,7 @@ export function JobForm({
             ? "Menyimpan..."
             : isEdit
               ? "Simpan Perubahan"
-              : "Terbitkan Lowongan"}
+              : "Simpan"}
         </Button>
       </div>
     </form>
