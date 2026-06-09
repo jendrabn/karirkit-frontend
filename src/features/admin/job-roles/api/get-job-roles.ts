@@ -1,7 +1,7 @@
 import { api } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
-import type { JobRoleListResponse } from "@/types/jobRole";
+import type { JobRoleListResponse } from "@/types/job-role";
 
 export interface GetJobRolesParams {
   page?: number;

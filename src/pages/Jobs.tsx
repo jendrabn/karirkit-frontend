@@ -1,19 +1,19 @@
 import { Briefcase, Loader2 } from "lucide-react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import { useJobs } from "@/features/jobs/api/get-jobs";
 import { useCompaniesList, useJobRolesList, useCitiesList } from "@/lib/jobs";
 import type { JobFilters } from "@/types/job";
-import { JobCard } from "@/features/jobs/components/JobCard";
+import { JobCard } from "@/features/jobs/components/job-card";
 import {
   type JobFilterState,
   JobFilterSidebar,
-} from "@/features/jobs/components/JobFilterSidebar";
-import { JobPagination } from "@/features/jobs/components/JobPagination";
+} from "@/features/jobs/components/job-filter-sidebar";
+import { JobPagination } from "@/features/jobs/components/job-pagination";
 import { useUrlParams } from "@/hooks/use-url-params";
-import { SEO } from "@/components/SEO";
+import { SEO } from "@/components/seo";
 import { env } from "@/config/env";
-import { PublicPageHero } from "@/components/PublicPageHero";
+import { PublicPageHero } from "@/components/public-page-hero";
 
 export default function Jobs() {
   const perPage = 10;

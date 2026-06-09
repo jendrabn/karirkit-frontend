@@ -1,4 +1,4 @@
-import { type ColumnVisibility } from "../components/JobRoleColumnToggle";
+import { type ColumnVisibility } from "../components/job-role-column-toggle";
 
 export const defaultColumnVisibility: ColumnVisibility = {
   name: true,

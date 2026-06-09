@@ -1,4 +1,4 @@
-import { type ColumnVisibility } from "../components/TemplatesColumnToggle";
+import { type ColumnVisibility } from "../components/templates-column-toggle";
 
 export const defaultColumnVisibility: ColumnVisibility = {
   preview: true,

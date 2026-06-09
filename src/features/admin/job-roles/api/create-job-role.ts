@@ -2,7 +2,7 @@ import { z } from "zod";
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import type { JobRole } from "@/types/jobRole";
+import type { JobRole } from "@/types/job-role";
 
 export const jobRoleSchema = z.object({
   name: z.string().min(1, "Nama role wajib diisi"),

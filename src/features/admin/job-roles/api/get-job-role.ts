@@ -1,7 +1,7 @@
 import { api } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
-import type { JobRole } from "@/types/jobRole";
+import type { JobRole } from "@/types/job-role";
 
 export const getJobRole = (id: string): Promise<JobRole> => {
   return api.get(`/admin/job-roles/${id}`);

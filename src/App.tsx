@@ -12,10 +12,10 @@ import { LoadingFallback } from "@/components/ui/loading-fallback";
 import { Toaster } from "@/components/ui/sonner";
 import { RouterProvider } from "react-router";
 import { createAppRouter } from "./router";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/contexts/auth-context";
 import { ThemeProvider } from "./hooks/use-theme";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
-import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
+import { PWAUpdatePrompt } from "@/components/pwa-update-prompt";
 
 export const App = () => {
   const [queryClient] = React.useState(

@@ -1,4 +1,4 @@
-import { type CategoryColumnVisibility } from "../components/CategoryColumnToggle";
+import { type CategoryColumnVisibility } from "../components/category-column-toggle";
 
 export const defaultCategoryColumnVisibility: CategoryColumnVisibility = {
   name: true,

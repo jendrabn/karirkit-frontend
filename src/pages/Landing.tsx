@@ -1,15 +1,15 @@
-import { Navbar } from "@/components/Navbar";
-import { HeroSection } from "@/features/landing/components/HeroSection";
-import { FeatureSelector } from "@/features/landing/components/FeatureSelector";
-import { TrustedBySection } from "@/features/landing/components/TrustedBySection";
-import { BenefitsSection } from "@/features/landing/components/BenefitsSection";
-import { TemplateSliderSection } from "@/features/landing/components/TemplateSliderSection";
-import { CTASection } from "@/features/landing/components/CTASection";
-import { TestimonialsSection } from "@/features/landing/components/TestimonialsSection";
-import { TipsSection } from "@/features/landing/components/TipsSection";
-import { FAQSection } from "@/features/landing/components/FAQSection";
-import { Footer } from "@/components/Footer";
-import { SEO } from "@/components/SEO";
+import { Navbar } from "@/components/navbar";
+import { HeroSection } from "@/features/landing/components/hero-section";
+import { FeatureSelector } from "@/features/landing/components/feature-selector";
+import { TrustedBySection } from "@/features/landing/components/trusted-by-section";
+import { BenefitsSection } from "@/features/landing/components/benefits-section";
+import { TemplateSliderSection } from "@/features/landing/components/template-slider-section";
+import { CTASection } from "@/features/landing/components/cta-section";
+import { TestimonialsSection } from "@/features/landing/components/testimonials-section";
+import { TipsSection } from "@/features/landing/components/tips-section";
+import { FAQSection } from "@/features/landing/components/faq-section";
+import { Footer } from "@/components/footer";
+import { SEO } from "@/components/seo";
 import { env } from "@/config/env";
 
 const Landing = () => {

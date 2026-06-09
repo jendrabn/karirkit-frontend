@@ -1,5 +1,5 @@
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
@@ -10,12 +10,12 @@ import {
 import { useBlogs, type GetBlogsParams } from "@/features/blogs/api/get-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { useBlogTags } from "@/features/blogs/api/get-blog-tags";
-import { SEO } from "@/components/SEO";
+import { SEO } from "@/components/seo";
 import { env } from "@/config/env";
-import { BlogSidebar } from "@/features/blogs/components/BlogSidebar";
+import { BlogSidebar } from "@/features/blogs/components/blog-sidebar";
 import { useUrlParams } from "@/hooks/use-url-params";
-import { PublicPageHero } from "@/components/PublicPageHero";
-import { BlogCard } from "@/features/blogs/components/BlogCard";
+import { PublicPageHero } from "@/components/public-page-hero";
+import { BlogCard } from "@/features/blogs/components/blog-card";
 
 const Blog = () => {
   const perPage = 6;

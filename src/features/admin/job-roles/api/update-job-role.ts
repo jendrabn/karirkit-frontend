@@ -2,7 +2,7 @@ import { z } from "zod";
 import { api } from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MutationConfig } from "@/lib/react-query";
-import type { JobRole } from "@/types/jobRole";
+import type { JobRole } from "@/types/job-role";
 import { jobRoleSchema } from "./create-job-role";
 
 export type UpdateJobRoleInput = z.infer<typeof jobRoleSchema>;

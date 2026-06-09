@@ -1,8 +1,8 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { PageHeader } from "@/components/layouts/PageHeader";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { PageHeader } from "@/components/layouts/page-header";
 
-import ProfileForm from "@/features/account/components/ProfileForm";
-import { MinimalSEO } from "@/components/MinimalSEO";
+import ProfileForm from "@/features/account/components/profile-form";
+import { MinimalSEO } from "@/components/minimal-seo";
 import { seoConfig } from "@/config/seo";
 
 export default function Profile() {

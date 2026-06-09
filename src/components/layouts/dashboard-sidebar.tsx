@@ -1,0 +1,543 @@
+import { useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router";
+import {
+  LayoutDashboard,
+  FileText,
+  ChevronDown,
+  ChevronRight,
+  User,
+  LogOut,
+  FolderOpen,
+  BookOpen,
+  FileStack,
+  Shield,
+  Users,
+  Sun,
+  Moon,
+  Briefcase,
+  Bookmark,
+  Files,
+  Bell,
+  Crown,
+} from "lucide-react";
+import { useTheme } from "@/hooks/use-theme";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar-context";
+import { DonationModal } from "@/components/donation-modal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { UserAvatar } from "@/components/user-avatar";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { paths } from "@/config/paths";
+import { useAuth } from "@/contexts/auth-context";
+import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
+import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
+
+const baseMenuItems = [
+  {
+    title: "Dashboard",
+    url: paths.dashboard.getHref(),
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Lamaran",
+    url: paths.applications.list.getHref(),
+    icon: Briefcase,
+  },
+  {
+    title: "Surat Lamaran",
+    url: paths.applicationLetters.list.getHref(),
+    icon: FileText,
+  },
+  {
+    title: "CV",
+    url: paths.cvs.list.getHref(),
+    icon: FileText,
+  },
+  {
+    title: "Portofolio",
+    url: paths.portfolios.list.getHref(),
+    icon: FolderOpen,
+  },
+  {
+    title: "Dokumen",
+    url: paths.documents.list.getHref(),
+    icon: Files,
+    requiresSubscription: true,
+  },
+  {
+    title: "Langganan",
+    url: paths.subscriptions.list.getHref(),
+    icon: Crown,
+  },
+];
+
+const blogMenuItems = [
+  { title: "Blog", url: paths.admin.blogs.list.getHref() },
+  { title: "Kategori", url: paths.admin.blogs.categories.getHref() },
+  { title: "Tag", url: paths.admin.blogs.tags.getHref() },
+];
+
+const jobMenuItems = [
+  { title: "Lowongan", url: paths.admin.jobs.list.getHref() },
+  { title: "Perusahaan", url: paths.admin.jobs.companies.getHref() },
+  { title: "Role Pekerjaan", url: paths.admin.jobs.roles.getHref() },
+];
+
+export function DashboardSidebar() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { state } = useSidebar();
+  const { theme, setTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
+  const { data: mySubscription } = useMySubscription({
+    queryConfig: { enabled: isAuthenticated },
+  });
+  const isCollapsed = state === "collapsed";
+  const [blogOpen, setBlogOpen] = useState(
+    location.pathname.startsWith("/admin/blogs") ||
+      location.pathname.startsWith("/admin/blogs/m"),
+  );
+  const [jobOpen, setJobOpen] = useState(
+    location.pathname.startsWith("/admin/jobs"),
+  );
+  const [donationOpen, setDonationOpen] = useState(false);
+
+  const isAdmin =
+    isAuthenticated &&
+    user &&
+    (user.role === "admin" || (user.role as string) === "superadmin");
+  const subscriptionFeatures = getPlanFeatureAccess(
+    mySubscription?.current_features,
+  );
+  const menuItems = baseMenuItems;
+
+  const handleLogout = () => {
+    logout();
+    navigate(paths.auth.getHref());
+  };
+
+  const isActive = (path: string) => {
+    if (path === paths.dashboard.getHref()) {
+      return location.pathname === path;
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  const isBlogActive =
+    location.pathname.startsWith("/admin/blogs") ||
+    location.pathname.startsWith("/admin/blogs/m");
+
+  const isJobActive = location.pathname.startsWith("/admin/jobs");
+
+  return (
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        {isAuthenticated && user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={cn(
+                  "flex items-center w-full rounded-lg hover:bg-muted transition-colors",
+                  isCollapsed ? "justify-center p-2" : "gap-3 p-2",
+                )}
+              >
+                <UserAvatar
+                  src={user.avatar}
+                  name={user.name}
+                  className={cn(
+                    "shrink-0",
+                    isCollapsed ? "h-8 w-8" : "h-10 w-10",
+                  )}
+                />
+                {!isCollapsed && (
+                  <>
+                    <div className="flex-1 text-left min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                  </>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-popover z-50">
+              <div className="px-3 py-2">
+                <p className="text-sm font-medium">{user.name}</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => navigate(paths.account.profile.getHref())}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Profil
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate(paths.account.notifications.getHref())}
+              >
+                <Bell className="h-4 w-4 mr-2" />
+                Pengaturan Notifikasi
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate(paths.jobs.savedJobs.getHref())}
+              >
+                <Bookmark className="h-4 w-4 mr-2" />
+                Lowongan Tersimpan
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-1.5">
+                <p className="text-xs text-muted-foreground mb-2">Tema</p>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setTheme("light")}
+                    className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${
+                      theme === "light"
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    <Sun className="h-3 w-3" />
+                    Terang
+                  </button>
+                  <button
+                    onClick={() => setTheme("dark")}
+                    className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${
+                      theme === "dark"
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    <Moon className="h-3 w-3" />
+                    Gelap
+                  </button>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-destructive"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Keluar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </SidebarHeader>
+
+      <SidebarContent className="pt-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted/30 [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-border/80">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item) =>
+                (() => {
+                  const isSubscriptionLocked =
+                    item.requiresSubscription &&
+                    !subscriptionFeatures.canManageDocuments;
+
+                  if (isSubscriptionLocked) {
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          size="lg"
+                          tooltip={`${item.title} - butuh langganan`}
+                          className={cn(
+                            "flex w-full items-center rounded-lg text-muted-foreground/70",
+                            isCollapsed
+                              ? "justify-center px-2 py-3"
+                              : "gap-3 px-3 py-3",
+                            "cursor-not-allowed opacity-60",
+                          )}
+                          disabled
+                        >
+                          <item.icon className="h-5 w-5 shrink-0" />
+                          {!isCollapsed && (
+                            <>
+                              <span className="font-medium">{item.title}</span>
+                              <Crown className="ml-auto h-4 w-4 text-amber-500" />
+                            </>
+                          )}
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  }
+
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild size="lg" tooltip={item.title}>
+                        <NavLink
+                          to={item.url}
+                          className={cn(
+                            "flex items-center rounded-lg transition-colors",
+                            isCollapsed
+                              ? "justify-center px-2 py-3"
+                              : "gap-3 px-3 py-3",
+                            isActive(item.url)
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-muted text-foreground",
+                          )}
+                        >
+                          <item.icon className="h-5 w-5 shrink-0" />
+                          {!isCollapsed && (
+                            <span className="font-medium">{item.title}</span>
+                          )}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })(),
+              )}
+
+              {isAdmin && !isCollapsed && (
+                <div className="py-3 px-3">
+                  <div className="flex items-center gap-2">
+                    <Separator className="flex-1" />
+                    <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                      <Shield className="h-3 w-3" />
+                      ADMIN
+                    </span>
+                    <Separator className="flex-1" />
+                  </div>
+                </div>
+              )}
+
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild size="lg" tooltip="Dashboard">
+                    <NavLink
+                      to={paths.admin.dashboard.getHref()}
+                      className={cn(
+                        "flex items-center rounded-lg transition-colors",
+                        isCollapsed
+                          ? "justify-center px-2 py-3"
+                          : "gap-3 px-3 py-3",
+                        isActive(paths.admin.dashboard.getHref())
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted text-foreground",
+                      )}
+                    >
+                      <LayoutDashboard className="h-5 w-5 shrink-0" />
+                      {!isCollapsed && (
+                        <span className="font-medium">Dashboard</span>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild size="lg" tooltip="Pengguna">
+                    <NavLink
+                      to={paths.admin.users.list.getHref()}
+                      className={cn(
+                        "flex items-center rounded-lg transition-colors",
+                        isCollapsed
+                          ? "justify-center px-2 py-3"
+                          : "gap-3 px-3 py-3",
+                        isActive(paths.admin.users.list.getHref())
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted text-foreground",
+                      )}
+                    >
+                      <Users className="h-5 w-5 shrink-0" />
+                      {!isCollapsed && (
+                        <span className="font-medium">Pengguna</span>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <Collapsible open={jobOpen} onOpenChange={setJobOpen}>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton
+                        size="lg"
+                        tooltip="Lowongan"
+                        className={cn(
+                          "flex items-center rounded-lg transition-colors w-full",
+                          isCollapsed
+                            ? "justify-center px-2 py-3"
+                            : "gap-3 px-3 py-3",
+                          isJobActive
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-muted text-foreground",
+                        )}
+                      >
+                        <Briefcase className="h-5 w-5 shrink-0" />
+                        {!isCollapsed && (
+                          <>
+                            <span className="font-medium flex-1 text-left">
+                              Lowongan
+                            </span>
+                            {jobOpen ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </>
+                        )}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    {!isCollapsed && (
+                      <CollapsibleContent className="mt-1">
+                        {jobMenuItems.map((item) => (
+                          <NavLink
+                            key={item.url}
+                            to={item.url}
+                            className={cn(
+                              "flex items-center gap-3 py-2 pl-8 pr-3 rounded-lg text-sm transition-colors",
+                              location.pathname === item.url
+                                ? "text-foreground font-medium"
+                                : "hover:bg-muted/50 text-muted-foreground",
+                            )}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            {item.title}
+                          </NavLink>
+                        ))}
+                      </CollapsibleContent>
+                    )}
+                  </Collapsible>
+                </SidebarMenuItem>
+              )}
+
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <Collapsible open={blogOpen} onOpenChange={setBlogOpen}>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton
+                        size="lg"
+                        tooltip="Blog"
+                        className={cn(
+                          "flex items-center rounded-lg transition-colors w-full",
+                          isCollapsed
+                            ? "justify-center px-2 py-3"
+                            : "gap-3 px-3 py-3",
+                          isBlogActive
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-muted text-foreground",
+                        )}
+                      >
+                        <BookOpen className="h-5 w-5 shrink-0" />
+                        {!isCollapsed && (
+                          <>
+                            <span className="font-medium flex-1 text-left">
+                              Blog
+                            </span>
+                            {blogOpen ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </>
+                        )}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    {!isCollapsed && (
+                      <CollapsibleContent className="mt-1">
+                        {blogMenuItems.map((item) => (
+                          <NavLink
+                            key={item.url}
+                            to={item.url}
+                            className={cn(
+                              "flex items-center gap-3 py-2 pl-8 pr-3 rounded-lg text-sm transition-colors",
+                              location.pathname === item.url
+                                ? "text-foreground font-medium"
+                                : "hover:bg-muted/50 text-muted-foreground",
+                            )}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            {item.title}
+                          </NavLink>
+                        ))}
+                      </CollapsibleContent>
+                    )}
+                  </Collapsible>
+                </SidebarMenuItem>
+              )}
+
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild size="lg" tooltip="Template">
+                    <NavLink
+                      to={paths.admin.templates.list.getHref()}
+                      className={cn(
+                        "flex items-center rounded-lg transition-colors",
+                        isCollapsed
+                          ? "justify-center px-2 py-3"
+                          : "gap-3 px-3 py-3",
+                        isActive(paths.admin.templates.list.getHref())
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted text-foreground",
+                      )}
+                    >
+                      <FileStack className="h-5 w-5 shrink-0" />
+                      {!isCollapsed && (
+                        <span className="font-medium">Template</span>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild size="lg" tooltip="Langganan">
+                    <NavLink
+                      to={paths.admin.subscriptions.list.getHref()}
+                      className={cn(
+                        "flex items-center rounded-lg transition-colors",
+                        isCollapsed
+                          ? "justify-center px-2 py-3"
+                          : "gap-3 px-3 py-3",
+                        isActive(paths.admin.subscriptions.list.getHref())
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted text-foreground",
+                      )}
+                    >
+                      <Crown className="h-5 w-5 shrink-0" />
+                      {!isCollapsed && (
+                        <span className="font-medium">Langganan</span>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      {/* Legacy donation modal: retained intentionally, but no sidebar trigger is rendered. */}
+      <DonationModal open={donationOpen} onOpenChange={setDonationOpen} />
+    </Sidebar>
+  );
+}

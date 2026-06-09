@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/UserAvatar";
+import { UserAvatar } from "@/components/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,10 +30,10 @@ import {
   Bookmark,
 } from "lucide-react";
 import logo from "@/assets/images/logo.png";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeToggle } from "./theme-toggle";
 import { useTheme } from "@/hooks/use-theme";
 import { paths } from "@/config/paths";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { Link, useLocation } from "react-router";
 
 const navLinks = [

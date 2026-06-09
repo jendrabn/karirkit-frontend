@@ -6,7 +6,7 @@ import {
   withProtection,
   withPublicProtection,
   withAdminProtection,
-} from "@/components/RouteWrappers";
+} from "@/components/route-wrappers";
 import { LoadingFallback } from "@/components/ui/loading-fallback";
 
 type RouteModule = {
@@ -68,54 +68,54 @@ export const createAppRouter = (queryClient: QueryClient) =>
         // Public routes (no authentication required)
         {
           path: "/",
-          lazy: () => import("./pages/Landing").then(convert(queryClient)),
+          lazy: () => import("./pages/landing").then(convert(queryClient)),
         },
         {
           path: "/blog",
-          lazy: () => import("./pages/Blog").then(convert(queryClient)),
+          lazy: () => import("./pages/blog").then(convert(queryClient)),
         },
         {
           path: "/blog/:slug",
-          lazy: () => import("./pages/BlogDetail").then(convert(queryClient)),
+          lazy: () => import("./pages/blog-detail").then(convert(queryClient)),
         },
         {
           path: "/jobs",
-          lazy: () => import("./pages/Jobs").then(convert(queryClient)),
+          lazy: () => import("./pages/jobs").then(convert(queryClient)),
         },
         {
           path: "/jobs/:slug",
-          lazy: () => import("./pages/JobDetail").then(convert(queryClient)),
+          lazy: () => import("./pages/job-detail").then(convert(queryClient)),
         },
         {
           path: "/pricing",
-          lazy: () => import("./pages/Pricing").then(convert(queryClient)),
+          lazy: () => import("./pages/pricing").then(convert(queryClient)),
         },
         {
           path: "/u/:username",
           lazy: () =>
-            import("./pages/PublicPortfolios").then(convert(queryClient)),
+            import("./pages/public-portfolios").then(convert(queryClient)),
         },
         {
           path: "/u/:username/:id",
           lazy: () =>
-            import("./pages/PublicPortfolioShow").then(convert(queryClient)),
+            import("./pages/public-portfolio-show").then(convert(queryClient)),
         },
         {
           path: "/cv/:slug",
-          lazy: () => import("./pages/PublicCVShow").then(convert(queryClient)),
+          lazy: () => import("./pages/public-cv-show").then(convert(queryClient)),
         },
         // Auth routes (only for non-authenticated users)
         {
           path: "/login",
           lazy: () =>
-            import("./pages/Auth").then(
+            import("./pages/auth").then(
               convertWithPublicProtection(queryClient)
             ),
         },
         {
           path: "/register",
           lazy: () =>
-            import("./pages/Auth").then(
+            import("./pages/auth").then(
               convertWithPublicProtection(queryClient)
             ),
         },
@@ -123,310 +123,310 @@ export const createAppRouter = (queryClient: QueryClient) =>
         {
           path: "/dashboard",
           lazy: () =>
-            import("./pages/Dashboard").then(convertWithProtection(queryClient)),
+            import("./pages/dashboard").then(convertWithProtection(queryClient)),
         },
         {
           path: "/profile",
           lazy: () =>
-            import("./pages/Profile").then(convertWithProtection(queryClient)),
+            import("./pages/profile").then(convertWithProtection(queryClient)),
         },
         {
           path: "/notifications",
           lazy: () =>
-            import("./pages/NotificationSettings").then(
+            import("./pages/notification-settings").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/saved-jobs",
           lazy: () =>
-            import("./pages/SavedJobs").then(convertWithProtection(queryClient)),
+            import("./pages/saved-jobs").then(convertWithProtection(queryClient)),
         },
         {
           path: "/applications",
           lazy: () =>
-            import("./pages/Applications").then(
+            import("./pages/applications").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/applications/create",
           lazy: () =>
-            import("./pages/ApplicationCreate").then(
+            import("./pages/application-create").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/applications/:id",
           lazy: () =>
-            import("./pages/ApplicationShow").then(
+            import("./pages/application-show").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/applications/:id/edit",
           lazy: () =>
-            import("./pages/ApplicationEdit").then(
+            import("./pages/application-edit").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/application-letters",
           lazy: () =>
-            import("./pages/ApplicationLetters").then(
+            import("./pages/application-letters").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/application-letters/create",
           lazy: () =>
-            import("./pages/ApplicationLetterCreate").then(
+            import("./pages/application-letter-create").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/application-letters/:id",
           lazy: () =>
-            import("./pages/ApplicationLetterShow").then(
+            import("./pages/application-letter-show").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/application-letters/:id/edit",
           lazy: () =>
-            import("./pages/ApplicationLetterEdit").then(
+            import("./pages/application-letter-edit").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/cvs",
-          lazy: () => import("./pages/CVs").then(convertWithProtection(queryClient)),
+          lazy: () => import("./pages/c-vs").then(convertWithProtection(queryClient)),
         },
         {
           path: "/cvs/create",
           lazy: () =>
-            import("./pages/CVCreate").then(convertWithProtection(queryClient)),
+            import("./pages/cv-create").then(convertWithProtection(queryClient)),
         },
         {
           path: "/cvs/:id",
           lazy: () =>
-            import("./pages/CVShow").then(convertWithProtection(queryClient)),
+            import("./pages/cv-show").then(convertWithProtection(queryClient)),
         },
         {
           path: "/cvs/:id/edit",
           lazy: () =>
-            import("./pages/CVEdit").then(convertWithProtection(queryClient)),
+            import("./pages/cv-edit").then(convertWithProtection(queryClient)),
         },
         {
           path: "/portfolios",
           lazy: () =>
-            import("./pages/Portfolios").then(
+            import("./pages/portfolios").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/portfolios/create",
           lazy: () =>
-            import("./pages/PortfolioCreate").then(
+            import("./pages/portfolio-create").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/portfolios/:id",
           lazy: () =>
-            import("./pages/PortfolioShow").then(
+            import("./pages/portfolio-show").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/portfolios/:id/edit",
           lazy: () =>
-            import("./pages/PortfolioEdit").then(
+            import("./pages/portfolio-edit").then(
               convertWithProtection(queryClient)
             ),
         },
         {
           path: "/documents",
           lazy: () =>
-            import("./pages/Documents").then(convertWithProtection(queryClient)),
+            import("./pages/documents").then(convertWithProtection(queryClient)),
         },
         {
           path: "/subscriptions",
           lazy: () =>
-            import("./pages/Subscription").then(convertWithProtection(queryClient)),
+            import("./pages/subscription").then(convertWithProtection(queryClient)),
         },
         // Admin routes (authentication and admin role required)
         {
           path: "/admin/dashboard",
           lazy: () =>
-            import("./pages/AdminDashboard").then(
+            import("./pages/admin-dashboard").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/users",
           lazy: () =>
-            import("./pages/AdminUsers").then(
+            import("./pages/admin-users").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/users/create",
           lazy: () =>
-            import("./pages/AdminUserCreate").then(
+            import("./pages/admin-user-create").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/users/:id/edit",
           lazy: () =>
-            import("./pages/AdminUserEdit").then(
+            import("./pages/admin-user-edit").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/users/:id",
           lazy: () =>
-            import("./pages/AdminUserShow").then(
+            import("./pages/admin-user-show").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/blogs",
           lazy: () =>
-            import("./pages/AdminBlogs").then(
+            import("./pages/admin-blogs").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/blogs/create",
           lazy: () =>
-            import("./pages/AdminBlogCreate").then(
+            import("./pages/admin-blog-create").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/blogs/:id/edit",
           lazy: () =>
-            import("./pages/AdminBlogEdit").then(
+            import("./pages/admin-blog-edit").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/blogs/:id",
           lazy: () =>
-            import("./pages/AdminBlogShow").then(
+            import("./pages/admin-blog-show").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/blogs/m/categories",
           lazy: () =>
-            import("./pages/AdminBlogCategories").then(
+            import("./pages/admin-blog-categories").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/blogs/m/tags",
           lazy: () =>
-            import("./pages/AdminBlogTags").then(
+            import("./pages/admin-blog-tags").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/templates",
           lazy: () =>
-            import("./pages/AdminTemplates").then(
+            import("./pages/admin-templates").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/templates/create",
           lazy: () =>
-            import("./pages/AdminTemplateCreate").then(
+            import("./pages/admin-template-create").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/templates/guide",
           lazy: () =>
-            import("./pages/AdminTemplateGuide").then(
+            import("./pages/admin-template-guide").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/templates/:id/edit",
           lazy: () =>
-            import("./pages/AdminTemplateEdit").then(
+            import("./pages/admin-template-edit").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/templates/:id",
           lazy: () =>
-            import("./pages/AdminTemplateShow").then(
+            import("./pages/admin-template-show").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/subscriptions",
           lazy: () =>
-            import("./pages/AdminSubscriptions").then(
+            import("./pages/admin-subscriptions").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/subscriptions/:id",
           lazy: () =>
-            import("./pages/AdminSubscriptionShow").then(
+            import("./pages/admin-subscription-show").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/jobs",
           lazy: () =>
-            import("./pages/AdminJobs").then(
+            import("./pages/admin-jobs").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/jobs/create",
           lazy: () =>
-            import("./pages/AdminJobCreate").then(
+            import("./pages/admin-job-create").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/jobs/:id/edit",
           lazy: () =>
-            import("./pages/AdminJobEdit").then(
+            import("./pages/admin-job-edit").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/jobs/:id",
           lazy: () =>
-            import("./pages/AdminJobShow").then(
+            import("./pages/admin-job-show").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/jobs/m/companies",
           lazy: () =>
-            import("./pages/AdminCompanies").then(
+            import("./pages/admin-companies").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "/admin/jobs/m/roles",
           lazy: () =>
-            import("./pages/AdminJobRoles").then(
+            import("./pages/admin-job-roles").then(
               convertWithAdminProtection(queryClient)
             ),
         },
         {
           path: "*",
-          lazy: () => import("./pages/NotFound").then(convert(queryClient)),
+          lazy: () => import("./pages/not-found").then(convert(queryClient)),
         },
       ],
     },

@@ -1,4 +1,4 @@
-import { type ColumnVisibility } from "../components/SubscriptionColumnToggle";
+import { type ColumnVisibility } from "../components/subscription-column-toggle";
 
 export const defaultColumnVisibility: ColumnVisibility = {
   user: true,

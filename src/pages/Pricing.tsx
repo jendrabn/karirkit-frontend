@@ -1,9 +1,9 @@
-import { Footer } from "@/components/Footer";
-import { Navbar } from "@/components/Navbar";
-import { SEO } from "@/components/SEO";
+import { Footer } from "@/components/footer";
+import { Navbar } from "@/components/navbar";
+import { SEO } from "@/components/seo";
 import { env } from "@/config/env";
 import { paths } from "@/config/paths";
-import { SubscriptionManager } from "@/features/subscriptions/components/SubscriptionManager";
+import { SubscriptionManager } from "@/features/subscriptions/components/subscription-manager";
 
 const pricingDescription =
   "Bandingkan paket KarirKit untuk membuat CV profesional, mengelola lamaran kerja, membuat surat lamaran, dan memakai fitur karier premium.";

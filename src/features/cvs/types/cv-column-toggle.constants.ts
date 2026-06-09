@@ -1,4 +1,4 @@
-import { type ColumnVisibility } from "../components/CVColumnToggle";
+import { type ColumnVisibility } from "../components/cv-column-toggle";
 
 export const defaultColumnVisibility: ColumnVisibility = {
   headline: true,

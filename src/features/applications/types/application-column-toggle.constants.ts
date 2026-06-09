@@ -1,4 +1,4 @@
-import { type ColumnVisibility } from "../components/ApplicationColumnToggle";
+import { type ColumnVisibility } from "../components/application-column-toggle";
 
 export const defaultColumnVisibility: ColumnVisibility = {
   company_name: true,

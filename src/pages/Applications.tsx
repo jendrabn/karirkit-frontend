@@ -1,7 +1,7 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { PageHeader } from "@/components/layouts/PageHeader";
-import { ApplicationsList } from "@/features/applications/components/ApplicationsList";
-import { MinimalSEO } from "@/components/MinimalSEO";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { PageHeader } from "@/components/layouts/page-header";
+import { ApplicationsList } from "@/features/applications/components/applications-list";
+import { MinimalSEO } from "@/components/minimal-seo";
 import { seoConfig } from "@/config/seo";
 
 export default function Applications() {

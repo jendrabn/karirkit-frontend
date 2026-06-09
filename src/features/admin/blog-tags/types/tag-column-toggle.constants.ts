@@ -1,4 +1,4 @@
-import { type TagColumnVisibility } from "../components/TagColumnToggle";
+import { type TagColumnVisibility } from "../components/tag-column-toggle";
 
 export const defaultTagColumnVisibility: TagColumnVisibility = {
   name: true,

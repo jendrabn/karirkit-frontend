@@ -1,4 +1,4 @@
-import { type ColumnVisibility } from "../components/BlogColumnToggle";
+import { type ColumnVisibility } from "../components/blog-column-toggle";
 
 export const defaultBlogColumnVisibility: ColumnVisibility = {
   title: true,

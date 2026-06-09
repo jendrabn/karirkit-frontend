@@ -1,8 +1,8 @@
-import { SEO } from "@/components/SEO";
+import { SEO } from "@/components/seo";
 import { paths } from "@/config/paths";
 import { seoConfig } from "@/config/seo";
 import logo from "@/assets/images/logo.png";
-import { SocialAuthButtons } from "@/features/auth/components/SocialAuthButtons";
+import { SocialAuthButtons } from "@/features/auth/components/social-auth-buttons";
 import { Link, useLocation } from "react-router";
 
 const policyLinks = [

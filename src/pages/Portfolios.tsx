@@ -1,7 +1,7 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { PageHeader } from "@/components/layouts/PageHeader";
-import { MinimalSEO } from "@/components/MinimalSEO";
-import PortfoliosList from "@/features/portfolios/components/PortfoliosList";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { PageHeader } from "@/components/layouts/page-header";
+import { MinimalSEO } from "@/components/minimal-seo";
+import PortfoliosList from "@/features/portfolios/components/portfolios-list";
 
 export default function Portfolios() {
   return (

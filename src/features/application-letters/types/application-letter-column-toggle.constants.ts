@@ -1,4 +1,4 @@
-import { type ColumnVisibility } from "../components/ApplicationLetterColumnToggle";
+import { type ColumnVisibility } from "../components/application-letter-column-toggle";
 
 export const defaultColumnVisibility: ColumnVisibility = {
   subject: true,

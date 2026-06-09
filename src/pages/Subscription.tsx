@@ -1,8 +1,8 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { PageHeader } from "@/components/layouts/PageHeader";
-import { MinimalSEO } from "@/components/MinimalSEO";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { PageHeader } from "@/components/layouts/page-header";
+import { MinimalSEO } from "@/components/minimal-seo";
 import { paths } from "@/config/paths";
-import { SubscriptionManager } from "@/features/subscriptions/components/SubscriptionManager";
+import { SubscriptionManager } from "@/features/subscriptions/components/subscription-manager";
 
 export default function Subscription() {
   return (

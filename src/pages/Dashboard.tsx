@@ -1,5 +1,5 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { PageHeader } from "@/components/layouts/PageHeader";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { PageHeader } from "@/components/layouts/page-header";
 import { Card } from "@/components/ui/card";
 import {
   FileText,
@@ -11,7 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard/api/get-dashboard-stats";
-import { MinimalSEO } from "@/components/MinimalSEO";
+import { MinimalSEO } from "@/components/minimal-seo";
 import { seoConfig } from "@/config/seo";
 
 export default function Dashboard() {

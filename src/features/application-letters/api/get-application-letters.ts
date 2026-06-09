@@ -2,7 +2,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { Gender, MaritalStatus } from "@/types/applicationLetter";
+import type { Gender, MaritalStatus } from "@/types/application-letter";
 
 export type ApplicationLettersResponse = {
   items: ApplicationLetter[];

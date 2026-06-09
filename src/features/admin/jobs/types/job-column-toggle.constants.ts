@@ -1,4 +1,4 @@
-import { type ColumnVisibility } from "../components/JobColumnToggle";
+import { type ColumnVisibility } from "../components/job-column-toggle";
 
 export const defaultColumnVisibility: ColumnVisibility = {
   title: true,

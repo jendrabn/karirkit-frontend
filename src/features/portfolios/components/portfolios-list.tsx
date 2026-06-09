@@ -1,0 +1,791 @@
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { paths } from "@/config/paths";
+import {
+  Search,
+  Filter,
+  Plus,
+  ArrowUpDown,
+  Eye,
+  Pencil,
+  Copy,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ExternalLink,
+  Github,
+  MoreVertical,
+  Calendar,
+  Briefcase,
+  Info,
+  Link2,
+  Check,
+  Loader2,
+  FileStack,
+  Share2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  PortfolioFilterModal,
+  type PortfolioFilterValues,
+} from "@/features/portfolios/components/portfolio-filter-modal";
+import { usePortfolios } from "@/features/portfolios/api/get-portfolios";
+import { useDeletePortfolio } from "@/features/portfolios/api/delete-portfolio";
+import { useMassDeletePortfolios } from "@/features/portfolios/api/mass-delete-portfolios";
+import { projectTypeLabels, type ProjectType } from "@/types/portfolio";
+import { toast } from "sonner";
+import { buildImageUrl } from "@/lib/utils";
+import { env } from "@/config/env";
+import { useAuth } from "@/contexts/auth-context";
+import { useUrlParams } from "@/hooks/use-url-params";
+import { getEnumBadgeClassName } from "@/lib/enum-badges";
+
+type SortField =
+  | "created_at"
+  | "updated_at"
+  | "year"
+  | "month"
+  | "title"
+  | "industry";
+type SortOrder = "asc" | "desc";
+
+const monthNames = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+const PortfoliosList = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Use URL params hook
+  const {
+    params,
+    setParam,
+    setParams,
+    searchInput,
+    handleSearchInput,
+    handleSearchSubmit,
+  } = useUrlParams({
+    page: 1,
+    per_page: 12,
+    q: "",
+    sort_by: "created_at" as SortField,
+    sort_order: "desc" as SortOrder,
+    project_type: "",
+    industry: "",
+    year: "",
+    month: "",
+    year_from: "",
+    year_to: "",
+    month_from: "",
+    month_to: "",
+    tools_name: "",
+  });
+
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [portfolioToDelete, setPortfolioToDelete] = useState<string | null>(
+    null,
+  );
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [massDeleteDialogOpen, setMassDeleteDialogOpen] = useState(false);
+
+  const { data: portfoliosResponse, isLoading } = usePortfolios({
+    params: {
+      page: params.page,
+      per_page: params.per_page,
+      q: params.q || undefined,
+      sort_by: params.sort_by,
+      sort_order: params.sort_order,
+      project_type: params.project_type
+        ? (params.project_type as ProjectType)
+        : undefined,
+      industry: params.industry || undefined,
+      year: params.year ? Number(params.year) : undefined,
+      month: params.month ? Number(params.month) : undefined,
+      year_from: params.year_from ? Number(params.year_from) : undefined,
+      year_to: params.year_to ? Number(params.year_to) : undefined,
+      month_from: params.month_from ? Number(params.month_from) : undefined,
+      month_to: params.month_to ? Number(params.month_to) : undefined,
+      tools_name: params.tools_name || undefined,
+    },
+  });
+
+  const deleteMutation = useDeletePortfolio({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Portfolio berhasil dihapus");
+        setDeleteDialogOpen(false);
+        setPortfolioToDelete(null);
+      },
+    },
+  });
+
+  const massDeleteMutation = useMassDeletePortfolios({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success("Portfolio terpilih berhasil dihapus");
+        setMassDeleteDialogOpen(false);
+        setSelectedIds([]);
+      },
+    },
+  });
+
+  const portfolios = portfoliosResponse?.items || [];
+  const pagination = portfoliosResponse?.pagination;
+  const totalPages = pagination?.total_pages || 1;
+
+  const handleDelete = (id: string) => {
+    setPortfolioToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (portfolioToDelete) {
+      deleteMutation.mutate(portfolioToDelete);
+    }
+  };
+
+  const confirmMassDelete = () => {
+    massDeleteMutation.mutate({ ids: selectedIds });
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(portfolios.map((p) => p.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  // Get username from auth context
+  const username = user?.username || "";
+  const publicPortfolioUrl =
+    env.APP_URL + paths.publicPortfolio.list.getHref(username);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(publicPortfolioUrl);
+    setCopied(true);
+    toast.success("Link portfolio berhasil disalin");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShareLink = async () => {
+    if (!navigator.share) {
+      handleCopyLink();
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: "Portfolio Publik",
+        text: "Lihat portfolio publik saya",
+        url: publicPortfolioUrl,
+      });
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        toast.error("Gagal membagikan link portfolio");
+      }
+    }
+  };
+
+  const handleShare = async (portfolio: (typeof portfolios)[number]) => {
+    const shareUrl =
+      env.APP_URL +
+      paths.publicPortfolio.detail.getHref(username, portfolio.id);
+
+    if (!navigator.share) {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Link portfolio berhasil disalin");
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: portfolio.title,
+        text: `Lihat portfolio ${portfolio.title}`,
+        url: shareUrl,
+      });
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        toast.error("Gagal membagikan portfolio");
+      }
+    }
+  };
+
+  return (
+    <>
+      {/* Public Portfolio Link */}
+      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Link2 className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Portfolio Publik Anda</p>
+            <p className="text-sm text-muted-foreground truncate max-w-[300px]">
+              {publicPortfolioUrl}
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopyLink}
+            className="gap-2"
+          >
+            {copied ? (
+              <>
+                <Check className="h-4 w-4" />
+                Tersalin
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4" />
+                Salin Link
+              </>
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleShareLink}
+            className="gap-2"
+          >
+            <Share2 className="h-4 w-4" />
+            Bagikan
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.open(publicPortfolioUrl, "_blank")}
+            className="gap-2"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Lihat
+          </Button>
+        </div>
+      </div>
+
+      <div className="bg-muted/40 border border-border/60 rounded-lg p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+            <Info className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Info Profil Publik</p>
+            <p className="text-sm text-muted-foreground">
+              Bio, headline, media sosial, lokasi, dan info kontak tampil di
+              halaman portofolio publik. Ubah datanya melalui halaman Profil.
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate(paths.account.profile.getHref())}
+        >
+          Ke Profil
+        </Button>
+      </div>
+
+      {/* Actions Bar */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="relative w-full md:w-auto md:min-w-[300px] max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Cari judul, deskripsi, peran, industri, tools..."
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onKeyDown={handleSearchSubmit}
+            className="pl-9"
+          />
+        </div>
+
+        <div className="flex gap-2 flex-wrap items-center">
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setMassDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Hapus ({selectedIds.length})
+            </Button>
+          )}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={
+                portfolios.length > 0 &&
+                selectedIds.length === portfolios.length
+              }
+              onCheckedChange={(checked) => handleSelectAll(!!checked)}
+              id="select-all"
+            />
+            <label
+              htmlFor="select-all"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Pilih Semua
+            </label>
+          </div>
+
+          <Select
+            value={`${params.sort_by}-${params.sort_order}`}
+            onValueChange={(value) => {
+              const [field, order] = value.split("-") as [SortField, SortOrder];
+              setParams({ sort_by: field, sort_order: order }, false);
+            }}
+          >
+            <SelectTrigger className="w-auto min-w-[180px]">
+              <ArrowUpDown className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Urutkan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="created_at-desc">Terbaru Dibuat</SelectItem>
+              <SelectItem value="created_at-asc">Terlama Dibuat</SelectItem>
+              <SelectItem value="updated_at-desc">
+                Terbaru Diperbarui
+              </SelectItem>
+              <SelectItem value="updated_at-asc">Terlama Diperbarui</SelectItem>
+              <SelectItem value="year-desc">Tahun (Terbaru)</SelectItem>
+              <SelectItem value="year-asc">Tahun (Terlama)</SelectItem>
+              <SelectItem value="month-desc">Bulan (Terbaru)</SelectItem>
+              <SelectItem value="month-asc">Bulan (Terlama)</SelectItem>
+              <SelectItem value="title-asc">Judul (A-Z)</SelectItem>
+              <SelectItem value="title-desc">Judul (Z-A)</SelectItem>
+              <SelectItem value="industry-asc">Industri (A-Z)</SelectItem>
+              <SelectItem value="industry-desc">Industri (Z-A)</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setFilterModalOpen(true)}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Filter
+          </Button>
+          <Button size="sm" onClick={() => navigate("/portfolios/create")}>
+            <Plus className="h-4 w-4 mr-2" />
+            Tambah Portfolio
+          </Button>
+        </div>
+      </div>
+
+      {/* Portfolio Grid */}
+      {isLoading ? (
+        <div className="flex justify-center items-center min-h-[50vh]">
+          <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <span className="text-sm font-medium text-muted-foreground">
+              Memuat data…
+            </span>
+          </div>
+        </div>
+      ) : portfolios.length === 0 ? (
+        <div className="text-center py-16 text-muted-foreground">
+          <div className="flex flex-col items-center gap-2">
+            <FileStack className="h-10 w-10 text-muted-foreground/50" />
+            <p className="text-base font-medium">Tidak ada data portfolio</p>
+            <p className="text-sm">Mulai tambahkan portfolio pertama Anda</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {portfolios.map((portfolio) => (
+            <Card
+              key={portfolio.id}
+              className="group overflow-hidden border border-border/60 hover:shadow-lg transition-all duration-300"
+            >
+              {/* Cover Image */}
+              <div className="relative aspect-video overflow-hidden">
+                <img
+                  src={buildImageUrl(portfolio.cover)}
+                  alt={portfolio.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                {/* Checkbox */}
+                <div className="absolute top-2 left-2 z-10">
+                  <Checkbox
+                    checked={selectedIds.includes(portfolio.id)}
+                    onCheckedChange={(checked) =>
+                      handleSelectOne(portfolio.id, !!checked)
+                    }
+                    className="bg-background/80 border-white/50 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                </div>
+
+                {/* Action Menu */}
+                <div className="absolute top-2 right-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem
+                        onClick={() => navigate(`/portfolios/${portfolio.id}`)}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Lihat Detail
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          navigate(`/portfolios/${portfolio.id}/edit`)
+                        }
+                      >
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleShare(portfolio)}>
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Bagikan
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => handleDelete(portfolio.id)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Hapus
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Project Type Badge */}
+                <div className="absolute bottom-2 left-2">
+                  <Badge
+                    variant="outline"
+                    className={getEnumBadgeClassName(
+                      "projectType",
+                      portfolio.project_type,
+                    )}
+                  >
+                    {projectTypeLabels[portfolio.project_type]}
+                  </Badge>
+                </div>
+              </div>
+
+              <CardContent className="p-4 space-y-3">
+                <div>
+                  <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-primary transition-colors">
+                    {portfolio.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                    {portfolio.sort_description}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Briefcase className="h-4 w-4" />
+                  <span className="line-clamp-1">{portfolio.role_title}</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>
+                    {monthNames[portfolio.month - 1]} {portfolio.year}
+                  </span>
+                </div>
+
+                {/* Tools */}
+                <div className="flex flex-wrap gap-1">
+                  {portfolio.tools.slice(0, 4).map((tool) => (
+                    <Badge
+                      key={tool.id}
+                      variant="secondary"
+                      className="text-xs"
+                    >
+                      {tool.name}
+                    </Badge>
+                  ))}
+                  {portfolio.tools.length > 4 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{portfolio.tools.length - 4}
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+
+              <CardFooter className="p-4 pt-0 flex gap-2">
+                {portfolio.live_url && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => window.open(portfolio.live_url, "_blank")}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Live Demo
+                  </Button>
+                )}
+                {portfolio.repo_url && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => window.open(portfolio.repo_url, "_blank")}
+                  >
+                    <Github className="h-4 w-4 mr-2" />
+                    Repository
+                  </Button>
+                )}
+                {!portfolio.live_url && !portfolio.repo_url && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => navigate(`/portfolios/${portfolio.id}`)}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Lihat Detail
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination && pagination.total_items > 0 && (
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Menampilkan</span>
+            <Select
+              value={params.per_page.toString()}
+              onValueChange={(value) => {
+                setParam("per_page", Number(value), true);
+              }}
+            >
+              <SelectTrigger className="w-[70px] h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="z-50 bg-popover">
+                <SelectItem value="6">6</SelectItem>
+                <SelectItem value="12">12</SelectItem>
+                <SelectItem value="24">24</SelectItem>
+                <SelectItem value="48">48</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-muted-foreground">
+              dari {pagination?.total_items || 0} portfolio
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              disabled={params.page === 1}
+              onClick={() => setParam("page", 1, false)}
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              disabled={params.page === 1}
+              onClick={() => setParam("page", params.page - 1, false)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="px-3 text-sm">
+              Halaman {params.page} dari {totalPages || 1}
+            </span>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              disabled={params.page === totalPages || totalPages === 0}
+              onClick={() => setParam("page", params.page + 1, false)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              disabled={params.page === totalPages || totalPages === 0}
+              onClick={() => setParam("page", totalPages, false)}
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Modal */}
+      <PortfolioFilterModal
+        open={filterModalOpen}
+        onOpenChange={setFilterModalOpen}
+        filters={{
+          project_type: params.project_type
+            ? (params.project_type as PortfolioFilterValues["project_type"])
+            : undefined,
+          industry: params.industry || "",
+          year: params.year ? Number(params.year) : undefined,
+          month: params.month ? Number(params.month) : undefined,
+          year_from: params.year_from ? Number(params.year_from) : undefined,
+          year_to: params.year_to ? Number(params.year_to) : undefined,
+          month_from: params.month_from ? Number(params.month_from) : undefined,
+          month_to: params.month_to ? Number(params.month_to) : undefined,
+          tools_name: params.tools_name || "",
+        }}
+        onApplyFilters={(newFilters) => {
+          setParams(
+            {
+              project_type: newFilters.project_type || "",
+              industry: newFilters.industry || "",
+              year:
+                newFilters.year !== undefined ? String(newFilters.year) : "",
+              month:
+                newFilters.month !== undefined ? String(newFilters.month) : "",
+              year_from:
+                newFilters.year_from !== undefined
+                  ? String(newFilters.year_from)
+                  : "",
+              year_to:
+                newFilters.year_to !== undefined
+                  ? String(newFilters.year_to)
+                  : "",
+              month_from:
+                newFilters.month_from !== undefined
+                  ? String(newFilters.month_from)
+                  : "",
+              month_to:
+                newFilters.month_to !== undefined
+                  ? String(newFilters.month_to)
+                  : "",
+              tools_name: newFilters.tools_name || "",
+            },
+            true,
+          );
+          setFilterModalOpen(false);
+        }}
+      />
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Portfolio</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus portfolio ini? Tindakan ini
+              tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={massDeleteDialogOpen}
+        onOpenChange={setMassDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Hapus {selectedIds.length} Portfolio?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. {selectedIds.length}{" "}
+              portfolio yang dipilih akan dihapus secara permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={massDeleteMutation.isPending}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmMassDelete();
+              }}
+              disabled={massDeleteMutation.isPending}
+            >
+              {massDeleteMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};
+
+export default PortfoliosList;
