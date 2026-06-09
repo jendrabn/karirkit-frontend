@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useForm, Controller, type DefaultValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,7 +64,8 @@ interface JobFormProps {
   error?: unknown;
 }
 
-type JobFormValues = CreateJobInput | UpdateJobInput;
+type JobFormInput = z.input<typeof createJobInputSchema>;
+type JobFormValues = z.output<typeof createJobInputSchema>;
 
 const toDateInputValue = (value?: string | null) => {
   if (!value) return "";
@@ -83,7 +85,7 @@ const ensureSelectedItemExists = (
   return Array.from(new Set([...(items ?? []), selectedValue]));
 };
 
-const getDefaultValues = (initialData?: Job): DefaultValues<JobFormValues> => {
+const getDefaultValues = (initialData?: Job): DefaultValues<JobFormInput> => {
   if (initialData) {
     return {
       company_id: initialData.company_id,
@@ -121,7 +123,7 @@ const getDefaultValues = (initialData?: Job): DefaultValues<JobFormValues> => {
     requirements: "",
     salary_min: null,
     salary_max: null,
-    talent_quota: 1,
+    talent_quota: null,
     job_url: "",
     contact_name: "",
     contact_email: "",
@@ -158,7 +160,7 @@ export function JobForm({
     [citiesData],
   );
 
-  const form = useForm<JobFormValues, unknown, JobFormValues>({
+  const form = useForm<JobFormInput, unknown, JobFormValues>({
     resolver: zodResolver(
       isEdit ? updateJobInputSchema : createJobInputSchema,
     ),
@@ -479,7 +481,7 @@ export function JobForm({
                     placeholder="Contoh: 2"
                     {...form.register("min_years_of_experience", {
                       setValueAs: (value) =>
-                        value === "" ? null : Number(value),
+                        value === "" ? undefined : Number(value),
                     })}
                     className={cn(
                       form.formState.errors.min_years_of_experience &&
@@ -563,10 +565,10 @@ export function JobForm({
 
               <Field>
                 <FieldLabel>Kuota Talenta</FieldLabel>
-                <Input
-                  type="number"
-                  min={1}
-                  placeholder="Contoh: 3"
+                  <Input
+                    type="number"
+                    min={1}
+                    placeholder="Contoh: 3"
                   {...form.register("talent_quota", {
                     setValueAs: (value) =>
                       value === "" ? null : Number(value),

@@ -40,7 +40,7 @@ export const createJobInputSchema = z.object({
   requirements: z.string().min(1, "Persyaratan wajib diisi"),
   salary_min: z.number().min(0).optional().nullable().default(null),
   salary_max: z.number().min(0).optional().nullable().default(null),
-  talent_quota: z.number().min(1).optional().nullable(),
+  talent_quota: z.number().min(1).optional().nullable().default(null),
   job_url: z.string().url().or(z.literal("")).optional().nullable(),
   contact_name: z.string().optional().nullable(),
   contact_email: z
