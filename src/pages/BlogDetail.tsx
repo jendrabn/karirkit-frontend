@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   Clock,
   Eye,
-  Calendar,
   Share2,
   Loader2,
   Tag,
@@ -195,46 +194,22 @@ const BlogDetail = () => {
               <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-12">
                 <article className="min-w-0">
                   <div className="max-w-4xl">
-                    {/* Category & Meta */}
-                    <div className="flex flex-wrap items-center gap-3 mb-4">
-                      {blog.category && (
-                        <Badge variant="secondary">{blog.category.name}</Badge>
-                      )}
-                      <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        <time dateTime={blog.published_at || blog.created_at}>
-                          {formatDate(
-                            blog.published_at || blog.created_at,
-                            "DD MMMM YYYY"
-                          )}
-                        </time>
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        {blog.read_time} menit baca
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <Eye className="h-4 w-4" />
-                        {blog.views.toLocaleString()} views
-                      </span>
-                    </div>
-
                     {/* Title */}
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+                    <h1 className="text-3xl font-bold leading-tight tracking-tight text-foreground md:text-4xl lg:text-[3.15rem]">
                       {blog.title}
                     </h1>
 
                     {/* Excerpt */}
                     {blog.excerpt && (
-                      <p className="text-lg text-muted-foreground mb-6">
+                      <p className="mt-5 text-base leading-7 text-muted-foreground md:text-lg">
                         {blog.excerpt}
                       </p>
                     )}
 
-                    {/* Author */}
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
+                    {/* Author + Meta + Share */}
+                    <div className="mt-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+                      <div className="min-w-0 flex items-center gap-3">
+                        <Avatar className="h-10 w-10 shrink-0 rounded-full sm:h-11 sm:w-11">
                           <AvatarImage
                             src={
                               blog.user.avatar
@@ -244,32 +219,56 @@ const BlogDetail = () => {
                             className="object-cover"
                             alt={blog.user.name}
                           />
-                          <AvatarFallback>
+                          <AvatarFallback className="text-xs font-medium">
                             {blog.user.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <p className="font-medium text-foreground">
-                            {blog.user.name}
+
+                        <div className="min-w-0 space-y-1.5">
+                          <p className="truncate text-sm leading-none text-muted-foreground sm:text-[15px]">
+                            Oleh{" "}
+                            <span className="font-semibold">
+                              {blog.user.name}
+                            </span>
                           </p>
-                          <p className="text-sm text-muted-foreground">
-                            Penulis
-                          </p>
+
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs leading-none text-muted-foreground sm:text-sm">
+                            <time dateTime={blog.published_at || blog.created_at}>
+                              {formatDate(
+                                blog.published_at || blog.created_at,
+                                "dddd, D MMMM YYYY - HH:mm"
+                              )}
+                            </time>
+                          </div>
                         </div>
                       </div>
-                      <Button
-                        variant="outline"
-                        className="gap-2"
-                        onClick={handleShare}
-                      >
-                        <Share2 className="h-4 w-4" />
-                        Bagikan
-                      </Button>
+
+                      <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                        <span className="inline-flex h-10 items-center gap-2 rounded-md border border-border/70 bg-background px-3.5 text-sm font-medium text-muted-foreground shadow-sm select-none">
+                          <Clock className="h-4 w-4 shrink-0" />
+                          <span>{blog.read_time} min</span>
+                        </span>
+
+                        <span className="inline-flex h-10 items-center gap-2 rounded-md border border-border/70 bg-background px-3.5 text-sm font-medium text-muted-foreground shadow-sm select-none">
+                          <Eye className="h-4 w-4 shrink-0" />
+                          <span>{blog.views.toLocaleString()}</span>
+                        </span>
+
+                        <Button
+                          variant="outline"
+                          className="h-10 gap-2 rounded-md border-border/70 bg-background px-3.5 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-foreground"
+                          onClick={handleShare}
+                          aria-label="Bagikan artikel"
+                        >
+                          <Share2 className="h-4 w-4" />
+                          <span>Share</span>
+                        </Button>
+                      </div>
                     </div>
 
                     {/* Featured Image */}
                     {blog.featured_image && (
-                      <div className="rounded-2xl overflow-hidden mb-8 aspect-video">
+                      <div className="mt-6 mb-8 overflow-hidden rounded-2xl aspect-video sm:mt-8">
                         <img
                           src={buildImageUrl(blog.featured_image)}
                           alt={blog.title}

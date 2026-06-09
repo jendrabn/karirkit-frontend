@@ -1,31 +1,21 @@
-import { Link } from "react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  ArrowRight,
-  Calendar,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Clock,
-  Eye,
 } from "lucide-react";
 import { useBlogs, type GetBlogsParams } from "@/features/blogs/api/get-blogs";
 import { useBlogCategories } from "@/features/blogs/api/get-blog-categories";
 import { useBlogTags } from "@/features/blogs/api/get-blog-tags";
-import { buildImageUrl } from "@/lib/utils";
 import { SEO } from "@/components/SEO";
 import { env } from "@/config/env";
 import { BlogSidebar } from "@/features/blogs/components/BlogSidebar";
-import { format } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { PublicPageHero } from "@/components/PublicPageHero";
+import { BlogCard } from "@/features/blogs/components/BlogCard";
 
 const Blog = () => {
   const perPage = 6;
@@ -126,7 +116,7 @@ const Blog = () => {
           {/* Main Content with Sidebar */}
           <section className="py-12 lg:py-16">
             <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
-              <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-12">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
                 {/* Blog Posts */}
                 <div>
                   {isLoading ? (
@@ -144,117 +134,9 @@ const Blog = () => {
                     </div>
                   ) : (
                     <>
-                      <div className="space-y-6">
+                      <div className="grid gap-6 lg:grid-cols-2">
                         {blogPosts.map((post) => (
-                          <Card
-                            key={post.id}
-                            className="overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20"
-                          >
-                            <div className="flex flex-col sm:flex-row max-w-4xl">
-                              {/* Featured Image */}
-                              <Link
-                                to={`/blog/${post.slug}`}
-                                className="relative w-full sm:w-80 h-48 sm:h-auto overflow-hidden group"
-                              >
-                                <img
-                                  src={
-                                    post.featured_image
-                                      ? buildImageUrl(post.featured_image)
-                                      : "https://placehold.co/800x450"
-                                  }
-                                  alt={post.title}
-                                  className="object-cover absolute h-full w-full left-0 top-0 right-0 bottom-0 group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                              </Link>
-
-                              {/* Content */}
-                              <div className="flex-1 p-6">
-                                <div className="space-y-4 h-full flex flex-col">
-                                  {/* Category Badge and Date */}
-                                  <div className="flex items-start justify-between gap-2 flex-wrap">
-                                    {post.category && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="text-xs font-medium"
-                                      >
-                                        {post.category.name}
-                                      </Badge>
-                                    )}
-                                    <div className="text-muted-foreground flex items-center text-xs">
-                                      <Calendar className="me-1 size-3.5" />
-                                      {format(
-                                        new Date(
-                                          post.published_at || post.created_at
-                                        ),
-                                        "dd MMM yyyy",
-                                        { locale: idLocale }
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* Title */}
-                                  <Link to={`/blog/${post.slug}`}>
-                                    <h2 className="text-xl font-bold leading-tight hover:text-primary transition-colors line-clamp-2">
-                                      {post.title}
-                                    </h2>
-                                  </Link>
-
-                                  {/* Excerpt */}
-                                  {post.excerpt && (
-                                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 flex-1">
-                                      {post.excerpt}
-                                    </p>
-                                  )}
-
-                                  {/* Author Info and Button */}
-                                  <div className="flex items-center justify-between gap-4 pt-2">
-                                    {/* Author */}
-                                    <div className="flex items-center gap-3">
-                                      <Avatar className="size-9">
-                                        <AvatarImage
-                                          src={
-                                            post.user?.avatar
-                                              ? buildImageUrl(post.user.avatar)
-                                              : undefined
-                                          }
-                                          className="object-cover"
-                                          alt={post.user?.name}
-                                        />
-                                        <AvatarFallback className="text-xs">
-                                          {post.user?.name?.charAt(0) || "A"}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                      <div className="flex flex-col gap-1">
-                                        <p className="text-sm font-medium leading-none">
-                                          {post.user?.name || "Anonymous"}
-                                        </p>
-                                        <div className="text-muted-foreground flex items-center text-xs">
-                                          <Clock className="me-1 size-3" />
-                                          {post.read_time} min
-                                          <Eye className="ms-2 me-1 size-3" />
-                                          {post.views.toLocaleString()}
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Read More Button */}
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="gap-1 text-primary hover:text-primary hover:bg-primary/10"
-                                      asChild
-                                    >
-                                      <Link to={`/blog/${post.slug}`}>
-                                        Baca
-                                        <ArrowRight className="h-4 w-4" />
-                                      </Link>
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </Card>
+                          <BlogCard key={post.id} blog={post} />
                         ))}
                       </div>
 
@@ -307,7 +189,7 @@ const Blog = () => {
                 </div>
 
                 {/* Sidebar */}
-                <aside>
+                <aside className="w-full lg:sticky lg:top-24 lg:self-start">
                   <BlogSidebar
                     categories={categories}
                     tags={tags}
