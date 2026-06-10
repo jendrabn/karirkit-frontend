@@ -566,60 +566,47 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
     <div
       aria-hidden="true"
       className={cn(
-        "relative overflow-hidden px-2 py-3 sm:px-3 sm:py-4 lg:px-4 lg:py-5",
+        "relative w-full overflow-hidden px-0 py-2 sm:px-3 sm:py-4 lg:px-4 lg:py-5",
         className,
       )}
     >
-      <div className="relative lg:hidden">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <TrackerCard />
-          <CVPreviewCard />
-          <DocumentStorageCard />
-          <PortfolioCard />
-          <div className="hidden sm:block">
+      <div className="relative mx-auto aspect-[760/560] w-full lg:aspect-auto lg:min-h-[520px] xl:min-h-[560px]">
+        <div className="absolute left-1/2 top-0 h-[560px] w-[760px] origin-top -translate-x-1/2 scale-[0.48] max-[359px]:scale-[0.43] min-[390px]:scale-[0.52] min-[430px]:scale-[0.57] sm:scale-[0.84] md:scale-100 lg:relative lg:left-auto lg:h-auto lg:min-h-[520px] lg:w-full lg:origin-center lg:translate-x-0 lg:scale-[0.97] xl:min-h-[560px] xl:scale-[0.94]">
+          <div className="absolute left-0 top-14 z-10 w-[220px] rotate-[-2.5deg] xl:w-[240px]">
+            <JobCard />
+          </div>
+
+          <div className="absolute left-[7%] top-[225px] z-0 w-[240px] rotate-[1.4deg] xl:w-[260px]">
             <AnalyticsCard />
           </div>
-          <div className="hidden sm:block">
+
+          <div className="absolute bottom-6 left-[5%] z-10 w-[260px] rotate-[-1.4deg] xl:w-[280px]">
+            <DocumentStorageCard />
+          </div>
+
+          <div className="absolute left-[25%] top-1 z-10 w-[230px] rotate-[-1deg] xl:w-[250px]">
+            <CoverLetterCard />
+          </div>
+
+          <div className="absolute left-1/2 top-16 z-20 w-[340px] -translate-x-1/2 xl:w-[372px]">
+            <TrackerCard />
+          </div>
+
+          <div className="absolute bottom-0 left-[33%] z-10 w-[260px] rotate-[1.5deg] xl:w-[280px]">
+            <BoardCard />
+          </div>
+
+          <div className="absolute right-[18%] top-3 z-10 w-[250px] rotate-[1.8deg] xl:w-[270px]">
+            <CVPreviewCard />
+          </div>
+
+          <div className="absolute right-0 top-[136px] z-0 w-[250px] rotate-[2.2deg] xl:w-[272px]">
+            <PortfolioCard />
+          </div>
+
+          <div className="absolute bottom-8 right-[11%] z-10 w-[255px] rotate-[-1.3deg] xl:w-[275px]">
             <TimelineCard />
           </div>
-        </div>
-      </div>
-
-      <div className="relative hidden min-h-[520px] lg:block lg:origin-center lg:scale-[0.97] xl:min-h-[560px] xl:scale-[0.94]">
-        <div className="absolute left-0 top-14 z-10 w-[220px] rotate-[-2.5deg] xl:w-[240px]">
-          <JobCard />
-        </div>
-
-        <div className="absolute left-[7%] top-[225px] z-0 w-[240px] rotate-[1.4deg] xl:w-[260px]">
-          <AnalyticsCard />
-        </div>
-
-        <div className="absolute bottom-6 left-[5%] z-10 w-[260px] rotate-[-1.4deg] xl:w-[280px]">
-          <DocumentStorageCard />
-        </div>
-
-        <div className="absolute left-[25%] top-1 z-10 w-[230px] rotate-[-1deg] xl:w-[250px]">
-          <CoverLetterCard />
-        </div>
-
-        <div className="absolute left-1/2 top-16 z-20 w-[340px] -translate-x-1/2 xl:w-[372px]">
-          <TrackerCard />
-        </div>
-
-        <div className="absolute bottom-0 left-[33%] z-10 w-[260px] rotate-[1.5deg] xl:w-[280px]">
-          <BoardCard />
-        </div>
-
-        <div className="absolute right-[18%] top-3 z-10 w-[250px] rotate-[1.8deg] xl:w-[270px]">
-          <CVPreviewCard />
-        </div>
-
-        <div className="absolute right-0 top-[136px] z-0 w-[250px] rotate-[2.2deg] xl:w-[272px]">
-          <PortfolioCard />
-        </div>
-
-        <div className="absolute bottom-8 right-[11%] z-10 w-[255px] rotate-[-1.3deg] xl:w-[275px]">
-          <TimelineCard />
         </div>
       </div>
     </div>
