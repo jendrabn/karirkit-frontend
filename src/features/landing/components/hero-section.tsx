@@ -15,7 +15,7 @@ export function HeroSection() {
   return (
     <section
       id="beranda"
-      className="hero-gradient relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden pt-10 pb-6 min-[390px]:pt-12 sm:py-10 lg:block lg:min-h-0 lg:pt-8 lg:pb-20"
+      className="hero-gradient relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden py-14 min-[390px]:py-16 sm:py-12 lg:block lg:min-h-0 lg:pt-8 lg:pb-20"
     >
       <div className="container relative z-10 mx-auto w-full px-4 lg:px-8">
         <div className="grid items-center gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-8 xl:gap-10">
@@ -63,7 +63,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="relative -mx-4 w-[calc(100%+2rem)] max-w-[calc(100%+2rem)] overflow-hidden sm:mx-0 sm:w-full sm:max-w-full lg:w-auto lg:max-w-none lg:overflow-visible">
+          <div className="relative w-full overflow-hidden lg:w-auto lg:max-w-none lg:overflow-visible">
             <HeroIllustration className="w-full lg:min-h-[540px]" />
           </div>
         </div>
