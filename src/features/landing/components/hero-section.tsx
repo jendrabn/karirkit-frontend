@@ -21,7 +21,7 @@ export function HeroSection() {
         <div className="grid items-center gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-8 xl:gap-10">
           <div className="min-w-0 space-y-5 text-center lg:-translate-y-3 lg:space-y-7 lg:text-left">
             <div className="space-y-4">
-              <h1 className="mx-auto max-w-[34rem] text-pretty text-[2rem] font-semibold leading-[1.1] tracking-normal text-[#246545] min-[390px]:text-[2.15rem] sm:text-[3rem] lg:mx-0 lg:max-w-none lg:text-[3.45rem] lg:leading-[1.04] lg:tracking-[-0.032em] xl:text-[3.75rem]">
+              <h1 className="mx-auto max-w-[34rem] text-pretty text-[2.28rem] font-bold leading-[1.06] tracking-normal text-[#246545] min-[390px]:text-[2.45rem] sm:text-[3.15rem] lg:mx-0 lg:max-w-none lg:text-[3.45rem] lg:leading-[1.04] lg:tracking-[-0.032em] xl:text-[3.75rem]">
                 Lacak & Kelola Semua Lamaran Kerjamu Tanpa Ribet
               </h1>
               <p className="mx-auto max-w-[42rem] text-base leading-7 text-foreground/72 sm:leading-8 lg:mx-0 lg:text-lg">
