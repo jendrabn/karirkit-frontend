@@ -63,7 +63,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="relative w-full overflow-hidden lg:w-auto lg:max-w-none lg:overflow-visible">
+          <div className="relative hidden w-full overflow-hidden lg:block lg:w-auto lg:max-w-none lg:overflow-visible">
             <HeroIllustration className="w-full lg:min-h-[540px]" />
           </div>
         </div>
