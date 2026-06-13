@@ -11,18 +11,14 @@ import type {
 export type UploadDocumentInput = {
   type: DocumentType;
   compression?: DocumentCompressionLevel;
-  merge?: boolean;
   name?: string;
-  file?: File;
-  files?: File[];
+  file?: File | File[];
 };
 
 export const uploadDocument = ({
   file,
-  files,
   type,
   compression,
-  merge,
   name,
 }: UploadDocumentInput): Promise<Document | Document[]> => {
   const formData = new FormData();
@@ -30,22 +26,17 @@ export const uploadDocument = ({
   if (name) {
     formData.append("name", name);
   }
-  if (files && files.length > 0) {
-    files.forEach((item) => {
-      formData.append("files[]", item);
+
+  if (Array.isArray(file)) {
+    file.forEach((item) => {
+      formData.append("file[]", item);
     });
   } else if (file) {
     formData.append("file", file);
   }
 
   return api.post("/documents", formData, {
-    params:
-      compression || merge !== undefined
-        ? {
-            compression,
-            merge,
-          }
-        : undefined,
+    params: compression ? { compression } : undefined,
     headers: {
       "Content-Type": "multipart/form-data",
     },

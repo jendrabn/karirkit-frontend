@@ -13,7 +13,6 @@ import {
   MoreVertical,
   Loader2,
 } from "lucide-react";
-import { getFileIcon } from "@/features/documents/utils/file-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -252,17 +251,14 @@ export function DocumentsList() {
     files: File[];
     type: DocumentType;
     compression?: CompressionLevel;
-    merge?: boolean;
     name?: string;
   }) => {
     const [firstFile] = payload.files;
     await uploadMutation.mutateAsync({
       type: payload.type,
       compression: payload.compression,
-      merge: payload.merge,
       name: payload.name,
-      file: payload.files.length === 1 ? firstFile : undefined,
-      files: payload.files.length > 1 ? payload.files : undefined,
+      file: payload.files.length === 1 ? firstFile : payload.files,
     });
   };
 
@@ -428,25 +424,20 @@ export function DocumentsList() {
                     </TableCell>
                      {columnVisibility.original_name && (
                        <TableCell>
-                         <div className="flex items-center gap-3">
-                           <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                             {getFileIcon(doc.mime_type, doc.original_name)}
-                           </div>
-                           <div className="min-w-0">
-                             <Tooltip>
-                               <TooltipTrigger asChild>
-                                 <p className="font-medium truncate max-w-[200px]">
-                                   {doc.original_name}
-                                 </p>
-                               </TooltipTrigger>
-                               <TooltipContent>
-                                 <p>{doc.original_name}</p>
-                               </TooltipContent>
-                             </Tooltip>
-                             <p className="text-xs text-muted-foreground">
-                               {doc.mime_type}
-                             </p>
-                           </div>
+                         <div className="min-w-0">
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <p className="font-medium truncate max-w-[200px]">
+                                 {doc.original_name}
+                               </p>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                               <p>{doc.original_name}</p>
+                             </TooltipContent>
+                           </Tooltip>
+                           <p className="text-xs text-muted-foreground">
+                             {doc.mime_type}
+                           </p>
                          </div>
                        </TableCell>
                      )}

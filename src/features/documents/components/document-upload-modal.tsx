@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as SwitchPrimitives from "@radix-ui/react-switch";
 import { useRef } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
 import {
@@ -34,37 +33,103 @@ import {
 } from "@/components/ui/field";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { getFileIconFromFile } from "@/features/documents/utils/file-icons";
 import { cn } from "@/lib/utils";
-
-function Switch({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>) {
-  return (
-    <SwitchPrimitives.Root
-      className={cn(
-        "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
-        className,
-      )}
-      {...props}
-    >
-      <SwitchPrimitives.Thumb
-        className={cn(
-          "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
-        )}
-      />
-    </SwitchPrimitives.Root>
-  );
-}
 
 export type CompressionLevel = DocumentCompressionLevel;
 
 const compressionLabels: Record<CompressionLevel, string> = {
-  auto: "Otomatis",
   light: "Ringan",
   medium: "Sedang",
   strong: "Kuat",
+};
+
+const maxFilesPerRequest = 20;
+const maxFileSizeBytes = 100 * 1024 * 1024;
+const allowedFileExtensions = [
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "webp",
+  "svg",
+  "pdf",
+  "doc",
+  "docx",
+  "xls",
+  "xlsx",
+  "ppt",
+  "pptx",
+  "mp4",
+  "mov",
+  "avi",
+  "mkv",
+  "webm",
+  "mp3",
+  "wav",
+  "ogg",
+  "m4a",
+  "aac",
+  "txt",
+  "csv",
+  "rtf",
+] as const;
+
+const isAllowedFile = (file: File) => {
+  const extension = file.name.toLowerCase().split(".").pop() || "";
+  return (
+    file.type.startsWith("image/") ||
+    file.type === "application/pdf" ||
+    file.type.startsWith("video/") ||
+    file.type.startsWith("audio/") ||
+    file.type.startsWith("text/") ||
+    file.type === "application/rtf" ||
+    [
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ].includes(file.type) ||
+    allowedFileExtensions.includes(
+      extension as (typeof allowedFileExtensions)[number],
+    )
+  );
+};
+
+const isCompressionSupportedFile = (file: File) => {
+  const lowerFileName = file.name.toLowerCase();
+  const isSvg =
+    file.type === "image/svg+xml" || lowerFileName.endsWith(".svg");
+  const compressionSupportedExtensions = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+    ".pdf",
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".mkv",
+    ".webm",
+    ".mp3",
+    ".wav",
+    ".ogg",
+    ".m4a",
+    ".aac",
+  ];
+
+  return (
+    (file.type.startsWith("image/") && !isSvg) ||
+    file.type === "application/pdf" ||
+    file.type.startsWith("video/") ||
+    file.type.startsWith("audio/") ||
+    (!isSvg &&
+      compressionSupportedExtensions.some((extension) =>
+        lowerFileName.endsWith(extension),
+      ))
+  );
 };
 
 interface DocumentUploadModalProps {
@@ -74,7 +139,6 @@ interface DocumentUploadModalProps {
     files: File[];
     type: DocumentType;
     compression?: CompressionLevel;
-    merge?: boolean;
     name?: string;
   }) => Promise<void>;
 }
@@ -87,7 +151,6 @@ export function DocumentUploadModal({
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
   const [selectedType, setSelectedType] = React.useState<DocumentType | "">("");
   const [compression, setCompression] = React.useState<CompressionLevel | "">("");
-  const [mergeFiles, setMergeFiles] = React.useState(false);
   const [customName, setCustomName] = React.useState("");
   const [isUploading, setIsUploading] = React.useState(false);
   const [dragActive, setDragActive] = React.useState(false);
@@ -96,15 +159,9 @@ export function DocumentUploadModal({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const hasFiles = selectedFiles.length > 0;
-  const isImageFile = selectedFiles.some((file) =>
-    file.type.startsWith("image/"),
+  const hasCompressionSupportedFile = selectedFiles.some(
+    isCompressionSupportedFile,
   );
-  const isPdfFile = selectedFiles.some(
-    (file) =>
-      file.type === "application/pdf" ||
-      file.name.toLowerCase().endsWith(".pdf"),
-  );
-  const isCompressibleFile = isImageFile || isPdfFile;
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -127,35 +184,17 @@ export function DocumentUploadModal({
   };
 
   const handleFiles = (files: FileList | File[]) => {
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-      "image/svg+xml",
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.ms-excel",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.ms-powerpoint",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      "text/plain",
-      "application/rtf",
-    ];
-
     const incomingFiles = Array.from(files);
     const validFiles: File[] = [];
     let hasInvalidType = false;
     let hasOversize = false;
 
     incomingFiles.forEach((file) => {
-      if (!allowedTypes.includes(file.type)) {
+      if (!isAllowedFile(file)) {
         hasInvalidType = true;
         return;
       }
-      if (file.size > 25 * 1024 * 1024) {
+      if (file.size > maxFileSizeBytes) {
         hasOversize = true;
         return;
       }
@@ -164,12 +203,12 @@ export function DocumentUploadModal({
 
     if (hasInvalidType) {
       toast.error(
-        "Tipe file tidak didukung. Gunakan JPG, JPEG, PNG, GIF, WEBP, SVG, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, atau RTF.",
+        "Tipe file tidak didukung. Gunakan Image, PDF, Microsoft Office, Video, atau Audio.",
       );
     }
 
     if (hasOversize) {
-      toast.error("Ukuran file maksimal 25MB");
+      toast.error("Ukuran file maksimal 100 MB per file");
     }
 
     if (validFiles.length === 0) {
@@ -177,10 +216,15 @@ export function DocumentUploadModal({
     }
 
     setSelectedFiles((prev) => {
-      const next = [...prev, ...validFiles];
-      if (next.length <= 1) {
-        setMergeFiles(false);
+      const remainingSlots = maxFilesPerRequest - prev.length;
+      if (remainingSlots <= 0) {
+        toast.error(`Maksimal ${maxFilesPerRequest} file per request`);
+        return prev;
       }
+      if (validFiles.length > remainingSlots) {
+        toast.error(`Maksimal ${maxFilesPerRequest} file per request`);
+      }
+      const next = [...prev, ...validFiles.slice(0, remainingSlots)];
       return next;
     });
     setFileError(null);
@@ -215,15 +259,14 @@ export function DocumentUploadModal({
 
     setIsUploading(true);
     try {
-      // Pass compression only for image files
+      // Pass compression only when at least one selected file supports it.
       const compressionValue =
-        isCompressibleFile && compression ? compression : undefined;
+        hasCompressionSupportedFile && compression ? compression : undefined;
       const documentType = selectedType as DocumentType;
       await onUpload({
         files: selectedFiles,
         type: documentType,
         compression: compressionValue,
-        merge: selectedFiles.length > 1 ? mergeFiles : undefined,
         name: customName.trim() ? customName.trim() : undefined,
       });
       toast.success("Dokumen berhasil diupload");
@@ -240,7 +283,6 @@ export function DocumentUploadModal({
     setSelectedFiles([]);
     setSelectedType("");
     setCompression("");
-    setMergeFiles(false);
     setCustomName("");
     setFileError(null);
     setTypeError(null);
@@ -248,13 +290,7 @@ export function DocumentUploadModal({
   };
 
   const handleRemoveFile = (index: number) => {
-    setSelectedFiles((prev) => {
-      const next = prev.filter((_, i) => i !== index);
-      if (next.length <= 1) {
-        setMergeFiles(false);
-      }
-      return next;
-    });
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -301,7 +337,7 @@ export function DocumentUploadModal({
                     type="file"
                     className="hidden"
                     onChange={handleChange}
-                    accept=".jpg,.jpeg,.png,.gif,.webp,.svg,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.rtf"
+                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,video/*,audio/*,.txt,.csv,.rtf"
                     multiple
                   />
 
@@ -313,18 +349,13 @@ export function DocumentUploadModal({
                             key={`${file.name}-${index}`}
                             className="flex items-center justify-between gap-3 w-full min-w-0 overflow-hidden"
                           >
-                            <div className="flex items-center gap-3 min-w-0 flex-1">
-                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                {getFileIconFromFile(file)}
-                              </div>
-                              <div className="min-w-0 flex-1 break-all">
-                                <p className="text-sm font-medium max-w-full">
-                                  {file.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {formatFileSize(file.size)}
-                                </p>
-                              </div>
+                            <div className="min-w-0 flex-1 break-all">
+                              <p className="text-sm font-medium max-w-full">
+                                {file.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {formatFileSize(file.size)}
+                              </p>
                             </div>
                             <Button
                               variant="ghost"
@@ -367,8 +398,9 @@ export function DocumentUploadModal({
                   )}
                 </div>
                 <FieldDescription>
-                  JPG, JPEG, PNG, GIF, WEBP, SVG, PDF, DOC, DOCX, XLS, XLSX,
-                  PPT, PPTX, TXT, RTF (MAX 25MB)
+                  Format: Image, PDF, Microsoft Office, Video, Audio. Maksimal
+                  100 MB per file, {maxFilesPerRequest} file per request.
+                  Setiap file akan dibuat sebagai dokumen terpisah.
                 </FieldDescription>
                 <FieldError>{fileError}</FieldError>
               </Field>
@@ -409,56 +441,35 @@ export function DocumentUploadModal({
                 />
               </Field>
 
-              {selectedFiles.length > 1 && (
-                <div className="rounded-lg border border-border bg-muted/30 p-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium">
-                        Gabungkan Semua File
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Satukan {selectedFiles.length} file menjadi satu dokumen
-                        PDF
-                      </p>
-                    </div>
-                    <Switch
-                      checked={mergeFiles}
-                      onCheckedChange={setMergeFiles}
-                      className="mt-0.5"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {isCompressibleFile && (
-                <Field>
-                  <FieldLabel>Level Kompresi</FieldLabel>
-                  <Select
-                    value={compression}
-                    onValueChange={(value) =>
-                      setCompression(value as CompressionLevel)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih Level Kompresi" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="auto">
-                        {compressionLabels.auto}
-                      </SelectItem>
-                      <SelectItem value="light">
-                        {compressionLabels.light}
-                      </SelectItem>
-                      <SelectItem value="medium">
-                        {compressionLabels.medium}
-                      </SelectItem>
-                      <SelectItem value="strong">
-                        {compressionLabels.strong}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              )}
+              <Field>
+                <FieldLabel>Level Kompresi</FieldLabel>
+                <Select
+                  value={compression}
+                  onValueChange={(value) =>
+                    setCompression(value as CompressionLevel)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih Level Kompresi" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">
+                      {compressionLabels.light}
+                    </SelectItem>
+                    <SelectItem value="medium">
+                      {compressionLabels.medium}
+                    </SelectItem>
+                    <SelectItem value="strong">
+                      {compressionLabels.strong}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FieldDescription>
+                  Kompresi hanya diterapkan pada format yang didukung seperti
+                  gambar, PDF, video, dan audio. File Office, teks, CSV, RTF,
+                  SVG, dan beberapa format lain akan diunggah tanpa kompresi.
+                </FieldDescription>
+              </Field>
             </FieldSet>
           </div>
 

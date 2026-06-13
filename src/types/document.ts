@@ -46,7 +46,7 @@ export const documentTypes = [
 ] as const;
 
 export type DocumentType = (typeof documentTypes)[number];
-export type DocumentCompressionLevel = "auto" | "light" | "medium" | "strong";
+export type DocumentCompressionLevel = "light" | "medium" | "strong";
 
 export const documentTypeLabels: Record<DocumentType, string> = {
   ktp: "KTP",
