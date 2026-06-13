@@ -36,100 +36,12 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export type CompressionLevel = DocumentCompressionLevel;
+type CompressionSelection = CompressionLevel | "none";
 
 const compressionLabels: Record<CompressionLevel, string> = {
   light: "Ringan",
   medium: "Sedang",
   strong: "Kuat",
-};
-
-const maxFilesPerRequest = 20;
-const maxFileSizeBytes = 100 * 1024 * 1024;
-const allowedFileExtensions = [
-  "jpg",
-  "jpeg",
-  "png",
-  "gif",
-  "webp",
-  "svg",
-  "pdf",
-  "doc",
-  "docx",
-  "xls",
-  "xlsx",
-  "ppt",
-  "pptx",
-  "mp4",
-  "mov",
-  "avi",
-  "mkv",
-  "webm",
-  "mp3",
-  "wav",
-  "ogg",
-  "m4a",
-  "aac",
-  "txt",
-  "csv",
-  "rtf",
-] as const;
-
-const isAllowedFile = (file: File) => {
-  const extension = file.name.toLowerCase().split(".").pop() || "";
-  return (
-    file.type.startsWith("image/") ||
-    file.type === "application/pdf" ||
-    file.type.startsWith("video/") ||
-    file.type.startsWith("audio/") ||
-    file.type.startsWith("text/") ||
-    file.type === "application/rtf" ||
-    [
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.ms-excel",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.ms-powerpoint",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ].includes(file.type) ||
-    allowedFileExtensions.includes(
-      extension as (typeof allowedFileExtensions)[number],
-    )
-  );
-};
-
-const isCompressionSupportedFile = (file: File) => {
-  const lowerFileName = file.name.toLowerCase();
-  const isSvg =
-    file.type === "image/svg+xml" || lowerFileName.endsWith(".svg");
-  const compressionSupportedExtensions = [
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".gif",
-    ".webp",
-    ".pdf",
-    ".mp4",
-    ".mov",
-    ".avi",
-    ".mkv",
-    ".webm",
-    ".mp3",
-    ".wav",
-    ".ogg",
-    ".m4a",
-    ".aac",
-  ];
-
-  return (
-    (file.type.startsWith("image/") && !isSvg) ||
-    file.type === "application/pdf" ||
-    file.type.startsWith("video/") ||
-    file.type.startsWith("audio/") ||
-    (!isSvg &&
-      compressionSupportedExtensions.some((extension) =>
-        lowerFileName.endsWith(extension),
-      ))
-  );
 };
 
 interface DocumentUploadModalProps {
@@ -150,7 +62,8 @@ export function DocumentUploadModal({
 }: DocumentUploadModalProps) {
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
   const [selectedType, setSelectedType] = React.useState<DocumentType | "">("");
-  const [compression, setCompression] = React.useState<CompressionLevel | "">("");
+  const [compression, setCompression] =
+    React.useState<CompressionSelection>("none");
   const [customName, setCustomName] = React.useState("");
   const [isUploading, setIsUploading] = React.useState(false);
   const [dragActive, setDragActive] = React.useState(false);
@@ -159,9 +72,6 @@ export function DocumentUploadModal({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const hasFiles = selectedFiles.length > 0;
-  const hasCompressionSupportedFile = selectedFiles.some(
-    isCompressionSupportedFile,
-  );
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -184,49 +94,7 @@ export function DocumentUploadModal({
   };
 
   const handleFiles = (files: FileList | File[]) => {
-    const incomingFiles = Array.from(files);
-    const validFiles: File[] = [];
-    let hasInvalidType = false;
-    let hasOversize = false;
-
-    incomingFiles.forEach((file) => {
-      if (!isAllowedFile(file)) {
-        hasInvalidType = true;
-        return;
-      }
-      if (file.size > maxFileSizeBytes) {
-        hasOversize = true;
-        return;
-      }
-      validFiles.push(file);
-    });
-
-    if (hasInvalidType) {
-      toast.error(
-        "Tipe file tidak didukung. Gunakan Image, PDF, Microsoft Office, Video, atau Audio.",
-      );
-    }
-
-    if (hasOversize) {
-      toast.error("Ukuran file maksimal 100 MB per file");
-    }
-
-    if (validFiles.length === 0) {
-      return;
-    }
-
-    setSelectedFiles((prev) => {
-      const remainingSlots = maxFilesPerRequest - prev.length;
-      if (remainingSlots <= 0) {
-        toast.error(`Maksimal ${maxFilesPerRequest} file per request`);
-        return prev;
-      }
-      if (validFiles.length > remainingSlots) {
-        toast.error(`Maksimal ${maxFilesPerRequest} file per request`);
-      }
-      const next = [...prev, ...validFiles.slice(0, remainingSlots)];
-      return next;
-    });
+    setSelectedFiles((prev) => [...prev, ...Array.from(files)]);
     setFileError(null);
   };
 
@@ -259,14 +127,11 @@ export function DocumentUploadModal({
 
     setIsUploading(true);
     try {
-      // Pass compression only when at least one selected file supports it.
-      const compressionValue =
-        hasCompressionSupportedFile && compression ? compression : undefined;
       const documentType = selectedType as DocumentType;
       await onUpload({
         files: selectedFiles,
         type: documentType,
-        compression: compressionValue,
+        compression: compression === "none" ? undefined : compression,
         name: customName.trim() ? customName.trim() : undefined,
       });
       toast.success("Dokumen berhasil diupload");
@@ -282,7 +147,7 @@ export function DocumentUploadModal({
   const handleClose = () => {
     setSelectedFiles([]);
     setSelectedType("");
-    setCompression("");
+    setCompression("none");
     setCustomName("");
     setFileError(null);
     setTypeError(null);
@@ -337,7 +202,6 @@ export function DocumentUploadModal({
                     type="file"
                     className="hidden"
                     onChange={handleChange}
-                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,video/*,audio/*,.txt,.csv,.rtf"
                     multiple
                   />
 
@@ -398,9 +262,8 @@ export function DocumentUploadModal({
                   )}
                 </div>
                 <FieldDescription>
-                  Format: Image, PDF, Microsoft Office, Video, Audio. Maksimal
-                  100 MB per file, {maxFilesPerRequest} file per request.
-                  Setiap file akan dibuat sebagai dokumen terpisah.
+                  Format yang didukung: gambar, PDF, dokumen teks, spreadsheet,
+                  presentasi, video, dan audio. Maksimal 100 MB.
                 </FieldDescription>
                 <FieldError>{fileError}</FieldError>
               </Field>
@@ -446,13 +309,14 @@ export function DocumentUploadModal({
                 <Select
                   value={compression}
                   onValueChange={(value) =>
-                    setCompression(value as CompressionLevel)
+                    setCompression(value as CompressionSelection)
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih Level Kompresi" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none">Tanpa kompresi</SelectItem>
                     <SelectItem value="light">
                       {compressionLabels.light}
                     </SelectItem>
@@ -464,11 +328,6 @@ export function DocumentUploadModal({
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <FieldDescription>
-                  Kompresi hanya diterapkan pada format yang didukung seperti
-                  gambar, PDF, video, dan audio. File Office, teks, CSV, RTF,
-                  SVG, dan beberapa format lain akan diunggah tanpa kompresi.
-                </FieldDescription>
               </Field>
             </FieldSet>
           </div>
