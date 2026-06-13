@@ -136,9 +136,8 @@ export function DocumentUploadModal({
       });
       toast.success("Dokumen berhasil diupload");
       handleClose();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      toast.error("Gagal mengupload dokumen");
+    } catch {
+      // Error details are handled by the API layer so server messages stay visible.
     } finally {
       setIsUploading(false);
     }
