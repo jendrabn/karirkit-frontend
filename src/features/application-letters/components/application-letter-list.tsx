@@ -18,6 +18,7 @@ import {
   FileText,
   MoreVertical,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,6 +76,10 @@ import { useDuplicateApplicationLetter } from "../api/duplicate-application-lett
 import { useMassDeleteApplicationLetters } from "../api/mass-delete-application-letters";
 import type { ApplicationLetter } from "../api/get-application-letters";
 import { useDownloadApplicationLetter } from "../api/download-application-letter";
+import {
+  toApplicationLetterAiImprovementData,
+  useImproveApplicationLetterWithAI,
+} from "../api/improve-application-letter-with-ai";
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -242,6 +247,7 @@ export function ApplicationLetterList() {
   };
 
   const downloadMutation = useDownloadApplicationLetter();
+  const improveLetterMutation = useImproveApplicationLetterWithAI();
 
   const handleDownload = (
     letter: ApplicationLetter,
@@ -254,6 +260,22 @@ export function ApplicationLetterList() {
       name: letter.name,
       subject: letter.subject,
     });
+  };
+
+  const handleImproveWithAi = (letter: ApplicationLetter) => {
+    improveLetterMutation.mutate(
+      {
+        data: toApplicationLetterAiImprovementData(letter),
+      },
+      {
+        onSuccess: (data) => {
+          toast.success("Surat lamaran berhasil diperbaiki dengan AI");
+          navigate(paths.applicationLetters.edit.getHref(letter.id), {
+            state: { aiImprovedData: data },
+          });
+        },
+      },
+    );
   };
 
   const getLabel = (
@@ -674,6 +696,13 @@ export function ApplicationLetterList() {
                               <Copy className="h-4 w-4 mr-2" />
                               Duplikasi
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              disabled={improveLetterMutation.isPending}
+                              onClick={() => handleImproveWithAi(letter)}
+                            >
+                              <Sparkles className="h-4 w-4 mr-2" />
+                              Perbaiki Surat Lamaran
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => handleDownload(letter, "docx")}
@@ -872,8 +901,12 @@ export function ApplicationLetterList() {
 
       {/* Loading Overlay for Download */}
       <LoadingOverlay
-        show={downloadMutation.isPending}
-        message="Sedang mengunduh surat lamaran..."
+        show={downloadMutation.isPending || improveLetterMutation.isPending}
+        message={
+          improveLetterMutation.isPending
+            ? "Sedang memperbaiki surat lamaran dengan AI..."
+            : "Sedang mengunduh surat lamaran..."
+        }
       />
     </>
   );

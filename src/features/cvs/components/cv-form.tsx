@@ -1,4 +1,10 @@
-import { useMemo, useState, useEffect } from "react";
+import {
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import { Controller, useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "@/lib/auth";
@@ -12,10 +18,12 @@ import {
   Users,
   Share2,
   Layers,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TemplateActionButtonContent } from "@/components/template-action-button-content";
 import { AddActionButtonContent } from "@/components/add-action-button-content";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -79,21 +87,32 @@ interface CVFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   error?: unknown;
+  onAiImprove?: (data: CVFormData) => Promise<unknown>;
+  initialAiImprovementSuccess?: boolean;
 }
+
+export type CVFormHandle = {
+  improveWithAi: () => void;
+};
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i);
 
-export function CVForm({
+export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
   initialData,
   onSubmit,
   onCancel,
   isLoading,
   error,
-}: CVFormProps) {
+  onAiImprove,
+  initialAiImprovementSuccess,
+}: CVFormProps, ref) {
   const { data: user } = useUser();
   const { data: mySubscription } = useMySubscription();
   const subscriptionFeatures = getPlanFeatureAccess(mySubscription?.current_features);
+  const [aiImprovementSuccess, setAiImprovementSuccess] = useState(
+    Boolean(initialAiImprovementSuccess),
+  );
   
   const form = useForm<CVFormInput>({
     resolver: zodResolver(cvSchema, undefined, { raw: true }),
@@ -233,6 +252,43 @@ export function CVForm({
     }
   };
 
+  const handleAiImprove = handleSubmit(async (data) => {
+    if (!onAiImprove) return;
+
+    const currentValues = form.getValues();
+    let improvedData: Partial<CVFormInput> | undefined;
+
+    try {
+      improvedData = (await onAiImprove(cvSchema.parse(data))) as
+        | Partial<CVFormInput>
+        | undefined;
+    } catch {
+      return;
+    }
+
+    if (!improvedData) return;
+
+    form.reset({
+      ...currentValues,
+      ...improvedData,
+      template_id: currentValues.template_id,
+      photo: currentValues.photo,
+      projects: (improvedData.projects ??
+        currentValues.projects) as CVFormInput["projects"],
+    });
+    setAiImprovementSuccess(true);
+  }, displayFormErrors);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      improveWithAi: () => {
+        void handleAiImprove();
+      },
+    }),
+    [handleAiImprove],
+  );
+
   const getCurrentParagraphValue = () => {
     if (!activeParagraphType) return "";
 
@@ -257,6 +313,8 @@ export function CVForm({
     return "";
   };
 
+  const submitLabel = initialData ? "Simpan Perubahan" : "Simpan";
+
   return (
     <>
       <form
@@ -264,6 +322,16 @@ export function CVForm({
           onSubmit(cvSchema.parse(data));
         }, displayFormErrors)}
       >
+        {aiImprovementSuccess && (
+          <Alert className="mb-6 border-emerald-500/20 bg-emerald-500/10 text-emerald-950 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-50">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <AlertTitle>CV berhasil diperbaiki dengan AI</AlertTitle>
+            <AlertDescription>
+              Klik {submitLabel} untuk menyimpan perubahan terbaru.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <FieldSet disabled={isLoading} className="space-y-6 mb-6">
           {/* Template Selection */}
           <Card>
@@ -2770,10 +2838,8 @@ export function CVForm({
                 <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 Menyimpan...
               </>
-            ) : initialData ? (
-              "Simpan Perubahan"
             ) : (
-              "Simpan"
+              submitLabel
             )}
           </Button>
         </div>
@@ -2789,4 +2855,4 @@ export function CVForm({
       />
     </>
   );
-}
+});

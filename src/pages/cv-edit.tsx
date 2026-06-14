@@ -1,22 +1,34 @@
-import { useNavigate, useParams } from "react-router";
+import { useRef } from "react";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { PageHeader } from "@/components/layouts/page-header";
-import { CVForm } from "@/features/cvs/components/cv-form";
-import { type CVFormData } from "@/features/cvs/api/create-cv";
+import { Button } from "@/components/ui/button";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { CVForm, type CVFormHandle } from "@/features/cvs/components/cv-form";
+import { type CreateCVInput, type CVFormData } from "@/features/cvs/api/create-cv";
 import { useCV } from "@/features/cvs/api/get-cv";
 import { useUpdateCV, type UpdateCVInput } from "@/features/cvs/api/update-cv";
+import {
+  toCvAiImprovementData,
+  useImproveCVWithAI,
+} from "@/features/cvs/api/improve-cv-with-ai";
 import type { CV } from "@/types/cv";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/minimal-seo";
 
 export default function CVEdit() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const form = useForm<CVFormData>();
+  const cvFormRef = useRef<CVFormHandle>(null);
+  const aiImprovedData = (
+    location.state as { aiImprovedData?: Partial<CVFormData> } | null
+  )?.aiImprovedData;
 
   const { data: cvResponse, isLoading: isCVLoading } = useCV({
     id: id!,
@@ -30,6 +42,7 @@ export default function CVEdit() {
       },
     },
   });
+  const improveCvMutation = useImproveCVWithAI();
 
   useServerValidation(updateMutation.error, form);
 
@@ -37,6 +50,14 @@ export default function CVEdit() {
     if (id) {
       updateMutation.mutate({ id, data: data as UpdateCVInput });
     }
+  };
+
+  const handleAiImprove = async (data: CVFormData) => {
+    const improvedData = await improveCvMutation.mutateAsync({
+      data: toCvAiImprovementData(data as CreateCVInput),
+    });
+    toast.success("CV berhasil diperbaiki dengan AI");
+    return improvedData;
   };
 
   if (isCVLoading) {
@@ -67,6 +88,16 @@ export default function CVEdit() {
   }
 
   const cv = cvResponse as CV | undefined;
+  const cvInitialData = cv
+    ? ({
+        ...cv,
+        ...aiImprovedData,
+        template_id: cv.template_id,
+        photo: cv.photo,
+        slug: cv.slug,
+        visibility: cv.visibility,
+      } as CV)
+    : undefined;
 
   if (!cv) {
     return (
@@ -110,13 +141,30 @@ export default function CVEdit() {
         subtitle="Perbarui informasi CV Anda."
         showBackButton
         backButtonUrl="/cvs"
-      />
+      >
+        <Button
+          type="button"
+          variant="outline"
+          disabled={updateMutation.isPending || improveCvMutation.isPending}
+          onClick={() => cvFormRef.current?.improveWithAi()}
+        >
+          <Sparkles data-icon="inline-start" />
+          Perbaiki CV
+        </Button>
+      </PageHeader>
       <CVForm
-        initialData={cv}
+        ref={cvFormRef}
+        initialData={cvInitialData}
         onSubmit={handleSubmit}
         onCancel={() => navigate("/cvs")}
         isLoading={updateMutation.isPending}
         error={updateMutation.error}
+        onAiImprove={handleAiImprove}
+        initialAiImprovementSuccess={Boolean(aiImprovedData)}
+      />
+      <LoadingOverlay
+        show={improveCvMutation.isPending}
+        message="Sedang memperbaiki CV dengan AI..."
       />
     </DashboardLayout>
   );

@@ -16,6 +16,11 @@ const SUBSCRIPTION_ERROR_MESSAGES: Record<string, string> = {
     "Template premium hanya tersedia untuk pengguna Pro atau Max. Upgrade paket di halaman Langganan untuk melanjutkan.",
   DOCUMENT_ACCESS_DENIED:
     "Fitur dokumen hanya tersedia untuk pengguna Pro atau Max. Upgrade paket di halaman Langganan untuk membuka akses.",
+  AI_LIMIT_REACHED:
+    "Batas perbaikan AI harian Anda sudah tercapai. Coba lagi besok atau upgrade paket.",
+  AI_DISABLED: "Fitur perbaikan AI sedang dinonaktifkan.",
+  AI_PROCESSING_ERROR:
+    "AI gagal memproses data. Periksa kembali isian Anda lalu coba lagi.",
 };
 
 declare module "axios" {

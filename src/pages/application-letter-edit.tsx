@@ -1,21 +1,38 @@
-import { useNavigate, useParams } from "react-router";
+import { useRef } from "react";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { paths } from "@/config/paths";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { PageHeader } from "@/components/layouts/page-header";
-import { ApplicationLetterForm } from "@/features/application-letters/components/application-letter-form";
+import { Button } from "@/components/ui/button";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import {
+  ApplicationLetterForm,
+  type ApplicationLetterFormHandle,
+} from "@/features/application-letters/components/application-letter-form";
 import { type CreateApplicationLetterInput } from "@/features/application-letters/api/create-application-letter";
 import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
 import { useUpdateApplicationLetter } from "@/features/application-letters/api/update-application-letter";
+import {
+  toApplicationLetterAiImprovementData,
+  useImproveApplicationLetterWithAI,
+} from "@/features/application-letters/api/improve-application-letter-with-ai";
 import { toast } from "sonner";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { MinimalSEO } from "@/components/minimal-seo";
 
 export default function ApplicationLetterEdit() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
   const form = useForm<CreateApplicationLetterInput>();
+  const letterFormRef = useRef<ApplicationLetterFormHandle>(null);
+  const aiImprovedData = (
+    location.state as {
+      aiImprovedData?: Partial<CreateApplicationLetterInput>;
+    } | null
+  )?.aiImprovedData;
 
   const { data: letterResponse, isLoading: isLetterLoading } =
     useApplicationLetter({
@@ -30,6 +47,7 @@ export default function ApplicationLetterEdit() {
       },
     },
   });
+  const improveLetterMutation = useImproveApplicationLetterWithAI();
 
   useServerValidation(updateMutation.error, form);
 
@@ -37,6 +55,14 @@ export default function ApplicationLetterEdit() {
     if (id) {
       updateMutation.mutate({ id, data });
     }
+  };
+
+  const handleAiImprove = async (data: CreateApplicationLetterInput) => {
+    const improvedData = await improveLetterMutation.mutateAsync({
+      data: toApplicationLetterAiImprovementData(data),
+    });
+    toast.success("Surat lamaran berhasil diperbaiki dengan AI");
+    return improvedData;
   };
 
   if (isLetterLoading) {
@@ -66,6 +92,14 @@ export default function ApplicationLetterEdit() {
   }
 
   const letter = letterResponse;
+  const letterInitialData = letter
+    ? {
+        ...letter,
+        ...aiImprovedData,
+        template_id: letter.template_id,
+        signature: letter.signature,
+      }
+    : undefined;
 
   if (!letter) {
     return (
@@ -111,14 +145,31 @@ export default function ApplicationLetterEdit() {
         subtitle={`Edit surat lamaran untuk ${letter.company_name}`}
         showBackButton
         backButtonUrl="/application-letters"
-      />
+      >
+        <Button
+          type="button"
+          variant="outline"
+          disabled={updateMutation.isPending || improveLetterMutation.isPending}
+          onClick={() => letterFormRef.current?.improveWithAi()}
+        >
+          <Sparkles data-icon="inline-start" />
+          Perbaiki Surat Lamaran
+        </Button>
+      </PageHeader>
 
       <ApplicationLetterForm
-        initialData={letter as CreateApplicationLetterInput}
+        ref={letterFormRef}
+        initialData={letterInitialData as CreateApplicationLetterInput}
         onSubmit={handleSubmit}
         onCancel={() => navigate("/application-letters")}
         isLoading={updateMutation.isPending}
         error={updateMutation.error}
+        onAiImprove={handleAiImprove}
+        initialAiImprovementSuccess={Boolean(aiImprovedData)}
+      />
+      <LoadingOverlay
+        show={improveLetterMutation.isPending}
+        message="Sedang memperbaiki surat lamaran dengan AI..."
       />
     </DashboardLayout>
   );

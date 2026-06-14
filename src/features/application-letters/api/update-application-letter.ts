@@ -8,7 +8,7 @@ export type UpdateApplicationLetterInput = {
   name: string;
   birth_place_date: string;
   gender: "male" | "female";
-  marital_status: "single" | "married" | "divorced" | "widowed";
+  marital_status: "single" | "married" | "widowed";
   education: string;
   phone: string;
   email: string;
@@ -26,6 +26,7 @@ export type UpdateApplicationLetterInput = {
   closing_paragraph: string;
   signature?: string;
   template_id?: string;
+  language?: "en" | "id";
 };
 
 export type UpdateApplicationLetterResponse = ApplicationLetter;

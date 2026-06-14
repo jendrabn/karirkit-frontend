@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
 import { useUser } from "@/lib/auth";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, CheckCircle2 } from "lucide-react";
 import { ParagraphTemplateModal } from "./paragraph-template-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TemplateActionButtonContent } from "@/components/template-action-button-content";
 import { type ParagraphType } from "@/types/template";
 import {
@@ -57,18 +58,32 @@ interface ApplicationLetterFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   error?: unknown;
+  onAiImprove?: (data: CreateApplicationLetterInput) => Promise<unknown>;
+  initialAiImprovementSuccess?: boolean;
 }
 
-export function ApplicationLetterForm({
+export type ApplicationLetterFormHandle = {
+  improveWithAi: () => void;
+};
+
+export const ApplicationLetterForm = forwardRef<
+  ApplicationLetterFormHandle,
+  ApplicationLetterFormProps
+>(function ApplicationLetterForm({
   initialData,
   onSubmit,
   onCancel,
   isLoading,
   error,
-}: ApplicationLetterFormProps) {
+  onAiImprove,
+  initialAiImprovementSuccess,
+}: ApplicationLetterFormProps, ref) {
   const { data: user } = useUser();
   const { data: mySubscription } = useMySubscription();
   const subscriptionFeatures = getPlanFeatureAccess(mySubscription?.current_features);
+  const [aiImprovementSuccess, setAiImprovementSuccess] = useState(
+    Boolean(initialAiImprovementSuccess),
+  );
   const form = useForm<CreateApplicationLetterInput>({
     resolver: zodResolver(applicationLetterSchema),
     defaultValues: {
@@ -171,14 +186,61 @@ export function ApplicationLetterForm({
     return "";
   };
 
+  const submitLabel = initialData ? "Simpan Perubahan" : "Simpan";
+
   const handleFormSubmit = form.handleSubmit(
     (data) => onSubmit(applicationLetterSchema.parse(data)),
     displayFormErrors,
   );
 
+  const handleAiImprove = form.handleSubmit(async (data) => {
+    if (!onAiImprove) return;
+
+    const currentValues = form.getValues();
+    let improvedData: Partial<CreateApplicationLetterInput> | undefined;
+
+    try {
+      improvedData = (await onAiImprove(
+        applicationLetterSchema.parse(data),
+      )) as Partial<CreateApplicationLetterInput> | undefined;
+    } catch {
+      return;
+    }
+
+    if (!improvedData) return;
+
+    form.reset({
+      ...currentValues,
+      ...improvedData,
+      template_id: currentValues.template_id,
+      signature: currentValues.signature,
+    });
+    setAiImprovementSuccess(true);
+  }, displayFormErrors);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      improveWithAi: () => {
+        void handleAiImprove();
+      },
+    }),
+    [handleAiImprove],
+  );
+
   return (
     <>
       <form onSubmit={handleFormSubmit} className="space-y-6">
+        {aiImprovementSuccess && (
+          <Alert className="border-emerald-500/20 bg-emerald-500/10 text-emerald-950 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-50">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <AlertTitle>Surat lamaran berhasil diperbaiki dengan AI</AlertTitle>
+            <AlertDescription>
+              Klik {submitLabel} untuk menyimpan perubahan terbaru.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <FieldSet>
           {/* Template Selection */}
           <Card>
@@ -773,10 +835,8 @@ export function ApplicationLetterForm({
                 <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 Menyimpan...
               </>
-            ) : initialData ? (
-              "Simpan Perubahan"
             ) : (
-              "Simpan"
+              submitLabel
             )}
           </Button>
         </div>
@@ -792,4 +852,4 @@ export function ApplicationLetterForm({
       />
     </>
   );
-}
+});

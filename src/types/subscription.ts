@@ -26,6 +26,7 @@ export interface SubscriptionPlan {
   application_letter_docx_downloads_per_day: number;
   cv_pdf_downloads_per_day: number;
   application_letter_pdf_downloads_per_day: number;
+  ai_improvements_per_day: number;
   can_manage_documents: boolean;
   can_use_premium_cv_templates?: boolean;
   can_use_premium_application_letter_templates?: boolean;

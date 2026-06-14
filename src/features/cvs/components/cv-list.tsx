@@ -21,6 +21,7 @@ import {
   Globe,
   Lock,
   Share2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,6 +77,10 @@ import { useDeleteCV } from "@/features/cvs/api/delete-cv";
 import { useDuplicateCV } from "@/features/cvs/api/duplicate-cv";
 import { useDownloadCV } from "@/features/cvs/api/download-cv";
 import { useMassDeleteCVs } from "@/features/cvs/api/mass-delete-cvs";
+import {
+  toCvAiImprovementData,
+  useImproveCVWithAI,
+} from "@/features/cvs/api/improve-cv-with-ai";
 import type { CV } from "@/features/cvs/api/get-cvs";
 import { DEGREE_OPTIONS } from "@/types/cv";
 import { buildImageUrl, cn } from "@/lib/utils";
@@ -173,6 +178,7 @@ const CVList = () => {
   });
 
   const downloadMutation = useDownloadCV();
+  const improveCvMutation = useImproveCVWithAI();
 
   const massDeleteMutation = useMassDeleteCVs({
     mutationConfig: {
@@ -231,6 +237,22 @@ const CVList = () => {
 
   const handleDuplicate = (id: string) => {
     duplicateMutation.mutate(id);
+  };
+
+  const handleImproveWithAi = (cv: CV) => {
+    improveCvMutation.mutate(
+      {
+        data: toCvAiImprovementData(cv),
+      },
+      {
+        onSuccess: (data) => {
+          toast.success("CV berhasil diperbaiki dengan AI");
+          navigate(paths.cvs.edit.getHref(cv.id), {
+            state: { aiImprovedData: data },
+          });
+        },
+      },
+    );
   };
 
   const handleDownload = (cv: CV, format: "docx" | "pdf") => {
@@ -801,6 +823,13 @@ const CVList = () => {
                                 Duplikasi
                               </DropdownMenuItem>
                               <DropdownMenuItem
+                                disabled={improveCvMutation.isPending}
+                                onClick={() => handleImproveWithAi(cv)}
+                              >
+                              <Sparkles className="h-4 w-4 mr-2" />
+                              Perbaiki CV
+                            </DropdownMenuItem>
+                              <DropdownMenuItem
                                 onClick={() => {
                                   setCvToEditVisibility(cv);
                                   setVisibilityModalOpen(true);
@@ -1015,8 +1044,12 @@ const CVList = () => {
       </AlertDialog>
 
       <LoadingOverlay
-        show={downloadMutation.isPending}
-        message="Sedang mengunduh CV..."
+        show={downloadMutation.isPending || improveCvMutation.isPending}
+        message={
+          improveCvMutation.isPending
+            ? "Sedang memperbaiki CV dengan AI..."
+            : "Sedang mengunduh CV..."
+        }
       />
     </>
   );

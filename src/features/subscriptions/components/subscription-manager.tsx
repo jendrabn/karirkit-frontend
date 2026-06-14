@@ -612,6 +612,12 @@ export function SubscriptionManager({
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Perbaikan AI</span>
+                    <span className="font-semibold text-foreground">
+                      {formatSubscriptionLimit(plan.ai_improvements_per_day)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Penyimpanan</span>
                     <span className="font-semibold text-foreground">
                       {plan.max_document_storage_bytes === 0
