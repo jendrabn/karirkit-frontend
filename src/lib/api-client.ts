@@ -59,6 +59,17 @@ api.interceptors.response.use(
     const skipGeneralErrorToast =
       (error.config as AxiosRequestConfig | undefined)?.skipGeneralErrorToast ===
       true;
+    const isTimeoutError =
+      error.code === "ECONNABORTED" ||
+      (typeof error.message === "string" &&
+        error.message.toLowerCase().includes("timeout"));
+
+    if (!skipGeneralErrorToast && isTimeoutError) {
+      toast.error(
+        "Permintaan melebihi batas waktu. Silakan coba lagi beberapa saat.",
+      );
+      return Promise.reject(error);
+    }
 
     // Normalize blob error payloads before inspecting them downstream.
     if (error.response?.data instanceof Blob) {

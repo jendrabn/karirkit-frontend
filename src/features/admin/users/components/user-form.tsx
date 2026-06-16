@@ -89,7 +89,7 @@ export function UserForm({
                   Nama Lengkap <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Input
-                  placeholder="Masukkan nama lengkap"
+                  placeholder="Contoh: Siti Aulia"
                   {...form.register("name")}
                   className={cn(
                     form.formState.errors.name && "border-destructive",
@@ -103,7 +103,7 @@ export function UserForm({
                   Username <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Input
-                  placeholder="Masukkan username"
+                  placeholder="Contoh: siti.aulia"
                   {...form.register("username")}
                   className={cn(
                     form.formState.errors.username && "border-destructive",
@@ -120,7 +120,7 @@ export function UserForm({
                 </FieldLabel>
                 <Input
                   type="email"
-                  placeholder="Masukkan email"
+                  placeholder="Contoh: siti@perusahaan.id"
                   {...form.register("email")}
                   className={cn(
                     form.formState.errors.email && "border-destructive",
@@ -136,7 +136,7 @@ export function UserForm({
                 </FieldLabel>
                 <Input
                   type="password"
-                  placeholder="Masukkan password"
+                  placeholder="Contoh: Rahasia#123"
                   {...form.register("password")}
                   className={cn(
                     (form.formState.errors as FieldErrors<CreateUserInput>)
@@ -159,7 +159,7 @@ export function UserForm({
               <Field>
                 <FieldLabel>Nomor Telepon</FieldLabel>
                 <Input
-                  placeholder="Masukkan nomor telepon"
+                  placeholder="Contoh: 08123456xxxxx"
                   {...form.register("phone")}
                   className={cn(
                     form.formState.errors.phone && "border-destructive",

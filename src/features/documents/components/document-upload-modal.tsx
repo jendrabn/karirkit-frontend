@@ -297,7 +297,7 @@ export function DocumentUploadModal({
               <Field>
                 <FieldLabel>Nama Dokumen</FieldLabel>
                 <Input
-                  placeholder="Nama dokumen"
+                  placeholder="Contoh: Ijazah_S1_Ananda.pdf"
                   value={customName}
                   onChange={(event) => setCustomName(event.target.value)}
                 />

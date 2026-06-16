@@ -234,7 +234,7 @@ export function JobForm({
                           form.formState.errors.company_id &&
                             "border-destructive",
                         )}
-                        placeholder="Pilih Perusahaan"
+                        placeholder="Contoh: PT Nusantara Digital Solusi"
                         aria-invalid={!!form.formState.errors.company_id}
                         showClear
                       />
@@ -287,7 +287,7 @@ export function JobForm({
                           form.formState.errors.job_role_id &&
                             "border-destructive",
                         )}
-                        placeholder="Pilih Role Pekerjaan"
+                        placeholder="Contoh: Frontend Developer"
                         aria-invalid={!!form.formState.errors.job_role_id}
                         showClear
                       />
@@ -335,7 +335,7 @@ export function JobForm({
                           "w-full",
                           form.formState.errors.city_id && "border-destructive",
                         )}
-                        placeholder="Pilih Kota"
+                        placeholder="Contoh: Jakarta"
                         aria-invalid={!!form.formState.errors.city_id}
                         showClear
                       />
@@ -529,7 +529,7 @@ export function JobForm({
                   <Input
                     type="number"
                     min={0}
-                    placeholder="Contoh: 8000000"
+                    placeholder="Contoh: 8.000.000"
                     {...form.register("salary_min", {
                       setValueAs: (value) =>
                         value === "" ? null : Number(value),
@@ -548,7 +548,7 @@ export function JobForm({
                   <Input
                     type="number"
                     min={0}
-                    placeholder="Contoh: 12000000"
+                    placeholder="Contoh: 12.000.000"
                     {...form.register("salary_max", {
                       setValueAs: (value) =>
                         value === "" ? null : Number(value),
@@ -586,7 +586,7 @@ export function JobForm({
               <Field>
                 <FieldLabel>URL Lowongan</FieldLabel>
                 <Input
-                  placeholder="https://career.company.com/frontend-developer"
+                  placeholder="Contoh: https://career.company.com/frontend-developer"
                   {...form.register("job_url")}
                   className={cn(
                     form.formState.errors.job_url && "border-destructive",
@@ -600,7 +600,7 @@ export function JobForm({
               <Field>
                 <FieldLabel>Nama Kontak</FieldLabel>
                 <Input
-                  placeholder="Nama HR atau Recruiter"
+                  placeholder="Contoh: Siti Aulia, Recruiter"
                   {...form.register("contact_name")}
                   className={cn(
                     form.formState.errors.contact_name &&
@@ -616,7 +616,7 @@ export function JobForm({
                 <FieldLabel>Email Kontak</FieldLabel>
                 <Input
                   type="email"
-                  placeholder="hr@company.com"
+                  placeholder="Contoh: hr@perusahaan.id"
                   {...form.register("contact_email")}
                   className={cn(
                     form.formState.errors.contact_email &&
@@ -631,7 +631,7 @@ export function JobForm({
               <Field>
                 <FieldLabel>Telepon Kontak</FieldLabel>
                 <Input
-                  placeholder="+62 812 3456 7890"
+                  placeholder="Contoh: 08123456xxxxx"
                   {...form.register("contact_phone")}
                   className={cn(
                     form.formState.errors.contact_phone &&
@@ -775,7 +775,7 @@ export function JobForm({
                     key="description-editor"
                     value={field.value || ""}
                     onChange={field.onChange}
-                    placeholder="Jelaskan tanggung jawab pekerjaan, lingkup kerja, dan ekspektasi kandidat"
+                    placeholder="Contoh: Bertanggung jawab mengembangkan fitur antarmuka, berkolaborasi dengan tim produk, dan menjaga kualitas kode."
                   />
                   <FieldError>
                     {form.formState.errors.description?.message}
@@ -796,7 +796,7 @@ export function JobForm({
                     key="requirements-editor"
                     value={field.value || ""}
                     onChange={field.onChange}
-                    placeholder="Tuliskan kualifikasi, skill, dan pengalaman yang dibutuhkan"
+                    placeholder="Contoh: Menguasai React, TypeScript, dan memiliki pengalaman minimal 2 tahun di pengembangan web."
                   />
                   <FieldError>
                     {form.formState.errors.requirements?.message}

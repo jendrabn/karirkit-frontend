@@ -145,7 +145,7 @@ export function PortfolioForm({
                   </FieldLabel>
                   <Input
                     {...form.register("sort_description")}
-                    placeholder="Ringkasan singkat proyek (1 kalimat)"
+                    placeholder="Contoh: Aplikasi web untuk memantau stok barang secara real-time."
                     className={cn(
                       form.formState.errors.sort_description &&
                         "border-destructive",
@@ -165,7 +165,7 @@ export function PortfolioForm({
                   <Textarea
                     {...form.register("description")}
                     rows={5}
-                    placeholder="Jelaskan tujuan proyek, peran Anda, teknologi yang digunakan, dan hasil yang dicapai"
+                    placeholder="Contoh: Saya mengembangkan sistem inventori untuk membantu toko memantau stok, transaksi, dan laporan penjualan menggunakan React dan Laravel."
                     className={cn(
                       form.formState.errors.description && "border-destructive",
                     )}
@@ -320,7 +320,7 @@ export function PortfolioForm({
                 <Input
                   {...form.register("live_url")}
                   type="url"
-                  placeholder="https://aplikasi-anda.com"
+                  placeholder="Contoh: https://aplikasi-anda.com"
                   className={cn(
                     form.formState.errors.live_url && "border-destructive",
                   )}
@@ -335,7 +335,7 @@ export function PortfolioForm({
                 <Input
                   {...form.register("repo_url")}
                   type="url"
-                  placeholder="https://github.com/username/nama-project"
+                  placeholder="Contoh: https://github.com/username/nama-project"
                   className={cn(
                     form.formState.errors.repo_url && "border-destructive",
                   )}

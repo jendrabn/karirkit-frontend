@@ -147,6 +147,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
     control,
     handleSubmit,
     setValue,
+    getValues,
     trigger,
     formState: { errors },
   } = form;
@@ -249,6 +250,28 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
 
     if (activeParagraphType === "project") {
       setValue(`projects.${activeParagraphIndex}.description`, content);
+    }
+  };
+
+  const handleAddSkill = () => {
+    const nextIndex = skills.fields.length;
+    const lastSkill = getValues("skills")[skills.fields.length - 1];
+
+    skills.append({
+      name: "",
+      skill_category: lastSkill?.skill_category ?? "",
+      level: lastSkill?.level ?? "",
+    });
+
+    if (lastSkill) {
+      setValue(`skills.${nextIndex}.skill_category`, lastSkill.skill_category, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+      setValue(`skills.${nextIndex}.level`, lastSkill.level, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     }
   };
 
@@ -432,7 +455,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                   <Input
                     id="name"
                     {...register("name")}
-                    placeholder="John Doe"
+                    placeholder="Contoh: Siti Aulia"
                     className={cn(errors.name && "border-destructive")}
                   />
                   <FieldError>{errors.name?.message}</FieldError>
@@ -445,7 +468,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                   <Input
                     id="headline"
                     {...register("headline")}
-                    placeholder="Software Engineer | Full Stack Developer"
+                    placeholder="Contoh: Frontend Developer | React Developer"
                     className={cn(errors.headline && "border-destructive")}
                   />
                   <FieldError>{errors.headline?.message}</FieldError>
@@ -459,7 +482,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                     id="email"
                     type="email"
                     {...register("email")}
-                    placeholder="john.doe@example.com"
+                    placeholder="Contoh: siti@perusahaan.id"
                     className={cn(errors.email && "border-destructive")}
                   />
                   <FieldError>{errors.email?.message}</FieldError>
@@ -472,7 +495,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                   <Input
                     id="phone"
                     {...register("phone")}
-                    placeholder="081234567890"
+                    placeholder="Contoh: 08123456xxxxx"
                     className={cn(errors.phone && "border-destructive")}
                   />
                   <FieldError>{errors.phone?.message}</FieldError>
@@ -485,7 +508,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                   <Input
                     id="address"
                     {...register("address")}
-                    placeholder="Jl. Jend. Sudirman No. 1, Jakarta"
+                    placeholder="Contoh: Jl. Sudirman No. 1, Jakarta"
                     className={cn(errors.address && "border-destructive")}
                   />
                   <FieldError>{errors.address?.message}</FieldError>
@@ -509,7 +532,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                     id="about"
                     {...register("about")}
                     rows={4}
-                    placeholder="Ceritakan tentang diri Anda..."
+                    placeholder="Contoh: Lulusan Teknik Informatika dengan pengalaman mengembangkan aplikasi web dan antarmuka modern."
                     className={cn(errors.about && "border-destructive")}
                   />
                   <FieldError>{errors.about?.message}</FieldError>
@@ -638,7 +661,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             </FieldLabel>
                             <Input
                               {...register(`educations.${index}.school_name`)}
-                              placeholder="Universitas Indonesia"
+                              placeholder="Contoh: Universitas Indonesia"
                               className={cn(
                                 errors.educations?.[index]?.school_name &&
                                   "border-destructive",
@@ -656,7 +679,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                               {...register(
                                 `educations.${index}.school_location`,
                               )}
-                              placeholder="Depok, Jawa Barat"
+                              placeholder="Contoh: Depok, Jawa Barat"
                               className={cn(
                                 errors.educations?.[index]?.school_location &&
                                   "border-destructive",
@@ -676,7 +699,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             </FieldLabel>
                             <Input
                               {...register(`educations.${index}.major`)}
-                              placeholder="Teknik Informatika"
+                              placeholder="Contoh: Teknik Informatika"
                               className={cn(
                                 errors.educations?.[index]?.major &&
                                   "border-destructive",
@@ -919,7 +942,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             step="0.01"
                             min="0"
                             max="4"
-                            placeholder="3.85"
+                            placeholder="Contoh: 3,85"
                             {...register(`educations.${index}.gpa`, {
                               valueAsNumber: true,
                             })}
@@ -938,7 +961,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           <Textarea
                             {...register(`educations.${index}.description`)}
                             rows={2}
-                            placeholder="Fokus pada pengembangan perangkat lunak..."
+                            placeholder="Contoh: Fokus pada pengembangan perangkat lunak dan pengalaman membangun produk digital."
                             className={cn(
                               errors.educations?.[index]?.description &&
                                 "border-destructive",
@@ -1022,7 +1045,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             </FieldLabel>
                             <Input
                               {...register(`experiences.${index}.job_title`)}
-                              placeholder="Senior Software Engineer"
+                              placeholder="Contoh: Senior Software Engineer"
                               className={cn(
                                 errors.experiences?.[index]?.job_title &&
                                   "border-destructive",
@@ -1039,7 +1062,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             </FieldLabel>
                             <Input
                               {...register(`experiences.${index}.company_name`)}
-                              placeholder="PT Teknologi Maju"
+                              placeholder="Contoh: PT Teknologi Maju"
                               className={cn(
                                 errors.experiences?.[index]?.company_name &&
                                   "border-destructive",
@@ -1060,7 +1083,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                               {...register(
                                 `experiences.${index}.company_location`,
                               )}
-                              placeholder="Jakarta Selatan"
+                              placeholder="Contoh: Jakarta Selatan"
                               className={cn(
                                 errors.experiences?.[index]?.company_location &&
                                   "border-destructive",
@@ -1368,7 +1391,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           <Textarea
                             {...register(`experiences.${index}.description`)}
                             rows={3}
-                            placeholder="Bertanggung jawab untuk mengembangkan fitur..."
+                            placeholder="Contoh: Bertanggung jawab mengembangkan fitur utama aplikasi, memperbaiki bug, dan bekerja sama dengan tim produk."
                             className={cn(
                               errors.experiences?.[index]?.description &&
                                 "border-destructive",
@@ -1398,13 +1421,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() =>
-                  skills.append({
-                    name: "",
-                    level: undefined,
-                    skill_category: "",
-                  })
-                }
+                onClick={handleAddSkill}
               >
                 <AddActionButtonContent />
               </Button>
@@ -1422,128 +1439,136 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {skills.fields.map((field, index) => (
-                    <div key={field.id} className="flex gap-3 items-start">
-                      <Field className="w-48">
-                        <FieldLabel>
-                          Kategori <span className="text-destructive">*</span>
-                        </FieldLabel>
-                        <Combobox
-                          items={skillCategoryItems}
-                          value={skillsValue?.[index]?.skill_category || null}
-                          onValueChange={(value) =>
-                            setValue(
-                              `skills.${index}.skill_category`,
-                              (value ?? "") as SkillCategory,
-                              { shouldDirty: true, shouldValidate: true },
-                            )
-                          }
-                          itemToStringLabel={(value) =>
-                            skillCategoryLabels[value as SkillCategory] ?? ""
-                          }
-                        >
-                          <ComboboxInput
+                  {skills.fields.map((field, index) => {
+                    const currentSkill = skillsValue[index] ?? field;
+
+                    return (
+                      <div key={field.id} className="flex gap-3 items-start">
+                        <Field className="w-48">
+                          <FieldLabel>
+                            Kategori <span className="text-destructive">*</span>
+                          </FieldLabel>
+                          <Combobox
+                            items={skillCategoryItems}
+                            value={currentSkill.skill_category || null}
+                            onValueChange={(value) =>
+                              setValue(
+                                `skills.${index}.skill_category`,
+                                (value ?? "") as SkillCategory,
+                                { shouldDirty: true, shouldValidate: true },
+                              )
+                            }
+                            itemToStringLabel={(value) =>
+                              skillCategoryLabels[value as SkillCategory] ?? ""
+                            }
+                          >
+                            <ComboboxInput
+                              className={cn(
+                                "w-full",
+                                errors.skills?.[index]?.skill_category &&
+                                  "border-destructive",
+                              )}
+                              placeholder="Contoh: Teknologi"
+                              aria-invalid={
+                                !!errors.skills?.[index]?.skill_category
+                              }
+                              showClear
+                            />
+                            <ComboboxContent>
+                              <ComboboxEmpty>
+                                Kategori tidak ditemukan
+                              </ComboboxEmpty>
+                              <ComboboxList>
+                                {(key) => (
+                                  <ComboboxItem key={key} value={key}>
+                                    {skillCategoryLabels[key as SkillCategory]}
+                                  </ComboboxItem>
+                                )}
+                              </ComboboxList>
+                            </ComboboxContent>
+                          </Combobox>
+                          <FieldError>
+                            {typeof errors.skills?.[index]?.skill_category
+                              ?.message === "string"
+                              ? errors.skills?.[index]?.skill_category?.message
+                              : undefined}
+                          </FieldError>
+                        </Field>
+                        <Field className="flex-1">
+                          <FieldLabel>
+                            Nama Keahlian{" "}
+                            <span className="text-destructive">*</span>
+                          </FieldLabel>
+                          <Input
+                            placeholder="Contoh: React.js, Python, manajemen proyek"
+                            {...register(`skills.${index}.name`)}
                             className={cn(
-                              "w-full",
-                              errors.skills?.[index]?.skill_category &&
+                              errors.skills?.[index]?.name &&
                                 "border-destructive",
                             )}
-                            placeholder="Pilih Kategori"
-                            aria-invalid={
-                              !!errors.skills?.[index]?.skill_category
-                            }
-                            showClear
                           />
-                          <ComboboxContent>
-                            <ComboboxEmpty>
-                              Kategori tidak ditemukan
-                            </ComboboxEmpty>
-                            <ComboboxList>
-                              {(key) => (
-                                <ComboboxItem key={key} value={key}>
-                                  {skillCategoryLabels[key as SkillCategory]}
-                                </ComboboxItem>
-                              )}
-                            </ComboboxList>
-                          </ComboboxContent>
-                        </Combobox>
-                        <FieldError>
-                          {typeof errors.skills?.[index]?.skill_category
-                            ?.message === "string"
-                            ? errors.skills?.[index]?.skill_category?.message
-                            : undefined}
-                        </FieldError>
-                      </Field>
-                      <Field className="flex-1">
-                        <FieldLabel>
-                          Nama Keahlian{" "}
-                          <span className="text-destructive">*</span>
-                        </FieldLabel>
-                        <Input
-                          placeholder="Contoh: React.js, Python, Manajemen Proyek"
-                          {...register(`skills.${index}.name`)}
-                          className={cn(
-                            errors.skills?.[index]?.name &&
-                              "border-destructive",
+                          <FieldError>
+                            {errors.skills?.[index]?.name?.message}
+                          </FieldError>
+                        </Field>
+                        <Controller
+                          control={control}
+                          name={`skills.${index}.level`}
+                          render={({ field: levelField }) => (
+                            <Field className="w-40">
+                              <FieldLabel>
+                                Level Keahlian{" "}
+                                <span className="text-destructive">*</span>
+                              </FieldLabel>
+                              <Select
+                                value={levelField.value ?? ""}
+                                onValueChange={(v) =>
+                                  levelField.onChange(
+                                    v as
+                                      | "beginner"
+                                      | "intermediate"
+                                      | "advanced"
+                                      | "expert",
+                                  )
+                                }
+                              >
+                                <SelectTrigger
+                                  className={cn(
+                                    errors.skills?.[index]?.level &&
+                                      "border-destructive",
+                                  )}
+                                >
+                                  <SelectValue placeholder="Pilih Level Keahlian" />
+                                </SelectTrigger>
+                                <SelectContent className="z-50">
+                                  {SKILL_LEVEL_OPTIONS.map((opt) => (
+                                    <SelectItem
+                                      key={opt.value}
+                                      value={opt.value}
+                                    >
+                                      {opt.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FieldError>
+                                {errors.skills?.[index]?.level?.message}
+                              </FieldError>
+                            </Field>
                           )}
                         />
-                        <FieldError>
-                          {errors.skills?.[index]?.name?.message}
-                        </FieldError>
-                      </Field>
-                      <Field className="w-40">
-                        <FieldLabel>
-                          Level Keahlian{" "}
-                          <span className="text-destructive">*</span>
-                        </FieldLabel>
-                        <Select
-                          value={
-                            typeof skillsValue?.[index]?.level === "string"
-                              ? skillsValue?.[index]?.level
-                              : ""
-                          }
-                          onValueChange={(v) =>
-                            setValue(
-                              `skills.${index}.level`,
-                              v as
-                                | "beginner"
-                                | "intermediate"
-                                | "advanced"
-                                | "expert",
-                            )
-                          }
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="mt-7 self-start"
+                          onClick={() => skills.remove(index)}
                         >
-                          <SelectTrigger
-                            className={cn(
-                              errors.skills?.[index]?.level &&
-                                "border-destructive",
-                            )}
-                          >
-                            <SelectValue placeholder="Pilih Level Keahlian" />
-                          </SelectTrigger>
-                          <SelectContent className="z-50">
-                            {SKILL_LEVEL_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FieldError>
-                          {errors.skills?.[index]?.level?.message}
-                        </FieldError>
-                      </Field>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="mt-7 self-start"
-                        onClick={() => skills.remove(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  ))}
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
@@ -1614,7 +1639,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             </FieldLabel>
                             <Input
                               {...register(`certificates.${index}.title`)}
-                              placeholder="AWS Certified Solutions Architect"
+                              placeholder="Contoh: AWS Certified Solutions Architect"
                               className={cn(
                                 errors.certificates?.[index]?.title &&
                                   "border-destructive",
@@ -1631,7 +1656,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             </FieldLabel>
                             <Input
                               {...register(`certificates.${index}.issuer`)}
-                              placeholder="Amazon Web Services"
+                              placeholder="Contoh: Amazon Web Services"
                               className={cn(
                                 errors.certificates?.[index]?.issuer &&
                                   "border-destructive",
@@ -1892,7 +1917,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                               {...register(
                                 `certificates.${index}.credential_id`,
                               )}
-                              placeholder="AWS-12345678"
+                              placeholder="Contoh: AWS-12345678"
                               className={cn(
                                 errors.certificates?.[index]?.credential_id &&
                                   "border-destructive",
@@ -1911,7 +1936,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                               {...register(
                                 `certificates.${index}.credential_url`,
                               )}
-                              placeholder="https://aws.amazon.com/verify..."
+                              placeholder="Contoh: https://aws.amazon.com/verify"
                               className={cn(
                                 errors.certificates?.[index]?.credential_url &&
                                   "border-destructive",
@@ -1931,7 +1956,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           <Textarea
                             {...register(`certificates.${index}.description`)}
                             rows={2}
-                            placeholder="Sertifikasi untuk arsitektur cloud..."
+                            placeholder="Contoh: Sertifikasi untuk arsitektur cloud dan pengelolaan layanan AWS."
                             className={cn(
                               errors.certificates?.[index]?.description &&
                                 "border-destructive",
@@ -2007,7 +2032,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           </FieldLabel>
                           <Input
                             {...register(`awards.${index}.title`)}
-                            placeholder="Employee of the Year"
+                            placeholder="Contoh: Employee of the Year"
                             className={cn(
                               errors.awards?.[index]?.title &&
                                 "border-destructive",
@@ -2023,7 +2048,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           </FieldLabel>
                           <Input
                             {...register(`awards.${index}.issuer`)}
-                            placeholder="PT Teknologi Maju"
+                            placeholder="Contoh: PT Teknologi Maju"
                             className={cn(
                               errors.awards?.[index]?.issuer &&
                                 "border-destructive",
@@ -2072,7 +2097,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           <Textarea
                             {...register(`awards.${index}.description`)}
                             rows={2}
-                            placeholder="Penghargaan atas kinerja luar biasa..."
+                            placeholder="Contoh: Penghargaan atas kinerja luar biasa selama satu tahun penuh."
                             className={cn(
                               errors.awards?.[index]?.description &&
                                 "border-destructive",
@@ -2158,7 +2183,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                               {...register(
                                 `organizations.${index}.organization_name`,
                               )}
-                              placeholder="Himpunan Mahasiswa Informatika"
+                              placeholder="Contoh: Himpunan Mahasiswa Informatika"
                               className={cn(
                                 errors.organizations?.[index]
                                   ?.organization_name && "border-destructive",
@@ -2178,7 +2203,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             </FieldLabel>
                             <Input
                               {...register(`organizations.${index}.role_title`)}
-                              placeholder="Ketua Umum"
+                              placeholder="Contoh: Ketua Umum"
                               className={cn(
                                 errors.organizations?.[index]?.role_title &&
                                   "border-destructive",
@@ -2239,7 +2264,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             <FieldLabel>Lokasi</FieldLabel>
                             <Input
                               {...register(`organizations.${index}.location`)}
-                              placeholder="Bandung"
+                              placeholder="Contoh: Bandung"
                               className={cn(
                                 errors.organizations?.[index]?.location &&
                                   "border-destructive",
@@ -2509,7 +2534,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           <Textarea
                             {...register(`organizations.${index}.description`)}
                             rows={2}
-                            placeholder="Memimpin organisasi dengan 100 anggota..."
+                            placeholder="Contoh: Memimpin organisasi dengan 100 anggota aktif dan mengoordinasikan program kerja tahunan."
                             className={cn(
                               errors.organizations?.[index]?.description &&
                                 "border-destructive",
@@ -2594,7 +2619,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           </FieldLabel>
                           <Input
                             {...register(`projects.${index}.name`)}
-                            placeholder="Nama proyek"
+                            placeholder="Contoh: Aplikasi Inventori Sekolah"
                             className={cn(
                               errors.projects?.[index]?.name &&
                                 "border-destructive",
@@ -2646,7 +2671,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             <FieldLabel>Repository</FieldLabel>
                             <Input
                               {...register(`projects.${index}.repo_url`)}
-                              placeholder="https://github.com/username/project"
+                              placeholder="Contoh: https://github.com/username/project"
                               className={cn(
                                 errors.projects?.[index]?.repo_url &&
                                   "border-destructive",
@@ -2660,7 +2685,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             <FieldLabel>Tautan Live</FieldLabel>
                             <Input
                               {...register(`projects.${index}.live_url`)}
-                              placeholder="https://project.example.com"
+                              placeholder="Contoh: https://project.example.com"
                               className={cn(
                                 errors.projects?.[index]?.live_url &&
                                   "border-destructive",
@@ -2688,12 +2713,16 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           <Textarea
                             {...register(`projects.${index}.description`)}
                             rows={3}
-                            placeholder="Jelaskan peran dan capaian proyek..."
+                            placeholder="Contoh: Berperan sebagai frontend developer dan berhasil merilis fitur utama ke 2.000 pengguna aktif."
                             className={cn(
                               errors.projects?.[index]?.description &&
                                 "border-destructive",
                             )}
                           />
+                          <FieldDescription>
+                            Pisahkan tiap poin dengan menekan Enter agar tampil
+                            sebagai daftar.
+                          </FieldDescription>
                           <FieldError>
                             {errors.projects?.[index]?.description?.message}
                           </FieldError>
@@ -2768,7 +2797,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                                   errors.social_links?.[index]?.platform &&
                                     "border-destructive",
                                 )}
-                                placeholder="Pilih Platform"
+                                placeholder="Contoh: LinkedIn"
                                 aria-invalid={
                                   !!errors.social_links?.[index]?.platform
                                 }
@@ -2800,7 +2829,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                           URL <span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
-                          placeholder="https://linkedin.com/in/johndoe"
+                          placeholder="Contoh: https://linkedin.com/in/sitiaulia"
                           {...register(`social_links.${index}.url`)}
                           className={cn(
                             errors.social_links?.[index]?.url &&

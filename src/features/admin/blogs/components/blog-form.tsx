@@ -206,7 +206,7 @@ export function BlogForm({
                           form.formState.errors.category_id &&
                             "border-destructive",
                         )}
-                        placeholder="Pilih Kategori"
+                        placeholder="Contoh: Teknologi"
                         aria-invalid={!!form.formState.errors.category_id}
                         showClear
                       />
@@ -301,7 +301,7 @@ export function BlogForm({
                             <ComboboxChip key={tagId}>{tag.name}</ComboboxChip>
                           );
                         })}
-                        <ComboboxChipsInput placeholder="Cari tag..." />
+                        <ComboboxChipsInput placeholder="Contoh: frontend, karier, interview" />
                       </>
                     )}
                   </ComboboxValue>
@@ -326,7 +326,7 @@ export function BlogForm({
               <FieldLabel>Excerpt / Ringkasan</FieldLabel>
               <Textarea
                 {...form.register("excerpt")}
-                placeholder="Ringkasan singkat yang muncul di halaman listing blog"
+                placeholder="Contoh: Panduan singkat untuk mempersiapkan interview frontend dengan lebih percaya diri."
                 rows={3}
                 className={cn(
                   form.formState.errors.excerpt && "border-destructive",
@@ -420,7 +420,7 @@ export function BlogForm({
                   <QuillEditor
                     value={field.value || ""}
                     onChange={field.onChange}
-                    placeholder="Tulis konten blog secara lengkap di sini..."
+                    placeholder="Contoh: Dalam artikel ini kita membahas tujuh langkah praktis untuk lolos interview frontend."
                   />
                   <FieldError>
                     {form.formState.errors.content?.message}

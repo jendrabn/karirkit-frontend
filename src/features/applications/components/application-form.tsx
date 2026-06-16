@@ -121,7 +121,7 @@ export function ApplicationForm({
                 </FieldLabel>
                 <Input
                   {...form.register("company_name")}
-                  placeholder="Contoh: PT Teknologi Nusantara"
+                  placeholder="Contoh: PT Nusantara Digital Solusi"
                   className={cn(
                     form.formState.errors.company_name && "border-destructive",
                   )}
@@ -135,7 +135,7 @@ export function ApplicationForm({
                 <FieldLabel>Website Perusahaan</FieldLabel>
                 <Input
                   {...form.register("company_url")}
-                  placeholder="https://www.perusahaan.com"
+                  placeholder="Contoh: https://www.perusahaan.com"
                   className={cn(
                     form.formState.errors.company_url && "border-destructive",
                   )}
@@ -164,9 +164,9 @@ export function ApplicationForm({
               <Field>
                 <FieldLabel>Sumber Lowongan</FieldLabel>
                 <InputGroup>
-                  <InputGroupInput
+                <InputGroupInput
                     {...form.register("job_source")}
-                    placeholder="LinkedIn, JobStreet, Website Perusahaan"
+                    placeholder="Contoh: LinkedIn, JobStreet, website perusahaan"
                     aria-invalid={!!form.formState.errors.job_source}
                   />
                   <InputGroupAddon align="inline-end">
@@ -185,7 +185,7 @@ export function ApplicationForm({
                       </PopoverTrigger>
                       <PopoverContent className="w-64 p-0" align="end">
                         <Command>
-                          <CommandInput placeholder="Cari sumber lowongan..." />
+                          <CommandInput placeholder="Contoh: LinkedIn, JobStreet, website perusahaan" />
                           <CommandEmpty>
                             Sumber lowongan tidak ditemukan
                           </CommandEmpty>
@@ -222,7 +222,7 @@ export function ApplicationForm({
                 <FieldLabel>URL Lowongan</FieldLabel>
                 <Input
                   {...form.register("job_url")}
-                  placeholder="https://jobs.company.com/frontend-developer"
+                  placeholder="Contoh: https://jobs.perusahaan.id/frontend-developer"
                   className={cn(
                     form.formState.errors.job_url && "border-destructive",
                   )}
@@ -236,7 +236,7 @@ export function ApplicationForm({
                 <FieldLabel>Lokasi</FieldLabel>
                 <Input
                   {...form.register("location")}
-                  placeholder="Jakarta / Remote / Hybrid"
+                  placeholder="Contoh: Jakarta, Remote, atau Hybrid"
                   className={cn(
                     form.formState.errors.location && "border-destructive",
                   )}
@@ -330,7 +330,7 @@ export function ApplicationForm({
                 <FieldLabel>Gaji Minimal</FieldLabel>
                 <Input
                   type="number"
-                  placeholder="Contoh: 8000000"
+                  placeholder="Contoh: 8.000.000"
                   {...form.register("salary_min", {
                     setValueAs: (v) => (v === "" ? undefined : Number(v)),
                   })}
@@ -347,7 +347,7 @@ export function ApplicationForm({
                 <FieldLabel>Gaji Maksimal</FieldLabel>
                 <Input
                   type="number"
-                  placeholder="Contoh: 12000000"
+                  placeholder="Contoh: 12.000.000"
                   {...form.register("salary_max", {
                     setValueAs: (v) => (v === "" ? undefined : Number(v)),
                   })}
@@ -490,7 +490,7 @@ export function ApplicationForm({
               <Field>
                 <FieldLabel>Nama Kontak</FieldLabel>
                 <Input
-                  placeholder="Nama HR / Recruiter"
+                  placeholder="Contoh: Siti Aulia, Recruiter"
                   {...form.register("contact_name")}
                   className={cn(
                     form.formState.errors.contact_name && "border-destructive",
@@ -505,7 +505,7 @@ export function ApplicationForm({
                 <FieldLabel>Email Kontak</FieldLabel>
                 <Input
                   type="email"
-                  placeholder="hr@perusahaan.com"
+                  placeholder="Contoh: hr@perusahaan.id"
                   {...form.register("contact_email")}
                   className={cn(
                     form.formState.errors.contact_email && "border-destructive",
@@ -519,7 +519,7 @@ export function ApplicationForm({
               <Field>
                 <FieldLabel>Telepon Kontak</FieldLabel>
                 <Input
-                  placeholder="+62 812 3456 7890"
+                  placeholder="Contoh: 08123456xxxxx"
                   {...form.register("contact_phone")}
                   className={cn(
                     form.formState.errors.contact_phone && "border-destructive",
@@ -590,7 +590,7 @@ export function ApplicationForm({
                 <FieldLabel>Catatan Follow Up</FieldLabel>
                 <Textarea
                   rows={3}
-                  placeholder="Contoh: Follow up via email, menunggu balasan HR"
+                  placeholder="Contoh: Sudah follow up lewat email dan menunggu balasan dari HR."
                   {...form.register("follow_up_note")}
                 />
                 <FieldError>
@@ -611,7 +611,7 @@ export function ApplicationForm({
               <FieldLabel>Catatan Tambahan</FieldLabel>
               <Textarea
                 rows={4}
-                placeholder="Catatan pribadi terkait lamaran ini"
+                placeholder="Contoh: Prioritaskan perusahaan dengan sistem kerja hybrid."
                 {...form.register("notes")}
               />
               <FieldError>{form.formState.errors.notes?.message}</FieldError>

@@ -88,7 +88,7 @@ export function TagFormModal({
                 {...form.register("name", {
                   onChange: handleNameChange,
                 })}
-                placeholder="Masukkan nama tag"
+                placeholder="Contoh: Frontend"
                 className={cn(
                   form.formState.errors.name && "border-destructive",
                 )}

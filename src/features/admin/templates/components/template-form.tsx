@@ -244,7 +244,7 @@ export function TemplateForm({
                 </FieldLabel>
                 <Input
                   {...form.register("name")}
-                  placeholder="Contoh: Simple Professional CV"
+                  placeholder="Contoh: CV Profesional Sederhana"
                   className={cn(
                     form.formState.errors.name && "border-destructive",
                   )}

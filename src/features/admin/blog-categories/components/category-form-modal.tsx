@@ -98,7 +98,7 @@ export function CategoryFormModal({
                   onChange: handleNameChange,
                 })}
                 form="category-form"
-                placeholder="Masukkan nama kategori"
+                placeholder="Contoh: Teknologi dan Karier"
                 className={cn(
                   form.formState.errors.name && "border-destructive",
                 )}
@@ -113,7 +113,7 @@ export function CategoryFormModal({
               <Textarea
                 {...form.register("description")}
                 form="category-form"
-                placeholder="Masukkan deskripsi kategori"
+                placeholder="Contoh: Artikel seputar teknologi, karier, dan pengembangan diri."
                 rows={3}
                 className={cn(
                   form.formState.errors.description && "border-destructive",

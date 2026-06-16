@@ -50,8 +50,6 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/auth-context";
-import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
-import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
 
 const baseMenuItems = [
   {
@@ -83,7 +81,6 @@ const baseMenuItems = [
     title: "Dokumen",
     url: paths.documents.list.getHref(),
     icon: Files,
-    requiresSubscription: true,
   },
   {
     title: "Langganan",
@@ -110,9 +107,6 @@ export function DashboardSidebar() {
   const { state } = useSidebar();
   const { theme, setTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
-  const { data: mySubscription } = useMySubscription({
-    queryConfig: { enabled: isAuthenticated },
-  });
   const isCollapsed = state === "collapsed";
   const [blogOpen, setBlogOpen] = useState(
     location.pathname.startsWith("/admin/blogs") ||
@@ -127,9 +121,6 @@ export function DashboardSidebar() {
     isAuthenticated &&
     user &&
     (user.role === "admin" || (user.role as string) === "superadmin");
-  const subscriptionFeatures = getPlanFeatureAccess(
-    mySubscription?.current_features,
-  );
   const menuItems = baseMenuItems;
 
   const handleLogout = () => {
@@ -256,37 +247,6 @@ export function DashboardSidebar() {
             <SidebarMenu>
               {menuItems.map((item) =>
                 (() => {
-                  const isSubscriptionLocked =
-                    item.requiresSubscription &&
-                    !subscriptionFeatures.canManageDocuments;
-
-                  if (isSubscriptionLocked) {
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          size="lg"
-                          tooltip={`${item.title} - butuh langganan`}
-                          className={cn(
-                            "flex w-full items-center rounded-lg text-muted-foreground/70",
-                            isCollapsed
-                              ? "justify-center px-2 py-3"
-                              : "gap-3 px-3 py-3",
-                            "cursor-not-allowed opacity-60",
-                          )}
-                          disabled
-                        >
-                          <item.icon className="h-5 w-5 shrink-0" />
-                          {!isCollapsed && (
-                            <>
-                              <span className="font-medium">{item.title}</span>
-                              <Crown className="ml-auto h-4 w-4 text-amber-500" />
-                            </>
-                          )}
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  }
-
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild size="lg" tooltip={item.title}>

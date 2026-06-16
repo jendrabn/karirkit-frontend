@@ -107,7 +107,7 @@ export function CompanyFormModal({
                   Nama Perusahaan <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Input
-                  placeholder="Nama perusahaan"
+                  placeholder="Contoh: PT Nusantara Digital Solusi"
                   {...form.register("name")}
                   className={cn(
                     form.formState.errors.name && "border-destructive",
@@ -119,7 +119,7 @@ export function CompanyFormModal({
               <Field>
                 <FieldLabel>Sektor Bisnis</FieldLabel>
                 <Input
-                  placeholder="Contoh: Teknologi, Retail"
+                  placeholder="Contoh: Teknologi, Retail, dan Logistik"
                   {...form.register("business_sector")}
                   className={cn(
                     form.formState.errors.business_sector &&
@@ -169,7 +169,7 @@ export function CompanyFormModal({
               <Field>
                 <FieldLabel>Website URL</FieldLabel>
                 <Input
-                  placeholder="https://..."
+                  placeholder="Contoh: https://www.perusahaan.id"
                   {...form.register("website_url")}
                   className={cn(
                     form.formState.errors.website_url && "border-destructive",
@@ -201,7 +201,7 @@ export function CompanyFormModal({
               <Field>
                 <FieldLabel>Deskripsi</FieldLabel>
                 <Textarea
-                  placeholder="Deskripsi perusahaan..."
+                  placeholder="Contoh: Perusahaan teknologi yang berfokus pada pengembangan produk digital untuk UMKM."
                   {...form.register("description")}
                   className={cn(
                     form.formState.errors.description && "border-destructive",

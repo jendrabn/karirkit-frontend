@@ -360,7 +360,7 @@ export const ApplicationLetterForm = forwardRef<
                   <Input
                     id="birth_place_date"
                     {...form.register("birth_place_date")}
-                    placeholder="Jakarta, 15 Mei 1995"
+                    placeholder="Contoh: Jakarta, 15 Mei 1995"
                     className={cn(
                       form.formState.errors.birth_place_date &&
                         "border-destructive",
@@ -453,7 +453,7 @@ export const ApplicationLetterForm = forwardRef<
                   <Input
                     id="education"
                     {...form.register("education")}
-                    placeholder="S1 Teknik Informatika"
+                    placeholder="Contoh: S1 Teknik Informatika"
                     className={cn(
                       form.formState.errors.education && "border-destructive",
                     )}
@@ -470,7 +470,7 @@ export const ApplicationLetterForm = forwardRef<
                   <Input
                     id="phone"
                     {...form.register("phone")}
-                    placeholder="081234567890"
+                    placeholder="Contoh: 08123456xxxxx"
                     className={cn(
                       form.formState.errors.phone && "border-destructive",
                     )}
@@ -504,7 +504,7 @@ export const ApplicationLetterForm = forwardRef<
                   <Input
                     id="applicant_city"
                     {...form.register("applicant_city")}
-                    placeholder="Jakarta"
+                    placeholder="Contoh: Jakarta"
                     className={cn(
                       form.formState.errors.applicant_city &&
                         "border-destructive",
@@ -551,7 +551,7 @@ export const ApplicationLetterForm = forwardRef<
                   <Input
                     id="receiver_title"
                     {...form.register("receiver_title")}
-                    placeholder="HRD Manager"
+                    placeholder="Contoh: HRD Manager"
                     className={cn(
                       form.formState.errors.receiver_title &&
                         "border-destructive",
@@ -586,7 +586,7 @@ export const ApplicationLetterForm = forwardRef<
                   <Input
                     id="company_city"
                     {...form.register("company_city")}
-                    placeholder="Jakarta"
+                    placeholder="Contoh: Jakarta"
                     className={cn(
                       form.formState.errors.company_city &&
                         "border-destructive",
@@ -688,7 +688,7 @@ export const ApplicationLetterForm = forwardRef<
                     <Input
                       id="subject"
                       {...form.register("subject")}
-                      placeholder="Lamaran Posisi Software Engineer"
+                      placeholder="Contoh: Lamaran Posisi Software Engineer"
                       className={cn(
                         form.formState.errors.subject && "border-destructive",
                       )}
@@ -718,7 +718,7 @@ export const ApplicationLetterForm = forwardRef<
                     id="opening_paragraph"
                     {...form.register("opening_paragraph")}
                     rows={3}
-                    placeholder="Dengan hormat, saya yang bertanda tangan di bawah ini..."
+                    placeholder="Contoh: Dengan hormat, saya mengajukan lamaran untuk posisi Software Engineer di perusahaan Bapak/Ibu."
                     className={cn(
                       form.formState.errors.opening_paragraph &&
                         "border-destructive",
@@ -747,7 +747,7 @@ export const ApplicationLetterForm = forwardRef<
                     id="body_paragraph"
                     {...form.register("body_paragraph")}
                     rows={5}
-                    placeholder="Saya memiliki pengalaman dalam bidang..."
+                    placeholder="Contoh: Saya memiliki pengalaman mengembangkan aplikasi web menggunakan React, TypeScript, dan Node.js."
                     className={cn(
                       form.formState.errors.body_paragraph &&
                         "border-destructive",
@@ -763,7 +763,7 @@ export const ApplicationLetterForm = forwardRef<
                   <Input
                     id="attachments"
                     {...form.register("attachments")}
-                    placeholder="CV, Ijazah, Transkrip Nilai, Sertifikat"
+                    placeholder="Contoh: CV, Ijazah, Transkrip Nilai, Sertifikat"
                     className={cn(
                       form.formState.errors.attachments && "border-destructive",
                     )}
@@ -795,7 +795,7 @@ export const ApplicationLetterForm = forwardRef<
                     id="closing_paragraph"
                     {...form.register("closing_paragraph")}
                     rows={3}
-                    placeholder="Demikian surat lamaran ini saya buat..."
+                    placeholder="Contoh: Demikian surat lamaran ini saya ajukan sebagai bahan pertimbangan."
                     className={cn(
                       form.formState.errors.closing_paragraph &&
                         "border-destructive",
