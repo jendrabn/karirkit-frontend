@@ -1521,7 +1521,11 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                                 <span className="text-destructive">*</span>
                               </FieldLabel>
                               <Select
-                                value={levelField.value ?? ""}
+                                value={
+                                  typeof levelField.value === "string"
+                                    ? levelField.value
+                                    : ""
+                                }
                                 onValueChange={(v) =>
                                   levelField.onChange(
                                     v as
