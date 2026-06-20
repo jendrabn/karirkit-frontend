@@ -44,51 +44,15 @@ export const getPlanFeatureAccess = (
   features?: SubscriptionCurrentFeatures | null,
   plan?: SubscriptionPlan | null,
 ) => {
-  const canDuplicateCvs =
-    features?.can_duplicate_cvs ?? plan?.can_duplicate_cvs ?? true;
-  const canDuplicateApplications =
-    features?.can_duplicate_applications ?? plan?.can_duplicate_applications ?? true;
-  const canDuplicateApplicationLetters =
-    features?.can_duplicate_application_letters ??
-    plan?.can_duplicate_application_letters ??
-    true;
-
   return {
-    canManageDocuments:
-      features?.can_manage_documents ?? plan?.can_manage_documents ?? false,
     canUsePremiumCvTemplates:
       features?.can_use_premium_cv_templates ??
-      features?.can_use_premium_templates ??
       plan?.can_use_premium_cv_templates ??
-      plan?.can_use_premium_templates ??
       false,
     canUsePremiumApplicationLetterTemplates:
       features?.can_use_premium_application_letter_templates ??
-      features?.can_use_premium_templates ??
       plan?.can_use_premium_application_letter_templates ??
-      plan?.can_use_premium_templates ??
       false,
-    canDuplicateCvs,
-    canDuplicateApplications,
-    canDuplicateApplicationLetters,
-    canDuplicateDocuments:
-      features?.can_duplicate_documents ??
-      plan?.can_duplicate_documents ??
-      (canDuplicateCvs &&
-        canDuplicateApplications &&
-        canDuplicateApplicationLetters),
-    canDownloadCvDocx:
-      features?.can_download_cv_docx ?? plan?.can_download_cv_docx ?? true,
-    canDownloadApplicationLetterDocx:
-      features?.can_download_application_letter_docx ??
-      plan?.can_download_application_letter_docx ??
-      true,
-    canDownloadCvPdf:
-      features?.can_download_cv_pdf ?? plan?.can_download_cv_pdf ?? true,
-    canDownloadApplicationLetterPdf:
-      features?.can_download_application_letter_pdf ??
-      plan?.can_download_application_letter_pdf ??
-      true,
   };
 };
 
@@ -109,9 +73,11 @@ export const getSubscriptionLimits = (
     max_applications: plan.max_applications,
     max_application_letters: plan.max_application_letters,
     max_document_storage_bytes: plan.max_document_storage_bytes,
-    downloads: {
-      cv_per_day: plan.cv_downloads_per_day,
-      application_letter_per_day: plan.application_letter_downloads_per_day,
-    },
+    max_cv_pdf_downloads: plan.max_cv_pdf_downloads,
+    max_cv_docx_downloads: plan.max_cv_docx_downloads,
+    max_letter_pdf_downloads: plan.max_letter_pdf_downloads,
+    max_letter_docx_downloads: plan.max_letter_docx_downloads,
+    max_cv_ai_improvements: plan.max_cv_ai_improvements,
+    max_application_letter_ai_improvements: plan.max_application_letter_ai_improvements,
   };
 };

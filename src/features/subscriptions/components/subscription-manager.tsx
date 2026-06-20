@@ -586,35 +586,39 @@ export function SubscriptionManager({
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Download CV PDF</span>
                     <span className="font-semibold text-foreground">
-                      {formatSubscriptionLimit(plan.cv_pdf_downloads_per_day)}
+                      {formatSubscriptionLimit(plan.max_cv_pdf_downloads)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Download CV DOCX</span>
                     <span className="font-semibold text-foreground">
-                      {formatSubscriptionLimit(plan.cv_docx_downloads_per_day)}
+                      {formatSubscriptionLimit(plan.max_cv_docx_downloads)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Download Surat PDF</span>
+                    <span className="text-muted-foreground">Download Surat Lamaran PDF</span>
+                    <span className="font-semibold text-foreground">
+                      {formatSubscriptionLimit(plan.max_letter_pdf_downloads)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Download Surat Lamaran DOCX</span>
+                    <span className="font-semibold text-foreground">
+                      {formatSubscriptionLimit(plan.max_letter_docx_downloads)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Perbaikan AI CV</span>
+                    <span className="font-semibold text-foreground">
+                      {formatSubscriptionLimit(plan.max_cv_ai_improvements)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Perbaikan AI Surat Lamaran</span>
                     <span className="font-semibold text-foreground">
                       {formatSubscriptionLimit(
-                        plan.application_letter_pdf_downloads_per_day,
+                        plan.max_application_letter_ai_improvements,
                       )}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Download Surat DOCX</span>
-                    <span className="font-semibold text-foreground">
-                      {formatSubscriptionLimit(
-                        plan.application_letter_docx_downloads_per_day,
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Perbaikan AI</span>
-                    <span className="font-semibold text-foreground">
-                      {formatSubscriptionLimit(plan.ai_improvements_per_day)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
@@ -631,44 +635,12 @@ export function SubscriptionManager({
 
                 <div className="mb-6 space-y-0.5">
                   <FeatureRow
-                    enabled={features.canDownloadCvDocx}
-                    label="Download CV DOCX"
-                  />
-                  <FeatureRow
-                    enabled={features.canDownloadCvPdf}
-                    label="Download CV PDF"
-                  />
-                  <FeatureRow
-                    enabled={features.canDownloadApplicationLetterDocx}
-                    label="Download Surat DOCX"
-                  />
-                  <FeatureRow
-                    enabled={features.canDownloadApplicationLetterPdf}
-                    label="Download Surat PDF"
-                  />
-                  <FeatureRow
-                    enabled={features.canManageDocuments}
-                    label="Kelola Dokumen"
-                  />
-                  <FeatureRow
                     enabled={features.canUsePremiumCvTemplates}
                     label="Template Premium CV"
                   />
                   <FeatureRow
                     enabled={features.canUsePremiumApplicationLetterTemplates}
-                    label="Template Premium Surat"
-                  />
-                  <FeatureRow
-                    enabled={features.canDuplicateCvs}
-                    label="Duplikasi CV"
-                  />
-                  <FeatureRow
-                    enabled={features.canDuplicateApplications}
-                    label="Duplikasi Tracker"
-                  />
-                  <FeatureRow
-                    enabled={features.canDuplicateApplicationLetters}
-                    label="Duplikasi Surat"
+                    label="Template Premium Surat Lamaran"
                   />
                 </div>
 

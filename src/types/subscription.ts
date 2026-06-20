@@ -20,25 +20,14 @@ export interface SubscriptionPlan {
   max_applications: number;
   max_application_letters: number;
   max_document_storage_bytes: number;
-  cv_downloads_per_day: number;
-  application_letter_downloads_per_day: number;
-  cv_docx_downloads_per_day: number;
-  application_letter_docx_downloads_per_day: number;
-  cv_pdf_downloads_per_day: number;
-  application_letter_pdf_downloads_per_day: number;
-  ai_improvements_per_day: number;
-  can_manage_documents: boolean;
-  can_use_premium_cv_templates?: boolean;
-  can_use_premium_application_letter_templates?: boolean;
-  can_use_premium_templates?: boolean;
-  can_duplicate_cvs: boolean;
-  can_duplicate_applications: boolean;
-  can_duplicate_application_letters: boolean;
-  can_duplicate_documents?: boolean;
-  can_download_cv_docx: boolean;
-  can_download_application_letter_docx: boolean;
-  can_download_cv_pdf: boolean;
-  can_download_application_letter_pdf: boolean;
+  max_cv_pdf_downloads: number;
+  max_cv_docx_downloads: number;
+  max_letter_pdf_downloads: number;
+  max_letter_docx_downloads: number;
+  max_cv_ai_improvements: number;
+  max_application_letter_ai_improvements: number;
+  can_use_premium_cv_templates: boolean;
+  can_use_premium_application_letter_templates: boolean;
 }
 
 export interface SubscriptionPlansResponse {
@@ -46,32 +35,22 @@ export interface SubscriptionPlansResponse {
   plans: SubscriptionPlan[];
 }
 
-export interface SubscriptionDownloadLimits {
-  cv_per_day: number;
-  application_letter_per_day: number;
-}
-
 export interface SubscriptionCurrentLimits {
   max_cvs: number;
   max_applications: number;
   max_application_letters: number;
   max_document_storage_bytes: number;
-  downloads: SubscriptionDownloadLimits;
+  max_cv_pdf_downloads: number;
+  max_cv_docx_downloads: number;
+  max_letter_pdf_downloads: number;
+  max_letter_docx_downloads: number;
+  max_cv_ai_improvements: number;
+  max_application_letter_ai_improvements: number;
 }
 
 export interface SubscriptionCurrentFeatures {
-  can_manage_documents: boolean;
-  can_use_premium_cv_templates?: boolean;
-  can_use_premium_application_letter_templates?: boolean;
-  can_use_premium_templates?: boolean;
-  can_duplicate_cvs?: boolean;
-  can_duplicate_applications?: boolean;
-  can_duplicate_application_letters?: boolean;
-  can_duplicate_documents?: boolean;
-  can_download_cv_docx?: boolean;
-  can_download_application_letter_docx?: boolean;
-  can_download_cv_pdf: boolean;
-  can_download_application_letter_pdf: boolean;
+  can_use_premium_cv_templates: boolean;
+  can_use_premium_application_letter_templates: boolean;
 }
 
 export interface MySubscription {
