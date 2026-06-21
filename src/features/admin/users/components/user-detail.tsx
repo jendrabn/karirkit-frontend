@@ -9,6 +9,9 @@ import {
   Clock,
   CheckCircle,
   Briefcase,
+  Download,
+  HardDrive,
+  Brain,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,6 +23,15 @@ import {
 import type { User } from "@/types/user";
 import { SUBSCRIPTION_PLAN_LABELS } from "@/features/subscriptions/utils";
 import { getEnumBadgeClassName } from "@/lib/enum-badges";
+
+const formatBytes = (bytes?: number) => {
+  if (bytes === undefined || bytes === null) return "-";
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+};
 
 export const UserDetail = ({ user }: { user: User }) => {
   const subscriptionPlanLabel = user.subscription_plan
@@ -191,20 +203,49 @@ export const UserDetail = ({ user }: { user: User }) => {
           </div>
           <div className="flex items-center gap-3 text-sm">
             <div className="p-2 rounded-lg bg-muted">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Download className="h-4 w-4 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Unduhan Hari Ini</p>
-              <p className="font-medium">{user.download_today_count ?? 0}</p>
+              <p className="text-muted-foreground text-xs">Unduhan PDF</p>
+              <p className="font-medium">
+                {(user.usage?.max_cv_pdf_downloads ?? 0) +
+                  (user.usage?.max_letter_pdf_downloads ?? 0)}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <div className="p-2 rounded-lg bg-muted">
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              <Download className="h-4 w-4 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Total Unduhan</p>
-              <p className="font-medium">{user.download_total_count ?? 0}</p>
+              <p className="text-muted-foreground text-xs">Unduhan DOCX</p>
+              <p className="font-medium">
+                {(user.usage?.max_cv_docx_downloads ?? 0) +
+                  (user.usage?.max_letter_docx_downloads ?? 0)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <div className="p-2 rounded-lg bg-muted">
+              <Brain className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs">AI Improvements</p>
+              <p className="font-medium">
+                {(user.usage?.max_cv_ai_improvements ?? 0) +
+                  (user.usage?.max_application_letter_ai_improvements ?? 0)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <div className="p-2 rounded-lg bg-muted">
+              <HardDrive className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs">Penyimpanan</p>
+              <p className="font-medium">
+                {formatBytes(user.usage?.max_document_storage_bytes)}
+              </p>
             </div>
           </div>
         </div>

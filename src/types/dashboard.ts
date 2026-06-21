@@ -1,6 +1,7 @@
 import type { Blog } from "@/types/blog";
 import type { SubscriptionPlanId } from "@/types/subscription";
 import type { User } from "@/types/user";
+import type { UserUsageQuota } from "@/types/usage";
 
 export interface DashboardStats {
   total_applications: number;
@@ -20,11 +21,7 @@ export interface DashboardStats {
   saved_jobs_count: number;
   subscription_plan?: SubscriptionPlanId | null;
   subscription_expires_at?: string | null;
-  download_today_count: number;
-  download_total_count: number;
-  document_storage_limit?: number | null;
-  document_storage_used?: number | null;
-  document_storage_remaining?: number | null;
+  usage: UserUsageQuota;
 }
 
 export type DashboardStatsResponse = DashboardStats;

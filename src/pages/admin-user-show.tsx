@@ -17,6 +17,11 @@ import {
   AlertCircle,
   ExternalLink,
   Briefcase,
+  FileText,
+  Send,
+  Download,
+  HardDrive,
+  Brain,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { PageHeader } from "@/components/layouts/page-header";
@@ -111,6 +116,15 @@ const getGenderLabel = (gender: User["gender"]) => {
   }
 
   return "-";
+};
+
+const formatBytes = (bytes?: number) => {
+  if (bytes === undefined || bytes === null) return "-";
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 };
 
 const AdminUserShow = () => {
@@ -234,10 +248,6 @@ const AdminUserShow = () => {
     USER_STATUS_OPTIONS.find((option) => option.value === user.status)?.label ||
     user.status;
   const statusIconComponent = STATUS_ICON_MAP[user.status] ?? AlertCircle;
-  const totalDownloads =
-    user.download_total_count ?? user.download_stats?.total_count ?? 0;
-  const downloadTodayCount =
-    user.download_today_count ?? user.download_stats?.today_count ?? 0;
   const emailVerifiedLabel = user.email_verified_at
     ? formatDateTime(user.email_verified_at)
     : "Belum terverifikasi";
@@ -247,7 +257,13 @@ const AdminUserShow = () => {
   const subscriptionPlanLabel = user.subscription_plan
     ? SUBSCRIPTION_PLAN_LABELS[user.subscription_plan]
     : "-";
-
+  const usage = user.usage;
+  const totalDownloads = usage
+    ? usage.max_cv_pdf_downloads +
+      usage.max_cv_docx_downloads +
+      usage.max_letter_pdf_downloads +
+      usage.max_letter_docx_downloads
+    : 0;
   return (
     <DashboardLayout
       breadcrumbItems={[
@@ -382,44 +398,72 @@ const AdminUserShow = () => {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between gap-3">
-                <CardTitle className="text-lg">Aktivitas & Statistik</CardTitle>
+                <CardTitle className="text-lg">Usage & Statistik</CardTitle>
                 <Badge variant="outline" className="gap-1 text-xs uppercase">
-                  <CheckCircle className="h-3 w-3" />
-                  {formatNumber(totalDownloads)} total
+                  <Download className="h-3 w-3" />
+                  {formatNumber(totalDownloads)} unduhan
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <InfoItem
-                  label="Unduhan Hari Ini"
-                  value={formatNumber(downloadTodayCount)}
-                  icon={Calendar}
+                  label="Total CV"
+                  value={formatNumber(usage?.max_cvs ?? 0)}
+                  icon={FileText}
                 />
                 <InfoItem
-                  label="Total Unduhan"
-                  value={formatNumber(totalDownloads)}
-                  icon={CheckCircle}
+                  label="Total Surat Lamaran"
+                  value={formatNumber(usage?.max_application_letters ?? 0)}
+                  icon={Send}
+                />
+                <InfoItem
+                  label="Total Lamaran"
+                  value={formatNumber(usage?.max_applications ?? 0)}
+                  icon={Briefcase}
+                />
+
+                <InfoItem
+                  label="Unduhan CV PDF"
+                  value={formatNumber(usage?.max_cv_pdf_downloads ?? 0)}
+                  icon={Download}
+                />
+                <InfoItem
+                  label="Unduhan CV DOCX"
+                  value={formatNumber(usage?.max_cv_docx_downloads ?? 0)}
+                  icon={Download}
+                />
+                <InfoItem
+                  label="Unduhan Surat PDF"
+                  value={formatNumber(usage?.max_letter_pdf_downloads ?? 0)}
+                  icon={Download}
+                />
+                <InfoItem
+                  label="Unduhan Surat DOCX"
+                  value={formatNumber(usage?.max_letter_docx_downloads ?? 0)}
+                  icon={Download}
+                />
+                <InfoItem
+                  label="AI CV"
+                  value={formatNumber(usage?.max_cv_ai_improvements ?? 0)}
+                  icon={Brain}
+                />
+                <InfoItem
+                  label="AI Surat Lamaran"
+                  value={formatNumber(
+                    usage?.max_application_letter_ai_improvements ?? 0,
+                  )}
+                  icon={Brain}
+                />
+                <InfoItem
+                  label="Penyimpanan"
+                  value={formatBytes(usage?.max_document_storage_bytes)}
+                  icon={HardDrive}
                 />
                 <InfoItem
                   label="Login Terakhir"
                   value={lastLoginLabel}
                   icon={Clock}
-                />
-                <InfoItem
-                  label="Email Terverifikasi"
-                  value={
-                    <Badge
-                      variant="outline"
-                      className={getEnumBadgeClassName(
-                        "verificationStatus",
-                        user.email_verified_at ? "true" : "false",
-                      )}
-                    >
-                      {emailVerifiedLabel}
-                    </Badge>
-                  }
-                  icon={Shield}
                 />
               </div>
             </CardContent>

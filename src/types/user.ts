@@ -1,6 +1,6 @@
-import type { DocumentStorageStats, DownloadStats } from "@/types/storage";
 import type { SocialLink } from "@/types/social";
 import type { SubscriptionPlanId } from "@/types/subscription";
+import type { AdminUsageStats } from "@/types/usage";
 
 export type UserRole = "user" | "admin";
 export type UserStatus = "active" | "suspended" | "banned";
@@ -15,15 +15,7 @@ export interface User {
   avatar?: string | null;
   created_at?: string;
   updated_at?: string;
-  /** @deprecated gunakan download_stats.total_count */
-  total_downloads?: number;
-  download_today_count?: number;
-  download_total_count?: number;
   email_verified_at?: string | null;
-  download_stats?: DownloadStats;
-  daily_download_limit?: number;
-  document_storage_limit?: number;
-  document_storage_stats?: DocumentStorageStats;
   social_links?: SocialLink[];
   status: UserStatus;
   status_reason?: string | null;
@@ -36,6 +28,7 @@ export interface User {
   last_login_at?: string | null;
   subscription_plan?: SubscriptionPlanId | null;
   subscription_expires_at?: string | null;
+  usage?: AdminUsageStats;
 }
 
 export const USER_ROLE_OPTIONS = [

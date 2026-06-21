@@ -28,8 +28,22 @@ export interface FilterValues {
   suspended?: "true" | "false";
   created_at_from?: string;
   created_at_to?: string;
-  download_total_count_from?: string;
-  download_total_count_to?: string;
+  max_applications_from?: string;
+  max_applications_to?: string;
+  max_cv_pdf_downloads_from?: string;
+  max_cv_pdf_downloads_to?: string;
+  max_cv_docx_downloads_from?: string;
+  max_cv_docx_downloads_to?: string;
+  max_letter_pdf_downloads_from?: string;
+  max_letter_pdf_downloads_to?: string;
+  max_letter_docx_downloads_from?: string;
+  max_letter_docx_downloads_to?: string;
+  max_cv_ai_improvements_from?: string;
+  max_cv_ai_improvements_to?: string;
+  max_application_letter_ai_improvements_from?: string;
+  max_application_letter_ai_improvements_to?: string;
+  max_document_storage_bytes_from?: string;
+  max_document_storage_bytes_to?: string;
 }
 
 interface UserFilterModalProps {
@@ -228,27 +242,231 @@ export function UserFilterModal({
               </Field>
 
               <Field>
-                <FieldLabel>Total Download</FieldLabel>
+                <FieldLabel>Total Lamaran</FieldLabel>
                 <div className="flex gap-2">
                   <Input
                     type="number"
                     placeholder="Dari"
-                    value={localFilters.download_total_count_from || ""}
+                    value={localFilters.max_applications_from || ""}
                     onChange={(e) =>
                       setLocalFilters({
                         ...localFilters,
-                        download_total_count_from: e.target.value,
+                        max_applications_from: e.target.value,
                       })
                     }
                   />
                   <Input
                     type="number"
                     placeholder="Sampai"
-                    value={localFilters.download_total_count_to || ""}
+                    value={localFilters.max_applications_to || ""}
                     onChange={(e) =>
                       setLocalFilters({
                         ...localFilters,
-                        download_total_count_to: e.target.value,
+                        max_applications_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Unduhan CV PDF</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.max_cv_pdf_downloads_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_cv_pdf_downloads_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.max_cv_pdf_downloads_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_cv_pdf_downloads_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Unduhan CV DOCX</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.max_cv_docx_downloads_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_cv_docx_downloads_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.max_cv_docx_downloads_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_cv_docx_downloads_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Unduhan Surat PDF</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.max_letter_pdf_downloads_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_letter_pdf_downloads_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.max_letter_pdf_downloads_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_letter_pdf_downloads_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Unduhan Surat DOCX</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.max_letter_docx_downloads_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_letter_docx_downloads_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.max_letter_docx_downloads_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_letter_docx_downloads_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>AI CV</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.max_cv_ai_improvements_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_cv_ai_improvements_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.max_cv_ai_improvements_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_cv_ai_improvements_to: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>AI Surat Lamaran</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={
+                      localFilters.max_application_letter_ai_improvements_from ||
+                      ""
+                    }
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_application_letter_ai_improvements_from:
+                          e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={
+                      localFilters.max_application_letter_ai_improvements_to ||
+                      ""
+                    }
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_application_letter_ai_improvements_to:
+                          e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </Field>
+
+              <Field>
+                <FieldLabel>Penyimpanan (bytes)</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Dari"
+                    value={localFilters.max_document_storage_bytes_from || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_document_storage_bytes_from: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Sampai"
+                    value={localFilters.max_document_storage_bytes_to || ""}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        max_document_storage_bytes_to: e.target.value,
                       })
                     }
                   />

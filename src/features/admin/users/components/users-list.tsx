@@ -105,24 +105,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { SortableHeader } from "@/components/sortable-header";
-
-type SortField =
-  | "name"
-  | "email"
-  | "role"
-  | "status"
-  | "created_at"
-  | "updated_at"
-  | "download_total_count";
-
-const getUserTodayDownloads = (user: User) =>
-  user.download_today_count ?? user.download_stats?.today_count ?? 0;
-
-const getUserTotalDownloads = (user: User) =>
-  user.download_total_count ??
-  user.download_stats?.total_count ??
-  user.total_downloads ??
-  0;
+import type { GetUsersParams } from "../api/get-users";
 
 const getSubscriptionPlanLabel = (user: User) =>
   user.subscription_plan
@@ -149,7 +132,6 @@ export const UsersList = () => {
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
 
-  // Use URL params hook
   const {
     params,
     setParam,
@@ -161,7 +143,7 @@ export const UsersList = () => {
     page: 1,
     per_page: 10,
     q: "",
-    sort_by: "created_at" as SortField,
+    sort_by: "created_at" as string,
     sort_order: "desc" as "asc" | "desc",
     role: "",
     status: "",
@@ -170,8 +152,22 @@ export const UsersList = () => {
     suspended: "",
     created_at_from: "",
     created_at_to: "",
-    download_total_count_from: "",
-    download_total_count_to: "",
+    max_applications_from: "",
+    max_applications_to: "",
+    max_cv_pdf_downloads_from: "",
+    max_cv_pdf_downloads_to: "",
+    max_cv_docx_downloads_from: "",
+    max_cv_docx_downloads_to: "",
+    max_letter_pdf_downloads_from: "",
+    max_letter_pdf_downloads_to: "",
+    max_letter_docx_downloads_from: "",
+    max_letter_docx_downloads_to: "",
+    max_cv_ai_improvements_from: "",
+    max_cv_ai_improvements_to: "",
+    max_application_letter_ai_improvements_from: "",
+    max_application_letter_ai_improvements_to: "",
+    max_document_storage_bytes_from: "",
+    max_document_storage_bytes_to: "",
   });
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -204,28 +200,64 @@ export const UsersList = () => {
       page: params.page,
       per_page: params.per_page,
       q: params.q || undefined,
-      sort_by: params.sort_by,
-      sort_order: params.sort_order,
-      role: params.role ? (params.role as User["role"]) : undefined,
-      status: params.status
-        ? (params.status as FilterValues["status"])
-        : undefined,
-      gender: params.gender
-        ? (params.gender as FilterValues["gender"])
-        : undefined,
-      email_verified: params.email_verified
-        ? (params.email_verified as FilterValues["email_verified"])
-        : undefined,
-      suspended: params.suspended
-        ? (params.suspended as FilterValues["suspended"])
-        : undefined,
+      sort_by: (params.sort_by || "created_at") as GetUsersParams["sort_by"],
+      sort_order: params.sort_order as "asc" | "desc",
+      role: params.role || undefined,
+      status: params.status || undefined,
+      gender: params.gender || undefined,
+      email_verified: params.email_verified || undefined,
+      suspended: params.suspended || undefined,
       created_at_from: params.created_at_from || undefined,
       created_at_to: params.created_at_to || undefined,
-      download_total_count_from: params.download_total_count_from
-        ? Number(params.download_total_count_from)
+      max_applications_from: params.max_applications_from
+        ? Number(params.max_applications_from)
         : undefined,
-      download_total_count_to: params.download_total_count_to
-        ? Number(params.download_total_count_to)
+      max_applications_to: params.max_applications_to
+        ? Number(params.max_applications_to)
+        : undefined,
+      max_cv_pdf_downloads_from: params.max_cv_pdf_downloads_from
+        ? Number(params.max_cv_pdf_downloads_from)
+        : undefined,
+      max_cv_pdf_downloads_to: params.max_cv_pdf_downloads_to
+        ? Number(params.max_cv_pdf_downloads_to)
+        : undefined,
+      max_cv_docx_downloads_from: params.max_cv_docx_downloads_from
+        ? Number(params.max_cv_docx_downloads_from)
+        : undefined,
+      max_cv_docx_downloads_to: params.max_cv_docx_downloads_to
+        ? Number(params.max_cv_docx_downloads_to)
+        : undefined,
+      max_letter_pdf_downloads_from: params.max_letter_pdf_downloads_from
+        ? Number(params.max_letter_pdf_downloads_from)
+        : undefined,
+      max_letter_pdf_downloads_to: params.max_letter_pdf_downloads_to
+        ? Number(params.max_letter_pdf_downloads_to)
+        : undefined,
+      max_letter_docx_downloads_from: params.max_letter_docx_downloads_from
+        ? Number(params.max_letter_docx_downloads_from)
+        : undefined,
+      max_letter_docx_downloads_to: params.max_letter_docx_downloads_to
+        ? Number(params.max_letter_docx_downloads_to)
+        : undefined,
+      max_cv_ai_improvements_from: params.max_cv_ai_improvements_from
+        ? Number(params.max_cv_ai_improvements_from)
+        : undefined,
+      max_cv_ai_improvements_to: params.max_cv_ai_improvements_to
+        ? Number(params.max_cv_ai_improvements_to)
+        : undefined,
+      max_application_letter_ai_improvements_from:
+        params.max_application_letter_ai_improvements_from
+          ? Number(params.max_application_letter_ai_improvements_from)
+          : undefined,
+      max_application_letter_ai_improvements_to:
+        params.max_application_letter_ai_improvements_to
+          ? Number(params.max_application_letter_ai_improvements_to)
+          : undefined,
+      max_document_storage_bytes_from: params.max_document_storage_bytes_from
+        ? Number(params.max_document_storage_bytes_from)
+        : undefined,
+      max_document_storage_bytes_to: params.max_document_storage_bytes_to
+        ? Number(params.max_document_storage_bytes_to)
         : undefined,
     },
   });
@@ -243,7 +275,7 @@ export const UsersList = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
-  const handleSort = (field: SortField) => {
+  const handleSort = (field: string) => {
     if (params.sort_by === field) {
       setParam(
         "sort_order",
@@ -363,8 +395,22 @@ export const UsersList = () => {
     params.suspended ||
     params.created_at_from ||
     params.created_at_to ||
-    params.download_total_count_from ||
-    params.download_total_count_to;
+    params.max_applications_from ||
+    params.max_applications_to ||
+    params.max_cv_pdf_downloads_from ||
+    params.max_cv_pdf_downloads_to ||
+    params.max_cv_docx_downloads_from ||
+    params.max_cv_docx_downloads_to ||
+    params.max_letter_pdf_downloads_from ||
+    params.max_letter_pdf_downloads_to ||
+    params.max_letter_docx_downloads_from ||
+    params.max_letter_docx_downloads_to ||
+    params.max_cv_ai_improvements_from ||
+    params.max_cv_ai_improvements_to ||
+    params.max_application_letter_ai_improvements_from ||
+    params.max_application_letter_ai_improvements_to ||
+    params.max_document_storage_bytes_from ||
+    params.max_document_storage_bytes_to;
 
   const users = usersData?.items || [];
   const pagination = usersData?.pagination || {
@@ -375,6 +421,15 @@ export const UsersList = () => {
   };
   const visibleColumnCount =
     Object.values(columnVisibility).filter(Boolean).length + 2;
+
+  const formatBytes = (bytes?: number) => {
+    if (bytes === undefined || bytes === null) return "-";
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+  };
 
   return (
     <>
@@ -416,8 +471,22 @@ export const UsersList = () => {
                     suspended: "",
                     created_at_from: "",
                     created_at_to: "",
-                    download_total_count_from: "",
-                    download_total_count_to: "",
+                    max_applications_from: "",
+                    max_applications_to: "",
+                    max_cv_pdf_downloads_from: "",
+                    max_cv_pdf_downloads_to: "",
+                    max_cv_docx_downloads_from: "",
+                    max_cv_docx_downloads_to: "",
+                    max_letter_pdf_downloads_from: "",
+                    max_letter_pdf_downloads_to: "",
+                    max_letter_docx_downloads_from: "",
+                    max_letter_docx_downloads_to: "",
+                    max_cv_ai_improvements_from: "",
+                    max_cv_ai_improvements_to: "",
+                    max_application_letter_ai_improvements_from: "",
+                    max_application_letter_ai_improvements_to: "",
+                    max_document_storage_bytes_from: "",
+                    max_document_storage_bytes_to: "",
                   },
                   true,
                 )
@@ -534,18 +603,59 @@ export const UsersList = () => {
                     Masa Aktif
                   </TableHead>
                 )}
-                {columnVisibility.download_today_count && (
-                  <TableHead className="uppercase text-xs font-medium tracking-wide">
-                    Unduhan Hari Ini
+                {columnVisibility.max_applications && (
+                  <TableHead>
+                    <SortableHeader field="max_applications" onSort={handleSort}>
+                      Total Lamaran
+                    </SortableHeader>
                   </TableHead>
                 )}
-                {columnVisibility.download_total_count && (
+                {columnVisibility.max_cv_pdf_downloads && (
                   <TableHead>
-                    <SortableHeader
-                      field="download_total_count"
-                      onSort={handleSort}
-                    >
-                      Total Unduhan
+                    <SortableHeader field="max_cv_pdf_downloads" onSort={handleSort}>
+                      Unduhan CV PDF
+                    </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.max_cv_docx_downloads && (
+                  <TableHead>
+                    <SortableHeader field="max_cv_docx_downloads" onSort={handleSort}>
+                      Unduhan CV DOCX
+                    </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.max_letter_pdf_downloads && (
+                  <TableHead>
+                    <SortableHeader field="max_letter_pdf_downloads" onSort={handleSort}>
+                      Unduhan Surat PDF
+                    </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.max_letter_docx_downloads && (
+                  <TableHead>
+                    <SortableHeader field="max_letter_docx_downloads" onSort={handleSort}>
+                      Unduhan Surat DOCX
+                    </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.max_cv_ai_improvements && (
+                  <TableHead>
+                    <SortableHeader field="max_cv_ai_improvements" onSort={handleSort}>
+                      AI CV
+                    </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.max_application_letter_ai_improvements && (
+                  <TableHead>
+                    <SortableHeader field="max_application_letter_ai_improvements" onSort={handleSort}>
+                      AI Surat
+                    </SortableHeader>
+                  </TableHead>
+                )}
+                {columnVisibility.max_document_storage_bytes && (
+                  <TableHead>
+                    <SortableHeader field="max_document_storage_bytes" onSort={handleSort}>
+                      Penyimpanan
                     </SortableHeader>
                   </TableHead>
                 )}
@@ -846,30 +956,118 @@ export const UsersList = () => {
                           : "-"}
                       </TableCell>
                     )}
-                    {columnVisibility.download_today_count && (
+                    {columnVisibility.max_applications && (
                       <TableCell className="text-muted-foreground max-w-[120px]">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="block truncate">
-                              {getUserTodayDownloads(user)}
+                              {user.usage?.max_applications ?? "-"}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>{getUserTodayDownloads(user)}</p>
+                            <p>{user.usage?.max_applications ?? "-"}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>
                     )}
-                    {columnVisibility.download_total_count && (
+                    {columnVisibility.max_cv_pdf_downloads && (
                       <TableCell className="text-muted-foreground max-w-[120px]">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="block truncate">
-                              {getUserTotalDownloads(user)}
+                              {user.usage?.max_cv_pdf_downloads ?? "-"}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>{getUserTotalDownloads(user)}</p>
+                            <p>{user.usage?.max_cv_pdf_downloads ?? "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.max_cv_docx_downloads && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.usage?.max_cv_docx_downloads ?? "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.usage?.max_cv_docx_downloads ?? "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.max_letter_pdf_downloads && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.usage?.max_letter_pdf_downloads ?? "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.usage?.max_letter_pdf_downloads ?? "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.max_letter_docx_downloads && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.usage?.max_letter_docx_downloads ?? "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.usage?.max_letter_docx_downloads ?? "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.max_cv_ai_improvements && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.usage?.max_cv_ai_improvements ?? "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.usage?.max_cv_ai_improvements ?? "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.max_application_letter_ai_improvements && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {user.usage?.max_application_letter_ai_improvements ?? "-"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{user.usage?.max_application_letter_ai_improvements ?? "-"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                    {columnVisibility.max_document_storage_bytes && (
+                      <TableCell className="text-muted-foreground max-w-[120px]">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">
+                              {formatBytes(user.usage?.max_document_storage_bytes)}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {user.usage?.max_document_storage_bytes
+                                ? `${user.usage.max_document_storage_bytes.toLocaleString()} bytes`
+                                : "-"}
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>
@@ -1032,8 +1230,26 @@ export const UsersList = () => {
             : undefined,
           created_at_from: params.created_at_from || "",
           created_at_to: params.created_at_to || "",
-          download_total_count_from: params.download_total_count_from || "",
-          download_total_count_to: params.download_total_count_to || "",
+          max_applications_from: params.max_applications_from || "",
+          max_applications_to: params.max_applications_to || "",
+          max_cv_pdf_downloads_from: params.max_cv_pdf_downloads_from || "",
+          max_cv_pdf_downloads_to: params.max_cv_pdf_downloads_to || "",
+          max_cv_docx_downloads_from: params.max_cv_docx_downloads_from || "",
+          max_cv_docx_downloads_to: params.max_cv_docx_downloads_to || "",
+          max_letter_pdf_downloads_from: params.max_letter_pdf_downloads_from || "",
+          max_letter_pdf_downloads_to: params.max_letter_pdf_downloads_to || "",
+          max_letter_docx_downloads_from: params.max_letter_docx_downloads_from || "",
+          max_letter_docx_downloads_to: params.max_letter_docx_downloads_to || "",
+          max_cv_ai_improvements_from: params.max_cv_ai_improvements_from || "",
+          max_cv_ai_improvements_to: params.max_cv_ai_improvements_to || "",
+          max_application_letter_ai_improvements_from:
+            params.max_application_letter_ai_improvements_from || "",
+          max_application_letter_ai_improvements_to:
+            params.max_application_letter_ai_improvements_to || "",
+          max_document_storage_bytes_from:
+            params.max_document_storage_bytes_from || "",
+          max_document_storage_bytes_to:
+            params.max_document_storage_bytes_to || "",
         }}
         onApply={(newFilters) => {
           setParams(
@@ -1045,9 +1261,36 @@ export const UsersList = () => {
               suspended: newFilters.suspended || "",
               created_at_from: newFilters.created_at_from || "",
               created_at_to: newFilters.created_at_to || "",
-              download_total_count_from:
-                newFilters.download_total_count_from || "",
-              download_total_count_to: newFilters.download_total_count_to || "",
+              max_applications_from: newFilters.max_applications_from || "",
+              max_applications_to: newFilters.max_applications_to || "",
+              max_cv_pdf_downloads_from:
+                newFilters.max_cv_pdf_downloads_from || "",
+              max_cv_pdf_downloads_to:
+                newFilters.max_cv_pdf_downloads_to || "",
+              max_cv_docx_downloads_from:
+                newFilters.max_cv_docx_downloads_from || "",
+              max_cv_docx_downloads_to:
+                newFilters.max_cv_docx_downloads_to || "",
+              max_letter_pdf_downloads_from:
+                newFilters.max_letter_pdf_downloads_from || "",
+              max_letter_pdf_downloads_to:
+                newFilters.max_letter_pdf_downloads_to || "",
+              max_letter_docx_downloads_from:
+                newFilters.max_letter_docx_downloads_from || "",
+              max_letter_docx_downloads_to:
+                newFilters.max_letter_docx_downloads_to || "",
+              max_cv_ai_improvements_from:
+                newFilters.max_cv_ai_improvements_from || "",
+              max_cv_ai_improvements_to:
+                newFilters.max_cv_ai_improvements_to || "",
+              max_application_letter_ai_improvements_from:
+                newFilters.max_application_letter_ai_improvements_from || "",
+              max_application_letter_ai_improvements_to:
+                newFilters.max_application_letter_ai_improvements_to || "",
+              max_document_storage_bytes_from:
+                newFilters.max_document_storage_bytes_from || "",
+              max_document_storage_bytes_to:
+                newFilters.max_document_storage_bytes_to || "",
             },
             true,
           );
