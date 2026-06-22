@@ -1,9 +1,17 @@
+import { motion } from "motion/react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Check } from "lucide-react";
 import {
   FeatureIllustration,
   type FeatureIllustrationVariant,
 } from "@/features/landing/components/feature-illustration";
+import {
+  fadeUp,
+  fadeUpLg,
+  staggerContainer,
+  staggerItem,
+  viewportConfig,
+} from "@/lib/motion";
 
 import iconTracker from "@/assets/images/icon-tracker.png";
 import iconSurat from "@/assets/images/icon-surat.png";
@@ -85,42 +93,56 @@ export function FeatureSelector() {
   return (
     <section id="application-tracker" className="py-16 lg:py-24 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="text-center mb-12">
+        <motion.div
+          className="text-center mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={fadeUp}
+        >
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
             Semua yang Anda Butuhkan untuk Karier Impian
           </h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
             Kelola lamaran kerja, buat CV profesional, surat lamaran yang meyakinkan, dan portofolio digital dalam satu platform.
           </p>
-        </div>
+        </motion.div>
 
         <Tabs defaultValue="application" className="w-full">
-          <TabsList className="grid grid-cols-2 lg:grid-cols-4 auto-rows-fr gap-4 lg:gap-6 h-auto bg-transparent p-0 mb-12">
-            {featureMeta.map((feature) => (
-              <TabsTrigger
-                key={feature.id}
-                value={feature.id}
-                className="group relative data-[state=active]:bg-card data-[state=active]:border-primary data-[state=active]:shadow-xl border-2 border-border/50 bg-card/50 rounded-2xl p-5 sm:p-6 h-full flex flex-col items-center text-center gap-3 sm:gap-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
-              >
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-primary opacity-0 group-data-[state=active]:opacity-100 transition-opacity" />
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden flex items-center justify-center transition-transform group-hover:scale-110 group-data-[state=active]:scale-110">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="w-full overflow-hidden space-y-2">
-                  <h3 className="font-bold text-base sm:text-lg whitespace-normal break-words leading-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent group-data-[state=active]:from-primary group-data-[state=active]:to-primary/80 transition-all duration-300">
-                    {feature.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground/80 mt-2 hidden sm:block line-clamp-2 whitespace-normal break-words leading-relaxed group-hover:text-muted-foreground transition-colors duration-300">
-                    {feature.subtitle}
-                  </p>
-                </div>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            variants={staggerContainer}
+          >
+            <TabsList className="grid grid-cols-2 lg:grid-cols-4 auto-rows-fr gap-4 lg:gap-6 h-auto bg-transparent p-0 mb-12">
+              {featureMeta.map((feature) => (
+                <motion.div key={feature.id} variants={staggerItem}>
+                  <TabsTrigger
+                    value={feature.id}
+                    className="group relative data-[state=active]:bg-card data-[state=active]:border-primary data-[state=active]:shadow-xl border-2 border-border/50 bg-card/50 rounded-2xl p-5 sm:p-6 h-full flex flex-col items-center text-center gap-3 sm:gap-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 cursor-pointer w-full"
+                  >
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-primary opacity-0 group-data-[state=active]:opacity-100 transition-opacity" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden flex items-center justify-center transition-transform group-hover:scale-110 group-data-[state=active]:scale-110">
+                      <img
+                        src={feature.image}
+                        alt={feature.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="w-full overflow-hidden space-y-2">
+                      <h3 className="font-bold text-base sm:text-lg whitespace-normal break-words leading-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent group-data-[state=active]:from-primary group-data-[state=active]:to-primary/80 transition-all duration-300">
+                        {feature.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground/80 mt-2 hidden sm:block line-clamp-2 whitespace-normal break-words leading-relaxed group-hover:text-muted-foreground transition-colors duration-300">
+                        {feature.subtitle}
+                      </p>
+                    </div>
+                  </TabsTrigger>
+                </motion.div>
+              ))}
+            </TabsList>
+          </motion.div>
 
           {featureMeta.map((feature) => (
             <TabsContent
@@ -159,10 +181,14 @@ function FeatureDetail({
   bgColor,
 }: FeatureDetailProps) {
   return (
-    <div
+    <motion.div
       className={`grid lg:grid-cols-2 gap-8 lg:gap-16 items-center rounded-3xl p-8 lg:p-12 ${bgColor} border border-border/30`}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewportConfig}
+      variants={staggerContainer}
     >
-      <div className="space-y-6">
+      <motion.div className="space-y-6" variants={fadeUpLg}>
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
           {title}
         </h2>
@@ -171,19 +197,23 @@ function FeatureDetail({
         </p>
         <ul className="space-y-4">
           {bullets.map((bullet, index) => (
-            <li key={index} className="flex items-start gap-3">
+            <motion.li
+              key={index}
+              className="flex items-start gap-3"
+              variants={staggerItem}
+            >
               <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
                 <Check className="w-4 h-4 text-primary" />
               </div>
               <span className="text-foreground">{bullet}</span>
-            </li>
+            </motion.li>
           ))}
         </ul>
-      </div>
+      </motion.div>
 
-      <div className="order-first lg:order-last">
+      <motion.div className="order-first lg:order-last" variants={fadeUpLg}>
         <FeatureIllustration variant={illustration} />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

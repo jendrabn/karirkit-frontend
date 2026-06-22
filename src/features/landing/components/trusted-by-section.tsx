@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import {
   Carousel,
   CarouselContent,
@@ -5,6 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { fadeUp, viewportConfig } from "@/lib/motion";
 
 const companies = [
   {
@@ -93,9 +95,15 @@ export function TrustedBySection() {
   return (
     <section className="border-y border-border/40 bg-muted/30 py-16 dark:border-border/60 dark:bg-background/95">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="mb-8 text-center text-sm text-muted-foreground">
+        <motion.p
+          className="mb-8 text-center text-sm text-muted-foreground"
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={fadeUp}
+        >
           Dipercaya oleh pencari kerja dan profesional dari berbagai perusahaan
-        </p>
+        </motion.p>
 
         <Carousel
           opts={{

@@ -1,9 +1,16 @@
+import { motion } from "motion/react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  fadeUp,
+  staggerContainer,
+  staggerItem,
+  viewportConfig,
+} from "@/lib/motion";
 
 const faqs = [
   {
@@ -52,28 +59,42 @@ export function FAQSection() {
   return (
     <section id="faq" className="py-16 lg:py-24 bg-muted/30">
       <div className="container mx-auto px-4 lg:px-8 max-w-3xl">
-        <div className="text-center mb-12">
+        <motion.div
+          className="text-center mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={fadeUp}
+        >
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
             Pertanyaan yang Sering Diajukan
           </h2>
-        </div>
+        </motion.div>
 
-        <Accordion type="single" collapsible className="space-y-4">
-          {faqs.map((faq, index) => (
-            <AccordionItem
-              key={index}
-              value={`item-${index}`}
-              className="bg-card rounded-xl border border-border px-6 data-[state=open]:card-shadow"
-            >
-              <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={staggerContainer}
+        >
+          <Accordion type="single" collapsible className="space-y-4">
+            {faqs.map((faq, index) => (
+              <motion.div key={index} variants={staggerItem}>
+                <AccordionItem
+                  value={`item-${index}`}
+                  className="bg-card rounded-xl border border-border px-6 data-[state=open]:card-shadow"
+                >
+                  <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
+            ))}
+          </Accordion>
+        </motion.div>
       </div>
     </section>
   );

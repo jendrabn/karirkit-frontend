@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { Card } from "@/components/ui/card";
 import {
   Clock,
@@ -11,6 +12,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useStats } from "@/features/landing/api/get-stats";
+import {
+  fadeUp,
+  staggerContainer,
+  staggerItem,
+  viewportConfig,
+} from "@/lib/motion";
 
 export function BenefitsSection() {
   const { data: stats } = useStats();
@@ -98,20 +105,30 @@ export function BenefitsSection() {
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="space-y-8">
-            <div>
+          <motion.div
+            className="space-y-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeUp}>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                 Satu Tempat untuk Lamaran, Dokumen, dan Langganan
               </h2>
-            </div>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            </motion.div>
+            <motion.p
+              className="text-muted-foreground text-lg leading-relaxed"
+              variants={fadeUp}
+            >
               Dari melacak lamaran sampai membuat CV, surat lamaran, portfolio, dan dokumen, semua ada dalam satu platform. Saat butuh akses tambahan, kamu juga bisa upgrade ke paket langganan yang sesuai kebutuhan.
-            </p>
-            <div className="space-y-5">
+            </motion.p>
+            <motion.div className="space-y-5" variants={staggerContainer}>
               {items.map((item, index) => (
-                <div
+                <motion.div
                   key={index}
                   className="flex items-center gap-4 group hover:translate-x-2 transition-transform cursor-default"
+                  variants={staggerItem}
                 >
                   <div
                     className={`w-14 h-14 rounded-2xl ${item.color} flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow`}
@@ -121,35 +138,40 @@ export function BenefitsSection() {
                   <span className="text-foreground font-medium text-lg">
                     {item.text}
                   </span>
-                </div>
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="grid grid-cols-2 gap-4 lg:gap-5">
+          <motion.div
+            className="grid grid-cols-2 gap-4 lg:gap-5"
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            variants={staggerContainer}
+          >
             {statsList.map((stat, index) => (
-              <Card
-                key={index}
-                className="p-5 lg:p-6 rounded-2xl card-shadow bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-border/50 group"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
-                  >
-                    <stat.icon className="w-6 h-6 text-primary" />
+              <motion.div key={index} variants={staggerItem}>
+                <Card className="p-5 lg:p-6 rounded-2xl card-shadow bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-border/50 group">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                    >
+                      <stat.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl lg:text-3xl font-bold text-primary">
+                        {stat.value}
+                      </p>
+                      <p className="text-xs lg:text-sm text-muted-foreground">
+                        {stat.label}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-2xl lg:text-3xl font-bold text-primary">
-                      {stat.value}
-                    </p>
-                    <p className="text-xs lg:text-sm text-muted-foreground">
-                      {stat.label}
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

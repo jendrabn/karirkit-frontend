@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import {
@@ -6,6 +7,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { Quote, Star } from "lucide-react";
+import { fadeUp, viewportConfig } from "@/lib/motion";
 
 const testimonials = [
   {
@@ -145,14 +147,20 @@ export function TestimonialsSection() {
       <div className="absolute left-0 top-1/2 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
 
       <div className="container mx-auto relative z-10 px-4 lg:px-8">
-        <div className="mb-12 text-center">
+        <motion.div
+          className="mb-12 text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={fadeUp}
+        >
           <h2 className="text-2xl font-bold text-foreground md:text-3xl lg:text-4xl">
             Dengar Cerita Pengguna KarirKit
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             Ribuan pencari kerja sudah merasakan manfaat KarirKit untuk karier mereka
           </p>
-        </div>
+        </motion.div>
 
         <Carousel
           opts={{

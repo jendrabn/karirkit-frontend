@@ -1,8 +1,16 @@
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
 import { HeroIllustration } from "@/features/landing/components/hero-illustration";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "react-router";
+import {
+  fadeUp,
+  fadeUpLg,
+  fadeRight,
+  staggerContainer,
+  staggerItem,
+} from "@/lib/motion";
 
 const heroFeatures = [
   "Pelacak Lamaran",
@@ -19,31 +27,43 @@ export function HeroSection() {
     >
       <div className="container relative z-10 mx-auto w-full px-4 lg:px-8">
         <div className="grid items-center gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-8 xl:gap-10">
-          <div className="min-w-0 space-y-5 text-center lg:-translate-y-3 lg:space-y-7 lg:text-left">
-            <div className="space-y-4">
+          <motion.div
+            className="min-w-0 space-y-5 text-center lg:-translate-y-3 lg:space-y-7 lg:text-left"
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+          >
+            <motion.div className="space-y-4" variants={fadeUpLg}>
               <h1 className="mx-auto max-w-[34rem] text-pretty text-[2.28rem] font-bold leading-[1.06] tracking-normal text-primary min-[390px]:text-[2.45rem] sm:text-[3.15rem] lg:mx-0 lg:max-w-none lg:text-[3.45rem] lg:leading-[1.04] lg:tracking-[-0.032em] xl:text-[3.75rem]">
                 Lacak & Kelola Semua Lamaran Kerjamu Tanpa Ribet
               </h1>
               <p className="mx-auto max-w-[42rem] text-base leading-7 text-foreground/72 sm:leading-8 lg:mx-0 lg:text-lg">
                 Lacak setiap lamaran, buat CV profesional, susun surat lamaran, simpan dokumen penting, dan bangun portofolio digital dalam satu workflow.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="mx-auto hidden max-w-[36rem] grid-cols-1 gap-y-3 sm:grid sm:grid-cols-2 sm:gap-x-10 lg:mx-0">
+            <motion.div
+              className="mx-auto hidden max-w-[36rem] grid-cols-1 gap-y-3 sm:grid sm:grid-cols-2 sm:gap-x-10 lg:mx-0"
+              variants={staggerContainer}
+            >
               {heroFeatures.map((feature, index) => (
-                <div
+                <motion.div
                   key={index}
                   className="flex items-center justify-center gap-3 lg:justify-start"
+                  variants={staggerItem}
                 >
                   <CheckCircle2 className="h-[1.125rem] w-[1.125rem] shrink-0 text-primary/80" />
                   <span className="text-sm font-medium text-foreground/88 sm:text-base">
                     {feature}
                   </span>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
-            <div className="flex flex-col items-center justify-center gap-3 pt-1 sm:flex-row sm:gap-4 lg:justify-start">
+            <motion.div
+              className="flex flex-col items-center justify-center gap-3 pt-1 sm:flex-row sm:gap-4 lg:justify-start"
+              variants={fadeUp}
+            >
               <Button
                 variant="hero"
                 size="lg"
@@ -60,12 +80,17 @@ export function HeroSection() {
               >
                 <a href="#application-tracker">Lihat Fitur</a>
               </Button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="relative hidden w-full overflow-hidden lg:block lg:w-auto lg:max-w-none lg:overflow-visible">
+          <motion.div
+            className="relative hidden w-full overflow-hidden lg:block lg:w-auto lg:max-w-none lg:overflow-visible"
+            initial="hidden"
+            animate="visible"
+            variants={fadeRight}
+          >
             <HeroIllustration className="w-full lg:min-h-[540px]" />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

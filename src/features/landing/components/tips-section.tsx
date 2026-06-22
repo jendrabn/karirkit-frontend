@@ -1,9 +1,11 @@
+import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLatestBlogs } from "@/features/blogs/api/get-latest-blogs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router";
 import { BlogCard } from "@/features/blogs/components/blog-card";
+import { fadeUp, viewportConfig } from "@/lib/motion";
 
 export function TipsSection() {
   const { data: articles, isLoading } = useLatestBlogs({ limit: 4 });
@@ -13,7 +15,13 @@ export function TipsSection() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
+        <motion.div
+          className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={fadeUp}
+        >
           <div>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
               Temukan Panduan dan Tips Karir
@@ -25,7 +33,7 @@ export function TipsSection() {
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
-        </div>
+        </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading

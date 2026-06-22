@@ -1,7 +1,14 @@
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { paths } from "@/config/paths";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router";
+import {
+  fadeUp,
+  staggerContainer,
+  staggerItem,
+  viewportConfig,
+} from "@/lib/motion";
 
 const benefits = [
   "Mulai dari plan Free",
@@ -19,28 +26,47 @@ export function CTASection() {
       </div>
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground leading-tight">
+        <motion.div
+          className="max-w-4xl mx-auto text-center space-y-8"
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={staggerContainer}
+        >
+          <motion.h2
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground leading-tight"
+            variants={fadeUp}
+          >
             Mulai dari Free, Upgrade Saat Butuh Lebih
-          </h2>
+          </motion.h2>
 
-          <p className="text-primary-foreground/90 text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed">
+          <motion.p
+            className="text-primary-foreground/90 text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed"
+            variants={fadeUp}
+          >
             Kelola lamaran, buat CV dan surat lamaran, simpan dokumen, lalu upgrade ke Pro atau Max untuk membuka template premium dan limit yang lebih besar.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-wrap justify-center gap-4 lg:gap-6">
+          <motion.div
+            className="flex flex-wrap justify-center gap-4 lg:gap-6"
+            variants={staggerContainer}
+          >
             {benefits.map((benefit, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="flex items-center gap-2 text-primary-foreground"
+                variants={staggerItem}
               >
                 <CheckCircle2 className="w-5 h-5" />
                 <span className="font-medium">{benefit}</span>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <motion.div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+            variants={fadeUp}
+          >
             <Button
               size="lg"
               className="bg-background text-primary hover:bg-background/90 h-14 px-10 text-base font-semibold shadow-2xl group"
@@ -59,8 +85,8 @@ export function CTASection() {
             >
               <Link to={paths.subscriptions.list.getHref()}>Lihat Paket Langganan</Link>
             </Button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

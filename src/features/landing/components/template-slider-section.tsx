@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import {
   Carousel,
   CarouselContent,
@@ -5,6 +6,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { fadeUp, viewportConfig } from "@/lib/motion";
+
 import cv1 from "@/assets/images/templates/cv-1.webp";
 import cv2 from "@/assets/images/templates/cv-2.webp";
 import cv3 from "@/assets/images/templates/cv-3.webp";
@@ -16,11 +19,17 @@ export function TemplateSliderSection() {
   return (
     <section className="py-16 lg:py-24 bg-secondary">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="text-center mb-12">
+        <motion.div
+          className="text-center mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={fadeUp}
+        >
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
             Desain profesional, siap pakai untuk karir impianmu!
           </h2>
-        </div>
+        </motion.div>
 
         <Carousel
           opts={{
