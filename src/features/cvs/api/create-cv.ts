@@ -276,9 +276,7 @@ export const cvSchema = z.object({
     .array(educationSchema)
     .min(1, "Minimal 1 pendidikan wajib diisi"),
   certificates: z.array(certificateSchema),
-  experiences: z
-    .array(experienceSchema)
-    .min(1, "Minimal 1 pengalaman wajib diisi"),
+  experiences: z.array(experienceSchema),
   skills: z.array(skillSchema).min(1, "Minimal 1 keahlian wajib diisi"),
   awards: z.array(awardSchema),
   social_links: z.array(socialLinkSchema),
