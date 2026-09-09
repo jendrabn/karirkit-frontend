@@ -8,6 +8,7 @@ import {
   withAdminProtection,
 } from "@/components/route-wrappers";
 import { LoadingFallback } from "@/components/ui/loading-fallback";
+import { AppErrorBoundary } from "@/components/errors/app-error-boundary";
 
 type RouteModule = {
   default: ComponentType;
@@ -64,6 +65,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
     {
       HydrateFallback: LoadingFallback,
+      ErrorBoundary: AppErrorBoundary,
       children: [
         // Public routes (no authentication required)
         {

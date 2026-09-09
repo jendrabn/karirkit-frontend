@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "bun scripts/generate-icons.mjs",
+    "generate:sitemap": "bun scripts/generate-sitemap.mjs",
+    "prebuild": "bun scripts/generate-icons.mjs && bun scripts/generate-sitemap.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -152,7 +152,12 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         registerType: "autoUpdate",
-        includeAssets: ["favicon.ico", "apple-touch-icon.png"],
+        includeAssets: [
+          "favicon.ico",
+          "apple-touch-icon.png",
+          "robots.txt",
+          "sitemap.xml",
+        ],
         manifest: {
           name: "KarirKit - Platform Manajemen Karir",
           short_name: "KarirKit",
@@ -196,6 +201,11 @@ export default defineConfig(({ mode }) => {
           cleanupOutdatedCaches: true,
           clientsClaim: true,
           skipWaiting: true,
+          navigateFallbackDenylist: [
+            /^\/robots\.txt$/,
+            /^\/sitemap.*\.xml$/,
+            /^\/api/,
+          ],
           runtimeCaching,
         },
         devOptions: {
