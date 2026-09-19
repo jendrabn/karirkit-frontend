@@ -173,30 +173,30 @@ export const createAppRouter = (queryClient: QueryClient) =>
             ),
         },
         {
-          path: "/application-letters",
+          path: "/cover-letters",
           lazy: () =>
-            import("./pages/application-letters").then(
+            import("./pages/cover-letters").then(
               convertWithProtection(queryClient)
             ),
         },
         {
-          path: "/application-letters/create",
+          path: "/cover-letters/create",
           lazy: () =>
-            import("./pages/application-letter-create").then(
+            import("./pages/cover-letter-create").then(
               convertWithProtection(queryClient)
             ),
         },
         {
-          path: "/application-letters/:id",
+          path: "/cover-letters/:id",
           lazy: () =>
-            import("./pages/application-letter-show").then(
+            import("./pages/cover-letter-show").then(
               convertWithProtection(queryClient)
             ),
         },
         {
-          path: "/application-letters/:id/edit",
+          path: "/cover-letters/:id/edit",
           lazy: () =>
-            import("./pages/application-letter-edit").then(
+            import("./pages/cover-letter-edit").then(
               convertWithProtection(queryClient)
             ),
         },

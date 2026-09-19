@@ -3,9 +3,9 @@ import { z } from "zod";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { ApplicationLetter } from "./get-application-letters";
+import type { CoverLetter } from "./get-cover-letters";
 
-export const applicationLetterSchema = z.object({
+export const coverLetterSchema = z.object({
   template_id: z.string().min(1, "Template wajib dipilih"),
   name: z.string().min(1, "Nama lengkap wajib diisi"),
   birth_place_date: z.string().min(1, "Tempat, tanggal lahir wajib diisi"),
@@ -36,25 +36,25 @@ export const applicationLetterSchema = z.object({
   }),
 });
 
-export type CreateApplicationLetterInput = z.infer<
-  typeof applicationLetterSchema
+export type CreateCoverLetterInput = z.infer<
+  typeof coverLetterSchema
 >;
 
-export type CreateApplicationLetterResponse = ApplicationLetter;
+export type CreateCoverLetterResponse = CoverLetter;
 
-export const createApplicationLetter = (
-  data: CreateApplicationLetterInput
-): Promise<CreateApplicationLetterResponse> => {
-  return api.post("/application-letters", data);
+export const createCoverLetter = (
+  data: CreateCoverLetterInput
+): Promise<CreateCoverLetterResponse> => {
+  return api.post("/cover-letters", data);
 };
 
-type UseCreateApplicationLetterOptions = {
-  mutationConfig?: MutationConfig<typeof createApplicationLetter>;
+type UseCreateCoverLetterOptions = {
+  mutationConfig?: MutationConfig<typeof createCoverLetter>;
 };
 
-export const useCreateApplicationLetter = ({
+export const useCreateCoverLetter = ({
   mutationConfig,
-}: UseCreateApplicationLetterOptions = {}) => {
+}: UseCreateCoverLetterOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, onError, ...restConfig } = mutationConfig || {};
@@ -62,7 +62,7 @@ export const useCreateApplicationLetter = ({
   return useMutation({
     onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({
-        queryKey: ["application-letters"],
+        queryKey: ["cover-letters"],
       });
       onSuccess?.(data, ...args);
     },
@@ -70,6 +70,6 @@ export const useCreateApplicationLetter = ({
       onError?.(error, ...args);
     },
     ...restConfig,
-    mutationFn: createApplicationLetter,
+    mutationFn: createCoverLetter,
   });
 };

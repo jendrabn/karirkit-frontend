@@ -49,9 +49,9 @@ export const getPlanFeatureAccess = (
       features?.can_use_premium_cv_templates ??
       plan?.can_use_premium_cv_templates ??
       false,
-    canUsePremiumApplicationLetterTemplates:
-      features?.can_use_premium_application_letter_templates ??
-      plan?.can_use_premium_application_letter_templates ??
+    canUsePremiumCoverLetterTemplates:
+      features?.can_use_premium_cover_letter_templates ??
+      plan?.can_use_premium_cover_letter_templates ??
       false,
   };
 };
@@ -71,13 +71,13 @@ export const getSubscriptionLimits = (
   return {
     max_cvs: plan.max_cvs,
     max_applications: plan.max_applications,
-    max_application_letters: plan.max_application_letters,
+    max_cover_letters: plan.max_cover_letters,
     max_document_storage_bytes: plan.max_document_storage_bytes,
     max_cv_pdf_downloads: plan.max_cv_pdf_downloads,
     max_cv_docx_downloads: plan.max_cv_docx_downloads,
     max_letter_pdf_downloads: plan.max_letter_pdf_downloads,
     max_letter_docx_downloads: plan.max_letter_docx_downloads,
     max_cv_ai_improvements: plan.max_cv_ai_improvements,
-    max_application_letter_ai_improvements: plan.max_application_letter_ai_improvements,
+    max_cover_letter_ai_improvements: plan.max_cover_letter_ai_improvements,
   };
 };

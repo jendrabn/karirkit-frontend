@@ -37,9 +37,9 @@ const featureMeta = [
     ],
   },
   {
-    id: "applicationletter",
+    id: "coverletter",
     image: iconSurat,
-    illustration: "applicationletter" as FeatureIllustrationVariant,
+    illustration: "coverletter" as FeatureIllustrationVariant,
     bgColor: "bg-gradient-to-br from-primary/10 via-primary/5 to-background",
     title: "Surat Lamaran",
     subtitle: "Buat surat lamaran profesional dengan cepat.",

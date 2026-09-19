@@ -7,7 +7,7 @@ export interface DashboardStats {
   total_applications: number;
   active_applications: number;
   inactive_applications: number;
-  total_application_letters: number;
+  total_cover_letters: number;
   total_cvs: number;
   total_portfolios: number;
   interview_applications: number;
@@ -40,7 +40,7 @@ export interface AdminDashboardStatistics {
   total_tags: number;
   total_templates: number;
   total_cv_templates: number;
-  total_application_letter_templates: number;
+  total_cover_letter_templates: number;
   total_jobs: number;
   total_published_jobs: number;
   total_draft_jobs: number;

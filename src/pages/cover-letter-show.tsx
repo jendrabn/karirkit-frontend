@@ -17,38 +17,38 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { MinimalSEO } from "@/components/minimal-seo";
-import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
-import { useDeleteApplicationLetter } from "@/features/application-letters/api/delete-application-letter";
-import { useDownloadApplicationLetter } from "@/features/application-letters/api/download-application-letter";
-import { ApplicationLetterDetail } from "@/features/application-letters/components/application-letter-detail";
+import { useCoverLetter } from "@/features/cover-letters/api/get-cover-letter";
+import { useDeleteCoverLetter } from "@/features/cover-letters/api/delete-cover-letter";
+import { useDownloadCoverLetter } from "@/features/cover-letters/api/download-cover-letter";
+import { CoverLetterDetail } from "@/features/cover-letters/components/cover-letter-detail";
 import { toast } from "sonner";
 
-const ApplicationLetterShow = () => {
+const CoverLetterShow = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const { data: letter, isLoading } = useApplicationLetter({
+  const { data: letter, isLoading } = useCoverLetter({
     id: id!,
   });
 
-  const deleteMutation = useDeleteApplicationLetter({
+  const deleteMutation = useDeleteCoverLetter({
     mutationConfig: {
       onSuccess: () => {
         toast.success("Surat lamaran berhasil dihapus");
-        navigate("/application-letters");
+        navigate("/cover-letters");
       },
     },
   });
 
-  const downloadMutation = useDownloadApplicationLetter();
+  const downloadMutation = useDownloadCoverLetter();
 
   if (isLoading) {
     return (
       <DashboardLayout
         breadcrumbItems={[
           { label: "Dashboard", href: "/dashboard" },
-          { label: "Surat Lamaran", href: "/application-letters" },
+          { label: "Surat Lamaran", href: "/cover-letters" },
           { label: "Detail Surat Lamaran" },
         ]}
       >
@@ -60,7 +60,7 @@ const ApplicationLetterShow = () => {
         <PageHeader
           title="Detail Surat Lamaran"
           showBackButton
-          backButtonUrl="/application-letters"
+          backButtonUrl="/cover-letters"
         />
         <div className="flex justify-center items-center min-h-[50vh]">
           <div className="inline-flex items-center gap-3 rounded-xl border bg-muted/30 px-5 py-4">
@@ -79,7 +79,7 @@ const ApplicationLetterShow = () => {
       <DashboardLayout
         breadcrumbItems={[
           { label: "Dashboard", href: "/dashboard" },
-          { label: "Surat Lamaran", href: "/application-letters" },
+          { label: "Surat Lamaran", href: "/cover-letters" },
           { label: "Surat Lamaran Tidak Ditemukan" },
         ]}
       >
@@ -91,7 +91,7 @@ const ApplicationLetterShow = () => {
         <PageHeader
           title="Detail Surat Lamaran"
           showBackButton
-          backButtonUrl="/application-letters"
+          backButtonUrl="/cover-letters"
         />
         <div className="flex flex-col items-center justify-center py-16">
           <h2 className="text-xl font-semibold mb-2">
@@ -100,7 +100,7 @@ const ApplicationLetterShow = () => {
           <p className="text-muted-foreground mb-4">
             Surat lamaran yang Anda cari tidak tersedia.
           </p>
-          <Button onClick={() => navigate("/application-letters")}>
+          <Button onClick={() => navigate("/cover-letters")}>
             Kembali ke Daftar
           </Button>
         </div>
@@ -112,7 +112,7 @@ const ApplicationLetterShow = () => {
     <DashboardLayout
       breadcrumbItems={[
         { label: "Dashboard", href: "/dashboard" },
-        { label: "Surat Lamaran", href: "/application-letters" },
+        { label: "Surat Lamaran", href: "/cover-letters" },
         { label: letter.subject },
       ]}
     >
@@ -121,7 +121,7 @@ const ApplicationLetterShow = () => {
         description={`Detail surat lamaran untuk ${letter.company_name}`}
         noIndex={true}
       />
-      <PageHeader title="Surat Lamaran" subtitle={letter.subject} showBackButton backButtonUrl="/application-letters">
+      <PageHeader title="Surat Lamaran" subtitle={letter.subject} showBackButton backButtonUrl="/cover-letters">
         <div className="flex gap-2">
           <Button
             size="sm"
@@ -158,7 +158,7 @@ const ApplicationLetterShow = () => {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => navigate(`/application-letters/${id}/edit`)}
+            onClick={() => navigate(`/cover-letters/${id}/edit`)}
           >
             <Pencil className="h-3.5 w-3.5 mr-1.5" />
             Edit
@@ -175,7 +175,7 @@ const ApplicationLetterShow = () => {
         </div>
       </PageHeader>
 
-      <ApplicationLetterDetail letter={letter} />
+      <CoverLetterDetail letter={letter} />
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
@@ -214,4 +214,4 @@ const ApplicationLetterShow = () => {
   );
 };
 
-export default ApplicationLetterShow;
+export default CoverLetterShow;

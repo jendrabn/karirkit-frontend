@@ -233,7 +233,7 @@ export const UserDetail = ({ user }: { user: User }) => {
               <p className="text-muted-foreground text-xs">AI Improvements</p>
               <p className="font-medium">
                 {(user.usage?.max_cv_ai_improvements ?? 0) +
-                  (user.usage?.max_application_letter_ai_improvements ?? 0)}
+                  (user.usage?.max_cover_letter_ai_improvements ?? 0)}
               </p>
             </div>
           </div>

@@ -24,7 +24,7 @@ import {
   type ParagraphTemplate,
   type ParagraphTypeLabels,
 } from "@/types/template";
-import { paragraphTemplates } from "@/features/application-letters/data/paragraph-templates";
+import { paragraphTemplates } from "@/features/cover-letters/data/paragraph-templates";
 
 const paragraphTypeLabels: ParagraphTypeLabels = {
   opening: "Paragraf Pembuka",

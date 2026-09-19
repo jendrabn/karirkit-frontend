@@ -37,7 +37,7 @@ interface UsageItem {
 
 const usageItems: UsageItem[] = [
   { key: "max_cvs", label: "CV" },
-  { key: "max_application_letters", label: "Surat Lamaran" },
+  { key: "max_cover_letters", label: "Surat Lamaran" },
   { key: "max_applications", label: "Lamaran" },
   { key: "max_document_storage_bytes", label: "Penyimpanan", format: formatBytes },
   { key: "max_cv_pdf_downloads", label: "Download CV PDF" },
@@ -45,7 +45,7 @@ const usageItems: UsageItem[] = [
   { key: "max_letter_pdf_downloads", label: "Download Surat PDF" },
   { key: "max_letter_docx_downloads", label: "Download Surat DOCX" },
   { key: "max_cv_ai_improvements", label: "AI CV" },
-  { key: "max_application_letter_ai_improvements", label: "AI Surat" },
+  { key: "max_cover_letter_ai_improvements", label: "AI Surat" },
 ];
 
 export default function Dashboard() {
@@ -61,7 +61,7 @@ export default function Dashboard() {
     },
     {
       label: "Surat Lamaran",
-      value: stats?.total_application_letters ?? 0,
+      value: stats?.total_cover_letters ?? 0,
       icon: FileText,
       bgColor: "bg-blue-100",
       textColor: "text-blue-600",

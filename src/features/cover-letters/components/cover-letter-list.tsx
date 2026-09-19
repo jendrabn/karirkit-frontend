@@ -64,26 +64,26 @@ import {
 } from "@/components/ui/tooltip";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import {
-  ApplicationLetterFilterModal,
+  CoverLetterFilterModal,
   type FilterValues,
-} from "./application-letter-filter-modal";
-import { ApplicationLetterColumnToggle } from "./application-letter-column-toggle";
-import { defaultColumnVisibility } from "../types/application-letter-column-toggle.constants";
-import type { ColumnVisibility } from "./application-letter-column-toggle";
-import { useApplicationLetters } from "../api/get-application-letters";
-import { useDeleteApplicationLetter } from "../api/delete-application-letter";
-import { useDuplicateApplicationLetter } from "../api/duplicate-application-letter";
-import { useMassDeleteApplicationLetters } from "../api/mass-delete-application-letters";
-import type { ApplicationLetter } from "../api/get-application-letters";
-import { useDownloadApplicationLetter } from "../api/download-application-letter";
+} from "./cover-letter-filter-modal";
+import { CoverLetterColumnToggle } from "./cover-letter-column-toggle";
+import { defaultColumnVisibility } from "../types/cover-letter-column-toggle.constants";
+import type { ColumnVisibility } from "./cover-letter-column-toggle";
+import { useCoverLetters } from "../api/get-cover-letters";
+import { useDeleteCoverLetter } from "../api/delete-cover-letter";
+import { useDuplicateCoverLetter } from "../api/duplicate-cover-letter";
+import { useMassDeleteCoverLetters } from "../api/mass-delete-cover-letters";
+import type { CoverLetter } from "../api/get-cover-letters";
+import { useDownloadCoverLetter } from "../api/download-cover-letter";
 import {
-  toApplicationLetterAiImprovementData,
-  useImproveApplicationLetterWithAI,
-} from "../api/improve-application-letter-with-ai";
+  toCoverLetterAiImprovementData,
+  useImproveCoverLetterWithAI,
+} from "../api/improve-cover-letter-with-ai";
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
-} from "@/types/application-letter";
+} from "@/types/cover-letter";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -99,7 +99,7 @@ type SortField =
   | "updated_at";
 type SortOrder = "asc" | "desc";
 
-export function ApplicationLetterList() {
+export function CoverLetterList() {
   const navigate = useNavigate();
 
   // Use URL params hook
@@ -130,7 +130,7 @@ export function ApplicationLetterList() {
 
   const [storedVisibility, setStoredVisibility] =
     useLocalStorage<ColumnVisibility>(
-      "application-letters-columns",
+      "cover-letters-columns",
       defaultColumnVisibility,
     );
 
@@ -142,7 +142,7 @@ export function ApplicationLetterList() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
-  const { data: lettersResponse, isLoading } = useApplicationLetters({
+  const { data: lettersResponse, isLoading } = useCoverLetters({
     params: {
       page: params.page,
       per_page: params.per_page,
@@ -166,7 +166,7 @@ export function ApplicationLetterList() {
     },
   });
 
-  const deleteMutation = useDeleteApplicationLetter({
+  const deleteMutation = useDeleteCoverLetter({
     mutationConfig: {
       onSuccess: () => {
         toast.success("Surat lamaran berhasil dihapus");
@@ -176,16 +176,16 @@ export function ApplicationLetterList() {
     },
   });
 
-  const duplicateMutation = useDuplicateApplicationLetter({
+  const duplicateMutation = useDuplicateCoverLetter({
     mutationConfig: {
       onSuccess: (data) => {
         toast.success("Surat lamaran berhasil diduplikasi");
-        navigate(paths.applicationLetters.detail.getHref(data.id));
+        navigate(paths.coverLetters.detail.getHref(data.id));
       },
     },
   });
 
-  const massDeleteMutation = useMassDeleteApplicationLetters({
+  const massDeleteMutation = useMassDeleteCoverLetters({
     mutationConfig: {
       onSuccess: () => {
         toast.success(`${selectedIds.length} surat lamaran berhasil dihapus`);
@@ -246,11 +246,11 @@ export function ApplicationLetterList() {
     duplicateMutation.mutate(id);
   };
 
-  const downloadMutation = useDownloadApplicationLetter();
-  const improveLetterMutation = useImproveApplicationLetterWithAI();
+  const downloadMutation = useDownloadCoverLetter();
+  const improveLetterMutation = useImproveCoverLetterWithAI();
 
   const handleDownload = (
-    letter: ApplicationLetter,
+    letter: CoverLetter,
     format: "docx" | "pdf",
   ) => {
     // Toast removed, using LoadingOverlay instead
@@ -262,15 +262,15 @@ export function ApplicationLetterList() {
     });
   };
 
-  const handleImproveWithAi = (letter: ApplicationLetter) => {
+  const handleImproveWithAi = (letter: CoverLetter) => {
     improveLetterMutation.mutate(
       {
-        data: toApplicationLetterAiImprovementData(letter),
+        data: toCoverLetterAiImprovementData(letter),
       },
       {
         onSuccess: (data) => {
           toast.success("Surat lamaran berhasil diperbaiki dengan AI");
-          navigate(paths.applicationLetters.edit.getHref(letter.id), {
+          navigate(paths.coverLetters.edit.getHref(letter.id), {
             state: { aiImprovedData: data },
           });
         },
@@ -319,13 +319,13 @@ export function ApplicationLetterList() {
             <Filter className="h-4 w-4 mr-2" />
             Filter
           </Button>
-          <ApplicationLetterColumnToggle
+          <CoverLetterColumnToggle
             visibility={columnVisibility}
             onVisibilityChange={setColumnVisibility}
           />
           <Button
             size="sm"
-            onClick={() => navigate("/application-letters/create")}
+            onClick={() => navigate("/cover-letters/create")}
           >
             <Plus className="h-4 w-4 mr-2" />
             Buat Surat Lamaran
@@ -470,7 +470,7 @@ export function ApplicationLetterList() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  letters.map((letter: ApplicationLetter, index: number) => (
+                  letters.map((letter: CoverLetter, index: number) => (
                     <TableRow
                       key={letter.id}
                       className={cn(
@@ -674,7 +674,7 @@ export function ApplicationLetterList() {
                           >
                             <DropdownMenuItem
                               onClick={() =>
-                                navigate(`/application-letters/${letter.id}`)
+                                navigate(`/cover-letters/${letter.id}`)
                               }
                             >
                               <Eye className="h-4 w-4 mr-2" />
@@ -683,7 +683,7 @@ export function ApplicationLetterList() {
                             <DropdownMenuItem
                               onClick={() =>
                                 navigate(
-                                  `/application-letters/${letter.id}/edit`,
+                                  `/cover-letters/${letter.id}/edit`,
                                 )
                               }
                             >
@@ -805,7 +805,7 @@ export function ApplicationLetterList() {
       </div>
 
       {/* Filter Modal */}
-      <ApplicationLetterFilterModal
+      <CoverLetterFilterModal
         open={filterModalOpen}
         onOpenChange={setFilterModalOpen}
         filters={{

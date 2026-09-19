@@ -18,7 +18,7 @@ export type GetUsersParams = {
     | "role"
     | "status"
     | "max_cvs"
-    | "max_application_letters"
+    | "max_cover_letters"
     | "max_applications"
     | "max_document_storage_bytes"
     | "max_cv_pdf_downloads"
@@ -26,7 +26,7 @@ export type GetUsersParams = {
     | "max_letter_pdf_downloads"
     | "max_letter_docx_downloads"
     | "max_cv_ai_improvements"
-    | "max_application_letter_ai_improvements";
+    | "max_cover_letter_ai_improvements";
   role?: string;
   status?: string;
   gender?: string;
@@ -36,8 +36,8 @@ export type GetUsersParams = {
   created_at_to?: string;
   max_cvs_from?: number;
   max_cvs_to?: number;
-  max_application_letters_from?: number;
-  max_application_letters_to?: number;
+  max_cover_letters_from?: number;
+  max_cover_letters_to?: number;
   max_applications_from?: number;
   max_applications_to?: number;
   max_document_storage_bytes_from?: number;
@@ -52,8 +52,8 @@ export type GetUsersParams = {
   max_letter_docx_downloads_to?: number;
   max_cv_ai_improvements_from?: number;
   max_cv_ai_improvements_to?: number;
-  max_application_letter_ai_improvements_from?: number;
-  max_application_letter_ai_improvements_to?: number;
+  max_cover_letter_ai_improvements_from?: number;
+  max_cover_letter_ai_improvements_to?: number;
 };
 
 export const getUsers = (

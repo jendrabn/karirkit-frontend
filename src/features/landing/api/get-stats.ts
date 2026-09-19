@@ -4,10 +4,10 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 type Stats = {
   total_users: number;
   total_cvs: number;
-  total_application_letters: number;
+  total_cover_letters: number;
   total_applications: number;
   total_cv_templates: number;
-  total_application_letter_templates: number;
+  total_cover_letter_templates: number;
 };
 
 export const getStats = (): Promise<Stats> => {

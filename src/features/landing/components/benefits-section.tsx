@@ -47,7 +47,7 @@ export function BenefitsSection() {
     },
     {
       icon: Send,
-      value: getDisplayValue(stats?.total_application_letters, "2.100+"),
+      value: getDisplayValue(stats?.total_cover_letters, "2.100+"),
       label: "Surat Lamaran",
       color: "bg-accent",
     },
@@ -55,7 +55,7 @@ export function BenefitsSection() {
       icon: LayoutTemplate,
       value: getDisplayValue(
         stats
-          ? stats.total_cv_templates + stats.total_application_letter_templates
+          ? stats.total_cv_templates + stats.total_cover_letter_templates
           : undefined,
         "50+",
       ),

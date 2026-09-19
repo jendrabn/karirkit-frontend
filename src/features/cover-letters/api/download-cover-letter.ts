@@ -3,24 +3,24 @@ import { AxiosError } from "axios";
 import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 
-export type DownloadApplicationLetterParams = {
+export type DownloadCoverLetterParams = {
   id: string;
   format: "pdf" | "docx";
   name?: string;
   subject?: string;
 };
 
-export const downloadApplicationLetter = (
+export const downloadCoverLetter = (
   id: string,
   format: "pdf" | "docx",
 ): Promise<Blob> => {
-  return api.get(`/application-letters/${id}/download`, {
+  return api.get(`/cover-letters/${id}/download`, {
     params: { format },
     responseType: "blob",
   });
 };
 
-type UseDownloadApplicationLetterOptions = {
+type UseDownloadCoverLetterOptions = {
   onSuccess?: () => void;
   onError?: () => void;
 };
@@ -52,12 +52,12 @@ const generateFilename = (name?: string, subject?: string): string => {
   return `Surat_Lamaran_${safeName}_${safeSubject}`;
 };
 
-export const useDownloadApplicationLetter = (
-  options?: UseDownloadApplicationLetterOptions,
+export const useDownloadCoverLetter = (
+  options?: UseDownloadCoverLetterOptions,
 ) => {
-  return useMutation<Blob, AxiosError, DownloadApplicationLetterParams>({
-    mutationFn: ({ id, format }: DownloadApplicationLetterParams) =>
-      downloadApplicationLetter(id, format),
+  return useMutation<Blob, AxiosError, DownloadCoverLetterParams>({
+    mutationFn: ({ id, format }: DownloadCoverLetterParams) =>
+      downloadCoverLetter(id, format),
 
     onSuccess: (data, variables) => {
       const filename = generateFilename(variables.name, variables.subject);

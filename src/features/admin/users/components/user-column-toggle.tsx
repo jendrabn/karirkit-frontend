@@ -30,7 +30,7 @@ export interface ColumnVisibility {
   max_letter_pdf_downloads: boolean;
   max_letter_docx_downloads: boolean;
   max_cv_ai_improvements: boolean;
-  max_application_letter_ai_improvements: boolean;
+  max_cover_letter_ai_improvements: boolean;
   max_document_storage_bytes: boolean;
   created_at: boolean;
   updated_at: boolean;
@@ -57,7 +57,7 @@ export const defaultColumnVisibility: ColumnVisibility = {
   max_letter_pdf_downloads: false,
   max_letter_docx_downloads: false,
   max_cv_ai_improvements: false,
-  max_application_letter_ai_improvements: false,
+  max_cover_letter_ai_improvements: false,
   max_document_storage_bytes: false,
   created_at: true,
   updated_at: false,
@@ -83,7 +83,7 @@ const columnOrder: (keyof ColumnVisibility)[] = [
   "max_letter_pdf_downloads",
   "max_letter_docx_downloads",
   "max_cv_ai_improvements",
-  "max_application_letter_ai_improvements",
+  "max_cover_letter_ai_improvements",
   "max_document_storage_bytes",
   "created_at",
   "updated_at",
@@ -109,7 +109,7 @@ const columnLabels: Record<keyof ColumnVisibility, string> = {
   max_letter_pdf_downloads: "Unduhan Surat PDF",
   max_letter_docx_downloads: "Unduhan Surat DOCX",
   max_cv_ai_improvements: "AI CV",
-  max_application_letter_ai_improvements: "AI Surat",
+  max_cover_letter_ai_improvements: "AI Surat",
   max_document_storage_bytes: "Penyimpanan",
   created_at: "Dibuat",
   updated_at: "Diperbarui",

@@ -30,8 +30,8 @@ Disallow: /login
 Disallow: /register
 Disallow: /applications
 Disallow: /applications/*
-Disallow: /application-letters
-Disallow: /application-letters/*
+Disallow: /cover-letters
+Disallow: /cover-letters/*
 Disallow: /cvs
 Disallow: /cvs/*
 Disallow: /portfolios

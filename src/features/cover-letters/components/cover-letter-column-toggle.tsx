@@ -69,7 +69,7 @@ interface ColumnToggleProps {
   onVisibilityChange: (visibility: ColumnVisibility) => void;
 }
 
-export function ApplicationLetterColumnToggle({
+export function CoverLetterColumnToggle({
   visibility,
   onVisibilityChange,
 }: ColumnToggleProps) {

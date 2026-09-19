@@ -414,7 +414,7 @@ const AdminUserShow = () => {
                 />
                 <InfoItem
                   label="Total Surat Lamaran"
-                  value={formatNumber(usage?.max_application_letters ?? 0)}
+                  value={formatNumber(usage?.max_cover_letters ?? 0)}
                   icon={Send}
                 />
                 <InfoItem
@@ -451,7 +451,7 @@ const AdminUserShow = () => {
                 <InfoItem
                   label="AI Surat Lamaran"
                   value={formatNumber(
-                    usage?.max_application_letter_ai_improvements ?? 0,
+                    usage?.max_cover_letter_ai_improvements ?? 0,
                   )}
                   icon={Brain}
                 />

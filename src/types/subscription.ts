@@ -18,16 +18,16 @@ export interface SubscriptionPlan {
   duration_days: number;
   max_cvs: number;
   max_applications: number;
-  max_application_letters: number;
+  max_cover_letters: number;
   max_document_storage_bytes: number;
   max_cv_pdf_downloads: number;
   max_cv_docx_downloads: number;
   max_letter_pdf_downloads: number;
   max_letter_docx_downloads: number;
   max_cv_ai_improvements: number;
-  max_application_letter_ai_improvements: number;
+  max_cover_letter_ai_improvements: number;
   can_use_premium_cv_templates: boolean;
-  can_use_premium_application_letter_templates: boolean;
+  can_use_premium_cover_letter_templates: boolean;
 }
 
 export interface SubscriptionPlansResponse {
@@ -38,19 +38,19 @@ export interface SubscriptionPlansResponse {
 export interface SubscriptionCurrentLimits {
   max_cvs: number;
   max_applications: number;
-  max_application_letters: number;
+  max_cover_letters: number;
   max_document_storage_bytes: number;
   max_cv_pdf_downloads: number;
   max_cv_docx_downloads: number;
   max_letter_pdf_downloads: number;
   max_letter_docx_downloads: number;
   max_cv_ai_improvements: number;
-  max_application_letter_ai_improvements: number;
+  max_cover_letter_ai_improvements: number;
 }
 
 export interface SubscriptionCurrentFeatures {
   can_use_premium_cv_templates: boolean;
-  can_use_premium_application_letter_templates: boolean;
+  can_use_premium_cover_letter_templates: boolean;
 }
 
 export interface MySubscription {

@@ -2,10 +2,10 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { buildImageUrl } from "@/lib/utils";
 import { dayjs } from "@/lib/date";
-import type { ApplicationLetter } from "@/features/application-letters/api/get-application-letters";
+import type { CoverLetter } from "@/features/cover-letters/api/get-cover-letters";
 
-interface ApplicationLetterDetailProps {
-  letter: ApplicationLetter;
+interface CoverLetterDetailProps {
+  letter: CoverLetter;
 }
 
 const labels = {
@@ -29,9 +29,9 @@ const labels = {
   },
 } as const;
 
-export function ApplicationLetterDetail({
+export function CoverLetterDetail({
   letter,
-}: ApplicationLetterDetailProps) {
+}: CoverLetterDetailProps) {
   const lang = letter.language === "en" ? "en" : "id";
   const t = labels[lang];
 

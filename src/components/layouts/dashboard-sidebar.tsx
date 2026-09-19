@@ -64,7 +64,7 @@ const baseMenuItems = [
   },
   {
     title: "Surat Lamaran",
-    url: paths.applicationLetters.list.getHref(),
+    url: paths.coverLetters.list.getHref(),
     icon: FileText,
   },
   {

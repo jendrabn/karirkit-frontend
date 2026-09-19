@@ -6,7 +6,7 @@ export type CVParagraphType =
   | "experience"
   | "organization"
   | "project";
-export type TemplateType = "cv" | "application_letter";
+export type TemplateType = "cv" | "cover_letter";
 export type Language = "en" | "id";
 
 export interface ParagraphTemplate {
@@ -37,7 +37,7 @@ export type CVParagraphTypeLabels = Record<CVParagraphType, string>;
 
 export const TEMPLATE_TYPE_OPTIONS = [
   { label: "CV", value: "cv" },
-  { label: "Surat Lamaran", value: "application_letter" },
+  { label: "Surat Lamaran", value: "cover_letter" },
 ] as const;
 
 export const LANGUAGE_OPTIONS = [

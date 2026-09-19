@@ -123,7 +123,7 @@ const ENUM_BADGE_MAP = {
   },
   templateType: {
     cv: "blue",
-    application_letter: "emerald",
+    cover_letter: "emerald",
   },
   projectType: {
     work: "blue",

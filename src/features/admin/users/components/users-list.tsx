@@ -164,8 +164,8 @@ export const UsersList = () => {
     max_letter_docx_downloads_to: "",
     max_cv_ai_improvements_from: "",
     max_cv_ai_improvements_to: "",
-    max_application_letter_ai_improvements_from: "",
-    max_application_letter_ai_improvements_to: "",
+    max_cover_letter_ai_improvements_from: "",
+    max_cover_letter_ai_improvements_to: "",
     max_document_storage_bytes_from: "",
     max_document_storage_bytes_to: "",
   });
@@ -245,13 +245,13 @@ export const UsersList = () => {
       max_cv_ai_improvements_to: params.max_cv_ai_improvements_to
         ? Number(params.max_cv_ai_improvements_to)
         : undefined,
-      max_application_letter_ai_improvements_from:
-        params.max_application_letter_ai_improvements_from
-          ? Number(params.max_application_letter_ai_improvements_from)
+      max_cover_letter_ai_improvements_from:
+        params.max_cover_letter_ai_improvements_from
+          ? Number(params.max_cover_letter_ai_improvements_from)
           : undefined,
-      max_application_letter_ai_improvements_to:
-        params.max_application_letter_ai_improvements_to
-          ? Number(params.max_application_letter_ai_improvements_to)
+      max_cover_letter_ai_improvements_to:
+        params.max_cover_letter_ai_improvements_to
+          ? Number(params.max_cover_letter_ai_improvements_to)
           : undefined,
       max_document_storage_bytes_from: params.max_document_storage_bytes_from
         ? Number(params.max_document_storage_bytes_from)
@@ -407,8 +407,8 @@ export const UsersList = () => {
     params.max_letter_docx_downloads_to ||
     params.max_cv_ai_improvements_from ||
     params.max_cv_ai_improvements_to ||
-    params.max_application_letter_ai_improvements_from ||
-    params.max_application_letter_ai_improvements_to ||
+    params.max_cover_letter_ai_improvements_from ||
+    params.max_cover_letter_ai_improvements_to ||
     params.max_document_storage_bytes_from ||
     params.max_document_storage_bytes_to;
 
@@ -483,8 +483,8 @@ export const UsersList = () => {
                     max_letter_docx_downloads_to: "",
                     max_cv_ai_improvements_from: "",
                     max_cv_ai_improvements_to: "",
-                    max_application_letter_ai_improvements_from: "",
-                    max_application_letter_ai_improvements_to: "",
+                    max_cover_letter_ai_improvements_from: "",
+                    max_cover_letter_ai_improvements_to: "",
                     max_document_storage_bytes_from: "",
                     max_document_storage_bytes_to: "",
                   },
@@ -645,9 +645,9 @@ export const UsersList = () => {
                     </SortableHeader>
                   </TableHead>
                 )}
-                {columnVisibility.max_application_letter_ai_improvements && (
+                {columnVisibility.max_cover_letter_ai_improvements && (
                   <TableHead>
-                    <SortableHeader field="max_application_letter_ai_improvements" onSort={handleSort}>
+                    <SortableHeader field="max_cover_letter_ai_improvements" onSort={handleSort}>
                       AI Surat
                     </SortableHeader>
                   </TableHead>
@@ -1040,16 +1040,16 @@ export const UsersList = () => {
                         </Tooltip>
                       </TableCell>
                     )}
-                    {columnVisibility.max_application_letter_ai_improvements && (
+                    {columnVisibility.max_cover_letter_ai_improvements && (
                       <TableCell className="text-muted-foreground max-w-[120px]">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="block truncate">
-                              {user.usage?.max_application_letter_ai_improvements ?? "-"}
+                              {user.usage?.max_cover_letter_ai_improvements ?? "-"}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>{user.usage?.max_application_letter_ai_improvements ?? "-"}</p>
+                            <p>{user.usage?.max_cover_letter_ai_improvements ?? "-"}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>
@@ -1242,10 +1242,10 @@ export const UsersList = () => {
           max_letter_docx_downloads_to: params.max_letter_docx_downloads_to || "",
           max_cv_ai_improvements_from: params.max_cv_ai_improvements_from || "",
           max_cv_ai_improvements_to: params.max_cv_ai_improvements_to || "",
-          max_application_letter_ai_improvements_from:
-            params.max_application_letter_ai_improvements_from || "",
-          max_application_letter_ai_improvements_to:
-            params.max_application_letter_ai_improvements_to || "",
+          max_cover_letter_ai_improvements_from:
+            params.max_cover_letter_ai_improvements_from || "",
+          max_cover_letter_ai_improvements_to:
+            params.max_cover_letter_ai_improvements_to || "",
           max_document_storage_bytes_from:
             params.max_document_storage_bytes_from || "",
           max_document_storage_bytes_to:
@@ -1283,10 +1283,10 @@ export const UsersList = () => {
                 newFilters.max_cv_ai_improvements_from || "",
               max_cv_ai_improvements_to:
                 newFilters.max_cv_ai_improvements_to || "",
-              max_application_letter_ai_improvements_from:
-                newFilters.max_application_letter_ai_improvements_from || "",
-              max_application_letter_ai_improvements_to:
-                newFilters.max_application_letter_ai_improvements_to || "",
+              max_cover_letter_ai_improvements_from:
+                newFilters.max_cover_letter_ai_improvements_from || "",
+              max_cover_letter_ai_improvements_to:
+                newFilters.max_cover_letter_ai_improvements_to || "",
               max_document_storage_bytes_from:
                 newFilters.max_document_storage_bytes_from || "",
               max_document_storage_bytes_to:

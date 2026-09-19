@@ -40,8 +40,8 @@ export interface FilterValues {
   max_letter_docx_downloads_to?: string;
   max_cv_ai_improvements_from?: string;
   max_cv_ai_improvements_to?: string;
-  max_application_letter_ai_improvements_from?: string;
-  max_application_letter_ai_improvements_to?: string;
+  max_cover_letter_ai_improvements_from?: string;
+  max_cover_letter_ai_improvements_to?: string;
   max_document_storage_bytes_from?: string;
   max_document_storage_bytes_to?: string;
 }
@@ -416,13 +416,13 @@ export function UserFilterModal({
                     type="number"
                     placeholder="Dari"
                     value={
-                      localFilters.max_application_letter_ai_improvements_from ||
+                      localFilters.max_cover_letter_ai_improvements_from ||
                       ""
                     }
                     onChange={(e) =>
                       setLocalFilters({
                         ...localFilters,
-                        max_application_letter_ai_improvements_from:
+                        max_cover_letter_ai_improvements_from:
                           e.target.value,
                       })
                     }
@@ -431,13 +431,13 @@ export function UserFilterModal({
                     type="number"
                     placeholder="Sampai"
                     value={
-                      localFilters.max_application_letter_ai_improvements_to ||
+                      localFilters.max_cover_letter_ai_improvements_to ||
                       ""
                     }
                     onChange={(e) =>
                       setLocalFilters({
                         ...localFilters,
-                        max_application_letter_ai_improvements_to:
+                        max_cover_letter_ai_improvements_to:
                           e.target.value,
                       })
                     }

@@ -2,10 +2,10 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
-import type { Gender, MaritalStatus } from "@/types/application-letter";
+import type { Gender, MaritalStatus } from "@/types/cover-letter";
 
-export type ApplicationLettersResponse = {
-  items: ApplicationLetter[];
+export type CoverLettersResponse = {
+  items: CoverLetter[];
   pagination: {
     page: number;
     per_page: number;
@@ -14,7 +14,7 @@ export type ApplicationLettersResponse = {
   };
 };
 
-export type ApplicationLetter = {
+export type CoverLetter = {
   id: string;
   user_id: string;
   name: string;
@@ -49,7 +49,7 @@ export type ApplicationLetter = {
   updated_at: string;
 };
 
-export type GetApplicationLettersParams = {
+export type GetCoverLettersParams = {
   page?: number;
   per_page?: number;
   q?: string;
@@ -73,9 +73,9 @@ export type GetApplicationLettersParams = {
   created_at_to?: string;
 };
 
-export const getApplicationLetters = (
-  params?: GetApplicationLettersParams
-): Promise<ApplicationLettersResponse> => {
+export const getCoverLetters = (
+  params?: GetCoverLettersParams
+): Promise<CoverLettersResponse> => {
   const filteredParams = params
     ? Object.fromEntries(
         Object.entries(params).filter(
@@ -84,31 +84,31 @@ export const getApplicationLetters = (
       )
     : undefined;
 
-  return api.get("/application-letters", {
+  return api.get("/cover-letters", {
     params: filteredParams,
   });
 };
 
-export const getApplicationLettersQueryOptions = (
-  params?: GetApplicationLettersParams
+export const getCoverLettersQueryOptions = (
+  params?: GetCoverLettersParams
 ) => {
   return queryOptions({
-    queryKey: ["application-letters", params],
-    queryFn: () => getApplicationLetters(params),
+    queryKey: ["cover-letters", params],
+    queryFn: () => getCoverLetters(params),
   });
 };
 
-type UseApplicationLettersOptions = {
-  params?: GetApplicationLettersParams;
-  queryConfig?: QueryConfig<typeof getApplicationLettersQueryOptions>;
+type UseCoverLettersOptions = {
+  params?: GetCoverLettersParams;
+  queryConfig?: QueryConfig<typeof getCoverLettersQueryOptions>;
 };
 
-export const useApplicationLetters = ({
+export const useCoverLetters = ({
   params,
   queryConfig,
-}: UseApplicationLettersOptions = {}) => {
+}: UseCoverLettersOptions = {}) => {
   return useQuery({
-    ...getApplicationLettersQueryOptions(params),
+    ...getCoverLettersQueryOptions(params),
     ...queryConfig,
   });
 };

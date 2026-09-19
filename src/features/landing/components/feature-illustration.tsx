@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 export type FeatureIllustrationVariant =
   | "application"
-  | "applicationletter"
+  | "coverletter"
   | "cv"
   | "portfolio"
   | "documents";
@@ -69,7 +69,7 @@ export function FeatureIllustration({
     <div aria-hidden="true" className={cn("relative mx-auto w-full max-w-[34rem]", className)}>
       <div className="relative">
         {variant === "application" && <ApplicationTrackerIllustration />}
-        {variant === "applicationletter" && <ApplicationLetterIllustration />}
+        {variant === "coverletter" && <CoverLetterIllustration />}
         {variant === "cv" && <CvBuilderIllustration />}
         {variant === "portfolio" && <PortfolioIllustration />}
         {variant === "documents" && <DocumentsIllustration />}
@@ -191,7 +191,7 @@ function ApplicationTrackerIllustration() {
   );
 }
 
-function ApplicationLetterIllustration() {
+function CoverLetterIllustration() {
   return (
     <div className="relative pt-12">
       <div className="absolute left-3 top-0 w-[44%] rounded-2xl border border-[#dbe7de] bg-white p-3 shadow-[0_18px_30px_-24px_rgba(36,101,69,0.4)]">

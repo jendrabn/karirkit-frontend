@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
-import type { ApplicationLetter } from "./get-application-letters";
+import type { CoverLetter } from "./get-cover-letters";
 
-export type UpdateApplicationLetterInput = {
+export type UpdateCoverLetterInput = {
   name: string;
   birth_place_date: string;
   gender: "male" | "female";
@@ -29,25 +29,25 @@ export type UpdateApplicationLetterInput = {
   language?: "en" | "id";
 };
 
-export type UpdateApplicationLetterResponse = ApplicationLetter;
+export type UpdateCoverLetterResponse = CoverLetter;
 
-export const updateApplicationLetter = ({
+export const updateCoverLetter = ({
   id,
   data,
 }: {
   id: string;
-  data: UpdateApplicationLetterInput;
-}): Promise<UpdateApplicationLetterResponse> => {
-  return api.put(`/application-letters/${id}`, data);
+  data: UpdateCoverLetterInput;
+}): Promise<UpdateCoverLetterResponse> => {
+  return api.put(`/cover-letters/${id}`, data);
 };
 
-type UseUpdateApplicationLetterOptions = {
-  mutationConfig?: MutationConfig<typeof updateApplicationLetter>;
+type UseUpdateCoverLetterOptions = {
+  mutationConfig?: MutationConfig<typeof updateCoverLetter>;
 };
 
-export const useUpdateApplicationLetter = ({
+export const useUpdateCoverLetter = ({
   mutationConfig,
-}: UseUpdateApplicationLetterOptions = {}) => {
+}: UseUpdateCoverLetterOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, onError, ...restConfig } = mutationConfig || {};
@@ -55,10 +55,10 @@ export const useUpdateApplicationLetter = ({
   return useMutation({
     onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({
-        queryKey: ["application-letters"],
+        queryKey: ["cover-letters"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["application-letter", args[0].id],
+        queryKey: ["cover-letter", args[0].id],
       });
       onSuccess?.(data, ...args);
     },
@@ -66,6 +66,6 @@ export const useUpdateApplicationLetter = ({
       onError?.(error, ...args);
     },
     ...restConfig,
-    mutationFn: updateApplicationLetter,
+    mutationFn: updateCoverLetter,
   });
 };

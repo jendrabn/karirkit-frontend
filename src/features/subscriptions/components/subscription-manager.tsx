@@ -580,7 +580,7 @@ export function SubscriptionManager({
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Maks Surat Lamaran</span>
                     <span className="font-semibold text-foreground">
-                      {formatSubscriptionLimit(plan.max_application_letters)}
+                      {formatSubscriptionLimit(plan.max_cover_letters)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
@@ -617,7 +617,7 @@ export function SubscriptionManager({
                     <span className="text-muted-foreground">Perbaikan AI Surat Lamaran</span>
                     <span className="font-semibold text-foreground">
                       {formatSubscriptionLimit(
-                        plan.max_application_letter_ai_improvements,
+                        plan.max_cover_letter_ai_improvements,
                       )}
                     </span>
                   </div>
@@ -639,7 +639,7 @@ export function SubscriptionManager({
                     label="Template Premium CV"
                   />
                   <FeatureRow
-                    enabled={features.canUsePremiumApplicationLetterTemplates}
+                    enabled={features.canUsePremiumCoverLetterTemplates}
                     label="Template Premium Surat Lamaran"
                   />
                 </div>

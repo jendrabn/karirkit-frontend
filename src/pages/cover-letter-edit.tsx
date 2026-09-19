@@ -6,60 +6,60 @@ import { PageHeader } from "@/components/layouts/page-header";
 import { Button } from "@/components/ui/button";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import {
-  ApplicationLetterForm,
-  type ApplicationLetterFormHandle,
-} from "@/features/application-letters/components/application-letter-form";
-import { type CreateApplicationLetterInput } from "@/features/application-letters/api/create-application-letter";
-import { useApplicationLetter } from "@/features/application-letters/api/get-application-letter";
-import { useUpdateApplicationLetter } from "@/features/application-letters/api/update-application-letter";
+  CoverLetterForm,
+  type CoverLetterFormHandle,
+} from "@/features/cover-letters/components/cover-letter-form";
+import { type CreateCoverLetterInput } from "@/features/cover-letters/api/create-cover-letter";
+import { useCoverLetter } from "@/features/cover-letters/api/get-cover-letter";
+import { useUpdateCoverLetter } from "@/features/cover-letters/api/update-cover-letter";
 import {
-  toApplicationLetterAiImprovementData,
-  useImproveApplicationLetterWithAI,
-} from "@/features/application-letters/api/improve-application-letter-with-ai";
+  toCoverLetterAiImprovementData,
+  useImproveCoverLetterWithAI,
+} from "@/features/cover-letters/api/improve-cover-letter-with-ai";
 import { toast } from "sonner";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { Loader2, Sparkles } from "lucide-react";
 import { MinimalSEO } from "@/components/minimal-seo";
 
-export default function ApplicationLetterEdit() {
+export default function CoverLetterEdit() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const form = useForm<CreateApplicationLetterInput>();
-  const letterFormRef = useRef<ApplicationLetterFormHandle>(null);
+  const form = useForm<CreateCoverLetterInput>();
+  const letterFormRef = useRef<CoverLetterFormHandle>(null);
   const aiImprovedData = (
     location.state as {
-      aiImprovedData?: Partial<CreateApplicationLetterInput>;
+      aiImprovedData?: Partial<CreateCoverLetterInput>;
     } | null
   )?.aiImprovedData;
 
   const { data: letterResponse, isLoading: isLetterLoading } =
-    useApplicationLetter({
+    useCoverLetter({
       id: id!,
     });
 
-  const updateMutation = useUpdateApplicationLetter({
+  const updateMutation = useUpdateCoverLetter({
     mutationConfig: {
       onSuccess: () => {
         toast.success("Surat lamaran berhasil diperbarui");
-        navigate(paths.applicationLetters.detail.getHref(id!));
+        navigate(paths.coverLetters.detail.getHref(id!));
       },
     },
   });
-  const improveLetterMutation = useImproveApplicationLetterWithAI();
+  const improveLetterMutation = useImproveCoverLetterWithAI();
 
   useServerValidation(updateMutation.error, form);
 
-  const handleSubmit = (data: CreateApplicationLetterInput) => {
+  const handleSubmit = (data: CreateCoverLetterInput) => {
     if (id) {
       updateMutation.mutate({ id, data });
     }
   };
 
-  const handleAiImprove = async (data: CreateApplicationLetterInput) => {
+  const handleAiImprove = async (data: CreateCoverLetterInput) => {
     const improvedData = await improveLetterMutation.mutateAsync({
-      data: toApplicationLetterAiImprovementData(data),
+      data: toCoverLetterAiImprovementData(data),
     });
     toast.success("Surat lamaran berhasil diperbaiki dengan AI");
     return improvedData;
@@ -70,7 +70,7 @@ export default function ApplicationLetterEdit() {
       <DashboardLayout
         breadcrumbItems={[
           { label: "Dashboard", href: "/dashboard" },
-          { label: "Surat Lamaran", href: "/application-letters" },
+          { label: "Surat Lamaran", href: "/cover-letters" },
           { label: "Edit Surat Lamaran" },
         ]}
       >
@@ -82,7 +82,7 @@ export default function ApplicationLetterEdit() {
         <PageHeader
           title="Edit Surat Lamaran"
           showBackButton
-          backButtonUrl="/application-letters"
+          backButtonUrl="/cover-letters"
         />
         <div className="flex justify-center items-center h-full min-h-[50vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -106,7 +106,7 @@ export default function ApplicationLetterEdit() {
       <DashboardLayout
         breadcrumbItems={[
           { label: "Dashboard", href: "/dashboard" },
-          { label: "Surat Lamaran", href: "/application-letters" },
+          { label: "Surat Lamaran", href: "/cover-letters" },
           { label: "Surat Lamaran Tidak Ditemukan" },
         ]}
       >
@@ -118,7 +118,7 @@ export default function ApplicationLetterEdit() {
         <PageHeader
           title="Surat Lamaran Tidak Ditemukan"
           showBackButton
-          backButtonUrl="/application-letters"
+          backButtonUrl="/cover-letters"
         />
         <p className="text-muted-foreground">
           Data surat lamaran dengan ID tersebut tidak ditemukan.
@@ -131,7 +131,7 @@ export default function ApplicationLetterEdit() {
     <DashboardLayout
       breadcrumbItems={[
         { label: "Dashboard", href: "/dashboard" },
-        { label: "Surat Lamaran", href: "/application-letters" },
+        { label: "Surat Lamaran", href: "/cover-letters" },
         { label: "Edit Surat Lamaran" },
       ]}
     >
@@ -144,7 +144,7 @@ export default function ApplicationLetterEdit() {
         title="Edit Surat Lamaran"
         subtitle={`Edit surat lamaran untuk ${letter.company_name}`}
         showBackButton
-        backButtonUrl="/application-letters"
+        backButtonUrl="/cover-letters"
       >
         <Button
           type="button"
@@ -157,11 +157,11 @@ export default function ApplicationLetterEdit() {
         </Button>
       </PageHeader>
 
-      <ApplicationLetterForm
+      <CoverLetterForm
         ref={letterFormRef}
-        initialData={letterInitialData as CreateApplicationLetterInput}
+        initialData={letterInitialData as CreateCoverLetterInput}
         onSubmit={handleSubmit}
-        onCancel={() => navigate("/application-letters")}
+        onCancel={() => navigate("/cover-letters")}
         isLoading={updateMutation.isPending}
         error={updateMutation.error}
         onAiImprove={handleAiImprove}

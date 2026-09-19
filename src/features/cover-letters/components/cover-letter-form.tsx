@@ -37,39 +37,39 @@ import {
 import { SignatureUpload } from "./signature-upload";
 import { TemplateSelector } from "@/components/template-selector";
 import {
-  type ApplicationLetter,
+  type CoverLetter,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
   LANGUAGE_OPTIONS,
-} from "@/types/application-letter";
+} from "@/types/cover-letter";
 import { useTemplates } from "@/features/landing/api/get-templates";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { displayFormErrors } from "@/lib/form-errors";
 import {
-  applicationLetterSchema,
-  type CreateApplicationLetterInput,
-} from "../api/create-application-letter";
+  coverLetterSchema,
+  type CreateCoverLetterInput,
+} from "../api/create-cover-letter";
 import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
 import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
 
-interface ApplicationLetterFormProps {
-  initialData?: Partial<ApplicationLetter>;
-  onSubmit: (data: CreateApplicationLetterInput) => void;
+interface CoverLetterFormProps {
+  initialData?: Partial<CoverLetter>;
+  onSubmit: (data: CreateCoverLetterInput) => void;
   onCancel: () => void;
   isLoading?: boolean;
   error?: unknown;
-  onAiImprove?: (data: CreateApplicationLetterInput) => Promise<unknown>;
+  onAiImprove?: (data: CreateCoverLetterInput) => Promise<unknown>;
   initialAiImprovementSuccess?: boolean;
 }
 
-export type ApplicationLetterFormHandle = {
+export type CoverLetterFormHandle = {
   improveWithAi: () => void;
 };
 
-export const ApplicationLetterForm = forwardRef<
-  ApplicationLetterFormHandle,
-  ApplicationLetterFormProps
->(function ApplicationLetterForm({
+export const CoverLetterForm = forwardRef<
+  CoverLetterFormHandle,
+  CoverLetterFormProps
+>(function CoverLetterForm({
   initialData,
   onSubmit,
   onCancel,
@@ -77,15 +77,15 @@ export const ApplicationLetterForm = forwardRef<
   error,
   onAiImprove,
   initialAiImprovementSuccess,
-}: ApplicationLetterFormProps, ref) {
+}: CoverLetterFormProps, ref) {
   const { data: user } = useUser();
   const { data: mySubscription } = useMySubscription();
   const subscriptionFeatures = getPlanFeatureAccess(mySubscription?.current_features);
   const [aiImprovementSuccess, setAiImprovementSuccess] = useState(
     Boolean(initialAiImprovementSuccess),
   );
-  const form = useForm<CreateApplicationLetterInput>({
-    resolver: zodResolver(applicationLetterSchema),
+  const form = useForm<CreateCoverLetterInput>({
+    resolver: zodResolver(coverLetterSchema),
     defaultValues: {
       template_id: initialData?.template_id || "",
       name: initialData?.name || user?.name || "",
@@ -137,7 +137,7 @@ export const ApplicationLetterForm = forwardRef<
   const { data: templatesResponse, isLoading: isTemplatesLoading } =
     useTemplates({
       params: {
-        type: "application_letter",
+        type: "cover_letter",
         language: selectedTemplateLanguage,
       },
       queryConfig: { enabled: !!selectedTemplateLanguage },
@@ -189,7 +189,7 @@ export const ApplicationLetterForm = forwardRef<
   const submitLabel = initialData ? "Simpan Perubahan" : "Simpan";
 
   const handleFormSubmit = form.handleSubmit(
-    (data) => onSubmit(applicationLetterSchema.parse(data)),
+    (data) => onSubmit(coverLetterSchema.parse(data)),
     displayFormErrors,
   );
 
@@ -197,12 +197,12 @@ export const ApplicationLetterForm = forwardRef<
     if (!onAiImprove) return;
 
     const currentValues = form.getValues();
-    let improvedData: Partial<CreateApplicationLetterInput> | undefined;
+    let improvedData: Partial<CreateCoverLetterInput> | undefined;
 
     try {
       improvedData = (await onAiImprove(
-        applicationLetterSchema.parse(data),
-      )) as Partial<CreateApplicationLetterInput> | undefined;
+        coverLetterSchema.parse(data),
+      )) as Partial<CreateCoverLetterInput> | undefined;
     } catch {
       return;
     }
@@ -314,7 +314,7 @@ export const ApplicationLetterForm = forwardRef<
                         }}
                         getTemplateDisabledReason={(template) =>
                           template.is_premium &&
-                          !subscriptionFeatures.canUsePremiumApplicationLetterTemplates
+                          !subscriptionFeatures.canUsePremiumCoverLetterTemplates
                             ? "Template premium membutuhkan paket Pro atau Max."
                             : null
                         }

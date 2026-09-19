@@ -7,7 +7,7 @@ export type Template = {
   id: string;
   name: string;
   slug: string;
-  type: "cv" | "application_letter";
+  type: "cv" | "cover_letter";
   language: "en" | "id";
   preview: string;
   previewImage: string; // Mapped from preview for compatibility
@@ -20,7 +20,7 @@ type ApiTemplate = {
   id: string;
   name: string;
   slug: string;
-  type: "cv" | "application_letter";
+  type: "cv" | "cover_letter";
   language: "en" | "id";
   preview: string;
   is_premium: boolean;
@@ -37,7 +37,7 @@ type ApiTemplatesResponse = {
 };
 
 export type GetTemplatesParams = {
-  type?: "cv" | "application_letter";
+  type?: "cv" | "cover_letter";
   language?: "en" | "id";
 };
 

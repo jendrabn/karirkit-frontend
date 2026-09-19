@@ -266,7 +266,7 @@ export interface CV {
     id: string;
     name: string;
     path: string;
-    type: "cv" | "application_letter";
+    type: "cv" | "cover_letter";
   };
   created_at: string;
   updated_at: string;

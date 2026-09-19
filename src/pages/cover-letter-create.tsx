@@ -6,45 +6,45 @@ import { PageHeader } from "@/components/layouts/page-header";
 import { Button } from "@/components/ui/button";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import {
-  ApplicationLetterForm,
-  type ApplicationLetterFormHandle,
-} from "@/features/application-letters/components/application-letter-form";
-import { type CreateApplicationLetterInput } from "@/features/application-letters/api/create-application-letter";
-import { useCreateApplicationLetter } from "@/features/application-letters/api/create-application-letter";
+  CoverLetterForm,
+  type CoverLetterFormHandle,
+} from "@/features/cover-letters/components/cover-letter-form";
+import { type CreateCoverLetterInput } from "@/features/cover-letters/api/create-cover-letter";
+import { useCreateCoverLetter } from "@/features/cover-letters/api/create-cover-letter";
 import {
-  toApplicationLetterAiImprovementData,
-  useImproveApplicationLetterWithAI,
-} from "@/features/application-letters/api/improve-application-letter-with-ai";
+  toCoverLetterAiImprovementData,
+  useImproveCoverLetterWithAI,
+} from "@/features/cover-letters/api/improve-cover-letter-with-ai";
 import { toast } from "sonner";
 import { useServerValidation } from "@/hooks/use-server-validation";
 import { useForm } from "react-hook-form";
 import { MinimalSEO } from "@/components/minimal-seo"; // Import
 import { Sparkles } from "lucide-react";
 
-export default function ApplicationLetterCreate() {
+export default function CoverLetterCreate() {
   const navigate = useNavigate();
-  const form = useForm<CreateApplicationLetterInput>();
-  const letterFormRef = useRef<ApplicationLetterFormHandle>(null);
+  const form = useForm<CreateCoverLetterInput>();
+  const letterFormRef = useRef<CoverLetterFormHandle>(null);
 
-  const createMutation = useCreateApplicationLetter({
+  const createMutation = useCreateCoverLetter({
     mutationConfig: {
       onSuccess: (data) => {
         toast.success("Surat lamaran berhasil dibuat");
-        navigate(paths.applicationLetters.detail.getHref(data.id));
+        navigate(paths.coverLetters.detail.getHref(data.id));
       },
     },
   });
-  const improveLetterMutation = useImproveApplicationLetterWithAI();
+  const improveLetterMutation = useImproveCoverLetterWithAI();
 
   useServerValidation(createMutation.error, form);
 
-  const handleSubmit = (data: CreateApplicationLetterInput) => {
+  const handleSubmit = (data: CreateCoverLetterInput) => {
     createMutation.mutate(data);
   };
 
-  const handleAiImprove = async (data: CreateApplicationLetterInput) => {
+  const handleAiImprove = async (data: CreateCoverLetterInput) => {
     const improvedData = await improveLetterMutation.mutateAsync({
-      data: toApplicationLetterAiImprovementData(data),
+      data: toCoverLetterAiImprovementData(data),
     });
     toast.success("Surat lamaran berhasil diperbaiki dengan AI");
     return improvedData;
@@ -54,7 +54,7 @@ export default function ApplicationLetterCreate() {
     <DashboardLayout
       breadcrumbItems={[
         { label: "Dashboard", href: "/dashboard" },
-        { label: "Surat Lamaran", href: "/application-letters" },
+        { label: "Surat Lamaran", href: "/cover-letters" },
         { label: "Buat Surat Lamaran" },
       ]}
     >
@@ -67,7 +67,7 @@ export default function ApplicationLetterCreate() {
         title="Buat Surat Lamaran"
         subtitle="Buat surat lamaran kerja baru."
         showBackButton
-        backButtonUrl="/application-letters"
+        backButtonUrl="/cover-letters"
       >
         <Button
           type="button"
@@ -80,10 +80,10 @@ export default function ApplicationLetterCreate() {
         </Button>
       </PageHeader>
 
-      <ApplicationLetterForm
+      <CoverLetterForm
         ref={letterFormRef}
         onSubmit={handleSubmit}
-        onCancel={() => navigate("/application-letters")}
+        onCancel={() => navigate("/cover-letters")}
         isLoading={createMutation.isPending}
         error={createMutation.error}
         onAiImprove={handleAiImprove}

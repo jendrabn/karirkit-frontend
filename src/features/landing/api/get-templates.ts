@@ -3,7 +3,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
 
-export type TemplateType = "cv" | "application_letter";
+export type TemplateType = "cv" | "cover_letter";
 export type TemplateLanguage = "en" | "id";
 
 export type Template = {

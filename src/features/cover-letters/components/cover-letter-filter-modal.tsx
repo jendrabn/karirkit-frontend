@@ -26,7 +26,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { type Language, LANGUAGE_OPTIONS } from "@/types/application-letter";
+import { type Language, LANGUAGE_OPTIONS } from "@/types/cover-letter";
 
 export interface FilterValues {
   dateFrom?: Date;
@@ -39,19 +39,19 @@ export interface FilterValues {
   marital_status?: "single" | "married" | "widowed";
 }
 
-interface ApplicationLetterFilterModalProps {
+interface CoverLetterFilterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   filters: FilterValues;
   onApplyFilters: (filters: FilterValues) => void;
 }
 
-export function ApplicationLetterFilterModal({
+export function CoverLetterFilterModal({
   open,
   onOpenChange,
   filters,
   onApplyFilters,
-}: ApplicationLetterFilterModalProps) {
+}: CoverLetterFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<FilterValues>(filters);
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -73,7 +73,7 @@ export function ApplicationLetterFilterModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <form
-        id="application-letter-filter-form"
+        id="cover-letter-filter-form"
         onSubmit={(e) => {
           e.preventDefault();
           handleApply();
@@ -275,7 +275,7 @@ export function ApplicationLetterFilterModal({
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button type="submit" form="application-letter-filter-form">
+            <Button type="submit" form="cover-letter-filter-form">
               Terapkan
             </Button>
           </DialogFooter>

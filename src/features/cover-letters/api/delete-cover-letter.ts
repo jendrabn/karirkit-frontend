@@ -3,17 +3,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 
-export const deleteApplicationLetter = (id: string): Promise<void> => {
-  return api.delete(`/application-letters/${id}`);
+export const deleteCoverLetter = (id: string): Promise<void> => {
+  return api.delete(`/cover-letters/${id}`);
 };
 
-type UseDeleteApplicationLetterOptions = {
-  mutationConfig?: MutationConfig<typeof deleteApplicationLetter>;
+type UseDeleteCoverLetterOptions = {
+  mutationConfig?: MutationConfig<typeof deleteCoverLetter>;
 };
 
-export const useDeleteApplicationLetter = ({
+export const useDeleteCoverLetter = ({
   mutationConfig,
-}: UseDeleteApplicationLetterOptions = {}) => {
+}: UseDeleteCoverLetterOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};
@@ -21,11 +21,11 @@ export const useDeleteApplicationLetter = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: ["application-letters"],
+        queryKey: ["cover-letters"],
       });
       onSuccess?.(...args);
     },
     ...restConfig,
-    mutationFn: deleteApplicationLetter,
+    mutationFn: deleteCoverLetter,
   });
 };

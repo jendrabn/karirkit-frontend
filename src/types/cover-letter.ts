@@ -4,7 +4,7 @@ export type Language = "en" | "id";
 
 import type { ListResponse } from "./api";
 
-export interface ApplicationLetter {
+export interface CoverLetter {
   id: string;
   user_id: string;
   name: string;
@@ -33,14 +33,14 @@ export interface ApplicationLetter {
     id: string;
     name: string;
     path: string;
-    type: "cv" | "application_letter";
+    type: "cv" | "cover_letter";
   };
   created_at: string;
   updated_at: string;
 }
 
-export type ApplicationLetterResponse = ApplicationLetter;
-export type ApplicationLetterListResponse = ListResponse<ApplicationLetter>;
+export type CoverLetterResponse = CoverLetter;
+export type CoverLetterListResponse = ListResponse<CoverLetter>;
 
 export const GENDER_OPTIONS: { value: Gender; label: string }[] = [
   { value: "male", label: "Laki-laki" },

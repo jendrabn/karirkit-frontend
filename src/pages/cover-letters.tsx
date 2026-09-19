@@ -1,9 +1,9 @@
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { PageHeader } from "@/components/layouts/page-header";
-import { ApplicationLetterList } from "@/features/application-letters/components/application-letter-list";
+import { CoverLetterList } from "@/features/cover-letters/components/cover-letter-list";
 import { MinimalSEO } from "@/components/minimal-seo";
 
-export default function ApplicationLetters() {
+export default function CoverLetters() {
   return (
     <DashboardLayout
       breadcrumbItems={[
@@ -20,7 +20,7 @@ export default function ApplicationLetters() {
         title="Surat Lamaran"
         subtitle="Kelola surat lamaran kerja Anda."
       />
-      <ApplicationLetterList />
+      <CoverLetterList />
     </DashboardLayout>
   );
 }

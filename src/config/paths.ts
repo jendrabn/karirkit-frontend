@@ -72,18 +72,18 @@ export const paths = {
     },
   },
 
-  applicationLetters: {
+  coverLetters: {
     list: {
-      getHref: () => "/application-letters",
+      getHref: () => "/cover-letters",
     },
     create: {
-      getHref: () => "/application-letters/create",
+      getHref: () => "/cover-letters/create",
     },
     edit: {
-      getHref: (id: string) => `/application-letters/${id}/edit`,
+      getHref: (id: string) => `/cover-letters/${id}/edit`,
     },
     detail: {
-      getHref: (id: string) => `/application-letters/${id}`,
+      getHref: (id: string) => `/cover-letters/${id}`,
     },
   },
 

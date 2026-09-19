@@ -10,7 +10,7 @@ Template bekerja dengan menyisipkan kode khusus di dalam dokumen Word yang akan 
 
 ---
 
-## 1. Template Surat Lamaran (Application Letter)
+## 1. Template Surat Lamaran (Cover Letter)
 
 ### Data yang Tersedia
 

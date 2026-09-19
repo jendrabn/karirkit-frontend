@@ -59,21 +59,21 @@ export const seoConfig = {
     description: "Edit informasi lamaran kerja Anda.",
   },
 
-  // Application Letters
-  applicationLetters: {
+  // Cover Letters
+  coverLetters: {
     title: "Surat Lamaran Saya",
     description: "Kelola semua surat lamaran kerja Anda dalam satu tempat.",
   },
-  applicationLetterCreate: {
+  coverLetterCreate: {
     title: "Buat Surat Lamaran",
     description:
       "Buat surat lamaran profesional dengan template yang tersedia.",
   },
-  applicationLetterShow: {
+  coverLetterShow: {
     title: "Detail Surat Lamaran",
     description: "Lihat detail surat lamaran Anda.",
   },
-  applicationLetterEdit: {
+  coverLetterEdit: {
     title: "Edit Surat Lamaran",
     description: "Edit surat lamaran Anda.",
   },
