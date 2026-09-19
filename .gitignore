@@ -23,8 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
+# Env 
 .env
-docs
-dev-dist
 
-opencode.json
+# Development
+.agents/
+development/
+skills-lock.json
+
