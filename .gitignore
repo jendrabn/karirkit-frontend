@@ -30,4 +30,4 @@ dist-ssr
 .agents/
 development/
 skills-lock.json
-
+public/sitemap.xml
