@@ -15,12 +15,19 @@ export default function AdminJobCreate() {
   const createJobMutation = useCreateJob();
 
   const handleSubmit = (data: CreateJobInput) => {
-    createJobMutation.mutate(data, {
-      onSuccess: (response) => {
-        toast.success("Lowongan berhasil dibuat");
-        navigate(paths.admin.jobs.detail.getHref(response.id));
+    createJobMutation.mutate(
+      {
+        ...data,
+        salary_min: data.salary_min === 0 ? null : data.salary_min,
+        salary_max: data.salary_max === 0 ? null : data.salary_max,
       },
-    });
+      {
+        onSuccess: (response) => {
+          toast.success("Lowongan berhasil dibuat");
+          navigate(paths.admin.jobs.detail.getHref(response.id));
+        },
+      },
+    );
   };
 
   return (

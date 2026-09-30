@@ -21,14 +21,22 @@ export default function AdminJobEdit() {
 
   const handleSubmit = (data: UpdateJobInput) => {
     if (!id) return;
+
     updateJobMutation.mutate(
-      { id, data },
+      {
+        id,
+        data: {
+          ...data,
+          salary_min: data.salary_min === 0 ? null : data.salary_min,
+          salary_max: data.salary_max === 0 ? null : data.salary_max,
+        },
+      },
       {
         onSuccess: () => {
           toast.success("Lowongan berhasil diperbarui");
           navigate(paths.admin.jobs.detail.getHref(id));
         },
-      }
+      },
     );
   };
 

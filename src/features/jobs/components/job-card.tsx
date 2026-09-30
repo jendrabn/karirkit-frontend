@@ -12,7 +12,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { dayjs } from "@/lib/date";
-import { buildImageUrl } from "@/lib/utils";
 import {
   EDUCATION_LEVEL_LABELS,
   JOB_TYPE_LABELS,
@@ -33,9 +32,6 @@ const badgeBaseClassName = "rounded-md px-2.5 py-1 text-xs font-medium";
 
 const bookmarkButtonBaseClassName =
   "inline-flex h-5 w-5 shrink-0 items-center justify-center p-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50";
-
-const companyLogoWrapClassName =
-  "flex w-10 shrink-0 items-center justify-start sm:w-12";
 
 const companyTextClassName = "flex min-w-0 items-center gap-1.5";
 const footerMetaClassName =
@@ -95,7 +91,6 @@ export function JobCard({ job }: JobCardProps) {
   const daysUntilExpiration = dayjs(job.expiration_date).diff(dayjs(), "days");
   const isExpiringSoon = daysUntilExpiration <= 7 && daysUntilExpiration > 0;
   const companyName = job.company?.name || "Perusahaan";
-  const companyLogoUrl = job.company?.logo ? buildImageUrl(job.company.logo) : "";
 
   const jobBadges = [
     {
@@ -179,32 +174,16 @@ export function JobCard({ job }: JobCardProps) {
             ) : null}
           </div>
 
-          <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
-            <div className={companyLogoWrapClassName}>
-              {companyLogoUrl ? (
-                <img
-                  src={companyLogoUrl}
-                  alt={companyName}
-                  className="h-auto w-full max-w-full object-contain"
-                  loading="lazy"
-                />
-              ) : (
-                <span className="text-sm font-semibold text-muted-foreground">
-                  {companyName.charAt(0)}
-                </span>
-              )}
+          <div className="flex min-w-0 flex-col gap-1 text-sm text-muted-foreground">
+            <div className={companyTextClassName}>
+              <Building2 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <span className="truncate font-medium text-foreground">
+                {companyName}
+              </span>
             </div>
-            <div className="min-w-0">
-              <div className={companyTextClassName}>
-                <Building2 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                <span className="truncate font-medium text-foreground">
-                  {companyName}
-                </span>
-              </div>
-              <div className="flex min-w-0 items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">{job.city?.name || "Lokasi"}</span>
-              </div>
+            <div className="flex min-w-0 items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">{job.city?.name || "Lokasi"}</span>
             </div>
           </div>
 

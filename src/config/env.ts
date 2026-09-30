@@ -10,6 +10,7 @@ const createEnv = () => {
       .optional(),
     APP_URL: z.string().optional().default("https://karirkit.id"),
     APP_NAME: z.string().optional().default("KarirKit"),
+    JOB_POST_FORM_URL: z.string().optional().default(""),
     DEBUG: z
       .string()
       .refine((s) => s === "true" || s === "false")

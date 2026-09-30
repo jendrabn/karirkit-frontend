@@ -10,6 +10,7 @@ import {
   JobFilterSidebar,
 } from "@/features/jobs/components/job-filter-sidebar";
 import { JobPagination } from "@/features/jobs/components/job-pagination";
+import { JobPostRequestAlert } from "@/features/jobs/components/job-post-request-alert";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { SEO } from "@/components/seo";
 import { env } from "@/config/env";
@@ -174,7 +175,9 @@ export default function Jobs() {
           ? String(newFilters.experience_min)
           : "",
       salary_min:
-        newFilters.salary_min !== undefined ? String(newFilters.salary_min) : "",
+        newFilters.salary_min !== undefined
+          ? String(newFilters.salary_min)
+          : "",
       education_level: newFilters.education_level?.[0] || "",
     };
 
@@ -193,7 +196,7 @@ export default function Jobs() {
         salary_min: "",
         education_level: "",
       },
-      true
+      true,
     );
   };
 
@@ -227,26 +230,28 @@ export default function Jobs() {
             onSearchSubmit={handleSearchSubmit}
           />
 
-        {/* Main Content */}
-        <section className="py-12 lg:py-16">
-          <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
-            <div className="grid lg:grid-cols-[1fr_320px] gap-8 lg:gap-10">
-              {/* Job List */}
-              <div className="order-2 lg:order-1 min-w-0">
-                {/* Mobile Filter */}
-                <div className="lg:hidden mb-4">
-                  <JobFilterSidebar
-                    jobRoles={jobRolesData || []}
-                    cities={citiesData || []}
-                    companies={companiesData || []}
-                    filters={filters}
-                    onFilterChange={handleFilterChange}
-                    onClearFilters={handleClearFilters}
-                  />
-                </div>
+          {/* Main Content */}
+          <section className="py-12 lg:py-16">
+            <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
+              <div className="grid lg:grid-cols-[1fr_320px] gap-8 lg:gap-10">
+                {/* Job List */}
+                <div className="order-2 lg:order-1 min-w-0">
+                  <JobPostRequestAlert />
 
-                {/* Results Count */}
-                {/* {!isLoadingJobs && jobs.length > 0 && (
+                  {/* Mobile Filter */}
+                  <div className="lg:hidden mb-4">
+                    <JobFilterSidebar
+                      jobRoles={jobRolesData || []}
+                      cities={citiesData || []}
+                      companies={companiesData || []}
+                      filters={filters}
+                      onFilterChange={handleFilterChange}
+                      onClearFilters={handleClearFilters}
+                    />
+                  </div>
+
+                  {/* Results Count */}
+                  {/* {!isLoadingJobs && jobs.length > 0 && (
                   <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
                     <Sparkles className="h-4 w-4 text-primary" />
                     <span>
@@ -263,65 +268,65 @@ export default function Jobs() {
                   </div>
                 )} */}
 
-                {/* Job Cards */}
-                {isLoadingJobs ? (
-                  <div className="flex items-center justify-center py-20">
-                    <div className="text-center space-y-4">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+                  {/* Job Cards */}
+                  {isLoadingJobs ? (
+                    <div className="flex items-center justify-center py-20">
+                      <div className="text-center space-y-4">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+                        <p className="text-muted-foreground">
+                          Memuat lowongan kerja...
+                        </p>
+                      </div>
+                    </div>
+                  ) : jobs.length === 0 ? (
+                    <div className="text-center py-20">
+                      <Briefcase className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">
+                        Tidak ada lowongan ditemukan
+                      </h3>
                       <p className="text-muted-foreground">
-                        Memuat lowongan kerja...
+                        Coba ubah filter atau kata kunci pencarian Anda
                       </p>
                     </div>
-                  </div>
-                ) : jobs.length === 0 ? (
-                  <div className="text-center py-20">
-                    <Briefcase className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      Tidak ada lowongan ditemukan
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Coba ubah filter atau kata kunci pencarian Anda
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    {jobs.map((job) => (
-                      <JobCard key={job.id} job={job} />
-                    ))}
-                  </div>
-                )}
+                  ) : (
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      {jobs.map((job) => (
+                        <JobCard key={job.id} job={job} />
+                      ))}
+                    </div>
+                  )}
 
-                {/* Pagination */}
-                {!isLoadingJobs && jobs.length > 0 && totalPages > 1 && (
-                  <div className="mt-8">
-                    <JobPagination
-                      currentPage={params.page}
-                      totalPages={totalPages}
-                      onPageChange={handlePageChange}
+                  {/* Pagination */}
+                  {!isLoadingJobs && jobs.length > 0 && totalPages > 1 && (
+                    <div className="mt-8">
+                      <JobPagination
+                        currentPage={params.page}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Filter Sidebar - Desktop */}
+                <aside className="order-1 lg:order-2 w-full lg:sticky lg:top-24 lg:self-start">
+                  <div className="hidden lg:block">
+                    <JobFilterSidebar
+                      jobRoles={jobRolesData || []}
+                      cities={citiesData || []}
+                      companies={companiesData || []}
+                      filters={filters}
+                      onFilterChange={handleFilterChange}
+                      onClearFilters={handleClearFilters}
                     />
                   </div>
-                )}
+                </aside>
               </div>
-
-              {/* Filter Sidebar - Desktop */}
-              <aside className="order-1 lg:order-2 w-full lg:sticky lg:top-24 lg:self-start">
-                <div className="hidden lg:block">
-                  <JobFilterSidebar
-                    jobRoles={jobRolesData || []}
-                    cities={citiesData || []}
-                    companies={companiesData || []}
-                    filters={filters}
-                    onFilterChange={handleFilterChange}
-                    onClearFilters={handleClearFilters}
-                  />
-                </div>
-              </aside>
             </div>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
 
-      <Footer />
+        <Footer />
       </div>
     </>
   );

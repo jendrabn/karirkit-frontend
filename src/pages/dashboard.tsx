@@ -183,7 +183,7 @@ export default function Dashboard() {
         subtitle="Ringkasan aktivitas dan statistik lamaran Anda."
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
         {statCards.map((stat, index) => (
           <Card key={index} className="rounded-2xl p-5">
             <div className="flex items-center gap-3">

@@ -42,7 +42,6 @@ import { env } from "@/config/env";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/contexts/auth-context";
 import { formatDateTime } from "@/lib/date";
-import { getEnumBadgeClassName } from "@/lib/enum-badges";
 
 const monthNames = [
   "Januari",
@@ -84,7 +83,8 @@ export default function PortfolioShow() {
   const username = user?.username;
 
   const publicPortfolioUrl = username
-    ? env.APP_URL + paths.publicPortfolio.detail.getHref(username, portfolio?.id || "")
+    ? env.APP_URL +
+      paths.publicPortfolio.detail.getHref(username, portfolio?.id || "")
     : "";
 
   const nextMedia = () => {
@@ -215,7 +215,12 @@ export default function PortfolioShow() {
         backButtonUrl="/portfolios"
       >
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={handleCopyLink} className="gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleCopyLink}
+            className="gap-2"
+          >
             {copied ? (
               <>
                 <Check className="h-4 w-4" />
@@ -228,7 +233,12 @@ export default function PortfolioShow() {
               </>
             )}
           </Button>
-          <Button size="sm" variant="outline" onClick={handleShare} className="gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleShare}
+            className="gap-2"
+          >
             <Share2 className="h-4 w-4" />
             Bagikan
           </Button>
@@ -256,13 +266,13 @@ export default function PortfolioShow() {
             <CardContent className="space-y-4">
               <div className="relative aspect-video">
                 <img
-                  src={
-                    buildImageUrl(
-                      portfolio.medias[currentMediaIndex]?.path || portfolio.cover,
-                    )
-                  }
+                  src={buildImageUrl(
+                    portfolio.medias[currentMediaIndex]?.path ||
+                      portfolio.cover,
+                  )}
                   alt={
-                    portfolio.medias[currentMediaIndex]?.caption || portfolio.title
+                    portfolio.medias[currentMediaIndex]?.caption ||
+                    portfolio.title
                   }
                   className="w-full h-full object-cover"
                 />
@@ -346,19 +356,14 @@ export default function PortfolioShow() {
           <Card>
             <CardHeader className="space-y-3">
               <CardTitle className="text-lg">Informasi Proyek</CardTitle>
-              <Badge
-                variant="outline"
-                className={getEnumBadgeClassName(
-                  "projectType",
-                  portfolio.project_type,
-                )}
-              >
-                <Briefcase className="h-3 w-3" />
-                {projectTypeLabels[portfolio.project_type]}
-              </Badge>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <InfoItem
+                  label="Tipe Proyek"
+                  value={projectTypeLabels[portfolio.project_type]}
+                  icon={Briefcase}
+                />
                 <InfoItem
                   label="Peran"
                   value={portfolio.role_title}
@@ -374,11 +379,7 @@ export default function PortfolioShow() {
                   value={monthNames[portfolio.month - 1]}
                   icon={Calendar}
                 />
-                <InfoItem
-                  label="Tahun"
-                  value={portfolio.year}
-                  icon={Clock}
-                />
+                <InfoItem label="Tahun" value={portfolio.year} icon={Clock} />
               </div>
             </CardContent>
           </Card>
