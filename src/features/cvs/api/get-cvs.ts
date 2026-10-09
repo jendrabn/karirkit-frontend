@@ -99,7 +99,6 @@ export type Experience = {
 
 export type Skill = {
   name: string;
-  level: "beginner" | "intermediate" | "advanced" | "expert";
   skill_category: SkillCategory;
 };
 
@@ -154,7 +153,6 @@ export type GetCVsParams = {
   educations_degree?: string;
   experiences_job_type?: string;
   experiences_is_current?: "true" | "false";
-  skills_level?: string;
   skills_skill_category?: string;
   organizations_organization_type?: string;
 };

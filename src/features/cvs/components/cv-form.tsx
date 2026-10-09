@@ -62,7 +62,6 @@ import {
   type CV,
   DEGREE_OPTIONS,
   JOB_TYPE_OPTIONS,
-  SKILL_LEVEL_OPTIONS,
   ORGANIZATION_TYPE_OPTIONS,
   MONTH_OPTIONS,
   LANGUAGE_OPTIONS,
@@ -260,15 +259,10 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
     skills.append({
       name: "",
       skill_category: lastSkill?.skill_category ?? "",
-      level: lastSkill?.level ?? "",
     });
 
     if (lastSkill) {
       setValue(`skills.${nextIndex}.skill_category`, lastSkill.skill_category, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-      setValue(`skills.${nextIndex}.level`, lastSkill.level, {
         shouldDirty: true,
         shouldValidate: true,
       });
@@ -1511,56 +1505,6 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
                             {errors.skills?.[index]?.name?.message}
                           </FieldError>
                         </Field>
-                        <Controller
-                          control={control}
-                          name={`skills.${index}.level`}
-                          render={({ field: levelField }) => (
-                            <Field className="w-40">
-                              <FieldLabel>
-                                Level Keahlian{" "}
-                                <span className="text-destructive">*</span>
-                              </FieldLabel>
-                              <Select
-                                value={
-                                  typeof levelField.value === "string"
-                                    ? levelField.value
-                                    : ""
-                                }
-                                onValueChange={(v) =>
-                                  levelField.onChange(
-                                    v as
-                                      | "beginner"
-                                      | "intermediate"
-                                      | "advanced"
-                                      | "expert",
-                                  )
-                                }
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    errors.skills?.[index]?.level &&
-                                      "border-destructive",
-                                  )}
-                                >
-                                  <SelectValue placeholder="Pilih Level Keahlian" />
-                                </SelectTrigger>
-                                <SelectContent className="z-50">
-                                  {SKILL_LEVEL_OPTIONS.map((opt) => (
-                                    <SelectItem
-                                      key={opt.value}
-                                      value={opt.value}
-                                    >
-                                      {opt.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FieldError>
-                                {errors.skills?.[index]?.level?.message}
-                              </FieldError>
-                            </Field>
-                          )}
-                        />
                         <Button
                           type="button"
                           variant="ghost"

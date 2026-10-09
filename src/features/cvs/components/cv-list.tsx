@@ -117,7 +117,6 @@ const CVList = () => {
     educations_degree: "",
     experiences_job_type: "",
     experiences_is_current: "",
-    skills_level: "",
     skills_skill_category: "",
     organizations_organization_type: "",
   });
@@ -151,7 +150,6 @@ const CVList = () => {
       experiences_job_type: params.experiences_job_type || undefined,
       experiences_is_current:
         (params.experiences_is_current as "true" | "false") || undefined,
-      skills_level: params.skills_level || undefined,
       skills_skill_category: params.skills_skill_category || undefined,
       organizations_organization_type:
         params.organizations_organization_type || undefined,
@@ -963,7 +961,6 @@ const CVList = () => {
           experiences_job_type: params.experiences_job_type || "",
           experiences_is_current:
             (params.experiences_is_current as "true" | "false") || undefined,
-          skills_level: params.skills_level || "",
           skills_skill_category: params.skills_skill_category || "",
           organizations_organization_type:
             params.organizations_organization_type || "",
@@ -978,7 +975,6 @@ const CVList = () => {
               educations_degree: newFilters.educations_degree || "",
               experiences_job_type: newFilters.experiences_job_type || "",
               experiences_is_current: newFilters.experiences_is_current || "",
-              skills_level: newFilters.skills_level || "",
               skills_skill_category: newFilters.skills_skill_category || "",
               organizations_organization_type:
                 newFilters.organizations_organization_type || "",

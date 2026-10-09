@@ -186,21 +186,6 @@ export const experienceSchema = z.discriminatedUnion("is_current", [
 
 export const skillSchema = z.object({
   name: z.string().min(1, "Nama keahlian wajib diisi"),
-  level: z.preprocess(
-    (v) => {
-      if (v === "" || v === null || v === undefined) {
-        return undefined;
-      }
-      return v;
-    },
-    z
-      .enum(["beginner", "intermediate", "advanced", "expert"], {
-        message: "Level keahlian wajib dipilih",
-      })
-      .refine((v) => v !== undefined, {
-        message: "Level keahlian wajib dipilih",
-      }),
-  ),
   skill_category: z.string().min(1, "Kategori keahlian wajib dipilih"),
 });
 

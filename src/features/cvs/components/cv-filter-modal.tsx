@@ -22,7 +22,6 @@ import {
   JOB_TYPE_OPTIONS,
   LANGUAGE_OPTIONS,
   ORGANIZATION_TYPE_OPTIONS,
-  SKILL_LEVEL_OPTIONS,
 } from "@/types/cv";
 import { SKILL_CATEGORY_LABELS } from "@/types/skill-categories";
 
@@ -34,7 +33,6 @@ export interface FilterValues {
   educations_degree?: string;
   experiences_job_type?: string;
   experiences_is_current?: "true" | "false";
-  skills_level?: string;
   skills_skill_category?: string;
   organizations_organization_type?: string;
 }
@@ -239,31 +237,6 @@ export function CVFilterModal({
                     <SelectItem value="all">Semua</SelectItem>
                     <SelectItem value="true">Ya</SelectItem>
                     <SelectItem value="false">Tidak</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-
-              <Field>
-                <FieldLabel>Level Keahlian</FieldLabel>
-                <Select
-                  value={localFilters.skills_level || "all"}
-                  onValueChange={(value) =>
-                    setLocalFilters({
-                      ...localFilters,
-                      skills_level: value === "all" ? undefined : value,
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Semua level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Semua</SelectItem>
-                    {SKILL_LEVEL_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
                   </SelectContent>
                 </Select>
               </Field>

@@ -14,7 +14,6 @@ export type DegreeType =
   | "doctorate"
   | "any";
 
-export type SkillLevel = "beginner" | "intermediate" | "advanced" | "expert";
 export type OrganizationType =
   | "student"
   | "community"
@@ -208,7 +207,6 @@ export type SkillCategory =
 
 export interface CvSkill {
   name: string;
-  level: SkillLevel;
   skill_category: SkillCategory;
 }
 
@@ -307,13 +305,6 @@ export const DEGREE_OPTIONS = [
   { value: "master", label: "Magister (S2)" },
   { value: "doctorate", label: "Doktor (S3)" },
   { value: "any", label: "Tidak ditentukan" },
-];
-
-export const SKILL_LEVEL_OPTIONS = [
-  { value: "beginner", label: "Pemula" },
-  { value: "intermediate", label: "Menengah" },
-  { value: "advanced", label: "Mahir" },
-  { value: "expert", label: "Ahli" },
 ];
 
 export const ORGANIZATION_TYPE_OPTIONS = [

@@ -20,7 +20,6 @@ import {
   JOB_TYPE_OPTIONS,
   MONTH_OPTIONS,
   ORGANIZATION_TYPE_OPTIONS,
-  SKILL_LEVEL_OPTIONS,
 } from "@/types/cv";
 import { SKILL_CATEGORY_LABELS } from "@/types/skill-categories";
 import { dayjs } from "@/lib/date";
@@ -392,9 +391,6 @@ export function CVDetail({
                           >
                             <span className="font-medium text-foreground">
                               {skill.name}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {getLabel(skill.level, SKILL_LEVEL_OPTIONS)}
                             </span>
                           </span>
                         ))}
