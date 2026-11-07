@@ -202,7 +202,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
         },
         {
           path: "/cvs",
-          lazy: () => import("./pages/c-vs").then(convertWithProtection(queryClient)),
+          lazy: () => import("./pages/cvs").then(convertWithProtection(queryClient)),
         },
         {
           path: "/cvs/create",

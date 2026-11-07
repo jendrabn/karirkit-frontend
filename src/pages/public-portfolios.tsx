@@ -226,7 +226,7 @@ export default function PublicPortfolios() {
                   className="group block animate-fade-in"
                   style={{ animationDelay: `${index * 80}ms` }}
                 >
-                  <Card className="overflow-hidden h-full bg-card hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-border/50 group-hover:border-primary/30">
+                  <Card className="overflow-hidden h-full bg-card hover:shadow-2xl transition-shadow duration-500 border-border/50 group-hover:border-primary/30">
                     <div className="aspect-16/10 relative overflow-hidden">
                       <img
                         src={buildImageUrl(portfolio.cover)}
