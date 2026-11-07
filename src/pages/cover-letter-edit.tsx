@@ -10,6 +10,7 @@ import {
   type CoverLetterFormHandle,
 } from "@/features/cover-letters/components/cover-letter-form";
 import { type CreateCoverLetterInput } from "@/features/cover-letters/api/create-cover-letter";
+import type { AiImprovementMeta } from "@/types/ai-improvement";
 import { useCoverLetter } from "@/features/cover-letters/api/get-cover-letter";
 import { useUpdateCoverLetter } from "@/features/cover-letters/api/update-cover-letter";
 import {
@@ -28,11 +29,12 @@ export default function CoverLetterEdit() {
   const { id } = useParams();
   const form = useForm<CreateCoverLetterInput>();
   const letterFormRef = useRef<CoverLetterFormHandle>(null);
-  const aiImprovedData = (
-    location.state as {
-      aiImprovedData?: Partial<CreateCoverLetterInput>;
-    } | null
-  )?.aiImprovedData;
+  const aiImprovedState = location.state as {
+    aiImprovedData?: Partial<CreateCoverLetterInput>;
+    aiImprovementMeta?: AiImprovementMeta;
+  } | null;
+  const aiImprovedData = aiImprovedState?.aiImprovedData;
+  const aiImprovementMeta = aiImprovedState?.aiImprovementMeta;
 
   const { data: letterResponse, isLoading: isLetterLoading } =
     useCoverLetter({
@@ -166,6 +168,7 @@ export default function CoverLetterEdit() {
         error={updateMutation.error}
         onAiImprove={handleAiImprove}
         initialAiImprovementSuccess={Boolean(aiImprovedData)}
+        initialAiImprovementMeta={aiImprovementMeta}
       />
       <LoadingOverlay
         show={improveLetterMutation.isPending}

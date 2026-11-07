@@ -3,9 +3,10 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dayjs } from "@/lib/date";
 import { useUser } from "@/lib/auth";
-import { CalendarIcon, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CalendarIcon, CheckCircle2 } from "lucide-react";
 import { ParagraphTemplateModal } from "./paragraph-template-modal";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -51,6 +52,11 @@ import {
 } from "../api/create-cover-letter";
 import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
 import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
+import {
+  getAiImprovementErrorMessage,
+  type AiImprovementMeta,
+} from "@/types/ai-improvement";
+import type { ImproveCoverLetterWithAIResponse } from "../api/improve-cover-letter-with-ai";
 
 interface CoverLetterFormProps {
   initialData?: Partial<CoverLetter>;
@@ -58,8 +64,11 @@ interface CoverLetterFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   error?: unknown;
-  onAiImprove?: (data: CreateCoverLetterInput) => Promise<unknown>;
+  onAiImprove?: (
+    data: CreateCoverLetterInput,
+  ) => Promise<ImproveCoverLetterWithAIResponse | undefined>;
   initialAiImprovementSuccess?: boolean;
+  initialAiImprovementMeta?: AiImprovementMeta;
 }
 
 export type CoverLetterFormHandle = {
@@ -77,6 +86,7 @@ export const CoverLetterForm = forwardRef<
   error,
   onAiImprove,
   initialAiImprovementSuccess,
+  initialAiImprovementMeta,
 }: CoverLetterFormProps, ref) {
   const { data: user } = useUser();
   const { data: mySubscription } = useMySubscription();
@@ -84,6 +94,13 @@ export const CoverLetterForm = forwardRef<
   const [aiImprovementSuccess, setAiImprovementSuccess] = useState(
     Boolean(initialAiImprovementSuccess),
   );
+  const [aiImprovementMeta, setAiImprovementMeta] = useState<
+    AiImprovementMeta | undefined
+  >(initialAiImprovementMeta);
+  const [aiImprovementError, setAiImprovementError] = useState<string | null>(
+    null,
+  );
+  const aiImprovementSummary = aiImprovementMeta?.improvement_summary;
   const form = useForm<CreateCoverLetterInput>({
     resolver: zodResolver(coverLetterSchema),
     defaultValues: {
@@ -197,25 +214,28 @@ export const CoverLetterForm = forwardRef<
     if (!onAiImprove) return;
 
     const currentValues = form.getValues();
-    let improvedData: Partial<CreateCoverLetterInput> | undefined;
 
     try {
-      improvedData = (await onAiImprove(
-        coverLetterSchema.parse(data),
-      )) as Partial<CreateCoverLetterInput> | undefined;
-    } catch {
-      return;
+      const result = await onAiImprove(coverLetterSchema.parse(data));
+
+      if (!result) return;
+
+      const improvedData = result.data as Partial<CreateCoverLetterInput>;
+
+      form.reset({
+        ...currentValues,
+        ...improvedData,
+        template_id: currentValues.template_id,
+        signature: currentValues.signature,
+      });
+      setAiImprovementMeta(result.meta);
+      setAiImprovementError(null);
+      setAiImprovementSuccess(true);
+    } catch (err) {
+      setAiImprovementSuccess(false);
+      setAiImprovementMeta(undefined);
+      setAiImprovementError(getAiImprovementErrorMessage(err));
     }
-
-    if (!improvedData) return;
-
-    form.reset({
-      ...currentValues,
-      ...improvedData,
-      template_id: currentValues.template_id,
-      signature: currentValues.signature,
-    });
-    setAiImprovementSuccess(true);
   }, displayFormErrors);
 
   useImperativeHandle(
@@ -235,9 +255,32 @@ export const CoverLetterForm = forwardRef<
           <Alert className="border-emerald-500/20 bg-emerald-500/10 text-emerald-950 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-50">
             <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <AlertTitle>Surat lamaran berhasil diperbaiki dengan AI</AlertTitle>
-            <AlertDescription>
-              Klik {submitLabel} untuk menyimpan perubahan terbaru.
+            <AlertDescription className="space-y-3">
+              {aiImprovementSummary ? (
+                <div className="space-y-2">
+                  <Badge variant="passed" className="font-medium">
+                    {aiImprovementSummary.changed_fields_count} bagian
+                    diperbaiki
+                  </Badge>
+                  {aiImprovementSummary.summary.length > 0 && (
+                    <ul className="list-disc space-y-1 pl-5">
+                      {aiImprovementSummary.summary.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ) : null}
+              <p>Klik {submitLabel} untuk menyimpan perubahan terbaru.</p>
             </AlertDescription>
+          </Alert>
+        )}
+
+        {aiImprovementError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Gagal memperbaiki surat lamaran dengan AI</AlertTitle>
+            <AlertDescription>{aiImprovementError}</AlertDescription>
           </Alert>
         )}
 

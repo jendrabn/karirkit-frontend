@@ -271,7 +271,10 @@ export function CoverLetterList() {
         onSuccess: (data) => {
           toast.success("Surat lamaran berhasil diperbaiki dengan AI");
           navigate(paths.coverLetters.edit.getHref(letter.id), {
-            state: { aiImprovedData: data },
+            state: {
+              aiImprovedData: data.data,
+              aiImprovementMeta: data.meta,
+            },
           });
         },
       },

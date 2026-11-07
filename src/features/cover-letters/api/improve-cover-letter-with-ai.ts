@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
+import type { AiImprovementResponse } from "@/types/ai-improvement";
 import type { CreateCoverLetterInput } from "./create-cover-letter";
 import type { CoverLetter } from "./get-cover-letters";
 
@@ -17,7 +18,7 @@ export type ImproveCoverLetterWithAIInput = {
 };
 
 export type ImproveCoverLetterWithAIResponse =
-  CoverLetterAiImprovementData;
+  AiImprovementResponse<CoverLetterAiImprovementData>;
 
 export const toCoverLetterAiImprovementData = (
   letter: CreateCoverLetterInput | CoverLetter,
@@ -47,7 +48,9 @@ export const toCoverLetterAiImprovementData = (
 export const improveCoverLetterWithAI = (
   data: ImproveCoverLetterWithAIInput,
 ): Promise<ImproveCoverLetterWithAIResponse> => {
-  return api.post("/cover-letters/ai-improve", data);
+  return api.post("/cover-letters/ai-improve", data, {
+    skipDataUnwrap: true,
+  });
 };
 
 type UseImproveCoverLetterWithAIOptions = {

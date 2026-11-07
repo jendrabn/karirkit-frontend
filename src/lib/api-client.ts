@@ -26,6 +26,7 @@ const SUBSCRIPTION_ERROR_MESSAGES: Record<string, string> = {
 declare module "axios" {
   interface AxiosRequestConfig {
     skipGeneralErrorToast?: boolean;
+    skipDataUnwrap?: boolean;
   }
 }
 
@@ -46,7 +47,11 @@ api.interceptors.request.use(authRequestInterceptor);
 api.interceptors.response.use(
   (response) => {
     if (response.status === 204) return null;
+    const skipDataUnwrap =
+      (response.config as AxiosRequestConfig | undefined)?.skipDataUnwrap ===
+      true;
     if (
+      !skipDataUnwrap &&
       response.data &&
       typeof response.data === "object" &&
       "data" in response.data

@@ -19,8 +19,10 @@ import {
   Share2,
   Layers,
   CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -79,6 +81,11 @@ import {
 } from "../api/create-cv";
 import { useMySubscription } from "@/features/subscriptions/api/get-my-subscription";
 import { getPlanFeatureAccess } from "@/features/subscriptions/utils";
+import {
+  getAiImprovementErrorMessage,
+  type AiImprovementMeta,
+} from "@/types/ai-improvement";
+import type { ImproveCVWithAIResponse } from "../api/improve-cv-with-ai";
 
 interface CVFormProps {
   initialData?: Partial<CV>;
@@ -86,8 +93,9 @@ interface CVFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   error?: unknown;
-  onAiImprove?: (data: CVFormData) => Promise<unknown>;
+  onAiImprove?: (data: CVFormData) => Promise<ImproveCVWithAIResponse | undefined>;
   initialAiImprovementSuccess?: boolean;
+  initialAiImprovementMeta?: AiImprovementMeta;
 }
 
 export type CVFormHandle = {
@@ -105,6 +113,7 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
   error,
   onAiImprove,
   initialAiImprovementSuccess,
+  initialAiImprovementMeta,
 }: CVFormProps, ref) {
   const { data: user } = useUser();
   const { data: mySubscription } = useMySubscription();
@@ -112,6 +121,13 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
   const [aiImprovementSuccess, setAiImprovementSuccess] = useState(
     Boolean(initialAiImprovementSuccess),
   );
+  const [aiImprovementMeta, setAiImprovementMeta] = useState<
+    AiImprovementMeta | undefined
+  >(initialAiImprovementMeta);
+  const [aiImprovementError, setAiImprovementError] = useState<string | null>(
+    null,
+  );
+  const aiImprovementSummary = aiImprovementMeta?.improvement_summary;
   
   const form = useForm<CVFormInput>({
     resolver: zodResolver(cvSchema, undefined, { raw: true }),
@@ -273,27 +289,30 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
     if (!onAiImprove) return;
 
     const currentValues = form.getValues();
-    let improvedData: Partial<CVFormInput> | undefined;
 
     try {
-      improvedData = (await onAiImprove(cvSchema.parse(data))) as
-        | Partial<CVFormInput>
-        | undefined;
-    } catch {
-      return;
+      const result = await onAiImprove(cvSchema.parse(data));
+
+      if (!result) return;
+
+      const improvedData = result.data as Partial<CVFormInput>;
+
+      form.reset({
+        ...currentValues,
+        ...improvedData,
+        template_id: currentValues.template_id,
+        photo: currentValues.photo,
+        projects: (improvedData.projects ??
+          currentValues.projects) as CVFormInput["projects"],
+      });
+      setAiImprovementMeta(result.meta);
+      setAiImprovementError(null);
+      setAiImprovementSuccess(true);
+    } catch (err) {
+      setAiImprovementSuccess(false);
+      setAiImprovementMeta(undefined);
+      setAiImprovementError(getAiImprovementErrorMessage(err));
     }
-
-    if (!improvedData) return;
-
-    form.reset({
-      ...currentValues,
-      ...improvedData,
-      template_id: currentValues.template_id,
-      photo: currentValues.photo,
-      projects: (improvedData.projects ??
-        currentValues.projects) as CVFormInput["projects"],
-    });
-    setAiImprovementSuccess(true);
   }, displayFormErrors);
 
   useImperativeHandle(
@@ -343,9 +362,32 @@ export const CVForm = forwardRef<CVFormHandle, CVFormProps>(function CVForm({
           <Alert className="mb-6 border-emerald-500/20 bg-emerald-500/10 text-emerald-950 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-50">
             <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <AlertTitle>CV berhasil diperbaiki dengan AI</AlertTitle>
-            <AlertDescription>
-              Klik {submitLabel} untuk menyimpan perubahan terbaru.
+            <AlertDescription className="space-y-3">
+              {aiImprovementSummary ? (
+                <div className="space-y-2">
+                  <Badge variant="passed" className="font-medium">
+                    {aiImprovementSummary.changed_fields_count} bagian
+                    diperbaiki
+                  </Badge>
+                  {aiImprovementSummary.summary.length > 0 && (
+                    <ul className="list-disc space-y-1 pl-5">
+                      {aiImprovementSummary.summary.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ) : null}
+              <p>Klik {submitLabel} untuk menyimpan perubahan terbaru.</p>
             </AlertDescription>
+          </Alert>
+        )}
+
+        {aiImprovementError && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Gagal memperbaiki CV dengan AI</AlertTitle>
+            <AlertDescription>{aiImprovementError}</AlertDescription>
           </Alert>
         )}
 

@@ -246,7 +246,10 @@ const CVList = () => {
         onSuccess: (data) => {
           toast.success("CV berhasil diperbaiki dengan AI");
           navigate(paths.cvs.edit.getHref(cv.id), {
-            state: { aiImprovedData: data },
+            state: {
+              aiImprovedData: data.data,
+              aiImprovementMeta: data.meta,
+            },
           });
         },
       },

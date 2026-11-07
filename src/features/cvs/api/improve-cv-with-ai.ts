@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
+import type { AiImprovementResponse } from "@/types/ai-improvement";
 import type { CreateCVInput } from "./create-cv";
 import type { CV } from "./get-cvs";
 
@@ -16,7 +17,7 @@ export type ImproveCVWithAIInput = {
   job_description?: string;
 };
 
-export type ImproveCVWithAIResponse = CvAiImprovementData;
+export type ImproveCVWithAIResponse = AiImprovementResponse<CvAiImprovementData>;
 
 export const toCvAiImprovementData = (
   cv: CreateCVInput | CV,
@@ -41,7 +42,7 @@ export const toCvAiImprovementData = (
 export const improveCVWithAI = (
   data: ImproveCVWithAIInput,
 ): Promise<ImproveCVWithAIResponse> => {
-  return api.post("/cvs/ai-improve", data);
+  return api.post("/cvs/ai-improve", data, { skipDataUnwrap: true });
 };
 
 type UseImproveCVWithAIOptions = {

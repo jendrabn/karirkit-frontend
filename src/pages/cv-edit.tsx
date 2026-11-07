@@ -14,6 +14,7 @@ import {
   useImproveCVWithAI,
 } from "@/features/cvs/api/improve-cv-with-ai";
 import type { CV } from "@/types/cv";
+import type { AiImprovementMeta } from "@/types/ai-improvement";
 import { toast } from "sonner";
 import { Loader2, Sparkles } from "lucide-react";
 import { useServerValidation } from "@/hooks/use-server-validation";
@@ -26,9 +27,12 @@ export default function CVEdit() {
   const { id } = useParams<{ id: string }>();
   const form = useForm<CVFormData>();
   const cvFormRef = useRef<CVFormHandle>(null);
-  const aiImprovedData = (
-    location.state as { aiImprovedData?: Partial<CVFormData> } | null
-  )?.aiImprovedData;
+  const aiImprovedState = location.state as {
+    aiImprovedData?: Partial<CVFormData>;
+    aiImprovementMeta?: AiImprovementMeta;
+  } | null;
+  const aiImprovedData = aiImprovedState?.aiImprovedData;
+  const aiImprovementMeta = aiImprovedState?.aiImprovementMeta;
 
   const { data: cvResponse, isLoading: isCVLoading } = useCV({
     id: id!,
@@ -161,6 +165,7 @@ export default function CVEdit() {
         error={updateMutation.error}
         onAiImprove={handleAiImprove}
         initialAiImprovementSuccess={Boolean(aiImprovedData)}
+        initialAiImprovementMeta={aiImprovementMeta}
       />
       <LoadingOverlay
         show={improveCvMutation.isPending}
